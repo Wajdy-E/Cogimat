@@ -1,11 +1,14 @@
 import { Slot } from "expo-router";
 import { Provider } from "react-redux";
-import { store } from "../store/store"; 
+import { store } from "../store/store";
+import { GluestackUIProvider } from "./components/ui/gluestack-ui-provider";
 
 export default function Layout() {
-  return (
-    <Provider store={store}>
-      <Slot />
-    </Provider>
-  );
+	return (
+		<GluestackUIProvider>
+			<Provider store={store}>
+				<Slot />
+			</Provider>
+		</GluestackUIProvider>
+	);
 }
