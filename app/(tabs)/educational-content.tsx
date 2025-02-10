@@ -1,5 +1,9 @@
+import { View } from "react-native";
+
 function educationalContent() {
-    return (  );
+    return (  
+        <View></View>
+    );
 }
 
 export default educationalContent;

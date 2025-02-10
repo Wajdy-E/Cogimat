@@ -1,5 +1,7 @@
+import { View } from "react-native";
+
 function favourites() {
-    return (  );
+	return <View></View>;
 }
 
 export default favourites;

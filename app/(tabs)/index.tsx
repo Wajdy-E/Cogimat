@@ -1,7 +1,7 @@
 import { View } from "react-native";
 
-function progress() {
+function Home() {
 	return <View></View>;
 }
 
-export default progress;
+export default Home;

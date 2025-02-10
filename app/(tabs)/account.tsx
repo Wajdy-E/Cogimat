@@ -1,5 +1,7 @@
+import { View } from "react-native";
+
 function account() {
-	return <div> hi</div>;
+	return <View> hi</View>;
 }
 
 export default account;
