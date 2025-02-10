@@ -1,5 +1,7 @@
+import { View } from "react-native";
+
 function TabsLayout() {
-    return (  );
+	return <View></View>;
 }
 
 export default TabsLayout;

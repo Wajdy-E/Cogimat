@@ -9,12 +9,12 @@ import {
 	FormControlLabelText,
 } from "../components/ui/form-control";
 
-function Signup() {
+function Login() {
 	return (
 		<View className="flex-1 justify-center px-4">
 			<VStack space="md">
 				<Heading size="xl" className="text-center mb-6">
-					Create Account
+					Login
 				</Heading>
 
 				<FormControl>
@@ -39,29 +39,33 @@ function Signup() {
 					</Input>
 				</FormControl>
 
-				<FormControl>
-					<FormControlLabel>
-						<FormControlLabelText>Confirm Password</FormControlLabelText>
-					</FormControlLabel>
-					<Input>
-						<InputField
-							placeholder="Confirm your password"
-							type="password"
-							className="p-2"
-						/>
-					</Input>
-				</FormControl>
-
 				<Button
 					size="lg"
 					className="mt-4"
+					onPress={() => console.log("Login pressed")}
+				>
+					<ButtonText>Login</ButtonText>
+				</Button>
+
+				<Button
+					variant="link"
+					size="sm"
+					className="mt-2"
+					onPress={() => console.log("Forgot password pressed")}
+				>
+					<ButtonText>Forgot Password?</ButtonText>
+				</Button>
+
+				<Button
+					variant="link"
+					size="sm"
 					onPress={() => console.log("Sign up pressed")}
 				>
-					<ButtonText>Sign Up</ButtonText>
+					<ButtonText>Don't have an account? Sign up</ButtonText>
 				</Button>
 			</VStack>
 		</View>
 	);
 }
 
-export default Signup;
+export default Login;

@@ -1,5 +1,7 @@
+import { View } from "react-native";
+
 function community() {
-    return (  );
+	return <View></View>;
 }
 
 export default community;

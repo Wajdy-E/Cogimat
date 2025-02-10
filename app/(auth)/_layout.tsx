@@ -1,5 +1,7 @@
+import { View } from "react-native";
+
 function AuthLayout() {
-    return (  );
+	return <View></View>;
 }
 
 export default AuthLayout;
