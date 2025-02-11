@@ -1,7 +1,7 @@
 import { View } from "react-native";
 
-function favourites() {
+function Favourites() {
 	return <View></View>;
 }
 
-export default favourites;
+export default Favourites;

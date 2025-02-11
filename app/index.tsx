@@ -9,8 +9,11 @@ export default function Home() {
 		<View className="bg-red-500 h-full flex justify-center items-center">
 			<Text>Open up bomvor.tsx to start working on your app!</Text>
 			<Card title="Hello" btnKey="Click me">
-				<Link href="/tabs/">hi.</Link>
+				<Text>Hi.</Text>
 			</Card>
+			<Link href="/(tabs)/">
+				<Text>Hi.</Text>
+			</Link>
 			<StatusBar style="auto" />
 		</View>
 	);

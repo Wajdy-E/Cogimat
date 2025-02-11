@@ -1,7 +1,12 @@
+import { Text } from "react-native";
 import { View } from "react-native";
 
-function account() {
-	return <View> hi</View>;
+function Account() {
+	return (
+		<View>
+			<Text>Account</Text>
+		</View>
+	);
 }
 
-export default account;
+export default Account;
