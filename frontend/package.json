@@ -58,7 +58,8 @@
     "tailwindcss": "^3.4.17",
     "yup": "^1.6.1",
     "expo-auth-session": "~6.0.3",
-    "undefined": "expo-auth-session/providers/google"
+    "undefined": "expo-auth-session/providers/google",
+    "expo-image-picker": "~16.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

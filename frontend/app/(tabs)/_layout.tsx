@@ -8,22 +8,6 @@ export default function TabsLayout() {
 	const activeColor = "#64dac4";
 	const inactiveColor = "#d3d3d3";
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				// Use the correct backend URL
-				const response = await axios.post(
-					"http://192.168.2.32:3000/api/auth/signup"
-				);
-				console.log("API Response:", response.data);
-			} catch (error) {
-				console.error("API Error:", error);
-			}
-		};
-
-		fetchData();
-	}, []);
-
 	return (
 		<Tabs
 			screenOptions={{

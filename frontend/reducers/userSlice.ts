@@ -26,6 +26,7 @@ export enum LanguageEnum {
 	Japanese = "ja",
 	Korean = "ko",
 }
+
 export interface UserSettings {
 	theme: Theme;
 	allowNotifications: boolean;
@@ -47,7 +48,12 @@ const initialState: UserState = {
 	user: {
 		baseInfo: null,
 		subscription: null,
-		settings: null,
+		settings: {
+			theme: Theme.Light, // Default to light theme
+			allowNotifications: true,
+			allowEmails: true,
+			language: LanguageEnum.English,
+		},
 	},
 };
 
@@ -58,8 +64,15 @@ const userSlice = createSlice({
 		setCurrentUser(state, action: PayloadAction<UserBase>) {
 			state.user.baseInfo = action.payload;
 		},
+		toggleTheme(state) {
+			state.user.settings!.theme =
+				state.user.settings!.theme === Theme.Light ? Theme.Dark : Theme.Light;
+		},
+		setTheme(state, action: PayloadAction<Theme>) {
+			state.user.settings!.theme = action.payload;
+		},
 	},
 });
 
-export const { setCurrentUser } = userSlice.actions;
+export const { setCurrentUser, toggleTheme, setTheme } = userSlice.actions;
 export default userSlice.reducer;
