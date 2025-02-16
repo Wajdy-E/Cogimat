@@ -16,7 +16,7 @@ export const config = {
 		"--color-primary-900": "68 130 119",
 
 		/* Secondary  */
-		"--color-secondary-0": "253 253 253",
+		"--color-secondary-0": "0 0 0",
 		"--color-secondary-50": "251 251 251",
 		"--color-secondary-100": "246 246 246",
 		"--color-secondary-200": "242 242 242",
@@ -167,7 +167,7 @@ export const config = {
 		"--color-primary-900": "68 130 119",
 
 		/* Secondary  */
-		"--color-secondary-0": "20 20 20",
+		"--color-secondary-0": "255 255 255" /** white */,
 		"--color-secondary-50": "23 23 23",
 		"--color-secondary-100": "31 31 31",
 		"--color-secondary-200": "39 39 39",
@@ -181,18 +181,18 @@ export const config = {
 		"--color-secondary-950": "164 164 164",
 
 		/* Tertiary */
-		"--color-tertiary-0": "84 49 18",
-		"--color-tertiary-50": "108 61 19",
-		"--color-tertiary-100": "130 73 23",
-		"--color-tertiary-200": "180 98 26",
-		"--color-tertiary-300": "215 117 31",
-		"--color-tertiary-400": "231 129 40",
-		"--color-tertiary-500": "251 157 75",
-		"--color-tertiary-600": "253 180 116",
-		"--color-tertiary-700": "254 209 170",
-		"--color-tertiary-800": "255 233 213",
-		"--color-tertiary-900": "255 242 229",
-		"--color-tertiary-950": "255 250 245",
+
+		"--color-tertiary-50": "#ff100111",
+		"--color-tertiary-100": "#fffeec",
+		"--color-tertiary-200": "#fffdc8",
+		"--color-tertiary-300": "#fcfaa7",
+		"--color-tertiary-400": "#f8f487",
+		"--color-tertiary-500": "#f6f163",
+		"--color-tertiary-600": "#f0eb56",
+		"--color-tertiary-700": "#e8e348",
+		"--color-tertiary-800": "#e0da3b",
+		"--color-tertiary-900": "#d6d12f",
+		"--color-tertiary-950": "#c2bd2e",
 
 		/* Error */
 		"--color-error-0": "83 19 19",
@@ -279,18 +279,18 @@ export const config = {
 		"--color-outline-950": "253 254 254",
 
 		/* Background */
-		"--color-background-0": "18 18 18",
-		"--color-background-50": "39 38 37",
-		"--color-background-100": "65 64 64",
-		"--color-background-200": "83 82 82",
-		"--color-background-300": "116 116 116",
-		"--color-background-400": "142 142 142",
-		"--color-background-500": "162 163 163",
-		"--color-background-600": "213 212 212",
-		"--color-background-700": "229 228 228",
-		"--color-background-800": "242 241 241",
-		"--color-background-900": "246 246 246",
-		"--color-background-950": "255 255 255",
+		"--color-background-0": "33 32 32",
+		"--color-background-50": "153 94 94",
+		"--color-background-100": "125 86 86",
+		"--color-background-200": "99 76 76",
+		"--color-background-300": "74 64 64",
+		"--color-background-400": "52 50 50",
+		"--color-background-500": "33 32 32",
+		"--color-background-600": "22 23 23",
+		"--color-background-700": "11 13 13",
+		"--color-background-800": "1 1 1",
+		"--color-background-900": "8 8 8",
+		"--color-background-950": "15 25 25",
 
 		/* Background Special */
 		"--color-background-error": "66 43 43",

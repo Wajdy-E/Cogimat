@@ -1,16 +1,26 @@
 import { Slot } from "expo-router";
-import { Provider } from "react-redux";
-import { store } from "../store/store";
+import { Provider, useSelector } from "react-redux";
+import { RootState, store } from "../store/store";
 import { GluestackUIProvider } from "./components/ui/gluestack-ui-provider";
-import { useState } from "react";
+
+function ThemedApp() {
+	const colorMode = useSelector(
+		(state: RootState) => state.user.user?.settings?.theme ?? "light"
+	);
+
+	return (
+		<>
+			<GluestackUIProvider mode={colorMode}>
+				<Slot />
+			</GluestackUIProvider>
+		</>
+	);
+}
 
 export default function Layout() {
-	const [colorMode, setColorMode] = useState<"light" | "dark">("light");
 	return (
-		<GluestackUIProvider mode={colorMode}>
-			<Provider store={store}>
-				<Slot />
-			</Provider>
-		</GluestackUIProvider>
+		<Provider store={store}>
+			<ThemedApp />
+		</Provider>
 	);
 }
