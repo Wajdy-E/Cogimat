@@ -1,201 +1,156 @@
-import { View, Text } from "react-native";
-import { Button, ButtonText } from "../components/ui/button";
-import { Input, InputField } from "../components/ui/input";
-import { VStack } from "../components/ui/vstack";
-import { Heading } from "../components/ui/heading";
+import React, { useEffect, useState } from "react";
 import {
-	FormControl,
-	FormControlLabel,
-	FormControlLabelText,
-} from "../components/ui/form-control";
-import { Formik } from "formik";
-import { signupSchema } from "../../schemas/schema";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
+	Alert,
+	Button,
+	NativeSyntheticEvent,
+	StyleSheet,
+	TextInputChangeEventData,
+	View,
+} from "react-native";
+import { supabase } from "../../lib/supabase";
+import * as AppleAuthentication from "expo-apple-authentication";
+import { Input, InputField } from "@/components/ui/input"; // Assuming Gluestack Input
+import { Session } from "@supabase/supabase-js";
+import { Text } from "react-native";
 
-WebBrowser.maybeCompleteAuthSession();
-
-function Signup() {
+export default function Auth() {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [session, setSession] = useState<Session | null>(null);
 
-	// Google OAuth
-	const [request, response, promptAsync] = Google.useAuthRequest({
-		clientId: process.env.GOOGLE_CLIENT_ID,
-		iosClientId: "YOUR_IOS_CLIENT_ID",
-		androidClientId: "YOUR_ANDROID_CLIENT_ID",
-	});
-
-	// Handle Google Sign-In Response
 	useEffect(() => {
-		if (response?.type === "success") {
-			const { authentication } = response;
-			if (authentication?.accessToken) {
-				handleGoogleSignup(authentication.accessToken);
-			}
-		}
-	}, [response]);
+		supabase.auth.getSession().then(({ data: { session } }) => {
+			setSession(session);
+		});
 
-	// Handle Email/Password Signup
-	const handleSubmit = async (values: any) => {
+		supabase.auth.onAuthStateChange((_event, session) => {
+			setSession(session);
+		});
+	}, []);
+	async function signInWithEmail() {
 		setLoading(true);
-		try {
-			const response = await axios.post(
-				"http://192.168.2.32:3000/api/auth/signup",
-				values
-			);
-			console.log("API Response:", response.data);
+		const { error } = await supabase.auth.signInWithPassword({
+			email: email,
+			password: password,
+		});
 
-			if (response.status === 200) {
-				console.log("Account created:", response.data);
-			} else {
-				console.log("Error:", response.data.message);
-			}
-		} catch (error) {
-			console.error("Signup failed:", error);
-		} finally {
-			setLoading(false);
-		}
-	};
+		if (error) Alert.alert(error.message);
+		setLoading(false);
+	}
 
-	// Handle Google Signup
-	const handleGoogleSignup = async (accessToken: string) => {
+	async function signUpWithEmail() {
 		setLoading(true);
-		try {
-			const response = await axios.post(
-				"http://192.168.2.32:3000/api/auth/google",
-				{ accessToken }
-			);
-			console.log("Google Signup Response:", response.data);
-		} catch (error) {
-			console.error("Google signup failed:", error);
-		} finally {
-			setLoading(false);
-		}
-	};
+		const {
+			data: { session },
+			error,
+		} = await supabase.auth.signUp({
+			email: email,
+			password: password,
+		});
+
+		if (error) Alert.alert(error.message);
+		if (!session)
+			Alert.alert("Please check your inbox for email verification!");
+		setLoading(false);
+	}
 
 	return (
-		<View className="flex-1 justify-center px-4">
-			<Heading size="xl" className="text-center mb-6">
-				Create Account
-			</Heading>
+		<View style={styles.container}>
+			<View style={[styles.verticallySpaced, styles.mt20]}>
+				<Input className="min-w-[250px]">
+					<InputField
+						type="text"
+						value={email}
+						onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
+							setEmail(e.nativeEvent.text)
+						}
+					/>
+				</Input>
+			</View>
+			<View style={styles.verticallySpaced}>
+				<Input className="min-w-[250px]">
+					<InputField
+						type="password"
+						value={password}
+						onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
+							setPassword(e.nativeEvent.text)
+						}
+					/>
+				</Input>
+			</View>
+			<View style={[styles.verticallySpaced, styles.mt20]}>
+				<Button
+					title="Sign in"
+					disabled={loading}
+					onPress={() => signInWithEmail()}
+				/>
+			</View>
+			<View style={styles.verticallySpaced}>
+				<Button
+					title="Sign up"
+					disabled={loading}
+					onPress={() => signUpWithEmail()}
+				/>
+			</View>
+			{session && session.user && (
+				<>
+					<Text>{session.user.id}</Text>
+				</>
+			)}
 
-			<Formik
-				initialValues={{
-					firstName: "",
-					lastName: "",
-					email: "",
-					password: "",
+			<AppleAuthentication.AppleAuthenticationButton
+				buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+				buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+				cornerRadius={5}
+				style={{ width: 200, height: 64 }}
+				onPress={async () => {
+					try {
+						const credential = await AppleAuthentication.signInAsync({
+							requestedScopes: [
+								AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+								AppleAuthentication.AppleAuthenticationScope.EMAIL,
+							],
+						});
+						// Sign in via Supabase Auth.
+						if (credential.identityToken) {
+							const { error, data } = await supabase.auth.signInWithIdToken({
+								provider: "apple",
+								token: credential.identityToken,
+								 // Replace with your Apple Service ID
+							});
+
+							console.log(
+								"Apple Credential:",
+								JSON.stringify(credential, null, 2)
+							);
+
+							console.log(error);
+
+							if (!error) {
+								// User is signed in.
+							}
+						} else {
+							throw new Error("No identityToken.");
+						}
+					} catch (e) {}
 				}}
-				validationSchema={signupSchema}
-				onSubmit={handleSubmit}
-			>
-				{({
-					handleChange,
-					handleBlur,
-					handleSubmit,
-					values,
-					errors,
-					touched,
-				}) => (
-					<VStack space="md">
-						<FormControl>
-							<FormControlLabel>
-								<FormControlLabelText>First Name</FormControlLabelText>
-							</FormControlLabel>
-							<Input>
-								<InputField
-									placeholder="Enter your first name"
-									value={values.firstName}
-									onChangeText={handleChange("firstName")}
-									onBlur={handleBlur("firstName")}
-									className="p-2"
-								/>
-							</Input>
-							{touched.firstName && errors.firstName && (
-								<Text style={{ color: "red" }}>{errors.firstName}</Text>
-							)}
-						</FormControl>
-
-						<FormControl>
-							<FormControlLabel>
-								<FormControlLabelText>Last Name</FormControlLabelText>
-							</FormControlLabel>
-							<Input>
-								<InputField
-									placeholder="Enter your last name"
-									value={values.lastName}
-									onChangeText={handleChange("lastName")}
-									onBlur={handleBlur("lastName")}
-									className="p-2"
-								/>
-							</Input>
-							{touched.lastName && errors.lastName && (
-								<Text style={{ color: "red" }}>{errors.lastName}</Text>
-							)}
-						</FormControl>
-
-						<FormControl>
-							<FormControlLabel>
-								<FormControlLabelText>Email</FormControlLabelText>
-							</FormControlLabel>
-							<Input>
-								<InputField
-									placeholder="Enter your email"
-									value={values.email}
-									onChangeText={handleChange("email")}
-									onBlur={handleBlur("email")}
-									className="p-2"
-								/>
-							</Input>
-							{touched.email && errors.email && (
-								<Text style={{ color: "red" }}>{errors.email}</Text>
-							)}
-						</FormControl>
-
-						<FormControl>
-							<FormControlLabel>
-								<FormControlLabelText>Password</FormControlLabelText>
-							</FormControlLabel>
-							<Input>
-								<InputField
-									placeholder="Enter your password"
-									value={values.password}
-									onChangeText={handleChange("password")}
-									onBlur={handleBlur("password")}
-									secureTextEntry
-									className="p-2"
-								/>
-							</Input>
-							{touched.password && errors.password && (
-								<Text style={{ color: "red" }}>{errors.password}</Text>
-							)}
-						</FormControl>
-
-						<Button
-							size="lg"
-							className="mt-4"
-							onPress={() => handleSubmit()}
-							disabled={loading}
-						>
-							<ButtonText>{loading ? "Signing Up..." : "Sign Up"}</ButtonText>
-						</Button>
-
-						{/* Google Sign-In Button */}
-						<Button
-							size="lg"
-							className="mt-4 bg-blue-500"
-							onPress={() => promptAsync()}
-							disabled={!request || loading}
-						>
-							<ButtonText>Sign Up with Google</ButtonText>
-						</Button>
-					</VStack>
-				)}
-			</Formik>
+			/>
 		</View>
 	);
 }
 
-export default Signup;
+const styles = StyleSheet.create({
+	container: {
+		marginTop: 40,
+		padding: 12,
+	},
+	verticallySpaced: {
+		paddingTop: 4,
+		paddingBottom: 4,
+		alignSelf: "stretch",
+	},
+	mt20: {
+		marginTop: 20,
+	},
+});

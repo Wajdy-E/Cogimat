@@ -128,18 +128,19 @@ export const config = {
 		"--color-outline-950": "26 23 23",
 
 		/* Background */
-		"--color-background-0": "255 255 255",
-		"--color-background-50": "246 246 246",
-		"--color-background-100": "242 241 241",
-		"--color-background-200": "220 219 219",
-		"--color-background-300": "213 212 212",
-		"--color-background-400": "162 163 163",
-		"--color-background-500": "142 142 142",
-		"--color-background-600": "116 116 116",
-		"--color-background-700": "83 82 82",
-		"--color-background-800": "65 64 64",
-		"--color-background-900": "39 38 37",
-		"--color-background-950": "18 18 18",
+
+		"--bg-background-0": "rgb(20, 16, 164)",
+		"--bg-background-50": "rgb(20, 16, 164)",
+		"--bg-background-100": "rgb(19, 81, 74)",
+		"--bg-background-200": "rgb(18, 145, 51)",
+		"--bg-background-300": "rgb(17, 161, 29)",
+		"--bg-background-400": "rgb(16, 145, 9)",
+		"--bg-background-500": "rgb(248, 248, 248)",
+		"--bg-background-600": "rgb(236, 238, 238)",
+		"--bg-background-700": "rgb(223, 229, 229)",
+		"--bg-background-800": "rgb(209, 222, 222)",
+		"--bg-background-900": "rgb(194, 216, 216)",
+		"--bg-background-950": "rgb(177, 211, 211)",
 
 		/* Background Special */
 		"--color-background-error": "254 241 241",

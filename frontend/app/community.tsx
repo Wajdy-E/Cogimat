@@ -1,7 +1,13 @@
-import { View } from "react-native";
+import { SafeAreaView, View } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 function community() {
-	return <View></View>;
-}
+	return (
+		<SafeAreaProvider>
+			<SafeAreaView className="bg-background-500 h-screen">
+				<View></View>
+			</SafeAreaView>
+		</SafeAreaProvider>
+	);}
 
 export default community;

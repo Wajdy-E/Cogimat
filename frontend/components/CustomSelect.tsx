@@ -27,7 +27,7 @@ const CustomSelect = ({
 }: CustomSelectProps) => {
 	return (
 		<Select defaultValue={value} onValueChange={onChange}>
-			<SelectTrigger variant="outline" size="xl">
+			<SelectTrigger variant="outline" size="md">
 				<SelectInput placeholder={placeholder} />
 				<SelectIcon className="mr-3" as={ChevronDownIcon} />
 			</SelectTrigger>

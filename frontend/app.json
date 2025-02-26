@@ -15,18 +15,38 @@
 		},
 		"ios": {
 			"supportsTablet": true,
-			"bundleIdentifier": "com.cogimat.cogipro"
+			"bundleIdentifier": "com.cogipro.cogimat",
+			"infoPlist": {
+				"ITSAppUsesNonExemptEncryption": false
+			}
 		},
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/adaptive-icon.png",
 				"backgroundColor": "#ffffff"
-			}
+			},
+			"package": "com.cogimat.cogipro"
 		},
 		"web": {
 			"favicon": "./assets/favicon.png",
 			"bundler": "metro"
 		},
-		"plugins": ["expo-router", "expo-localization", "expo-secure-store"]
+		"plugins": [
+			"expo-router",
+			"expo-localization",
+			"expo-secure-store",
+			[
+				"expo-build-properties",
+				{ "ios": { "useFrameworks": "static", "modular_headers": true } }
+			]
+		],
+		"extra": {
+			"router": {
+				"origin": false
+			},
+			"eas": {
+				"projectId": "1e5774cb-7870-4e34-aed3-15d28c0853c8"
+			}
+		}
 	}
 }

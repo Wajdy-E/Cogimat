@@ -11,9 +11,13 @@ function BackButton() {
 	);
 	const iconColor = theme === "dark" ? "#f8f487" : "#000000";
 	return (
-		<Button onPress={() => router.back()}>
-			<Ionicons name="caret-back-outline" size={24} color={iconColor} />
-		</Button>
+		<Ionicons
+			name="caret-back-outline"
+			size={24}
+			color={iconColor}
+			onPress={() => router.back()}
+			className="mb-[20px]"
+		/>
 	);
 }
 
