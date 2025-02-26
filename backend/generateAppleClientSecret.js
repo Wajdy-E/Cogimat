@@ -2,7 +2,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const teamId = "V3VL862DLJ"; // Your Team ID
-const keyId = "7U6Z3RR66G"; // Your Key ID
+const keyId = "BNVHWH64DK"; // Your Key ID
 const clientId = "com.cogipro.service"; // Your Service ID
 const privateKey = process.env.APPLE_PRIVATE_KEY.replace(/\\n/g, "\n"); // Load private key from environment variable
 
