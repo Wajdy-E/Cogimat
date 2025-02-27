@@ -12,6 +12,11 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { Input, InputField } from "@/components/ui/input"; // Assuming Gluestack Input
 import { Session } from "@supabase/supabase-js";
 import { Text } from "react-native";
+import {
+	GoogleSignin,
+	GoogleSigninButton,
+	statusCodes,
+} from "@react-native-google-signin/google-signin";
 
 export default function Auth() {
 	const [email, setEmail] = useState("");
@@ -19,6 +24,13 @@ export default function Auth() {
 	const [loading, setLoading] = useState(false);
 	const [session, setSession] = useState<Session | null>(null);
 
+	// GoogleSignin.configure({
+	// 	scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+	// 	webClientId:
+	// 		"232077053528-fcmmv1lik3juu8s9nkl9qmal1rcopacp.apps.googleusercontent.com",
+	// 	iosClientId:
+	// 		"232077053528-eft8gushc1ogneutfbpullp979call59.apps.googleusercontent.com",
+	// });
 	useEffect(() => {
 		supabase.auth.getSession().then(({ data: { session } }) => {
 			setSession(session);
@@ -117,7 +129,7 @@ export default function Auth() {
 							const { error, data } = await supabase.auth.signInWithIdToken({
 								provider: "apple",
 								token: credential.identityToken,
-								 // Replace with your Apple Service ID
+								// Replace with your Apple Service ID
 							});
 
 							console.log(

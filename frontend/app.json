@@ -5,11 +5,9 @@
 		"scheme": "cogimat",
 		"version": "1.0.0",
 		"orientation": "portrait",
-		"icon": "./assets/icon.png",
 		"userInterfaceStyle": "light",
 		"newArchEnabled": true,
 		"splash": {
-			"image": "./assets/splash-icon.png",
 			"resizeMode": "contain",
 			"backgroundColor": "#ffffff"
 		},
@@ -17,18 +15,20 @@
 			"supportsTablet": true,
 			"bundleIdentifier": "com.cogipro.cogimat",
 			"infoPlist": {
-				"ITSAppUsesNonExemptEncryption": false
+				"ITSAppUsesNonExemptEncryption": false,
+				"CFBundleURLTypes": [
+					{
+						"CFBundleURLSchemes": [
+							"com.googleusercontent.apps.232077053528-eft8gushc1ogneutfbpullp979call59"
+						]
+					}
+				]
 			}
 		},
 		"android": {
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/adaptive-icon.png",
-				"backgroundColor": "#ffffff"
-			},
 			"package": "com.cogimat.cogipro"
 		},
 		"web": {
-			"favicon": "./assets/favicon.png",
 			"bundler": "metro"
 		},
 		"plugins": [
