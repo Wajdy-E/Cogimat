@@ -1,26 +1,44 @@
-import { Slot } from "expo-router";
-import { Provider, useSelector } from "react-redux";
-import { RootState, store } from "../store/store";
+import { Stack } from "expo-router";
+import { Provider, useSelector, shallowEqual } from "react-redux";
+import { RootState, store, persistor } from "../store/store";
 import { GluestackUIProvider } from "./components/ui/gluestack-ui-provider";
+import { PersistGate } from "redux-persist/integration/react";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { tokenCache } from "../cache";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ThemeProvider, useTheme } from "./components/ui/ThemeProvider";
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 function ThemedApp() {
-	const colorMode = useSelector(
-		(state: RootState) => state.user.user?.settings?.theme ?? "light"
-	);
+	const { theme } = useTheme();
 
 	return (
-		<>
-			<GluestackUIProvider mode={colorMode}>
-				<Slot />
-			</GluestackUIProvider>
-		</>
+		<GluestackUIProvider mode={theme} key={theme}>
+			<SafeAreaProvider>
+				<Stack
+					screenOptions={{
+						animation: "fade",
+						headerShown: false,
+					}}
+				/>
+			</SafeAreaProvider>
+		</GluestackUIProvider>
 	);
 }
 
 export default function Layout() {
 	return (
-		<Provider store={store}>
-			<ThemedApp />
-		</Provider>
+		<ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+			<ClerkLoaded>
+				<Provider store={store}>
+					<PersistGate loading={null} persistor={persistor}>
+						<ThemeProvider>
+							<ThemedApp />
+						</ThemeProvider>
+					</PersistGate>
+				</Provider>
+			</ClerkLoaded>
+		</ClerkProvider>
 	);
 }

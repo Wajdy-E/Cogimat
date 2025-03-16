@@ -1,22 +1,20 @@
-import { SafeAreaView, StatusBar, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import Colors from "../../components/program/Colors";
+import { StatusBar, View } from "react-native";
+import Colors from "../../components/program-components/Colors";
 import { Heading } from "@/components/ui/heading";
-import Shapes from "../../components/program/Shapes";
+import Shapes from "../../components/program-components/Shapes";
 function CreateExercise() {
 	return (
-		<SafeAreaProvider>
-			<SafeAreaView className="bg-background-500 h-screen">
-				<View className="w-full flex items-center">
-					<View className="flex-col w-[80%] gap-2">
-							<Heading size="lg">Colors</Heading>
-							<Colors />
-					</View>
+		<View>
+			<View className="w-full flex items-center">
+				<View className="flex-col w-[80%] gap-2">
+					<Heading size="lg">Colors</Heading>
+					<Colors />
 				</View>
-				<Shapes />
-			</SafeAreaView>
+			</View>
+			<Shapes />
+
 			<StatusBar />
-		</SafeAreaProvider>
+		</View>
 	);
 }
 

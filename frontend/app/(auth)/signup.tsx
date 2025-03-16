@@ -1,168 +1,264 @@
-import React, { useEffect, useState } from "react";
-import {
-	Alert,
-	Button,
-	NativeSyntheticEvent,
-	StyleSheet,
-	TextInputChangeEventData,
-	View,
-} from "react-native";
-import { supabase } from "../../lib/supabase";
+import React, { useCallback, useEffect, useState } from "react";
+import { Alert, View, Platform, SafeAreaView } from "react-native";
 import * as AppleAuthentication from "expo-apple-authentication";
-import { Input, InputField } from "@/components/ui/input"; // Assuming Gluestack Input
-import { Session } from "@supabase/supabase-js";
-import { Text } from "react-native";
-import {
-	GoogleSignin,
-	GoogleSigninButton,
-	statusCodes,
-} from "@react-native-google-signin/google-signin";
+import { Button, ButtonText } from "../components/ui/button";
+import FormInput from "../../components/FormInput";
+import { VStack } from "@/components/ui/vstack";
+import { Center } from "@/components/ui/center";
+import { Divider } from "@/components/ui/divider";
+import { Link, useRouter } from "expo-router";
+import BackButton from "../../components/BackButton";
+import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from "expo-auth-session";
+import { useAuth, useSSO, useUser } from "@clerk/clerk-expo";
+import { useSignUp, useSignIn } from "@clerk/clerk-expo";
+import { OAuthStrategy } from "@clerk/types";
+import { createUser } from "../../store/auth/authSaga";
+import { AppDispatch } from "../../store/store";
+import { setIsSignedIn } from "../../store/auth/authSlice";
+import { i18n } from "../../i18n";
+import { Text } from "@/components/ui/text";
+export const useWarmUpBrowser = () => {
+	useEffect(() => {
+		void WebBrowser.warmUpAsync();
+		return () => {
+			void WebBrowser.coolDownAsync();
+		};
+	}, []);
+};
 
-export default function Auth() {
+WebBrowser.maybeCompleteAuthSession();
+
+export default function SignUp() {
+	const router = useRouter();
+	const dispatch: AppDispatch = useDispatch();
+	const { isLoaded, signUp, setActive } = useSignUp();
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
-	const [session, setSession] = useState<Session | null>(null);
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [pendingVerification, setPendingVerification] = useState(false);
+	const [code, setCode] = useState("");
 
-	// GoogleSignin.configure({
-	// 	scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-	// 	webClientId:
-	// 		"232077053528-fcmmv1lik3juu8s9nkl9qmal1rcopacp.apps.googleusercontent.com",
-	// 	iosClientId:
-	// 		"232077053528-eft8gushc1ogneutfbpullp979call59.apps.googleusercontent.com",
-	// });
-	useEffect(() => {
-		supabase.auth.getSession().then(({ data: { session } }) => {
-			setSession(session);
-		});
+	const signUpSchema = Yup.object().shape({
+		firstName: Yup.string()
+			.min(2, i18n.t("signup.errors.firstNameShort"))
+			.required(i18n.t("signup.errors.firstNameRequired")),
+		lastName: Yup.string()
+			.min(2, i18n.t("signup.errors.lastNameShort"))
+			.required(i18n.t("signup.errors.lastNameRequired")),
+		email: Yup.string().email(i18n.t("signup.errors.invalidEmail")).required(i18n.t("signup.errors.emailRequired")),
+		password: Yup.string()
+			.min(6, i18n.t("signup.errors.passwordShort"))
+			.required(i18n.t("signup.errors.passwordRequired")),
+	});
 
-		supabase.auth.onAuthStateChange((_event, session) => {
-			setSession(session);
-		});
+	useWarmUpBrowser();
+
+	const { startSSOFlow } = useSSO();
+	const { signOut } = useAuth();
+	const { user } = useUser();
+
+	const onProviderSignIn = useCallback(async (strategy: string) => {
+		try {
+			const { createdSessionId, setActive } = await startSSOFlow({
+				strategy: `oauth_${strategy}` as OAuthStrategy,
+				redirectUrl: AuthSession.makeRedirectUri(),
+			});
+
+			if (createdSessionId) {
+				setActive!({ session: createdSessionId });
+				if (user) {
+					const { firstName, lastName, emailAddresses, id, username } = user;
+
+					dispatch(
+						createUser({
+							firstName,
+							lastName,
+							email: emailAddresses[0] as unknown as string,
+							id,
+							username,
+						})
+					);
+					dispatch(setIsSignedIn());
+					router.replace("/(tabs)/");
+				}
+			} else {
+				// If there is no `createdSessionId`,
+				// there are missing requirements, such as MFA
+				// Use the `signIn` or `signUp` returned from `startSSOFlow`
+				// to handle next steps
+			}
+		} catch (err) {
+			// See https://clerk.com/docs/custom-flows/error-handling
+			// for more info on error handling
+			console.error(JSON.stringify(err, null, 2));
+		}
 	}, []);
-	async function signInWithEmail() {
-		setLoading(true);
-		const { error } = await supabase.auth.signInWithPassword({
-			email: email,
-			password: password,
-		});
-
-		if (error) Alert.alert(error.message);
-		setLoading(false);
-	}
 
 	async function signUpWithEmail() {
-		setLoading(true);
-		const {
-			data: { session },
-			error,
-		} = await supabase.auth.signUp({
-			email: email,
-			password: password,
-		});
+		if (!isLoaded) return;
+		try {
+			setLoading(true);
+			await signUpSchema.validate({ firstName, lastName, email, password });
 
-		if (error) Alert.alert(error.message);
-		if (!session)
-			Alert.alert("Please check your inbox for email verification!");
-		setLoading(false);
+			await signUp.create({ emailAddress: email, password, firstName, lastName });
+
+			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+			setPendingVerification(true);
+		} catch (error) {
+			Alert.alert(i18n.t("signup.alert.invalidData"), (error as Error).message);
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	async function verifyEmailCode() {
+		if (!isLoaded) return;
+		try {
+			const signUpAttempt = await signUp.attemptEmailAddressVerification({
+				code,
+			});
+
+			if (signUpAttempt.status === "complete") {
+				await setActive({ session: signUpAttempt.createdSessionId });
+				dispatch(setIsSignedIn());
+				router.replace("/(tabs)/");
+			} else {
+				console.error("Verification incomplete:", signUpAttempt);
+			}
+		} catch (error) {
+			Alert.alert(i18n.t("signup.alert.verificationFailed"), (error as Error).message);
+		}
+	}
+
+	if (pendingVerification) {
+		return (
+			<Center className="flex-1 justify-center items-center bg-background-700">
+				<View className="w-full flex-row items-center justify-between px-6 py-4 text-center">
+					<BackButton />
+					<Text className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("signup.verifyEmailTitle")}</Text>
+				</View>
+				{/* <LanguageSwitcher /> */}
+
+				<View className="w-screen flex-1 justify-center items-center">
+					<VStack space="md" className="w-[90%]">
+						<Center className="flex gap-5">
+							<FormInput
+								label={"signup.verifyCode"}
+								placeholder={"signup.verifyCodePlaceholder"}
+								value={code}
+								invalid={!code}
+								formSize="lg"
+								inputSize="lg"
+								isRequired={true}
+								inputType="text"
+								onChange={(text) => setCode(text)}
+							/>
+							<Button className="w-full rounded-lg" disabled={loading} onPress={verifyEmailCode} size="xl">
+								<ButtonText>{i18n.t("signup.verify")}</ButtonText>
+							</Button>
+						</Center>
+					</VStack>
+				</View>
+			</Center>
+		);
 	}
 
 	return (
-		<View style={styles.container}>
-			<View style={[styles.verticallySpaced, styles.mt20]}>
-				<Input className="min-w-[250px]">
-					<InputField
-						type="text"
-						value={email}
-						onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
-							setEmail(e.nativeEvent.text)
-						}
-					/>
-				</Input>
+		<SafeAreaView className="flex-1 justify-center items-center bg-background-700">
+			<View className="w-full flex-row items-center justify-between px-6 py-4 text-center">
+				<BackButton />
+				<Text className="text-2xl font-bold mb-6 w-[90%]">{"signup.title"}</Text>
 			</View>
-			<View style={styles.verticallySpaced}>
-				<Input className="min-w-[250px]">
-					<InputField
-						type="password"
-						value={password}
-						onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
-							setPassword(e.nativeEvent.text)
-						}
-					/>
-				</Input>
+			{/* <LanguageSwitcher /> */}
+			<View className="w-screen flex-1 justify-center items-center">
+				<VStack space="md" className="w-[90%]">
+					<Center className="flex gap-5">
+						<FormInput
+							label={"signup.form.firstName"}
+							placeholder={"signup.form.firstNamePlaceholder"}
+							value={firstName}
+							invalid={!firstName}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType="text"
+							onChange={(text) => setFirstName(text)}
+						/>
+						<FormInput
+							label={"signup.form.lastName"}
+							placeholder={"signup.form.lastNamePlaceholder"}
+							value={lastName}
+							invalid={!lastName}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType="text"
+							onChange={(text) => setLastName(text)}
+						/>
+						<FormInput
+							label={"signup.form.email"}
+							placeholder={"signup.form.emailPlaceholder"}
+							value={email}
+							invalid={!email}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType="text"
+							onChange={(text) => setEmail(text)}
+						/>
+
+						<FormInput
+							label={"signup.form.password"}
+							placeholder={"signup.form.passwordPlaceholder"}
+							value={password}
+							invalid={!password}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType="password"
+							onChange={(text) => setPassword(text)}
+						/>
+
+						<Button className="w-full rounded-lg" disabled={loading} onPress={signUpWithEmail} size="xl">
+							<ButtonText>{i18n.t("signup.form.signUp")}</ButtonText>
+						</Button>
+
+						<View className="flex-row items-center gap-2 mt-5">
+							<Divider className="bg-slate-300 w-[30%]" />
+							<Text>{i18n.t("signup.orSignUpWith")}</Text>
+							<Divider className="bg-slate-300 w-[30%]" />
+						</View>
+
+						{Platform.OS === "ios" && (
+							<AppleAuthentication.AppleAuthenticationButton
+								buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+								buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+								cornerRadius={5}
+								style={{ width: "100%", height: 50, marginTop: 10 }}
+								onPress={() => onProviderSignIn("apple")}
+							/>
+						)}
+
+						<Button onPress={() => onProviderSignIn("google")}>
+							<ButtonText>{i18n.t("signup.googleSignUp")}</ButtonText>
+						</Button>
+
+						<Text>
+							{i18n.t("signup.alreadyHaveAccount")}{" "}
+							<Link href={"/login"} className="underline text-primary-500">
+								{i18n.t("signup.login")}
+							</Link>
+						</Text>
+					</Center>
+				</VStack>
 			</View>
-			<View style={[styles.verticallySpaced, styles.mt20]}>
-				<Button
-					title="Sign in"
-					disabled={loading}
-					onPress={() => signInWithEmail()}
-				/>
-			</View>
-			<View style={styles.verticallySpaced}>
-				<Button
-					title="Sign up"
-					disabled={loading}
-					onPress={() => signUpWithEmail()}
-				/>
-			</View>
-			{session && session.user && (
-				<>
-					<Text>{session.user.id}</Text>
-				</>
-			)}
-
-			<AppleAuthentication.AppleAuthenticationButton
-				buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-				buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-				cornerRadius={5}
-				style={{ width: 200, height: 64 }}
-				onPress={async () => {
-					try {
-						const credential = await AppleAuthentication.signInAsync({
-							requestedScopes: [
-								AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-								AppleAuthentication.AppleAuthenticationScope.EMAIL,
-							],
-						});
-						// Sign in via Supabase Auth.
-						if (credential.identityToken) {
-							const { error, data } = await supabase.auth.signInWithIdToken({
-								provider: "apple",
-								token: credential.identityToken,
-								// Replace with your Apple Service ID
-							});
-
-							console.log(
-								"Apple Credential:",
-								JSON.stringify(credential, null, 2)
-							);
-
-							console.log(error);
-
-							if (!error) {
-								// User is signed in.
-							}
-						} else {
-							throw new Error("No identityToken.");
-						}
-					} catch (e) {}
-				}}
-			/>
-		</View>
+		</SafeAreaView>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		marginTop: 40,
-		padding: 12,
-	},
-	verticallySpaced: {
-		paddingTop: 4,
-		paddingBottom: 4,
-		alignSelf: "stretch",
-	},
-	mt20: {
-		marginTop: 20,
-	},
-});

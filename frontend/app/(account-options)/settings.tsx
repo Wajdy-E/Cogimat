@@ -1,32 +1,59 @@
-import { SafeAreaView, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import BackButton from "../../components/BackButton";
+import { View } from "react-native";
 import CustomSelect from "../../components/CustomSelect";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { RootState } from "../../store/store";
-import { setTheme, Theme } from "../../reducers/userSlice";
+import { setTheme, Theme, setNotifications } from "../../store/auth/authSlice";
 import { useState } from "react";
 import { Heading } from "@/components/ui/heading";
+import { Switch } from "@/components/ui/switch";
+import { VStack } from "@/components/ui/vstack";
+import * as Notifications from "expo-notifications";
+import { useTheme } from "@/components/ui/ThemeProvider";
+
 function Settings() {
 	const dispatch = useDispatch();
-	const theme = useSelector(
-		(state: RootState) => state.user.user.settings?.theme || "light"
+	const { theme, toggleTheme } = useTheme();
+	const { notifications } = useSelector(
+		(state: RootState) => ({
+			notifications: state.user.user.settings?.allowNotifications ?? false,
+		}),
+		shallowEqual
 	);
 
-	const [rerender, setRerender] = useState(false);
+	const [notificationsEnabled, setNotificationsEnabled] = useState(notifications);
+
 	function handleThemeChange(newTheme: string) {
-		dispatch(setTheme(newTheme as Theme));
-		setRerender((prev) => !prev);
+		if (theme != newTheme) {
+			toggleTheme();
+			dispatch(setTheme(newTheme as Theme));
+		}
+	}
+
+	async function askNotificationPermission() {
+		console.log("Asking for permission");
+		const { status } = await Notifications.requestPermissionsAsync();
+		return status === "granted";
+	}
+
+	async function updateNotificationSettings() {
+		if (!notifications) {
+			const permissionGranted = await askNotificationPermission();
+			if (!permissionGranted) {
+				setNotificationsEnabled(false);
+				return;
+			}
+		}
+		setNotificationsEnabled(!notificationsEnabled);
+		dispatch(setNotifications(!notifications));
 	}
 
 	return (
-		<SafeAreaProvider>
-			<SafeAreaView className={`${rerender} bg-secondary-500 h-screen`}>
-				<View className="w-full flex justify-center items-center">
-					<View className="w-[80%]">
-						<BackButton />
+		<View className="bg-background-700 h-screen">
+			<View className="w-full flex justify-center items-center">
+				<View className="w-[80%]">
+					<VStack space="lg">
 						<View className="flex-row justify-between">
-							<Heading size="xl">Theme</Heading>
+							<Heading size="lg">Theme</Heading>
 							<CustomSelect
 								options={[
 									{ label: "Light", value: "light" },
@@ -37,10 +64,15 @@ function Settings() {
 								onChange={handleThemeChange}
 							/>
 						</View>
-					</View>
+
+						<View className="flex-row justify-between">
+							<Heading size="lg">Notifications</Heading>
+							<Switch onToggle={updateNotificationSettings} value={notificationsEnabled} />
+						</View>
+					</VStack>
 				</View>
-			</SafeAreaView>
-		</SafeAreaProvider>
+			</View>
+		</View>
 	);
 }
 

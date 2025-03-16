@@ -1,59 +1,50 @@
-import bcrypt from "bcrypt";
 import { query } from "../../../../lib/db";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-const SECRET_KEY = process.env.JWT_SECRET_KEY;
+import { UserBase } from "@/type";
 
 export async function POST(req: Request) {
 	try {
-		const { firstName, lastName, email, password } = await req.json();
-
-		if (!email || !password || !firstName || !lastName) {
-			return NextResponse.json(
-				{ message: "Please fill in all fields" },
-				{ status: 400 }
-			);
+		const bodyText = await req.text(); // Read body as text first
+		if (!bodyText) {
+			throw new Error("Request body is empty");
 		}
-		// Check if the user already exists
-		const existingUser = await query("SELECT * FROM users WHERE email=$1", [
-			email,
-		]);
+
+		const result = JSON.parse(bodyText);
+		const { username, email, id, firstName, lastName } = result;
+
+		if (!email || !firstName || !lastName) {
+			return NextResponse.json({ message: "Please fill in all fields" }, { status: 400 });
+		}
+
+		const existingUser = await query("SELECT * FROM users WHERE email=$1", [email]);
 
 		if (existingUser.length > 0) {
-			return NextResponse.json(
-				{ message: "User already exists. Please log in." },
-				{ status: 400 }
-			);
+			return NextResponse.json({ message: "User already exists. Please log in." }, { status: 400 });
 		}
 
-		// Hash password
-		const hashedPassword = await bcrypt.hash(password, 12);
+		let user_name = username === null ? firstName + lastName : username;
 
-		// Insert user into DB
 		const newUser = await query(
-			"INSERT INTO users (email, password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *",
-			[email, hashedPassword, firstName, lastName]
+			`INSERT INTO users (email, first_name, last_name, username, clerk_id)
+			 VALUES ($1, $2, $3, $4, $5)
+			 RETURNING user_id AS "id", 
+					   email AS "email", 
+					   first_name AS "firstName", 
+					   last_name AS "lastName", 
+					   username AS "username", 
+					   creation_date AS "createdAt"`,
+			[email, firstName, lastName, user_name, id]
 		);
 
-		// Generate JWT
-		const token = jwt.sign({ userId: newUser[0].id, email }, SECRET_KEY!, {
-			expiresIn: "7d",
-		});
-
-		// Return the JWT token
 		return NextResponse.json(
 			{
 				message: "User registered successfully",
-				token: token,
-				user: newUser[0],
+				user: newUser[0] as UserBase,
 			},
 			{ status: 201 }
 		);
 	} catch (error) {
 		console.error("Auth Error:", error);
-		return NextResponse.json(
-			{ message: "Internal Server Error" },
-			{ status: 500 }
-		);
+		return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
 	}
 }

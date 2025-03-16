@@ -4,6 +4,7 @@
 		"slug": "Cogimat",
 		"scheme": "cogimat",
 		"version": "1.0.0",
+		"icon": "./assets/cogimatlogo.png",
 		"orientation": "portrait",
 		"userInterfaceStyle": "light",
 		"newArchEnabled": true,
@@ -12,32 +13,45 @@
 			"backgroundColor": "#ffffff"
 		},
 		"ios": {
+			"usesAppleSignIn": true,
 			"supportsTablet": true,
 			"bundleIdentifier": "com.cogipro.cogimat",
 			"infoPlist": {
-				"ITSAppUsesNonExemptEncryption": false,
 				"CFBundleURLTypes": [
 					{
-						"CFBundleURLSchemes": [
-							"com.googleusercontent.apps.232077053528-eft8gushc1ogneutfbpullp979call59"
-						]
+						"CFBundleURLSchemes": ["com.googleusercontent.apps.232077053528-eft8gushc1ogneutfbpullp979call59"]
 					}
-				]
+				],
+				"ITSAppUsesNonExemptEncryption": false
 			}
 		},
 		"android": {
-			"package": "com.cogimat.cogipro"
+			"package": "com.cogimat.cogipro",
+			"permissions": ["INTERNET"]
 		},
 		"web": {
 			"bundler": "metro"
 		},
 		"plugins": [
 			"expo-router",
+			["expo-apple-authentication"],
+			["expo-localization"],
 			"expo-localization",
 			"expo-secure-store",
 			[
+				"@react-native-google-signin/google-signin",
+				{
+					"iosUrlScheme": "com.googleusercontent.apps.232077053528-eft8gushc1ogneutfbpullp979call59"
+				}
+			],
+			[
 				"expo-build-properties",
-				{ "ios": { "useFrameworks": "static", "modular_headers": true } }
+				{
+					"ios": {
+						"useFrameworks": "static",
+						"modular_headers": true
+					}
+				}
 			]
 		],
 		"extra": {

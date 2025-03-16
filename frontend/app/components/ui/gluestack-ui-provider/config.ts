@@ -129,18 +129,18 @@ export const config = {
 
 		/* Background */
 
-		"--bg-background-0": "rgb(20, 16, 164)",
-		"--bg-background-50": "rgb(20, 16, 164)",
-		"--bg-background-100": "rgb(19, 81, 74)",
-		"--bg-background-200": "rgb(18, 145, 51)",
-		"--bg-background-300": "rgb(17, 161, 29)",
-		"--bg-background-400": "rgb(16, 145, 9)",
-		"--bg-background-500": "rgb(248, 248, 248)",
-		"--bg-background-600": "rgb(236, 238, 238)",
-		"--bg-background-700": "rgb(223, 229, 229)",
-		"--bg-background-800": "rgb(209, 222, 222)",
-		"--bg-background-900": "rgb(194, 216, 216)",
-		"--bg-background-950": "rgb(177, 211, 211)",
+		"--bg-background-0": "20, 16, 164",
+		"--bg-background-50": "20, 16, 164",
+		"--bg-background-100": "19, 81, 74",
+		"--bg-background-200": "18, 145, 51",
+		"--bg-background-300": "17, 161, 29",
+		"--bg-background-400": "16, 145, 9",
+		"--bg-background-500": "248, 248, 248",
+		"--bg-background-600": "236, 238, 238",
+		"--bg-background-700": "223, 229, 229",
+		"--bg-background-800": "209, 222, 222",
+		"--bg-background-900": "194, 216, 216",
+		"--bg-background-950": "177, 211, 211",
 
 		/* Background Special */
 		"--color-background-error": "254 241 241",
@@ -182,18 +182,17 @@ export const config = {
 		"--color-secondary-950": "164 164 164",
 
 		/* Tertiary */
-
-		"--color-tertiary-50": "#ff100111",
-		"--color-tertiary-100": "#fffeec",
-		"--color-tertiary-200": "#fffdc8",
-		"--color-tertiary-300": "#fcfaa7",
-		"--color-tertiary-400": "#f8f487",
-		"--color-tertiary-500": "#f6f163",
-		"--color-tertiary-600": "#f0eb56",
-		"--color-tertiary-700": "#e8e348",
-		"--color-tertiary-800": "#e0da3b",
-		"--color-tertiary-900": "#d6d12f",
-		"--color-tertiary-950": "#c2bd2e",
+		"--color-tertiary-50": "255 161 117",
+		"--color-tertiary-100": "255 254 236",
+		"--color-tertiary-200": "255 253 200",
+		"--color-tertiary-300": "252 250 167",
+		"--color-tertiary-400": "248 244 135",
+		"--color-tertiary-500": "246 241 99",
+		"--color-tertiary-600": "240 235 86",
+		"--color-tertiary-700": "232 227 72",
+		"--color-tertiary-800": "224 218 59",
+		"--color-tertiary-900": "214 209 47",
+		"--color-tertiary-950": "194 189 46",
 
 		/* Error */
 		"--color-error-0": "83 19 19",
@@ -263,7 +262,7 @@ export const config = {
 		"--color-typography-700": "219 219 220",
 		"--color-typography-800": "229 229 229",
 		"--color-typography-900": "245 245 245",
-		"--color-typography-950": "254 254 255",
+		"--color-typography-950": "255 254 255",
 
 		/* Outline */
 		"--color-outline-0": "26 23 23",
@@ -289,7 +288,7 @@ export const config = {
 		"--color-background-500": "33 32 32",
 		"--color-background-600": "22 23 23",
 		"--color-background-700": "11 13 13",
-		"--color-background-800": "1 1 1",
+		"--color-background-800": "0 0 0", //black
 		"--color-background-900": "8 8 8",
 		"--color-background-950": "15 25 25",
 

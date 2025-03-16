@@ -1,33 +1,39 @@
-import { SafeAreaView, Text, View } from "react-native";
-import {
-	Avatar,
-	AvatarBadge,
-	AvatarFallbackText,
-	AvatarImage,
-} from "../components/ui/avatar";
+import { Text, View } from "react-native";
+import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from "../components/ui/avatar";
 import { VStack } from "@/components/ui/vstack";
-import { useSelector } from "react-redux";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { AppDispatch } from "../../store/store";
+
 import * as ImagePicker from "expo-image-picker";
-import React, { useState, useEffect, useMemo } from "react";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
+import { Button, ButtonIcon, ButtonText } from "../../app/components/ui/button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AccountOptions } from "@/ComponentsData";
 import { RootState } from "../../store/store";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { ArrowRightIcon } from "../components/ui/icon";
+import { Heading } from "@/components/ui/heading";
+import { Trash2 } from "lucide-react-native";
+import { setIsSignedIn } from "../../store/auth/authSlice";
+import { useClerk } from "@clerk/clerk-expo";
+import { i18n } from "../../i18n";
+
 function Account() {
 	const router = useRouter();
-	const theme = useSelector(
-		(state: RootState) => state.user.user.settings?.theme
-	);
+	const theme = useSelector((state: RootState) => state.user.user.settings?.theme);
 	const iconColor = theme === "dark" ? "#f8f487" : "#000000";
+	const { signOut } = useClerk();
 
-	const { firstName, lastName, username } = useSelector((state: RootState) => ({
-		firstName: state.user.user.baseInfo?.firstName,
-		lastName: state.user.user.baseInfo?.lastName,
-		username: state.user.user.baseInfo?.username,
-	}));
+	const dispatch = useDispatch();
+	const { firstName, lastName, username, email } = useSelector(
+		(state: RootState) => ({
+			firstName: state.user.user.baseInfo?.firstName,
+			lastName: state.user.user.baseInfo?.lastName,
+			username: state.user.user.baseInfo?.username,
+			email: state.user.user.baseInfo?.email,
+		}),
+		shallowEqual
+	);
 
 	const [imageUri, setImageUri] = useState<string | null>(null);
 
@@ -37,10 +43,6 @@ function Account() {
 			alert("Sorry, we need camera roll permissions to make this work!");
 		}
 	};
-
-	useEffect(() => {
-		requestPermission();
-	}, []);
 
 	const pickImage = async () => {
 		try {
@@ -78,56 +80,76 @@ function Account() {
 		}
 	}, []);
 
-	return (
-		<SafeAreaProvider>
-			<SafeAreaView className="bg-background-500 h-screen">
-				<View className="h-screen">
-					<View className="items-center">
-						<Button onPress={pickImage} size="xxl" className="rounded-full">
-							<Avatar size="2xl">
-								{imageUri ? (
-									<AvatarImage source={{ uri: imageUri }} alt="Profile Image" />
-								) : (
-									<AvatarFallbackText>
-										{firstName && firstName.length > 0
-											? firstName.charAt(0).toUpperCase()
-											: ""}{" "}
-										{lastName && lastName.length > 0
-											? lastName.charAt(0).toUpperCase()
-											: ""}
-									</AvatarFallbackText>
-								)}
-								<AvatarBadge />
-							</Avatar>
-						</Button>
-						<Text className="mt-2 text-lg">{username}</Text>
-					</View>
+	//console.log("first name", firstName, email);
 
-					{AccountOptions && AccountOptions.length > 0 && (
-						<VStack
-							className="setting-options flex items-center justify-center w-full"
-							space="lg"
-						>
-							{AccountOptions.map((page, index) => {
-								return (
-									<Button
-										className="rounded-lg flex-row justify-between w-[80%]"
-										key={`${page.title}-${index}`}
-										onPress={() => router.navigate(page.link)}
-										action="secondary"
-										variant="solid"
-										size="xl"
-									>
-										<ButtonText>{page.title}</ButtonText>
-										<ButtonIcon as={ArrowRightIcon} />
-									</Button>
-								);
-							})}
-						</VStack>
-					)}
+	return (
+		<View className="bg-background-700">
+			<View className="h-screen">
+				<View className="items-center gap-2">
+					<Button onPress={pickImage} size="xxl" className="rounded-full bg-transparent">
+						<Avatar size="2xl">
+							{imageUri ? (
+								<AvatarImage source={{ uri: imageUri }} alt="Profile Image" />
+							) : (
+								<AvatarFallbackText>
+									{firstName && firstName.length > 0 ? firstName.charAt(0).toUpperCase() : ""}{" "}
+									{lastName && lastName.length > 0 ? lastName.charAt(0).toUpperCase() : ""}
+								</AvatarFallbackText>
+							)}
+							<AvatarBadge />
+						</Avatar>
+					</Button>
+					{firstName && <Heading size="xl">{firstName}</Heading>}
+					{/* {email && <Heading size="md">{email}</Heading>} */}
 				</View>
-			</SafeAreaView>
-		</SafeAreaProvider>
+
+				{AccountOptions && AccountOptions.length > 0 && (
+					<VStack className="setting-options flex items-center justify-center w-full mt-[30px]" space="lg">
+						{AccountOptions.map((page, index) => {
+							return (
+								<Button
+									className="rounded-lg flex-row justify-between w-[80%]"
+									key={`${page.title}-${index}`}
+									onPress={() => router.navigate(page.link)}
+									action="secondary"
+									variant="solid"
+									size="xl"
+								>
+									<ButtonText>{page.title}</ButtonText>
+									<ButtonIcon as={ArrowRightIcon} />
+								</Button>
+							);
+						})}
+					</VStack>
+				)}
+
+				<Button
+					className="rounded-lg w-[80%] mt-5"
+					onPress={() => router.navigate("../")}
+					action="secondary"
+					variant="solid"
+					size="xl"
+				>
+					<ButtonIcon as={Trash2} stroke="red" />
+					<ButtonText>{i18n.t("account.deleteAccount")}</ButtonText>
+				</Button>
+
+				<Button
+					className="rounded-lg w-[80%] mt-5"
+					onPress={async () => {
+						dispatch(setIsSignedIn());
+						router.push("/AppLoaded");
+						await signOut();
+					}}
+					action="secondary"
+					variant="solid"
+					size="xl"
+				>
+					<ButtonIcon as={Trash2} stroke="red" />
+					<ButtonText>{i18n.t("account.signout")}</ButtonText>
+				</Button>
+			</View>
+		</View>
 	);
 }
 

@@ -1,0 +1,28 @@
+{
+	"signup": {
+		"title": "Sign Up",
+		"form": {
+			"fullName": "Full Name",
+			"fullNamePlaceholder": "Enter your full name",
+			"email": "Email",
+			"emailPlaceholder": "Enter your email",
+			"password": "Password",
+			"passwordPlaceholder": "Enter your password",
+			"signUp": "Sign Up"
+		},
+		"errors": {
+			"fullNameShort": "Full name must be at least 3 characters",
+			"fullNameRequired": "Full name is required",
+			"invalidEmail": "Invalid email format",
+			"emailRequired": "Email is required",
+			"passwordShort": "Password must be at least 6 characters",
+			"passwordRequired": "Password is required"
+		},
+		"alert": {
+			"invalidData": "Invalid Data"
+		},
+		"orSignUpWith": "Or Sign Up With",
+		"alreadyHaveAccount": "Already have an account?",
+		"login": "Login"
+	}
+}
