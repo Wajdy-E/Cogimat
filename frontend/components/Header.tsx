@@ -36,7 +36,7 @@ export default function Header() {
 							as={Star}
 							stroke={`${exercises.isFavourited ? "yellow" : "white"}`}
 							fill={`${exercises.isFavourited ? "yellow" : "white"}`}
-							size="2xl"
+							size="xl"
 							className={`${exercises.isFavourited ? "fill-yellow-300" : ""}`}
 						/>
 					</Button>

@@ -299,9 +299,5 @@ export const config = {
 		"--color-background-muted": "51 51 51",
 		"--color-background-info": "26 40 46",
 
-		/* Focus Ring Indicator  */
 		"--color-indicator-primary": "247 247 247",
-		"--color-indicator-info": "161 199 245",
-		"--color-indicator-error": "232 70 69",
-	}),
-};
+})}
