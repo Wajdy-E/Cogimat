@@ -36,7 +36,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 	function onFavourite() {
 		const exerciseCopy = { ...props.exercise };
 		exerciseCopy.isFavourited = !props.exercise.isFavourited;
-		dispatch(setFavourite(exerciseCopy));
+		dispatch(setFavourite({ exerciseId: exerciseCopy.id, isFavourited: exerciseCopy.isFavourited }));
 	}
 	return (
 		<Card

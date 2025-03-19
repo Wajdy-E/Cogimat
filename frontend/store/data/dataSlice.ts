@@ -34,7 +34,6 @@ const initialState: ExerciseState = {
 	progress: {},
 };
 
-// Create the Redux slice
 const dataSlice = createSlice({
 	name: "exercises",
 	initialState,
@@ -51,8 +50,8 @@ const dataSlice = createSlice({
 		updateProgress(state, action: PayloadAction<{ exerciseId: number; progress: any }>) {
 			state.progress[action.payload.exerciseId] = action.payload.progress;
 		},
-		setIsFavourite(state, { payload }: PayloadAction<Exercise>) {
-			const exerciseIndex = state.exercises.findIndex((exercise) => exercise.id === payload.id);
+		setIsFavourite(state, { payload }: PayloadAction<{ exerciseId: number; isFavourite: boolean }>) {
+			const exerciseIndex = state.exercises.findIndex((exercise) => exercise.id === payload.exerciseId);
 			if (exerciseIndex !== -1) {
 				state.exercises[exerciseIndex].isFavourited = !state.exercises[exerciseIndex].isFavourited;
 			}

@@ -10,7 +10,7 @@ export const createUser = createAsyncThunk<UserBase, UserBase>(
 	async (userData: UserBase, { dispatch }) => {
 		try {
 			const response = await axios.post(`${BASE_URL}/api/auth/signup`, userData);
-			dispatch(setCurrentUser(response.data));
+			//dispatch(setCurrentUser(response.data));
 			return response.data;
 		} catch (error: any) {
 			console.error("Error creating user:", error);
@@ -20,7 +20,7 @@ export const createUser = createAsyncThunk<UserBase, UserBase>(
 
 export const setCurrentUserThunk = createAsyncThunk<UserBase, UserBase>(
 	"auth/setCurrentUser",
-	async (userData: UserBase, { dispatch }) => {
+	async (userData: UserBase, { dispatch, getState }) => {
 		try {
 			dispatch(setCurrentUser(userData as UserBase));
 			return userData;

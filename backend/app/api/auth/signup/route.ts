@@ -4,12 +4,7 @@ import { UserBase } from "@/type";
 
 export async function POST(req: Request) {
 	try {
-		const bodyText = await req.text(); // Read body as text first
-		if (!bodyText) {
-			throw new Error("Request body is empty");
-		}
-
-		const result = JSON.parse(bodyText);
+		const result = await req.json();
 		const { username, email, id, firstName, lastName } = result;
 
 		if (!email || !firstName || !lastName) {

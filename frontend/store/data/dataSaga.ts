@@ -1,14 +1,17 @@
 import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Exercise, setExercises, setIsFavourite } from "./dataSlice";
 import axios from "axios";
-
+import { RootState } from "../store";
 const BASE_URL = process.env.BASE_URL;
 
 //#region Sagas
 
-export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { dispatch }) => {
+export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { getState, dispatch }) => {
 	try {
-		const response = await axios.get(`${BASE_URL}/api/data/exercises`);
+		const state = getState() as RootState;
+		const userId = state.user.user.baseInfo?.id;
+		if (!userId) throw new Error("User is not authenticated");
+		const response = await axios.get(`${BASE_URL}/api/data/exercises`, { params: { userId } });
 
 		const formattedExercises: Exercise[] = response.data.exercises.map((ex: any) => ({
 			id: ex.id,
@@ -23,41 +26,34 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { di
 			videoUrl: ex.video_url,
 			imageFileName: ex.image_file_name,
 			timeToComplete: ex.time_to_complete,
-			isFavourited: ex.is_favourite,
+			isFavourited: ex.isFavourited,
 			focus: ex.focus,
 		}));
 
 		dispatch(setExercises(formattedExercises));
+		return { state: getState() };
 	} catch (error) {
 		console.error("Error fetching exercises:", error);
+		throw error;
 	}
 });
 
-export const setFavourite = createAsyncThunk<any, Exercise>(
+export const setFavourite = createAsyncThunk<any, { exerciseId: number; isFavourited: boolean }, { state: RootState }>(
 	"exercises/set-favourite",
-	async (exercise: Exercise, { dispatch }) => {
+	async ({ exerciseId, isFavourited }, { getState, dispatch }) => {
 		try {
-			const { data } = await axios.post(`${BASE_URL}/api/favourites`, exercise);
+			const userId = getState().user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
 
-			const formattedExercise: Exercise = {
-				id: data.updatedexercise.id,
-				name: data.updatedexercise.name,
-				type: data.updatedexercise.type,
-				difficulty: data.updatedexercise.difficulty,
-				description: data.updatedexercise.description,
-				instructions: data.updatedexercise.instructions,
-				trackingData: data.updatedexercise.tracking_data,
-				parameters: data.updatedexercise.parameters,
-				videoUrl: data.updatedexercise.video_url,
-				imageFileName: data.updatedexercise.image_file_name,
-				timeToComplete: data.updatedexercise.time_to_complete,
-				isFavourited: data.updatedexercise.is_favourite,
-				focus: data.updatedexercise.focus,
-			};
+			const { data } = await axios.post(`${BASE_URL}/api/favourites`, {
+				user_id: userId,
+				exercise_id: exerciseId,
+				is_favourited: isFavourited,
+			});
 
-			dispatch(setIsFavourite(formattedExercise));
+			if (data.success) dispatch(setIsFavourite({ exerciseId, isFavourite: isFavourited }));
 		} catch (error) {
-			console.error("Error fetching exercises:", error);
+			console.error("Error setting exercise as favourite:", error);
 		}
 	}
 );

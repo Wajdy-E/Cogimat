@@ -60,7 +60,6 @@ export default function SignUp() {
 	useWarmUpBrowser();
 
 	const { startSSOFlow } = useSSO();
-	const { signOut } = useAuth();
 	const { user } = useUser();
 
 	const onProviderSignIn = useCallback(async (strategy: string) => {
@@ -72,26 +71,7 @@ export default function SignUp() {
 
 			if (createdSessionId) {
 				setActive!({ session: createdSessionId });
-				if (user) {
-					const { firstName, lastName, emailAddresses, id, username } = user;
-
-					dispatch(
-						createUser({
-							firstName,
-							lastName,
-							email: emailAddresses[0] as unknown as string,
-							id,
-							username,
-						})
-					);
-					dispatch(setIsSignedIn());
-					router.replace("/(tabs)/");
-				}
 			} else {
-				// If there is no `createdSessionId`,
-				// there are missing requirements, such as MFA
-				// Use the `signIn` or `signUp` returned from `startSSOFlow`
-				// to handle next steps
 			}
 		} catch (err) {
 			// See https://clerk.com/docs/custom-flows/error-handling
@@ -100,15 +80,38 @@ export default function SignUp() {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (user) {
+			const { firstName, lastName, emailAddresses, id, username } = user;
+			const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0].emailAddress;
+
+			dispatch(
+				createUser({
+					firstName,
+					lastName,
+					email: emailAddress,
+					id,
+					username,
+				})
+			);
+
+			router.push("/(tabs)");
+		}
+	}, [user]);
+
 	async function signUpWithEmail() {
 		if (!isLoaded) return;
 		try {
 			setLoading(true);
 			await signUpSchema.validate({ firstName, lastName, email, password });
 
-			await signUp.create({ emailAddress: email, password, firstName, lastName });
+			const createdUser = await signUp.create({ emailAddress: email, password, firstName, lastName });
 
 			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+			const username = firstName + " " + lastName;
+			if (!createdUser.id) throw new Error("User ID is undefined");
+			dispatch(createUser({ email, firstName, username, lastName, id: createdUser.id }));
 
 			setPendingVerification(true);
 		} catch (error) {
@@ -127,7 +130,6 @@ export default function SignUp() {
 
 			if (signUpAttempt.status === "complete") {
 				await setActive({ session: signUpAttempt.createdSessionId });
-				dispatch(setIsSignedIn());
 				router.replace("/(tabs)/");
 			} else {
 				console.error("Verification incomplete:", signUpAttempt);
@@ -144,8 +146,6 @@ export default function SignUp() {
 					<BackButton />
 					<Text className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("signup.verifyEmailTitle")}</Text>
 				</View>
-				{/* <LanguageSwitcher /> */}
-
 				<View className="w-screen flex-1 justify-center items-center">
 					<VStack space="md" className="w-[90%]">
 						<Center className="flex gap-5">
@@ -176,7 +176,6 @@ export default function SignUp() {
 				<BackButton />
 				<Text className="text-2xl font-bold mb-6 w-[90%]">{"signup.title"}</Text>
 			</View>
-			{/* <LanguageSwitcher /> */}
 			<View className="w-screen flex-1 justify-center items-center">
 				<VStack space="md" className="w-[90%]">
 					<Center className="flex gap-5">

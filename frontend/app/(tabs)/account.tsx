@@ -2,7 +2,7 @@ import { Text, View } from "react-native";
 import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from "../components/ui/avatar";
 import { VStack } from "@/components/ui/vstack";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
-import { AppDispatch } from "../../store/store";
+import { AppDispatch, persistor } from "../../store/store";
 
 import * as ImagePicker from "expo-image-picker";
 import React, { useState, useEffect } from "react";
@@ -15,8 +15,10 @@ import { ArrowRightIcon } from "../components/ui/icon";
 import { Heading } from "@/components/ui/heading";
 import { Trash2 } from "lucide-react-native";
 import { setIsSignedIn } from "../../store/auth/authSlice";
-import { useClerk } from "@clerk/clerk-expo";
+import { useClerk, useUser } from "@clerk/clerk-expo";
 import { i18n } from "../../i18n";
+import { createAction } from "@reduxjs/toolkit";
+export const resetState = createAction("RESET_STATE");
 
 function Account() {
 	const router = useRouter();
@@ -25,15 +27,12 @@ function Account() {
 	const { signOut } = useClerk();
 
 	const dispatch = useDispatch();
-	const { firstName, lastName, username, email } = useSelector(
-		(state: RootState) => ({
-			firstName: state.user.user.baseInfo?.firstName,
-			lastName: state.user.user.baseInfo?.lastName,
-			username: state.user.user.baseInfo?.username,
-			email: state.user.user.baseInfo?.email,
-		}),
-		shallowEqual
-	);
+
+	const { user } = useUser();
+	let emailAddress = "";
+	if (user) {
+		emailAddress = typeof user.emailAddresses === "string" ? user.emailAddresses : user.emailAddresses[0].emailAddress;
+	}
 
 	const [imageUri, setImageUri] = useState<string | null>(null);
 
@@ -74,33 +73,39 @@ function Account() {
 		}
 	};
 
+	async function onSignOut() {
+		dispatch(setIsSignedIn());
+		await signOut();
+		persistor.purge();
+		dispatch(resetState());
+		router.push("/AppLoaded");
+	}
+
 	useEffect(() => {
 		if (!imageUri) {
 			loadProfileImage();
 		}
 	}, []);
 
-	//console.log("first name", firstName, email);
-
 	return (
 		<View className="bg-background-700">
 			<View className="h-screen">
 				<View className="items-center gap-2">
-					<Button onPress={pickImage} size="xxl" className="rounded-full bg-transparent">
+					<Button onPress={pickImage} size="xxl" className="rounded-full bg-transparent" variant="link">
 						<Avatar size="2xl">
 							{imageUri ? (
 								<AvatarImage source={{ uri: imageUri }} alt="Profile Image" />
 							) : (
 								<AvatarFallbackText>
-									{firstName && firstName.length > 0 ? firstName.charAt(0).toUpperCase() : ""}{" "}
-									{lastName && lastName.length > 0 ? lastName.charAt(0).toUpperCase() : ""}
+									{user?.firstName ? user.firstName.charAt(0).toUpperCase() : ""}{" "}
+									{user?.lastName ? user.lastName.charAt(0).toUpperCase() : ""}
 								</AvatarFallbackText>
 							)}
 							<AvatarBadge />
 						</Avatar>
 					</Button>
-					{firstName && <Heading size="xl">{firstName}</Heading>}
-					{/* {email && <Heading size="md">{email}</Heading>} */}
+					{user?.firstName && <Heading size="xl">{user.firstName}</Heading>}
+					{emailAddress.length > 0 && <Heading size="md">{emailAddress}</Heading>}
 				</View>
 
 				{AccountOptions && AccountOptions.length > 0 && (
@@ -134,17 +139,7 @@ function Account() {
 					<ButtonText>{i18n.t("account.deleteAccount")}</ButtonText>
 				</Button>
 
-				<Button
-					className="rounded-lg w-[80%] mt-5"
-					onPress={async () => {
-						dispatch(setIsSignedIn());
-						router.push("/AppLoaded");
-						await signOut();
-					}}
-					action="secondary"
-					variant="solid"
-					size="xl"
-				>
+				<Button className="rounded-lg w-[80%] mt-5" onPress={onSignOut} action="secondary" variant="solid" size="xl">
 					<ButtonIcon as={Trash2} stroke="red" />
 					<ButtonText>{i18n.t("account.signout")}</ButtonText>
 				</Button>

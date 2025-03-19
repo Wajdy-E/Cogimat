@@ -57,7 +57,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	const handleBack = () => setStep((prev) => (prev === Step.NAME ? prev : ((prev - 1) as Step)));
 	const handleChange = (name: keyof typeof formData, value: string) => setFormData({ ...formData, [name]: value });
 	const handleSubmit = () => {
-		console.log("Exercise Data:", formData);
 		props.onClose();
 	};
 

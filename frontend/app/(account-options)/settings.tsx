@@ -30,7 +30,6 @@ function Settings() {
 	}
 
 	async function askNotificationPermission() {
-		console.log("Asking for permission");
 		const { status } = await Notifications.requestPermissionsAsync();
 		return status === "granted";
 	}

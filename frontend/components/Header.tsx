@@ -18,7 +18,7 @@ export default function Header() {
 	function onFavourite() {
 		const exerciseCopy = { ...exercises };
 		exerciseCopy.isFavourited = !exercises.isFavourited;
-		dispatch(setFavourite(exerciseCopy));
+		dispatch(setFavourite({ isFavourited: exerciseCopy.isFavourited, exerciseId: exerciseCopy.id }));
 	}
 
 	return (

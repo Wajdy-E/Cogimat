@@ -8,17 +8,16 @@ import { useEffect } from "react";
 import { fetchExercises } from "../store/data/dataSaga";
 import { AppDispatch, RootState } from "../store/store";
 import { useSelector } from "react-redux";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function Home() {
 	const backgroundImage = require("../assets/index.png");
 	const logo = require("../assets/cogimatlogo.png");
 	const router = useRouter();
-	const isSignedIn = useSelector((state: RootState) => state.user.isSignedIn);
-
+	const { isSignedIn } = useUser();
 	const dispatch: AppDispatch = useDispatch();
 	useEffect(() => {
 		dispatch(fetchExercises());
-
 		if (isSignedIn) {
 			setTimeout(() => {
 				router.push("/(tabs)/");

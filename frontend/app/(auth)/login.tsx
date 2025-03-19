@@ -56,7 +56,6 @@ function Login() {
 		if (!isLoaded) return;
 		setLoading(true);
 		try {
-			// Validate form input
 			await loginSchema.validate({ email, password });
 
 			const signInAttempt = await signIn.create({
@@ -66,25 +65,11 @@ function Login() {
 
 			if (signInAttempt.status === "complete") {
 				await setActive({ session: signInAttempt.createdSessionId });
-				if (user) {
-					const { firstName, lastName, emailAddresses, id, username } = user;
-					dispatch(
-						setCurrentUserThunk({
-							firstName,
-							lastName,
-							email: emailAddresses[0] as unknown as string,
-							id,
-							username,
-						})
-					);
-				}
-				router.replace("/(tabs)/");
 			} else {
 				// If the status isn't complete, check why. User might need to
 				// complete further steps.
 				console.error(JSON.stringify(signInAttempt, null, 2));
 			}
-			router.push("/(tabs)");
 		} catch (error) {
 			if (error instanceof Yup.ValidationError) {
 				Alert.alert("Validation Error", error.message);
@@ -105,23 +90,6 @@ function Login() {
 			});
 			if (createdSessionId) {
 				setActive!({ session: createdSessionId });
-
-				if (user) {
-					const { firstName, lastName, emailAddresses, id, username } = user;
-					console.log(user);
-
-					dispatch(
-						setCurrentUserThunk({
-							firstName,
-							lastName,
-							email: emailAddresses[0] as unknown as string,
-							id,
-							username,
-						})
-					);
-					dispatch(setIsSignedIn());
-					router.replace("/(tabs)/");
-				}
 			} else {
 				// If there is no `createdSessionId`,
 				// there are missing requirements, such as MFA
@@ -138,18 +106,16 @@ function Login() {
 	useEffect(() => {
 		if (user) {
 			const { firstName, lastName, emailAddresses, id, username } = user;
-			console.log(user);
-
+			const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0].emailAddress;
 			dispatch(
 				setCurrentUserThunk({
 					firstName,
 					lastName,
-					email: emailAddresses[0] as unknown as string,
+					email: emailAddress,
 					id,
 					username,
 				})
 			);
-			dispatch(setIsSignedIn());
 			router.replace("/(tabs)/");
 		}
 	}, [user]);
