@@ -2,6 +2,7 @@ import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Exercise, setExercises, setIsFavourite } from "./dataSlice";
 import axios from "axios";
 import { RootState } from "../store";
+import { Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
 const BASE_URL = process.env.BASE_URL;
 
 //#region Sagas
@@ -22,12 +23,22 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 			instructions: ex.instructions,
 			isChallenge: ex.isChallenge,
 			trackingData: ex.tracking_data,
-			parameters: ex.parameters,
 			videoUrl: ex.video_url,
 			imageFileName: ex.image_file_name,
 			timeToComplete: ex.time_to_complete,
 			isFavourited: ex.isFavourited,
 			focus: ex.focus,
+			parameters: {
+				shapes: ex.parameters.shapes?.map((shape: string) => Shape[shape as keyof typeof Shape]),
+				colors: ex.parameters.colors?.map((color: string) => {
+					const foundColor = colorOptions.find((c) => c.name === Color[color as keyof typeof Color]);
+					return foundColor ?? { name: Color[color as keyof typeof Color], hexcode: "#FFFFFF" };
+				}),
+				numbers: ex.parameters.numbers?.map(
+					(number: number) => NumberEnum[number as unknown as keyof typeof NumberEnum]
+				),
+				letters: ex.parameters.letters?.map((letter: string) => Letter[letter as keyof typeof Letter]),
+			},
 		}));
 
 		dispatch(setExercises(formattedExercises));

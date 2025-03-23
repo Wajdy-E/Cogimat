@@ -3,6 +3,7 @@ import userReducer from "./auth/authSlice";
 import dataReducer from "./data/dataSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TypedUseSelectorHook, useSelector } from "react-redux";
 
 const persistConfig = {
 	key: "root",
@@ -26,6 +27,7 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const persistor = persistStore(store);
 export { store, persistor };

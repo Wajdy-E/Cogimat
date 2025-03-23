@@ -1,15 +1,12 @@
-import { GestureResponderEvent, View, Alert, SafeAreaView } from "react-native";
+import { GestureResponderEvent, View, Alert, SafeAreaView, Platform } from "react-native";
 import { Button, ButtonText } from "../../app/components/ui/button";
 import { VStack } from "../components/ui/vstack";
 import { Heading } from "../components/ui/heading";
 import { useDispatch } from "react-redux";
 import React, { useCallback, useEffect, useState } from "react";
-import { setIsSignedIn } from "../../store/auth/authSlice";
 import { Link, useRouter } from "expo-router";
 import FormInput from "../../components/FormInput";
 import * as Yup from "yup";
-import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
-import * as AppleAuthentication from "expo-apple-authentication";
 import BackButton from "../../components/BackButton";
 import { Center } from "@/components/ui/center";
 import { Divider } from "@/components/ui/divider";
@@ -21,6 +18,9 @@ import { setCurrentUserThunk } from "../../store/auth/authSaga";
 import { AppDispatch } from "../../store/store";
 import { Text } from "@/components/ui/text";
 import { i18n } from "../../i18n";
+import Apple from "../../assets/apple.svg";
+import Google from "../../assets/google.svg";
+import { useTheme } from "@/components/ui/ThemeProvider";
 
 const loginSchema = Yup.object().shape({
 	email: Yup.string().email(i18n.t("login.errors.invalidEmail")).required(i18n.t("login.errors.emailRequired")),
@@ -43,7 +43,7 @@ function Login() {
 	const [loading, setLoading] = useState(false);
 	const dispatch: AppDispatch = useDispatch();
 	const { signIn, setActive, isLoaded } = useSignIn();
-
+	const { themeTextColor } = useTheme();
 	const router = useRouter();
 
 	useWarmUpBrowser();
@@ -161,26 +161,36 @@ function Login() {
 					</Button>
 
 					<Center className="flex gap-4">
-						<View className="flex-row items-center gap-2 mt-5">
+						<View className="flex-row items-center gap-2">
 							<Divider className="bg-slate-300 w-[30%]" />
 							<Text>{i18n.t("login.orSignInWith")}</Text>
 							<Divider className="bg-slate-300 w-[30%]" />
 						</View>
 
-						<AppleAuthentication.AppleAuthenticationButton
-							buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-							buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-							cornerRadius={5}
-							style={{ width: "100%", height: 50, marginTop: 10 }}
-							onPress={() => onProviderSignIn("apple")}
-						/>
+						{Platform.OS === "ios" && (
+							<Button
+								onPress={() => onProviderSignIn("apple")}
+								variant="outline"
+								size="xl"
+								className="rounded-full w-100"
+								action="secondary"
+								style={{ width: "100%" }}
+							>
+								<Apple height={20} width={20} fill={themeTextColor} />
+								<ButtonText>{i18n.t("login.appleSignIn")}</ButtonText>
+							</Button>
+						)}
 
-						<GoogleSigninButton
-							size={GoogleSigninButton.Size.Wide}
-							color={GoogleSigninButton.Color.Dark}
-							style={{ width: "100%" }}
+						<Button
 							onPress={() => onProviderSignIn("google")}
-						/>
+							variant="outline"
+							size="xl"
+							className="rounded-full w-full"
+							action="secondary"
+						>
+							<Google height={20} width={20} />
+							<ButtonText>{i18n.t("login.googleSignIn")}</ButtonText>
+						</Button>
 
 						<Text>
 							{i18n.t("login.noAccount")}{" "}

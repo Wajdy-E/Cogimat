@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { NumberEnum, Letter, Shape, Color, ColorOption, ShapeOption } from "../../data/program/Program";
 
 export interface Exercise {
 	id: number;
@@ -8,12 +9,19 @@ export interface Exercise {
 	description: string;
 	timeToComplete: string;
 	instructions: string;
-	parameters: Record<string, any>;
+	parameters: ExerciseParameters;
 	trackingData: Record<string, any>;
 	videoUrl: string;
 	imageFileName: string;
 	isFavourited: boolean;
 	focus: string;
+}
+
+export interface ExerciseParameters {
+	shapes?: Shape[];
+	colors?: ColorOption[];
+	numbers?: NumberEnum[];
+	letters?: Letter[];
 }
 
 export enum ExerciseDifficulty {
@@ -41,7 +49,9 @@ const dataSlice = createSlice({
 		setExercises(state, action: PayloadAction<Exercise[]>) {
 			state.exercises = action.payload;
 		},
-
+		setCurrentExericse(state, { payload }: PayloadAction<Exercise>) {
+			state.selectedExercise = payload;
+		},
 		selectExercise(state, action: PayloadAction<number>) {
 			const exercise = state.exercises.find((ex) => ex.id === action.payload);
 			state.selectedExercise = exercise || null;
@@ -62,7 +72,13 @@ const dataSlice = createSlice({
 	},
 });
 
-export const { setExercises, selectExercise, setIsFavourite, updateProgress, clearSelectedExercise } =
-	dataSlice.actions;
+export const {
+	setExercises,
+	selectExercise,
+	setCurrentExericse,
+	setIsFavourite,
+	updateProgress,
+	clearSelectedExercise,
+} = dataSlice.actions;
 
 export default dataSlice.reducer;

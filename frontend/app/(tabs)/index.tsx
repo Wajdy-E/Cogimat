@@ -43,6 +43,7 @@ function Home() {
 									exercise={exercise}
 									classes="w-[250px]"
 									isFavourited={exercise.isFavourited}
+									variant="elevated"
 								/>
 							))}
 						</HStack>

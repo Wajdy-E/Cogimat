@@ -29,6 +29,26 @@ const translations = {
 		account: {
 			signout: "Sign out",
 			deleteAccount: "Delete account",
+			title: "Account",
+			email: "Email Address",
+			subscribe: "Subscribe to CogiPro",
+			subscriptionCode: "I Have a Subscription QR Code",
+			viewReport: "View fitness report",
+			askTeam: "Fitness question? Ask our team",
+
+			appSettings: "App Settings",
+			notifications: "Notifications",
+			darkMode: "Dark Mode",
+
+			help: "Help",
+			billingHelp: "Account & Billing Help",
+			contactSupport: "Contact Support",
+			restore: "Restore Subscription",
+
+			legal: "Legal",
+			terms: "Terms & Conditions",
+			privacy: "Privacy Policy",
+			version: "Version",
 		},
 		signup: {
 			title: "Sign Up",
@@ -38,6 +58,7 @@ const translations = {
 			verifyCodePlaceholder: "Enter your verification code",
 			orSignUpWith: "Or sign up with",
 			googleSignUp: "Continue with Google",
+			appleSignUp: "Continue with Apple",
 			alreadyHaveAccount: "Already have an account?",
 			login: "Log in",
 			alert: {

@@ -5,11 +5,19 @@ interface AccountOption {
 
 export const AccountOptions: AccountOption[] = [
 	{
-		title: "Subscription",
+		title: "Subscribe to CogiPro",
 		link: "",
 	},
 	{
-		title: "Settings",
-		link: "/settings",
+		title: "View fitness report",
+		link: "",
+	},
+	{
+		title: "Log out",
+		link: "",
+	},
+	{
+		title: "Fitness question? Ask our team",
+		link: "",
 	},
 ];

@@ -16,7 +16,7 @@ export const config = {
 		"--color-primary-900": "68 130 119",
 
 		/* Secondary  */
-		"--color-secondary-0": "0 0 0",
+		"--color-secondary-0": "0 0 0", //black
 		"--color-secondary-50": "251 251 251",
 		"--color-secondary-100": "246 246 246",
 		"--color-secondary-200": "242 242 242",
@@ -111,7 +111,7 @@ export const config = {
 		"--color-typography-700": "82 82 82",
 		"--color-typography-800": "64 64 64",
 		"--color-typography-900": "38 38 39",
-		"--color-typography-950": "23 23 23",
+		"--color-typography-950": "0 0 0", //black
 
 		/* Outline */
 		"--color-outline-0": "253 254 254",
@@ -141,6 +141,19 @@ export const config = {
 		"--bg-background-800": "209, 222, 222",
 		"--bg-background-900": "194, 216, 216",
 		"--bg-background-950": "177, 211, 211",
+
+		"--color-background-0": "20, 16, 164",
+		"--color-background-50": "20, 16, 164",
+		"--color-background-100": "19, 81, 74",
+		"--color-background-200": "18, 145, 51",
+		"--color-background-300": "17, 161, 29",
+		"--color-background-400": "16, 145, 9",
+		"--color-background-500": "248, 248, 248",
+		"--color-background-600": "236, 238, 238",
+		"--color-background-700": "223, 229, 229",
+		"--color-background-800": "209, 222, 222",
+		"--color-background-900": "194, 216, 216",
+		"--color-background-950": "177, 211, 211",
 
 		/* Background Special */
 		"--color-background-error": "254 241 241",
@@ -262,7 +275,7 @@ export const config = {
 		"--color-typography-700": "219 219 220",
 		"--color-typography-800": "229 229 229",
 		"--color-typography-900": "245 245 245",
-		"--color-typography-950": "255 254 255",
+		"--color-typography-950": "255 255 255", //white
 
 		/* Outline */
 		"--color-outline-0": "26 23 23",
@@ -292,6 +305,19 @@ export const config = {
 		"--color-background-900": "8 8 8",
 		"--color-background-950": "15 25 25",
 
+		"--bg-background-0": "33 32 32",
+		"--bg-background-50": "153 94 94",
+		"--bg-background-100": "125 86 86",
+		"--bg-background-200": "99 76 76",
+		"--bg-background-300": "74 64 64",
+		"--bg-background-400": "52 50 50",
+		"--bg-background-500": "33 32 32",
+		"--bg-background-600": "22 23 23",
+		"--bg-background-700": "11 13 13",
+		"--bg-background-800": "0 0 0",
+		"--bg-background-900": "8 8 8",
+		"--bg-background-950": "15 25 25",
+
 		/* Background Special */
 		"--color-background-error": "66 43 43",
 		"--color-background-warning": "65 47 35",
@@ -300,4 +326,5 @@ export const config = {
 		"--color-background-info": "26 40 46",
 
 		"--color-indicator-primary": "247 247 247",
-})}
+	}),
+};

@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Animated, View } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -12,6 +12,8 @@ import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { Flame, Clock, Brain } from "lucide-react-native";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
+import { useDispatch } from "react-redux";
+import { setCurrentExericse } from "../../store/data/dataSlice";
 
 function ExerciseProgram() {
 	const params = useLocalSearchParams();
@@ -19,7 +21,9 @@ function ExerciseProgram() {
 	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
 	const floatAnim = useRef(new Animated.Value(0)).current;
-
+	const dispatch = useDispatch();
+	dispatch(setCurrentExericse(exercise));
+	const router = useRouter();
 	useEffect(() => {
 		Animated.loop(
 			Animated.sequence([
@@ -84,7 +88,7 @@ function ExerciseProgram() {
 				}}
 			>
 				<Button
-					onPress={() => console.log("Start Now pressed")}
+					onPress={() => router.push("/exercise")}
 					className="rounded-full w-full"
 					variant="outline"
 					action="primary"

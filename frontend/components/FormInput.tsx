@@ -18,7 +18,7 @@ interface FormInputProps {
 	value?: string;
 	formErrorKey?: string;
 	formHelperKey?: string;
-	invalid: boolean;
+	invalid?: boolean;
 	formSize: "sm" | "md" | "lg" | undefined;
 	inputSize: "sm" | "md" | "lg" | undefined;
 	isRequired?: boolean;

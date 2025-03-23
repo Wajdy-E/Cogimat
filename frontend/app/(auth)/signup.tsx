@@ -12,14 +12,15 @@ import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
-import { useAuth, useSSO, useUser } from "@clerk/clerk-expo";
-import { useSignUp, useSignIn } from "@clerk/clerk-expo";
+import { useSignUp, useSSO, useUser } from "@clerk/clerk-expo";
 import { OAuthStrategy } from "@clerk/types";
 import { createUser } from "../../store/auth/authSaga";
 import { AppDispatch } from "../../store/store";
-import { setIsSignedIn } from "../../store/auth/authSlice";
 import { i18n } from "../../i18n";
 import { Text } from "@/components/ui/text";
+import Apple from "../../assets/apple.svg";
+import Google from "../../assets/google.svg";
+import { useTheme } from "@/components/ui/ThemeProvider";
 export const useWarmUpBrowser = () => {
 	useEffect(() => {
 		void WebBrowser.warmUpAsync();
@@ -35,6 +36,7 @@ export default function SignUp() {
 	const router = useRouter();
 	const dispatch: AppDispatch = useDispatch();
 	const { isLoaded, signUp, setActive } = useSignUp();
+	const { themeTextColor } = useTheme();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -174,7 +176,7 @@ export default function SignUp() {
 		<SafeAreaView className="flex-1 justify-center items-center bg-background-700">
 			<View className="w-full flex-row items-center justify-between px-6 py-4 text-center">
 				<BackButton />
-				<Text className="text-2xl font-bold mb-6 w-[90%]">{"signup.title"}</Text>
+				<Text className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("signup.title")}</Text>
 			</View>
 			<View className="w-screen flex-1 justify-center items-center">
 				<VStack space="md" className="w-[90%]">
@@ -183,7 +185,6 @@ export default function SignUp() {
 							label={"signup.form.firstName"}
 							placeholder={"signup.form.firstNamePlaceholder"}
 							value={firstName}
-							invalid={!firstName}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
@@ -194,7 +195,6 @@ export default function SignUp() {
 							label={"signup.form.lastName"}
 							placeholder={"signup.form.lastNamePlaceholder"}
 							value={lastName}
-							invalid={!lastName}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
@@ -205,7 +205,6 @@ export default function SignUp() {
 							label={"signup.form.email"}
 							placeholder={"signup.form.emailPlaceholder"}
 							value={email}
-							invalid={!email}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
@@ -217,7 +216,6 @@ export default function SignUp() {
 							label={"signup.form.password"}
 							placeholder={"signup.form.passwordPlaceholder"}
 							value={password}
-							invalid={!password}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
@@ -229,26 +227,36 @@ export default function SignUp() {
 							<ButtonText>{i18n.t("signup.form.signUp")}</ButtonText>
 						</Button>
 
-						<View className="flex-row items-center gap-2 mt-5">
+						<View className="flex-row items-center gap-2">
 							<Divider className="bg-slate-300 w-[30%]" />
 							<Text>{i18n.t("signup.orSignUpWith")}</Text>
 							<Divider className="bg-slate-300 w-[30%]" />
 						</View>
 
 						{Platform.OS === "ios" && (
-							<AppleAuthentication.AppleAuthenticationButton
-								buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-								buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-								cornerRadius={5}
-								style={{ width: "100%", height: 50, marginTop: 10 }}
+							<Button
 								onPress={() => onProviderSignIn("apple")}
-							/>
+								variant="outline"
+								size="xl"
+								className="rounded-full w-100"
+								action="secondary"
+								style={{ width: "100%" }}
+							>
+								<Apple height={20} width={20} fill={themeTextColor} />
+								<ButtonText>{i18n.t("signup.appleSignUp")}</ButtonText>
+							</Button>
 						)}
 
-						<Button onPress={() => onProviderSignIn("google")}>
+						<Button
+							onPress={() => onProviderSignIn("google")}
+							variant="outline"
+							size="xl"
+							className="rounded-full w-full"
+							action="secondary"
+						>
+							<Google height={20} width={20} />
 							<ButtonText>{i18n.t("signup.googleSignUp")}</ButtonText>
 						</Button>
-
 						<Text>
 							{i18n.t("signup.alreadyHaveAccount")}{" "}
 							<Link href={"/login"} className="underline text-primary-500">
