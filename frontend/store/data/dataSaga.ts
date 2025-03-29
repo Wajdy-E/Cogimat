@@ -1,5 +1,5 @@
 import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Exercise, setExercises, setIsFavourite } from "./dataSlice";
+import { Exercise, Goals, setExercises, setIsFavourite, setUserGoals, updateUserGoals } from "./dataSlice";
 import axios from "axios";
 import { RootState } from "../store";
 import { Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
@@ -61,10 +61,84 @@ export const setFavourite = createAsyncThunk<any, { exerciseId: number; isFavour
 				exercise_id: exerciseId,
 				is_favourited: isFavourited,
 			});
-
 			if (data.success) dispatch(setIsFavourite({ exerciseId, isFavourite: isFavourited }));
 		} catch (error) {
 			console.error("Error setting exercise as favourite:", error);
+		}
+	}
+);
+
+export const updateGoal = createAsyncThunk<any, { newGoal: Goals }, { state: RootState }>(
+	"user/set-goals",
+	async ({ newGoal }, { getState, dispatch }) => {
+		try {
+			const userId = getState().user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+
+			const { data } = await axios.put(`${BASE_URL}/api/goals`, {
+				user_id: userId,
+				newGoal,
+			});
+
+			if (data.success) dispatch(updateUserGoals(newGoal));
+		} catch (error) {
+			console.error("Error setting user goals:", error);
+		}
+	}
+);
+
+export const addGoal = createAsyncThunk<any, { newGoal: Goals }, { state: RootState }>(
+	"user/set-goals",
+	async ({ newGoal }, { getState, dispatch }) => {
+		try {
+			const userId = getState().user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+
+			const { data } = await axios.post(`${BASE_URL}/api/goals`, {
+				user_id: userId,
+				newGoal,
+			});
+
+			if (data.success) dispatch(updateUserGoals(data.goal));
+		} catch (error) {
+			console.error("Error setting user goals:", error);
+		}
+	}
+);
+
+export const fetchGoals = createAsyncThunk<any, void, { state: RootState }>(
+	"goals/fetch",
+	async (_, { getState, dispatch }) => {
+		const userId = getState().user.user.baseInfo?.id;
+		if (!userId) throw new Error("User is not authenticated");
+
+		const { data } = await axios.get(`${BASE_URL}/api/goals`, {
+			params: { user_id: userId },
+		});
+
+		if (data.success) dispatch(setUserGoals(data.goals));
+
+		return data.goals;
+	}
+);
+
+export const deleteGoal = createAsyncThunk<any, { goalId: string }, { state: RootState }>(
+	"user/delete-goal",
+	async ({ goalId }, { getState, dispatch }) => {
+		try {
+			const userId = getState().user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+
+			const currentGoals = getState().data.goals;
+			const updatedGoals = currentGoals.filter((g) => g.id !== goalId);
+
+			const { data } = await axios.delete(`${BASE_URL}/api/goals`, {
+				params: { user_id: userId, goal_id: goalId },
+			});
+
+			if (data.success) dispatch(setUserGoals(updatedGoals));
+		} catch (error) {
+			console.error("Error deleting goal:", error);
 		}
 	}
 );

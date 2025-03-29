@@ -129,20 +129,7 @@ export const config = {
 
 		/* Background */
 
-		"--bg-background-0": "20, 16, 164",
-		"--bg-background-50": "20, 16, 164",
-		"--bg-background-100": "19, 81, 74",
-		"--bg-background-200": "18, 145, 51",
-		"--bg-background-300": "17, 161, 29",
-		"--bg-background-400": "16, 145, 9",
-		"--bg-background-500": "248, 248, 248",
-		"--bg-background-600": "236, 238, 238",
-		"--bg-background-700": "223, 229, 229",
-		"--bg-background-800": "209, 222, 222",
-		"--bg-background-900": "194, 216, 216",
-		"--bg-background-950": "177, 211, 211",
-
-		"--color-background-0": "20, 16, 164",
+		"--color-background-0": "248, 248, 248" /** elevated uses this -- off white */,
 		"--color-background-50": "20, 16, 164",
 		"--color-background-100": "19, 81, 74",
 		"--color-background-200": "18, 145, 51",
@@ -150,7 +137,7 @@ export const config = {
 		"--color-background-400": "16, 145, 9",
 		"--color-background-500": "248, 248, 248",
 		"--color-background-600": "236, 238, 238",
-		"--color-background-700": "223, 229, 229",
+		"--color-background-700": "255, 255, 255",
 		"--color-background-800": "209, 222, 222",
 		"--color-background-900": "194, 216, 216",
 		"--color-background-950": "177, 211, 211",
@@ -292,7 +279,7 @@ export const config = {
 		"--color-outline-950": "253 254 254",
 
 		/* Background */
-		"--color-background-0": "33 32 32",
+		"--color-background-0": "28 28 30",
 		"--color-background-50": "153 94 94",
 		"--color-background-100": "125 86 86",
 		"--color-background-200": "99 76 76",
@@ -300,23 +287,10 @@ export const config = {
 		"--color-background-400": "52 50 50",
 		"--color-background-500": "33 32 32",
 		"--color-background-600": "22 23 23",
-		"--color-background-700": "11 13 13",
+		"--color-background-700": "14 14 16",
 		"--color-background-800": "0 0 0", //black
 		"--color-background-900": "8 8 8",
 		"--color-background-950": "15 25 25",
-
-		"--bg-background-0": "33 32 32",
-		"--bg-background-50": "153 94 94",
-		"--bg-background-100": "125 86 86",
-		"--bg-background-200": "99 76 76",
-		"--bg-background-300": "74 64 64",
-		"--bg-background-400": "52 50 50",
-		"--bg-background-500": "33 32 32",
-		"--bg-background-600": "22 23 23",
-		"--bg-background-700": "11 13 13",
-		"--bg-background-800": "0 0 0",
-		"--bg-background-900": "8 8 8",
-		"--bg-background-950": "15 25 25",
 
 		/* Background Special */
 		"--color-background-error": "66 43 43",

@@ -4,7 +4,7 @@ import { Exercise, ExerciseDifficulty } from "../store/data/dataSlice";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
-import { Flame, Clock } from "lucide-react-native";
+import { Flame, Clock, Sprout, Rocket, Trophy } from "lucide-react-native";
 import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import PlayButton from "./PlayButton";
@@ -25,7 +25,11 @@ interface ExerciseCardProps {
 }
 
 const imageMap: Record<string, any> = {
-	"placeholder.png": require("../assets/placeholder.png"),
+	"placeholder.png": require("../assets/exercise-thumbnails/placeholder.png"),
+	"color-matching.png": require("../assets/exercise-thumbnails/color-matching.png"),
+	"shape-matching.png": require("../assets/exercise-thumbnails/shape-matching.png"),
+	"letter-matching.png": require("../assets/exercise-thumbnails/letter-matching.png"),
+	"number-matching.png": require("../assets/exercise-thumbnails/number-matching.png"),
 };
 
 function ExerciseCard(props: ExerciseCardProps) {
@@ -37,6 +41,21 @@ function ExerciseCard(props: ExerciseCardProps) {
 		const exerciseCopy = { ...props.exercise };
 		exerciseCopy.isFavourited = !props.exercise.isFavourited;
 		dispatch(setFavourite({ exerciseId: exerciseCopy.id, isFavourited: exerciseCopy.isFavourited }));
+	}
+
+	function getIconForType() {
+		return (
+			<Icon
+				size="lg"
+				as={
+					props.difficulty === ExerciseDifficulty.Beginner
+						? Sprout
+						: props.difficulty === ExerciseDifficulty.Intermediate
+							? Rocket
+							: Trophy
+				}
+			/>
+		);
 	}
 	return (
 		<Card
@@ -53,11 +72,20 @@ function ExerciseCard(props: ExerciseCardProps) {
 					<Heading>{props.name}</Heading>
 					<View className="flex-row gap-2">
 						<View className="flex-row items-center gap-1">
-							<Icon size="md" as={Clock} className="fill-primary-500" />
-							<Text>{props.time}</Text>
+							<Icon size="md" as={Clock} />
+							{(() => {
+								const totalSeconds = parseInt(props.time, 10);
+								const minutes = Math.floor(totalSeconds / 60);
+								const seconds = totalSeconds % 60;
+								return (
+									<Text>
+										{minutes} min {seconds} sec
+									</Text>
+								);
+							})()}
 						</View>
 						<View className="flex-row items-center gap-1" style={{ maxWidth: "100%" }}>
-							<Icon size="lg" as={Flame} fill="bg-primary-500" className="fill-primary-500" />
+							{getIconForType()}
 							<Text size="lg" ellipsizeMode="tail" numberOfLines={1}>
 								{props.difficulty}
 							</Text>

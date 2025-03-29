@@ -12,9 +12,9 @@ import { Input, InputField } from "@/components/ui/input";
 import { i18n } from "../i18n";
 
 interface FormInputProps {
-	label: string;
+	label?: string;
 	children?: React.ReactNode;
-	placeholder: string;
+	placeholder?: string;
 	value?: string;
 	formErrorKey?: string;
 	formHelperKey?: string;
@@ -28,12 +28,14 @@ interface FormInputProps {
 export default function FormInput(props: FormInputProps) {
 	return (
 		<FormControl isInvalid={props.invalid} isRequired={props.isRequired} size={props.formSize}>
-			<FormControlLabel>
-				<FormControlLabelText>{i18n.t(props.label)}</FormControlLabelText>
-			</FormControlLabel>
+			{props.label && (
+				<FormControlLabel>
+					<FormControlLabelText>{i18n.t(props.label)}</FormControlLabelText>
+				</FormControlLabel>
+			)}
 			<Input size={props.inputSize} className="w-full">
 				<InputField
-					placeholder={i18n.t(props.placeholder)}
+					placeholder={i18n.t(props.placeholder ?? "")}
 					value={props.value}
 					type={props.inputType}
 					onChangeText={props.onChange}

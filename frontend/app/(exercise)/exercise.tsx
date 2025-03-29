@@ -4,34 +4,35 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import Countdown from "../../components/Countdown";
 import { Letter, NumberEnum } from "../../data/program/Program";
-import { Pause, Play, X } from "lucide-react-native"; // Icons for Pause, Play, End
+import { LucideIcon, Pause, Play, X, Square, Triangle, Circle, Diamond, Icon } from "lucide-react-native";
 import { Button, ButtonIcon } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
+import { Icon as GlueStackIcon } from "@/components/ui/icon";
+
+interface IconWithColor {
+	icon: LucideIcon;
+	color: string;
+}
 
 function ExerciseScreen() {
 	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise);
 
-	// If the exercise is not selected, return null
 	if (!currentExercise) return null;
 
 	const [showCountdown, setShowCountdown] = useState(true);
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
-	const [timeLeft, setTimeLeft] = useState(parseInt(currentExercise?.timeToComplete) || 30);
+	const [timeLeft, setTimeLeft] = useState(parseInt(currentExercise?.timeToComplete) || 60);
 	const [isPaused, setIsPaused] = useState(false);
-	const timeToComplete = parseInt(currentExercise?.timeToComplete) || 30;
-
+	const timeToComplete = parseInt(currentExercise?.timeToComplete) || 60;
+	const shapes = ["SQUARE", "CIRCLE", "TRIANGLE", "DIAMOND"];
 	useEffect(() => {
 		if (showCountdown || !currentExercise || !currentExercise.parameters) return;
 
-		console.log("Starting exercise stimuli...");
-
-		// Immediately show the first stimulus
 		setStimulus(getRandomStimulus());
 
 		let elapsedTime = 0;
 		const interval = setInterval(() => {
-			if (elapsedTime >= timeToComplete * 1000 || isPaused) return; // Stops when time is up or paused
+			if (elapsedTime >= timeToComplete * 1000 || isPaused) return;
 
 			setIsWhiteScreen(true);
 			setTimeout(() => {
@@ -74,36 +75,50 @@ function ExerciseScreen() {
 		}
 	};
 
+	const getIconForShape = (shapeName: string): IconWithColor => {
+		switch (shapeName.toUpperCase()) {
+			case "SQUARE":
+				return { icon: Square, color: "#FF0000" };
+			case "TRIANGLE":
+				return { icon: Triangle, color: "#00FF00" };
+			case "CIRCLE":
+				return { icon: Circle, color: "#FFFF00" };
+			case "DIAMOND":
+				return { icon: Diamond, color: "#0000FF" };
+			default:
+				return { icon: Square, color: "#FFFFFF" };
+		}
+	};
+
 	const renderStimulus = () => {
 		if (isWhiteScreen) {
 			return <View className="bg-white absolute inset-0" />;
 		}
-
 		if (!stimulus) return null;
 
 		if (typeof stimulus === "object" && "hexcode" in stimulus) {
-			// Color stimulus
 			return <View className="absolute inset-0" style={{ backgroundColor: stimulus.hexcode }} />;
-		} else if (typeof stimulus === "object" && "icon" in stimulus) {
-			// Shape stimulus (uses LucideIcon)
-			const Icon = stimulus.icon;
+		} else if (shapes.includes(stimulus)) {
+			const { icon: Icon, color } = getIconForShape(stimulus);
 			return (
-				<View className="flex bg-black justify-center absolute inset-0 items-center">
-					<Icon size={150} color="white" />
+				<View className="flex bg-background-700 justify-center absolute inset-0 items-center">
+					<Icon size={250} color={color} fill={color} />
 				</View>
 			);
 		} else if (Object.values(Letter).includes(stimulus)) {
-			// Letter stimulus
 			return (
-				<View className="flex bg-black justify-center absolute inset-0 items-center">
-					<Text className="text-9xl text-white font-bold">{stimulus}</Text>
+				<View className="flex bg-background-700 justify-center absolute inset-0 items-center">
+					<Text className="text-typography-950 font-bold" style={{ fontSize: 250 }}>
+						{stimulus}
+					</Text>
 				</View>
 			);
 		} else if (Object.values(NumberEnum).includes(stimulus)) {
-			// Number stimulus
 			return (
-				<View className="flex bg-black justify-center absolute inset-0 items-center">
-					<Text className="text-9xl text-white font-bold">{stimulus}</Text>
+				<View className="flex bg-background-700 justify-center absolute inset-0 items-center">
+					<Text className="text-typography-950 font-bold" style={{ fontSize: 250 }}>
+						{stimulus}
+					</Text>
 				</View>
 			);
 		}
@@ -118,13 +133,11 @@ function ExerciseScreen() {
 					isVisible={showCountdown}
 					seconds={5}
 					onComplete={() => {
-						console.log("Countdown complete, showing first stimulus...");
 						setShowCountdown(false);
 					}}
 				/>
 			) : (
 				<>
-					{/* Stimuli Display */}
 					{renderStimulus()}
 
 					<View className="bg-gray-800 rounded-full absolute px-10 py-3 right-5 top-5">
@@ -136,7 +149,7 @@ function ExerciseScreen() {
 						onPress={() => setIsPaused((prev) => !prev)}
 						action="primary"
 					>
-						{isPaused ? <Icon as={Play} size="xl" /> : <ButtonIcon as={Pause} size="xl" />}
+						{isPaused ? <GlueStackIcon as={Play} size="xl" /> : <ButtonIcon as={Pause} size="xl" />}
 					</Button>
 
 					<TouchableOpacity

@@ -29,17 +29,25 @@ export enum ExerciseDifficulty {
 	Intermediate = "Intermediate",
 	Advanced = "Advanced",
 }
+
+export interface Goals {
+	goal: string;
+	id?: string;
+	completed: boolean;
+}
 // Define the initial state
-export interface ExerciseState {
+export interface DataState {
 	exercises: Exercise[];
 	selectedExercise: Exercise | null;
 	progress: Record<number, any>;
+	goals: Goals[];
 }
 
-const initialState: ExerciseState = {
+const initialState: DataState = {
 	exercises: [],
 	selectedExercise: null,
 	progress: {},
+	goals: [],
 };
 
 const dataSlice = createSlice({
@@ -69,6 +77,21 @@ const dataSlice = createSlice({
 		clearSelectedExercise(state) {
 			state.selectedExercise = null;
 		},
+		setUserGoals(state, { payload }: PayloadAction<Goals[]>) {
+			state.goals = payload;
+		},
+		updateUserGoals(state, { payload }: PayloadAction<Goals>) {
+			const index = state.goals.findIndex((goal) => goal.id === payload.id);
+
+			if (index !== -1) {
+				state.goals[index] = payload;
+			} else {
+				state.goals.push(payload);
+			}
+		},
+		clearGoals(state) {
+			state.goals = [];
+		},
 	},
 });
 
@@ -79,6 +102,9 @@ export const {
 	setIsFavourite,
 	updateProgress,
 	clearSelectedExercise,
+	setUserGoals,
+	updateUserGoals,
+	clearGoals,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

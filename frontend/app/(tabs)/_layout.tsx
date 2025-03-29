@@ -6,26 +6,28 @@ import CreateExerciseModal from "../../components/program-components/CreateExerc
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { Theme } from "../../store/auth/authSlice";
+import { useTheme } from "@/components/ui/ThemeProvider";
 
 export default function TabsLayout() {
 	const activeColor = "#64dac4";
 	const inactiveColor = "#d3d3d3";
 
 	const [showModal, setShowModal] = useState<boolean>(false);
-
-	const theme = useSelector((state: RootState) => state.user.user.settings?.theme);
-	const themeColor = theme === Theme.Dark ? "#000000" : "ffffff";
-	const themeTextColor = theme === Theme.Dark ? "#ffffff" : "#000000";
+	const { themeBackgroundColor, themeTextColor } = useTheme();
 
 	return (
 		<View className="h-screen">
 			<Tabs
 				screenOptions={{
-					tabBarStyle: { backgroundColor: "#000000" },
+					tabBarStyle: { backgroundColor: themeBackgroundColor },
 					tabBarActiveTintColor: activeColor,
 					tabBarInactiveTintColor: inactiveColor,
 					headerShown: true,
-					headerStyle: { backgroundColor: themeColor, borderBottomColor: themeTextColor, borderBottomWidth: 1 },
+					headerStyle: {
+						backgroundColor: themeBackgroundColor,
+						borderBottomColor: themeTextColor,
+						borderBottomWidth: 1,
+					},
 					headerTintColor: themeTextColor,
 				}}
 			>

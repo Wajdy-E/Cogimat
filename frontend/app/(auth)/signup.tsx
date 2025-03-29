@@ -73,7 +73,6 @@ export default function SignUp() {
 
 			if (createdSessionId) {
 				setActive!({ session: createdSessionId });
-			} else {
 			}
 		} catch (err) {
 			// See https://clerk.com/docs/custom-flows/error-handling
@@ -223,27 +222,26 @@ export default function SignUp() {
 							onChange={(text) => setPassword(text)}
 						/>
 
-						<Button className="w-full rounded-lg" disabled={loading} onPress={signUpWithEmail} size="xl">
+						<Button className="w-full rounded-full" disabled={loading} onPress={signUpWithEmail} size="xl">
 							<ButtonText>{i18n.t("signup.form.signUp")}</ButtonText>
 						</Button>
 
-						<View className="flex-row items-center gap-2">
+						{/* <View className="flex-row items-center gap-2">
 							<Divider className="bg-slate-300 w-[30%]" />
 							<Text>{i18n.t("signup.orSignUpWith")}</Text>
 							<Divider className="bg-slate-300 w-[30%]" />
-						</View>
+						</View> */}
 
 						{Platform.OS === "ios" && (
 							<Button
 								onPress={() => onProviderSignIn("apple")}
 								variant="outline"
 								size="xl"
-								className="rounded-full w-100"
-								action="secondary"
+								className="rounded-full w-100 border-secondary-0"
 								style={{ width: "100%" }}
 							>
 								<Apple height={20} width={20} fill={themeTextColor} />
-								<ButtonText>{i18n.t("signup.appleSignUp")}</ButtonText>
+								<ButtonText className="text-typography-950">{i18n.t("login.appleSignIn")}</ButtonText>
 							</Button>
 						)}
 
@@ -251,11 +249,10 @@ export default function SignUp() {
 							onPress={() => onProviderSignIn("google")}
 							variant="outline"
 							size="xl"
-							className="rounded-full w-full"
-							action="secondary"
+							className="rounded-full w-full border-secondary-0"
 						>
 							<Google height={20} width={20} />
-							<ButtonText>{i18n.t("signup.googleSignUp")}</ButtonText>
+							<ButtonText className="text-typography-950">{i18n.t("login.googleSignIn")}</ButtonText>
 						</Button>
 						<Text>
 							{i18n.t("signup.alreadyHaveAccount")}{" "}

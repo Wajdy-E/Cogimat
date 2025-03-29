@@ -39,6 +39,7 @@ const translations = {
 			appSettings: "App Settings",
 			notifications: "Notifications",
 			darkMode: "Dark Mode",
+			emailMarketing: "Email Marketing",
 
 			help: "Help",
 			billingHelp: "Account & Billing Help",
@@ -109,6 +110,42 @@ const translations = {
 				emailRequired: "Email is required",
 				passwordShort: "Password must be at least 6 characters",
 				passwordRequired: "Password is required",
+			},
+		},
+		general: {
+			buttons: {
+				next: "Next",
+				previous: "Previous",
+				done: "Done",
+				cancel: "Cancel",
+				save: "Save",
+				submit: "Submit",
+				delete: "Delete",
+				edit: "Edit",
+			},
+		},
+		createExercise: {
+			steps: {
+				name: "Exercise details",
+				description: "Description",
+				difficulty: "Difficulty Level",
+			},
+			form: {
+				nameLabel: "Exercise Name",
+				namePlaceholder: "Enter exercise name",
+				descriptionLabel: "Description",
+				descriptionPlaceholder: "Enter description",
+				instructionsLabel: "Instructions",
+				instructionsPlaceholder: "Your text goes here...",
+				difficultyLabel: "Difficulty",
+				difficultyPlaceholder: "Difficulty (Easy, Medium, Hard)",
+			},
+		},
+		exercise: {
+			difficulty: {
+				beginner: "Beginner",
+				intermediate: "Intermediate",
+				advanced: "Advanced",
 			},
 		},
 	},

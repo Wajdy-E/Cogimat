@@ -5,7 +5,7 @@ import { UserBase } from "@/type";
 export async function POST(req: Request) {
 	try {
 		const result = await req.json();
-		const { username, email, id, firstName, lastName } = result;
+		const { email, id, firstName, lastName } = result;
 
 		if (!email || !firstName || !lastName) {
 			return NextResponse.json({ message: "Please fill in all fields" }, { status: 400 });
@@ -17,18 +17,15 @@ export async function POST(req: Request) {
 			return NextResponse.json({ message: "User already exists. Please log in." }, { status: 400 });
 		}
 
-		let user_name = username === null ? firstName + lastName : username;
-
 		const newUser = await query(
-			`INSERT INTO users (email, first_name, last_name, username, clerk_id)
-			 VALUES ($1, $2, $3, $4, $5)
+			`INSERT INTO users (email, first_name, last_name, clerk_id)
+			 VALUES ($1, $2, $3, $4)
 			 RETURNING user_id AS "id", 
 					   email AS "email", 
 					   first_name AS "firstName", 
 					   last_name AS "lastName", 
-					   username AS "username", 
 					   creation_date AS "createdAt"`,
-			[email, firstName, lastName, user_name, id]
+			[email, firstName, lastName, id]
 		);
 
 		return NextResponse.json(

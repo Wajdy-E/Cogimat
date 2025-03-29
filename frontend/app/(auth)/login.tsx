@@ -1,5 +1,5 @@
 import { GestureResponderEvent, View, Alert, SafeAreaView, Platform } from "react-native";
-import { Button, ButtonText } from "../../app/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "../../app/components/ui/button";
 import { VStack } from "../components/ui/vstack";
 import { Heading } from "../components/ui/heading";
 import { useDispatch } from "react-redux";
@@ -21,7 +21,8 @@ import { i18n } from "../../i18n";
 import Apple from "../../assets/apple.svg";
 import Google from "../../assets/google.svg";
 import { useTheme } from "@/components/ui/ThemeProvider";
-
+import { Box } from "@/components/ui/box";
+import { ArrowRight } from "lucide-react-native";
 const loginSchema = Yup.object().shape({
 	email: Yup.string().email(i18n.t("login.errors.invalidEmail")).required(i18n.t("login.errors.emailRequired")),
 	password: Yup.string().min(6, i18n.t("login.errors.passwordShort")).required(i18n.t("login.errors.passwordRequired")),
@@ -126,58 +127,55 @@ function Login() {
 				<BackButton />
 				<Heading className="text-2xl font-bold mb-6 w-[90%]">Log In</Heading>
 			</View>
-			<View className="flex-1 justify-center px-4">
-				<VStack space="md">
-					<FormInput
-						label="login.email"
-						placeholder="login.emailPlaceholder"
-						value={email}
-						invalid={!email}
-						formSize="lg"
-						inputSize="lg"
-						isRequired={true}
-						inputType="text"
-						onChange={(text) => setEmail(text)}
-					/>
+			<View className="flex-1 justify-around p-4">
+				<Box>
+					<Heading size="4xl">Welcome Back!</Heading>
+				</Box>
+				<Box>
+					<VStack space="lg">
+						<FormInput
+							label="login.email"
+							placeholder="login.emailPlaceholder"
+							value={email}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType="text"
+							onChange={(text) => setEmail(text)}
+						/>
 
-					<FormInput
-						label="login.password"
-						placeholder="login.passwordPlaceholder"
-						value={password}
-						invalid={!password}
-						formSize="lg"
-						inputSize="lg"
-						isRequired={true}
-						inputType="password"
-						onChange={(text) => setPassword(text)}
-					/>
+						<FormInput
+							label="login.password"
+							placeholder="login.passwordPlaceholder"
+							value={password}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType="password"
+							onChange={(text) => setPassword(text)}
+						/>
 
-					<Button size="lg" className="mt-4" onPress={(e) => handleSubmit(e)} disabled={loading}>
-						<ButtonText>{i18n.t("login.loginButton")}</ButtonText>
-					</Button>
+						<Button size="lg" className="rounded-full" onPress={(e) => handleSubmit(e)} disabled={loading}>
+							<ButtonText>{i18n.t("login.loginButton")}</ButtonText>
+							<ButtonIcon as={ArrowRight} />
+						</Button>
 
-					<Button variant="link" size="sm" className="mt-2">
-						<ButtonText>{i18n.t("login.forgotPassword")}</ButtonText>
-					</Button>
-
-					<Center className="flex gap-4">
-						<View className="flex-row items-center gap-2">
-							<Divider className="bg-slate-300 w-[30%]" />
-							<Text>{i18n.t("login.orSignInWith")}</Text>
-							<Divider className="bg-slate-300 w-[30%]" />
-						</View>
+						{/* <View className="flex-row items-center gap-2">
+								<Divider className="bg-slate-300 w-[30%]" />
+								<Text>{i18n.t("login.orSignInWith")}</Text>
+								<Divider className="bg-slate-300 w-[30%]" />
+								</View> */}
 
 						{Platform.OS === "ios" && (
 							<Button
 								onPress={() => onProviderSignIn("apple")}
 								variant="outline"
 								size="xl"
-								className="rounded-full w-100"
-								action="secondary"
+								className="rounded-full w-100 border-secondary-0"
 								style={{ width: "100%" }}
 							>
 								<Apple height={20} width={20} fill={themeTextColor} />
-								<ButtonText>{i18n.t("login.appleSignIn")}</ButtonText>
+								<ButtonText className="text-typography-950">{i18n.t("login.appleSignIn")}</ButtonText>
 							</Button>
 						)}
 
@@ -185,21 +183,25 @@ function Login() {
 							onPress={() => onProviderSignIn("google")}
 							variant="outline"
 							size="xl"
-							className="rounded-full w-full"
-							action="secondary"
+							className="rounded-full w-full border-secondary-0"
 						>
 							<Google height={20} width={20} />
-							<ButtonText>{i18n.t("login.googleSignIn")}</ButtonText>
+							<ButtonText className="text-typography-950">{i18n.t("login.googleSignIn")}</ButtonText>
 						</Button>
 
-						<Text>
-							{i18n.t("login.noAccount")}{" "}
-							<Link href={"/signup"} className="underline text-primary-500">
-								{i18n.t("login.signUp")}
+						<Center className="flex gap-4">
+							<Text>
+								{i18n.t("login.noAccount")}{" "}
+								<Link href={"/signup"} className="underline text-primary-500">
+									{i18n.t("login.signUp")}
+								</Link>
+							</Text>
+							<Link href="/signup" className="underline text-primary-500">
+								{i18n.t("login.forgotPassword")}
 							</Link>
-						</Text>
-					</Center>
-				</VStack>
+						</Center>
+					</VStack>
+				</Box>
 			</View>
 		</SafeAreaView>
 	);

@@ -10,11 +10,12 @@ import {
 	SelectDragIndicatorWrapper,
 	SelectItem,
 } from "@/components/ui/select";
-import { ChevronDownIcon } from "@/components/ui/icon";
 import { ISelectProps, ISelectItemProps } from "@gluestack-ui/select/lib/types";
-import { Text } from "@/components/ui/text";
-import { Box } from "@/components/ui/box";
-
+import { i18n } from "../i18n";
+import { FormControl, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
+import React from "react";
+import { ChevronDown } from "lucide-react-native";
+import { useTheme } from "@/components/ui/ThemeProvider";
 export interface FormSelectOptions {
 	label: string;
 	value: string;
@@ -23,23 +24,31 @@ export interface FormSelectOptions {
 interface FormSelectProps {
 	options: FormSelectOptions[];
 	variant: "outline" | "rounded" | "underlined" | undefined;
-	size: "sm" | "md" | "lg" | "xl" | undefined;
+	size: "sm" | "md" | "lg" | undefined;
 	title: string;
 }
 
 type FormSelectTypes = ISelectProps & ISelectItemProps & FormSelectProps;
 function FormSelect(props: FormSelectTypes) {
+	const { themeTextColor } = useTheme();
 	return (
-		<Box className="flex-row justify-between items-center">
-			<Text size="lg">{props.title}</Text>
+		<FormControl isRequired={props.isRequired} size={props.size}>
+			<FormControlLabel>
+				<FormControlLabelText>{i18n.t(props.title)}</FormControlLabelText>
+			</FormControlLabel>
 			<Select
 				selectedValue={props.selectedValue}
 				defaultValue={props.selectedValue ?? ""}
 				onValueChange={props.onValueChange}
 			>
-				<SelectTrigger variant={props.variant} size={props.size}>
+				<SelectTrigger
+					variant={props.variant}
+					size={props.size}
+					className="justify-between"
+					style={{ paddingRight: 5 }}
+				>
 					<SelectInput placeholder={props.placeholder} />
-					<SelectIcon className="mr-3" as={ChevronDownIcon} />
+					<SelectIcon as={ChevronDown} stroke={themeTextColor} />
 				</SelectTrigger>
 				<SelectPortal>
 					<SelectBackdrop />
@@ -48,12 +57,17 @@ function FormSelect(props: FormSelectTypes) {
 							<SelectDragIndicator />
 						</SelectDragIndicatorWrapper>
 						{props.options.map((option) => (
-							<SelectItem key={option.value} label={option.label} value={option.value} isDisabled={option.isDisabled} />
+							<SelectItem
+								key={option.value}
+								label={i18n.t(option.label)}
+								value={option.value}
+								isDisabled={option.isDisabled}
+							/>
 						))}
 					</SelectContent>
 				</SelectPortal>
 			</Select>
-		</Box>
+		</FormControl>
 	);
 }
 

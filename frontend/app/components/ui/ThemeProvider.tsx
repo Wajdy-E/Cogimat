@@ -10,6 +10,8 @@ interface ThemeContextType {
 	toggleTheme: () => void;
 	themeTextColor: string;
 	themeBackgroundColor: string;
+	themePrimaryColor: string;
+	themeSecondaryColor: string;
 }
 
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -35,9 +37,13 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const themeTextColor = theme === "light" ? "#000000" : "#ffffff";
 	const themeBackgroundColor = theme === "light" ? "#ffffff" : "#000000";
+	const themePrimaryColor = "#57CEB8";
+	const themeSecondaryColor = "#3F4040";
 
 	return (
-		<ThemeContext.Provider value={{ theme, toggleTheme, themeTextColor, themeBackgroundColor }}>
+		<ThemeContext.Provider
+			value={{ theme, toggleTheme, themeTextColor, themeBackgroundColor, themePrimaryColor, themeSecondaryColor }}
+		>
 			{children}
 		</ThemeContext.Provider>
 	);

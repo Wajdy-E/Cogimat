@@ -1,17 +1,20 @@
-import { useState } from "react";
 import { ColorOption } from "../../data/program/Program";
 import { Button, ButtonIcon } from "../../app/components/ui/button";
 import { CheckIcon } from "@/components/ui/icon";
-function Color(props: ColorOption) {
-	const [selected, setSelected] = useState(false);
 
+type ColorProps = ColorOption & {
+	selected: boolean;
+	onPress: () => void;
+};
+
+function Color({ hexcode, selected, onPress }: ColorProps) {
 	return (
 		<Button
-			onPress={() => setSelected(!selected)}
+			onPress={onPress}
 			className="h-10 w-10 rounded-full flex items-center justify-center"
-			style={{ backgroundColor: props.hexcode }}
+			style={{ backgroundColor: hexcode }}
 		>
-			<ButtonIcon as={selected ? CheckIcon : undefined} />
+			{selected && <ButtonIcon as={CheckIcon} />}
 		</Button>
 	);
 }

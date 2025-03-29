@@ -20,7 +20,6 @@ export async function GET(req: Request) {
 			exercise.isFavourited = favoriteIds.some((fav) => fav.exercise_id === exercise.id);
 		});
 
-		console.log(exercises);
 		return NextResponse.json({ exercises });
 	} catch (error) {
 		console.error("Get Exercises Error:", error);

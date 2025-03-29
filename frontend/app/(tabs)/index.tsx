@@ -1,5 +1,5 @@
 import { ScrollView, View } from "react-native";
-import Tab from "../../components/Tab";
+import Tab, { TabItem } from "../../components/Tab";
 import { Brain, FileChartColumn, UsersRound, ClipboardPen } from "lucide-react-native";
 import { useUser } from "@clerk/clerk-expo";
 import ExerciseCard from "../../components/ExerciseCard";
@@ -14,15 +14,17 @@ import { Center } from "@/components/ui/center";
 import { VStack } from "@/components/ui/vstack";
 import BlogCard from "../../components/CardWithImage";
 import { i18n } from "../../i18n";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Box } from "@/components/ui/box";
 
 function Home() {
-	const user = useUser();
+	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
 
-	const tabs = [
+	const tabs: TabItem[] = [
 		{
 			title: i18n.t("home.tabs.allExercises"),
-			icon: <FileChartColumn strokeWidth={2} size={34} stroke="#64DAC4" fill="transparent" />,
+			iconName: "FileChartColumn",
 			content: (
 				<View>
 					<NavigateTo
@@ -53,17 +55,17 @@ function Home() {
 		},
 		{
 			title: i18n.t("home.tabs.interactiveExercises"),
-			icon: <Brain strokeWidth={2} size={34} stroke="#64DAC4" fill="transparent" strokeOpacity={0.7} />,
+			iconName: "Brain",
 			content: <Text>{i18n.t("home.tabs.interactiveExercises")} Content</Text>,
 		},
 		{
 			title: i18n.t("home.tabs.myCustomExercises"),
-			icon: <ClipboardPen strokeWidth={2} size={34} stroke="#64DAC4" fill="transparent" />,
+			iconName: "ClipboardPen",
 			content: <Text>{i18n.t("home.tabs.myCustomExercises")} Content</Text>,
 		},
 		{
 			title: i18n.t("home.tabs.community"),
-			icon: <UsersRound strokeWidth={2} size={34} stroke="#64DAC4" fill="transparent" />,
+			iconName: "UsersRound",
 			content: <Text>{i18n.t("home.tabs.community")} Content</Text>,
 		},
 	];
@@ -71,14 +73,19 @@ function Home() {
 	return (
 		<ScrollView className="bg-background-700">
 			<SafeAreaView>
-				<View className="flex items-center">
-					<Heading className="text-primary-500 w-[90%]" size="2xl">
-						{i18n.t("home.greeting", { name: user.user?.firstName })}
-					</Heading>
-					<Text className="w-[90%]">{i18n.t("home.subtitle")}</Text>
+				<View className="flex-row items-center gap-3 w-[90%] self-center">
+					<Avatar size="xl">
+						<AvatarImage source={{ uri: user?.imageUrl }} />
+					</Avatar>
+					<View>
+						<Heading className="text-primary-500" size="2xl">
+							{i18n.t("home.greeting", { name: user?.firstName })}
+						</Heading>
+						<Text className="w-[90%]">{i18n.t("home.subtitle")}</Text>
+					</View>
 				</View>
 			</SafeAreaView>
-			<Tab tabs={tabs} tabVariant="link" iconTop={false} />
+			<Tab tabs={tabs} tabVariant="link" iconTop buttonIconHeight={25} />
 
 			<Center className="bg-primary-700 py-7 mt-6">
 				<VStack space="md">
@@ -98,40 +105,42 @@ function Home() {
 					/>
 				</VStack>
 			</Center>
-
-			<ScrollView
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				className="overflow-visible py-6"
-				contentOffset={{ x: 185, y: 0 }}
-			>
-				<HStack space="md">
-					<BlogCard
-						imageUri="https://via.placeholder.com/150"
-						imageAlt="Article 1"
-						date="March 15, 2025"
-						title="Article 1"
-						linkUrl="#"
-						cardClassName="w-[250px]"
-					/>
-					<BlogCard
-						imageUri="https://via.placeholder.com/150"
-						imageAlt="Article 2"
-						date="March 14, 2025"
-						title="Article 2"
-						linkUrl="#"
-						cardClassName="w-[250px]"
-					/>
-					<BlogCard
-						imageUri="https://via.placeholder.com/150"
-						imageAlt="Article 3"
-						date="March 13, 2025"
-						title="Article 3"
-						linkUrl="#"
-						cardClassName="w-[250px]"
-					/>
-				</HStack>
-			</ScrollView>
+			<Box className=" w-[90%] self-center">
+				<NavigateTo heading="Articles & Tips" text={i18n.t("home.exercisePrograms.seeAll")} classes="justify-between" />
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					className="overflow-visible"
+					contentOffset={{ x: 185, y: 0 }}
+				>
+					<HStack space="md">
+						<BlogCard
+							imageUri="https://via.placeholder.com/150"
+							imageAlt="Article 1"
+							date="March 15, 2025"
+							title="Article 1"
+							linkUrl="#"
+							cardClassName="w-[250px]"
+						/>
+						<BlogCard
+							imageUri="https://via.placeholder.com/150"
+							imageAlt="Article 2"
+							date="March 14, 2025"
+							title="Article 2"
+							linkUrl="#"
+							cardClassName="w-[250px]"
+						/>
+						<BlogCard
+							imageUri="https://via.placeholder.com/150"
+							imageAlt="Article 3"
+							date="March 13, 2025"
+							title="Article 3"
+							linkUrl="#"
+							cardClassName="w-[250px]"
+						/>
+					</HStack>
+				</ScrollView>
+			</Box>
 		</ScrollView>
 	);
 }

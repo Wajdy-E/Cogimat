@@ -9,9 +9,10 @@ export interface UserBase {
 	firstName: string | null;
 	lastName: string | null;
 	email: string;
-	username: string | null;
+	username?: string | null;
 	createdAt?: Date | null;
 	id: string;
+	profileUri?: string | null;
 }
 
 export enum Theme {
