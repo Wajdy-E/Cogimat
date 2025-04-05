@@ -4,9 +4,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { shallowEqual } from "react-redux";
 import WebView from "react-native-webview";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { ArrowRight, CirclePlay } from "lucide-react-native";
+import { ArrowRight, CirclePlay, Edit } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { Flame, Clock, Brain } from "lucide-react-native";
@@ -20,6 +20,7 @@ import WheelColorPicker from "react-native-wheel-color-picker";
 import ModalComponent from "../../components/Modal";
 import { Icon } from "@/components/ui/icon";
 import FormInput from "../../components/FormInput";
+import { i18n } from "../../i18n";
 
 function ExerciseProgram() {
 	const params = useLocalSearchParams();
@@ -35,10 +36,29 @@ function ExerciseProgram() {
 	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
 	const [onScreenColor, setOnScreenColor] = useState("#000000");
 	const [offScreenColor, setOffScreenColor] = useState("#FFFFFF");
+	const [isEditing, setIsEditing] = useState(false);
+	const [durationSettings, setDurationSettings] = useState({
+		offScreenTime: "0.5",
+		onScreenTime: "0.5",
+		exerciseTime: exercise.timeToComplete || "60",
+	});
+
+	const handleOffScreenTimeChange = (value: string) => {
+		setDurationSettings((prev) => ({ ...prev, offScreenTime: value }));
+	};
+
+	const handleOnScreenTimeChange = (value: string) => {
+		setDurationSettings((prev) => ({ ...prev, onScreenTime: value }));
+	};
+
+	const handleExerciseTimeChange = (value: string) => {
+		setDurationSettings((prev) => ({ ...prev, exerciseTime: value }));
+	};
 
 	function onScreenColorConfirm() {}
 
 	function offScreenColorConfirm() {}
+
 	useEffect(() => {
 		Animated.loop(
 			Animated.sequence([
@@ -55,10 +75,12 @@ function ExerciseProgram() {
 			])
 		).start();
 	}, [floatAnim]);
+
 	const runFirst = `
 	window.isNativeApp = true;
 	true;
-  `;
+	`;
+
 	return (
 		<View className="relative bg-background-700">
 			<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
@@ -75,6 +97,7 @@ function ExerciseProgram() {
 						}}
 					/>
 				</View>
+
 				<View className="flex items-center py-5">
 					<VStack className="w-[90%]" space="md">
 						<View className="flex-row justify-start gap-4">
@@ -100,38 +123,99 @@ function ExerciseProgram() {
 								})()}
 							</Badge>
 						</View>
+
 						<Heading>{exercise.name}</Heading>
 						<Text>{exercise.instructions}</Text>
-						<Heading>Customization</Heading>
+
+						<Heading>{i18n.t("exercise.sections.customization")}</Heading>
 						<Box className="bg-secondary-500 p-5 rounded-2xl">
 							<VStack space="lg">
-								<Heading size="md">Duration Settings </Heading>
-								<Divider className="bg-slate-400" />
-								<View className="flex-row justify-between">
-									<Heading size="sm">Off screen time: </Heading>
-									<FormInput inputSize="sm" formSize="sm" inputType="text" onChange={() => {}} />
+								<View>
+									<View className="flex-row justify-between items-center">
+										<Heading size="md" className="text-primary-500">
+											{i18n.t("exercise.sections.durationSettings")}
+										</Heading>
+										<Button variant="link" onPress={() => setIsEditing(!isEditing)}>
+											<ButtonIcon as={Edit} size="md" />
+										</Button>
+									</View>
+									<Divider className="bg-slate-400" />
 								</View>
-								<Heading size="sm">On screen time: </Heading>
-								<Heading size="sm">Exercise time: </Heading>
+
+								<FormInput
+									inputSize="sm"
+									formSize="sm"
+									inputType="text"
+									label="exercise.form.offScreenTime"
+									displayAsRow
+									onChange={handleOffScreenTimeChange}
+									defaultValue={durationSettings.offScreenTime}
+									value={durationSettings.offScreenTime}
+									isDisabled={!isEditing}
+									suffix="Seconds"
+								/>
+
+								<FormInput
+									inputSize="sm"
+									formSize="sm"
+									inputType="text"
+									onChange={handleOnScreenTimeChange}
+									defaultValue={durationSettings.onScreenTime}
+									label="exercise.form.onScreenTime"
+									value={durationSettings.onScreenTime}
+									displayAsRow
+									isDisabled={!isEditing}
+									suffix="Seconds"
+								/>
+
+								<FormInput
+									inputSize="sm"
+									formSize="sm"
+									inputType="text"
+									label="exercise.form.exerciseTime"
+									displayAsRow
+									onChange={handleExerciseTimeChange}
+									defaultValue={durationSettings.exerciseTime}
+									value={durationSettings.exerciseTime}
+									isDisabled={!isEditing}
+									suffix="Seconds"
+								/>
+
+								{isEditing && (
+									<ButtonGroup className="flex-row self-end">
+										<Button variant="outline" onPress={() => setIsEditing(false)} action="secondary" size="md">
+											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
+										</Button>
+										<Button onPress={() => setIsEditing(!isEditing)} action="primary" size="md">
+											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
+										</Button>
+									</ButtonGroup>
+								)}
 							</VStack>
 						</Box>
+
 						<Box className="bg-secondary-500 p-5 rounded-2xl">
 							<VStack space="lg">
-								<Heading size="md">Color Settings </Heading>
-								<Divider className="bg-slate-400" />
+								<View>
+									<Heading size="md" className="text-primary-500">
+										{i18n.t("exercise.sections.colorSettings")}
+									</Heading>
+									<Divider className="bg-slate-400" />
+								</View>
 								<View className="flex-row justify-between">
-									<Heading size="sm">Off screen color: </Heading>
+									<Heading size="sm">{i18n.t("exercise.form.offScreenColor")}</Heading>
 									<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
 										<Icon as={ArrowRight} size="md" />
 									</Button>
 								</View>
 								<View className="flex-row justify-between">
-									<Heading size="sm">On screen color: </Heading>
+									<Heading size="sm">{i18n.t("exercise.form.onScreenColor")}</Heading>
 									<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
 										<Icon as={ArrowRight} size="md" />
 									</Button>
 								</View>
 							</VStack>
+
 							<ModalComponent
 								isOpen={showOffScreenColorPicker}
 								onClose={() => setShowOffScreenColorPicker(false)}
@@ -139,6 +223,7 @@ function ExerciseProgram() {
 							>
 								<WheelColorPicker onColorChangeComplete={(color: string) => setOffScreenColor(color)} />
 							</ModalComponent>
+
 							<ModalComponent
 								isOpen={showOnScreenColorPicker}
 								onClose={() => setShowOnScreenColorPicker(false)}
@@ -150,6 +235,7 @@ function ExerciseProgram() {
 					</VStack>
 				</View>
 			</ScrollView>
+
 			<Animated.View
 				style={{
 					position: "absolute",
@@ -165,7 +251,7 @@ function ExerciseProgram() {
 					action="primary"
 					size="xl"
 				>
-					<ButtonText>Start Now</ButtonText>
+					<ButtonText>{i18n.t("exercise.form.startNow")}</ButtonText>
 					<ButtonIcon as={CirclePlay} />
 				</Button>
 			</Animated.View>

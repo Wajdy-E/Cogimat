@@ -4,13 +4,14 @@
 		"slug": "Cogimat",
 		"scheme": "cogimat",
 		"version": "1.0.0",
-		"icon": "./assets/cogimatlogo.png",
+		"icon": "./assets/icon.png",
 		"orientation": "portrait",
 		"userInterfaceStyle": "light",
 		"newArchEnabled": true,
 		"splash": {
 			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
+			"backgroundColor": "#042932",
+			"image": "./assets/splash.png"
 		},
 		"ios": {
 			"usesAppleSignIn": true,
@@ -27,7 +28,11 @@
 		},
 		"android": {
 			"package": "com.cogimat.cogipro",
-			"permissions": ["INTERNET"]
+			"permissions": ["INTERNET"],
+			"adaptiveIcon": {
+				"foreground-image": "./assets/icon.png",
+				"backgroundColor": "#042932"
+			}
 		},
 		"web": {
 			"bundler": "metro"
@@ -35,6 +40,12 @@
 		"plugins": [
 			"expo-router",
 			["expo-apple-authentication"],
+			[
+				"expo-image-picker",
+				{
+					"photosPermission": "This application requires access to your photos to set profile pictures and exercise thumbnails."
+				}
+			],
 			["expo-localization"],
 			"expo-localization",
 			"expo-secure-store",
@@ -52,7 +63,8 @@
 						"modular_headers": true
 					}
 				}
-			]
+			],
+			"expo-video"
 		],
 		"extra": {
 			"router": {

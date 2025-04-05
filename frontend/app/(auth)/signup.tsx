@@ -21,6 +21,8 @@ import { Text } from "@/components/ui/text";
 import Apple from "../../assets/apple.svg";
 import Google from "../../assets/google.svg";
 import { useTheme } from "@/components/ui/ThemeProvider";
+import { InputIcon } from "@/components/ui/input";
+import { Eye, EyeClosed } from "lucide-react-native";
 export const useWarmUpBrowser = () => {
 	useEffect(() => {
 		void WebBrowser.warmUpAsync();
@@ -40,6 +42,7 @@ export default function SignUp() {
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
@@ -148,23 +151,20 @@ export default function SignUp() {
 					<Text className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("signup.verifyEmailTitle")}</Text>
 				</View>
 				<View className="w-screen flex-1 justify-center items-center">
-					<VStack space="md" className="w-[90%]">
-						<Center className="flex gap-5">
-							<FormInput
-								label={"signup.verifyCode"}
-								placeholder={"signup.verifyCodePlaceholder"}
-								value={code}
-								invalid={!code}
-								formSize="lg"
-								inputSize="lg"
-								isRequired={true}
-								inputType="text"
-								onChange={(text) => setCode(text)}
-							/>
-							<Button className="w-full rounded-lg" disabled={loading} onPress={verifyEmailCode} size="xl">
-								<ButtonText>{i18n.t("signup.verify")}</ButtonText>
-							</Button>
-						</Center>
+					<VStack space="md" className="w-[90%] self-center">
+						<FormInput
+							label={"signup.verifyCode"}
+							placeholder={"signup.verifyCodePlaceholder"}
+							value={code}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType="text"
+							onChange={(text) => setCode(text)}
+						/>
+						<Button className="w-full rounded-lg" disabled={loading} onPress={verifyEmailCode} size="xl">
+							<ButtonText>{i18n.t("signup.verify")}</ButtonText>
+						</Button>
 					</VStack>
 				</View>
 			</Center>
@@ -218,19 +218,15 @@ export default function SignUp() {
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
-							inputType="password"
+							inputType={showPassword ? "text" : "password"}
 							onChange={(text) => setPassword(text)}
+							inputIcon={<InputIcon as={showPassword ? Eye : EyeClosed} />}
+							onIconClick={() => setShowPassword((prev) => !prev)}
 						/>
 
 						<Button className="w-full rounded-full" disabled={loading} onPress={signUpWithEmail} size="xl">
 							<ButtonText>{i18n.t("signup.form.signUp")}</ButtonText>
 						</Button>
-
-						{/* <View className="flex-row items-center gap-2">
-							<Divider className="bg-slate-300 w-[30%]" />
-							<Text>{i18n.t("signup.orSignUpWith")}</Text>
-							<Divider className="bg-slate-300 w-[30%]" />
-						</View> */}
 
 						{Platform.OS === "ios" && (
 							<Button

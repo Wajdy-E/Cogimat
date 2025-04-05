@@ -113,12 +113,7 @@ function Progress() {
 				<AnimatedTab options={["Tab A", "Tab B"]} content={tabs} />
 			</View>
 
-			<ModalComponent
-				onClose={() => setShowAddGoalModal(false)}
-				isOpen={showAddGoalModal}
-				buttonKey="Save"
-				onConfirm={handleAddGoal}
-			>
+			<ModalComponent onClose={() => setShowAddGoalModal(false)} isOpen={showAddGoalModal} onConfirm={handleAddGoal}>
 				<FormInput
 					formSize="md"
 					label="Set a goal"
@@ -136,7 +131,6 @@ function Progress() {
 				onConfirm={handleDeleteGoal}
 				headingKey="Are you sure you want delete your account?"
 				buttonKey="Sign Out"
-				cancelKey="Cancel"
 			/>
 		</ScrollView>
 	);

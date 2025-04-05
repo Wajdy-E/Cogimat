@@ -23,9 +23,14 @@ import Shapes from "./Shapes";
 import Numbers from "./Numbers";
 import Letters from "./Letters";
 import { i18n } from "../../i18n";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import AnimatedSwitch from "../AnimatedSwitch";
-import { Volume2, Eye } from "lucide-react-native";
+import { Volume2, Eye, ArrowRight } from "lucide-react-native";
+import ModalComponent from "../Modal";
+import WheelColorPicker from "react-native-wheel-color-picker";
+import ColorPickerModal from "../exercises/ColorPickerModal";
+import CustomImagePicker from "../ImagePicker";
+import CustomVideoPicker from "../CustomVideoPicker";
 
 interface CreateExerciseModalProps {
 	isOpen: boolean;
@@ -49,6 +54,9 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		letters: string[];
 		numbers: number[];
 		colors: string[];
+		focus?: string[];
+		imageUri?: string;
+		videoUri?: string;
 	}>({
 		name: "",
 		description: "",
@@ -58,6 +66,15 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		letters: [],
 		numbers: [],
 		colors: [],
+		focus: [],
+		imageUri: undefined,
+		videoUri: undefined,
+	});
+
+	const [durationSettings, setDurationSettings] = useState({
+		offScreenTime: "0.5",
+		onScreenTime: "0.5",
+		exerciseTime: "60",
 	});
 
 	const options: FormSelectOptions[] = [
@@ -66,10 +83,36 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		{ label: "exercise.difficulty.advanced", value: ExerciseDifficulty.Advanced },
 	];
 
+	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
+	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
+	const [onScreenColor, setOnScreenColor] = useState("#000000");
+	const [offScreenColor, setOffScreenColor] = useState("#FFFFFF");
+
+	const handleOffScreenTimeChange = (value: string) => {
+		setDurationSettings((prev) => ({ ...prev, offScreenTime: value }));
+	};
+
+	const handleOnScreenTimeChange = (value: string) => {
+		setDurationSettings((prev) => ({ ...prev, onScreenTime: value }));
+	};
+
+	const handleExerciseTimeChange = (value: string) => {
+		setDurationSettings((prev) => ({ ...prev, exerciseTime: value }));
+	};
+
+	function onScreenColorConfirm() {}
+
+	function offScreenColorConfirm() {}
+
 	const handleNext = () => setStep((prev) => (prev === Step.DIFFICULTY ? prev : ((prev + 1) as Step)));
 	const handleBack = () => setStep((prev) => (prev === Step.NAME ? prev : ((prev - 1) as Step)));
-	const handleChange = (name: keyof typeof formData, value: string) =>
-		setFormData((prev) => ({ ...prev, [name]: value }));
+	const handleChange = (name: keyof typeof formData, value: string) => {
+		if (name === "focus") {
+			setFormData((prev) => ({ ...prev, [name]: value.split(",") }));
+		} else {
+			setFormData((prev) => ({ ...prev, [name]: value }));
+		}
+	};
 	const handleSubmit = () => {
 		console.log("Submitted Data:", formData);
 		props.onClose();
@@ -78,25 +121,24 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	return (
 		<Drawer isOpen={props.isOpen} onClose={props.onClose} size="lg" anchor="bottom">
 			<DrawerBackdrop />
-			<DrawerContent className="bg-background-0 rounded-t-3xl overflow-hidden">
-				<VStack space="lg">
-					<DrawerHeader>
-						<View className="relative w-full">
-							<Heading size="xl" className="text-center">
-								{step === Step.NAME
-									? i18n.t("createExercise.steps.name")
-									: step === Step.DESCRIPTION
-										? i18n.t("createExercise.steps.description")
-										: i18n.t("createExercise.steps.difficulty")}
-							</Heading>
-							<View className="absolute right-0 top-0">
-								<DrawerCloseButton onPress={props.onClose}>
-									<Icon as={CloseIcon} size="md" />
-								</DrawerCloseButton>
-							</View>
+			<DrawerContent className="bg-background-0 rounded-t-3xl flex-1">
+				<DrawerHeader>
+					<View className="relative w-full">
+						<Heading size="xl" className="text-center">
+							{step === Step.NAME
+								? i18n.t("createExercise.steps.name")
+								: step === Step.DESCRIPTION
+									? i18n.t("createExercise.steps.description")
+									: i18n.t("createExercise.steps.difficulty")}
+						</Heading>
+						<View className="absolute right-0 top-0">
+							<DrawerCloseButton onPress={props.onClose}>
+								<Icon as={CloseIcon} size="md" />
+							</DrawerCloseButton>
 						</View>
-					</DrawerHeader>
-
+					</View>
+				</DrawerHeader>
+				<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
 					<DrawerBody>
 						{step === Step.NAME && (
 							<VStack space="xl">
@@ -136,6 +178,18 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 									</Textarea>
 								</FormControl>
 
+								<FormInput
+									placeholder="createExercise.form.focusPlaceholder"
+									value={formData.description}
+									label="createExercise.form.focusLabel"
+									inputSize="md"
+									onChange={(text) => handleChange("focus", text)}
+									inputType="text"
+									formSize="lg"
+									invalid={false}
+									formHelperKey="createExercise.form.focusHelper"
+								/>
+
 								<FormSelect
 									size="lg"
 									label="createExercise.form.difficultyLabel"
@@ -145,13 +199,30 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 									options={options}
 									title="createExercise.form.difficultyLabel"
 									isRequired={true}
-									selectedValue="beginner"
+									selectedValue="Beginner"
+								/>
+
+								<CustomImagePicker
+									buttonText="Upload Thumbnail"
+									onImagePicked={(file) => {
+										setFormData((prev) => ({ ...prev, imageUri: file.uri }));
+									}}
+									aspectX={3}
+									aspectY={2}
+								/>
+
+								<CustomVideoPicker
+									onVideoPicked={(file) => setFormData((prev) => ({ ...prev, videoUri: file.uri }))}
+									buttonText="Upload video tutorial"
 								/>
 							</VStack>
 						)}
 
 						{step === Step.DESCRIPTION && (
 							<VStack space="4xl">
+								<Heading size="lg" className="text-primary-500">
+									Exercise Parameters
+								</Heading>
 								<View className="flex-row justify-between items-center">
 									<Colors onChange={(selectedColors) => setFormData((prev) => ({ ...prev, colors: selectedColors }))} />
 									<AnimatedSwitch
@@ -194,6 +265,75 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 										offIcon={<ButtonIcon as={Eye} size={"xxl" as any} stroke="black" />}
 									/>
 								</View>
+
+								<Heading size="lg" className="text-primary-500">
+									Timing Settings
+								</Heading>
+								<FormInput
+									inputSize="sm"
+									formSize="sm"
+									inputType="text"
+									label="exercise.form.offScreenTime"
+									displayAsRow
+									onChange={handleOffScreenTimeChange}
+									defaultValue={durationSettings.offScreenTime}
+									value={durationSettings.offScreenTime}
+									suffix="Seconds"
+								/>
+
+								<FormInput
+									inputSize="sm"
+									formSize="sm"
+									inputType="text"
+									onChange={handleOnScreenTimeChange}
+									defaultValue={durationSettings.onScreenTime}
+									label="exercise.form.onScreenTime"
+									value={durationSettings.onScreenTime}
+									displayAsRow
+									suffix="Seconds"
+								/>
+
+								<FormInput
+									inputSize="sm"
+									formSize="sm"
+									inputType="text"
+									label="exercise.form.exerciseTime"
+									displayAsRow
+									onChange={handleExerciseTimeChange}
+									defaultValue={durationSettings.exerciseTime}
+									value={durationSettings.exerciseTime}
+									suffix="Seconds"
+								/>
+
+								<Heading size="md" className="text-primary-500">
+									{i18n.t("exercise.sections.colorSettings")}
+								</Heading>
+								<View className="flex-row justify-between">
+									<Heading size="sm">{i18n.t("exercise.form.offScreenColor")}</Heading>
+									<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
+										<Icon as={ArrowRight} size="md" />
+									</Button>
+								</View>
+								<View className="flex-row justify-between">
+									<Heading size="sm">{i18n.t("exercise.form.onScreenColor")}</Heading>
+									<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
+										<Icon as={ArrowRight} size="md" />
+									</Button>
+								</View>
+
+								<ColorPickerModal
+									isOpen={showOffScreenColorPicker}
+									onClose={() => setShowOffScreenColorPicker(false)}
+									onConfirm={offScreenColorConfirm}
+									onColorChange={(color: string) => setOffScreenColor(color)}
+								/>
+
+								<ColorPickerModal
+									isOpen={showOnScreenColorPicker}
+									onClose={() => setShowOnScreenColorPicker(false)}
+									onConfirm={onScreenColorConfirm}
+									onColorChange={(color: string) => setOnScreenColor(color)}
+								/>
 							</VStack>
 						)}
 
@@ -207,24 +347,23 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 							</Input>
 						)}
 					</DrawerBody>
-
-					<DrawerFooter className="flex-row gap-3">
-						{step !== Step.NAME && (
-							<Button variant="outline" onPress={handleBack}>
-								<ButtonText>{i18n.t("general.buttons.previous")}</ButtonText>
-							</Button>
-						)}
-						{step !== Step.DIFFICULTY ? (
-							<Button onPress={handleNext}>
-								<ButtonText>{i18n.t("general.buttons.next")}</ButtonText>
-							</Button>
-						) : (
-							<Button onPress={handleSubmit}>
-								<ButtonText>{i18n.t("general.buttons.submit")}</ButtonText>
-							</Button>
-						)}
-					</DrawerFooter>
-				</VStack>
+				</ScrollView>
+				<DrawerFooter className="flex-row justify-end items-center gap-3">
+					{step !== Step.NAME && (
+						<Button variant="outline" onPress={handleBack}>
+							<ButtonText>{i18n.t("general.buttons.previous")}</ButtonText>
+						</Button>
+					)}
+					{step !== Step.DIFFICULTY ? (
+						<Button onPress={handleNext}>
+							<ButtonText>{i18n.t("general.buttons.next")}</ButtonText>
+						</Button>
+					) : (
+						<Button onPress={handleSubmit}>
+							<ButtonText>{i18n.t("general.buttons.submit")}</ButtonText>
+						</Button>
+					)}
+				</DrawerFooter>
 			</DrawerContent>
 		</Drawer>
 	);

@@ -15,6 +15,33 @@ export interface Exercise {
 	imageFileName: string;
 	isFavourited: boolean;
 	focus: string;
+	customizableOptions?: CustomizableExerciseOptions;
+}
+
+export interface CustomizableExerciseOptions {
+	parameters: ExerciseParameters;
+	offScreenTime: number;
+	onScreenTime: number;
+	excerciseTime: number;
+	offScreenColor: string;
+	onScreenColor: string;
+	breakTime: number;
+	repetitions: number;
+}
+
+export interface CustomExercise {
+	id: number;
+	name: string;
+	type: string;
+	difficulty: ExerciseDifficulty;
+	description: string;
+	instructions: string;
+	parameters: ExerciseParameters;
+	videoUrl?: string;
+	imageFileName?: string;
+	isFavourited?: boolean;
+	focus?: string[];
+	customizableOptions?: CustomizableExerciseOptions;
 }
 
 export interface ExerciseParameters {
@@ -35,7 +62,7 @@ export interface Goals {
 	id?: string;
 	completed: boolean;
 }
-// Define the initial state
+
 export interface DataState {
 	exercises: Exercise[];
 	selectedExercise: Exercise | null;

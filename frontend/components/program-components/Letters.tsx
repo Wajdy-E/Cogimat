@@ -31,7 +31,7 @@ function Letters({ onChange }: LettersProps) {
 					>
 						<ButtonText
 							className={`h-10 w-10 text-center text-4xl ${
-								selectedLetters.includes(letter) ? "text-primary-500" : "text-white"
+								selectedLetters.includes(letter) ? "text-primary-500" : "text-typography-950"
 							}`}
 						>
 							{letter}

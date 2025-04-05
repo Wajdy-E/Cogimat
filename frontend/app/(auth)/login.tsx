@@ -22,7 +22,8 @@ import Apple from "../../assets/apple.svg";
 import Google from "../../assets/google.svg";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { Box } from "@/components/ui/box";
-import { ArrowRight } from "lucide-react-native";
+import { ArrowRight, Eye, EyeClosed } from "lucide-react-native";
+import { InputIcon } from "@/components/ui/input";
 const loginSchema = Yup.object().shape({
 	email: Yup.string().email(i18n.t("login.errors.invalidEmail")).required(i18n.t("login.errors.emailRequired")),
 	password: Yup.string().min(6, i18n.t("login.errors.passwordShort")).required(i18n.t("login.errors.passwordRequired")),
@@ -41,6 +42,7 @@ WebBrowser.maybeCompleteAuthSession();
 function Login() {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
+	const [showPassword, setShowPassword] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const dispatch: AppDispatch = useDispatch();
 	const { signIn, setActive, isLoaded } = useSignIn();
@@ -151,20 +153,16 @@ function Login() {
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
-							inputType="password"
+							inputType={showPassword ? "text" : "password"}
 							onChange={(text) => setPassword(text)}
+							inputIcon={<InputIcon as={showPassword ? Eye : EyeClosed} />}
+							onIconClick={() => setShowPassword((prev) => !prev)}
 						/>
 
 						<Button size="lg" className="rounded-full" onPress={(e) => handleSubmit(e)} disabled={loading}>
 							<ButtonText>{i18n.t("login.loginButton")}</ButtonText>
 							<ButtonIcon as={ArrowRight} />
 						</Button>
-
-						{/* <View className="flex-row items-center gap-2">
-								<Divider className="bg-slate-300 w-[30%]" />
-								<Text>{i18n.t("login.orSignInWith")}</Text>
-								<Divider className="bg-slate-300 w-[30%]" />
-								</View> */}
 
 						{Platform.OS === "ios" && (
 							<Button

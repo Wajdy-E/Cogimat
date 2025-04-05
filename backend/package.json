@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/backend": "^1.25.5",
     "@supabase/supabase-js": "^2.49.1",
+    "@vercel/blob": "^0.27.3",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "expo-apple-authentication": "^7.1.3",

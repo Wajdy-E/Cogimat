@@ -142,3 +142,33 @@ export const deleteGoal = createAsyncThunk<any, { goalId: string }, { state: Roo
 		}
 	}
 );
+
+export const uploadUserImage = createAsyncThunk<string | null, { uri: string }, { state: RootState }>(
+	"user/uploadImage",
+	async ({ uri }, { getState }) => {
+		try {
+			const userId = getState().user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+			const fileName = uri.split("/").pop() || "image.jpg";
+			const fileType = fileName.endsWith(".png") ? "image/png" : "image/jpeg";
+
+			const form = new FormData();
+			form.append("file", {
+				uri,
+				name: fileName,
+				type: fileType,
+			} as any); // RN requires `as any` for FormData file
+
+			const res = await axios.post(`${BASE_URL}/api/exercise-image-upload`, form, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			});
+
+			return res.data.url; // You can store this in your state if needed
+		} catch (error) {
+			console.error("Image upload failed:", error);
+			throw error;
+		}
+	}
+);

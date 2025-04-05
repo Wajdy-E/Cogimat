@@ -30,7 +30,9 @@ function Shapes(props: ShapesProps) {
 						<ButtonIcon
 							as={shape.icon}
 							className={`h-10 w-10 ${
-								selectedShapes.includes(shape.name) ? "fill-primary-500 stroke-primary-500" : "fill-white stroke-white"
+								selectedShapes.includes(shape.name)
+									? "fill-primary-500 stroke-primary-500"
+									: "fill-secondary-0 stroke-secondary-0"
 							}`}
 						/>
 					</Button>
