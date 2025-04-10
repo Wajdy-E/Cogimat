@@ -13,7 +13,7 @@ import { Flame, Clock, Brain } from "lucide-react-native";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
 import { useDispatch } from "react-redux";
-import { setCurrentExercise } from "../../store/data/dataSlice";
+import { setCurrentCustomExercise } from "../../store/data/dataSlice";
 import { Box } from "@/components/ui/box";
 import { Divider } from "@/components/ui/divider";
 import WheelColorPicker from "react-native-wheel-color-picker";
@@ -25,11 +25,11 @@ import { i18n } from "../../i18n";
 function ExerciseProgram() {
 	const params = useLocalSearchParams();
 	const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
-	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
+	const exercises = useSelector((state: RootState) => state.data.customExercises, shallowEqual);
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const dispatch = useDispatch();
-	dispatch(setCurrentExercise(exercise));
+	dispatch(setCurrentCustomExercise(exercise));
 	const router = useRouter();
 
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
@@ -40,7 +40,7 @@ function ExerciseProgram() {
 	const [durationSettings, setDurationSettings] = useState({
 		offScreenTime: "0.5",
 		onScreenTime: "0.5",
-		exerciseTime: exercise.timeToComplete || "60",
+		exerciseTime: exercise.customizableOptions?.excerciseTime.toString() || "60",
 	});
 
 	const handleOffScreenTimeChange = (value: string) => {
@@ -112,9 +112,9 @@ function ExerciseProgram() {
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 								<BadgeIcon as={Clock} />
 								{(() => {
-									const totalSeconds = parseInt(exercise.timeToComplete, 10);
-									const minutes = Math.floor(totalSeconds / 60);
-									const seconds = totalSeconds % 60;
+									const totalMinutes = parseFloat(exercise.customizableOptions?.excerciseTime.toString() || "60");
+									const minutes = Math.floor(totalMinutes);
+									const seconds = Math.round((totalMinutes - minutes) * 60);
 									return (
 										<BadgeText>
 											{minutes} min {seconds} sec

@@ -9,7 +9,7 @@ interface FavouriteButtonProps {
 function FavouriteButton(props: FavouriteButtonProps) {
 	return (
 		<Button
-			className="absolute top-2 right-0 bg-black/50 p-2 rounded-full"
+			className="absolute top-2 right-0 bg-black/50 py-2 px-3 rounded-full"
 			style={{ transform: [{ translateX: -15 }, { translateY: 2 }] }}
 			onPress={props.onFavourite}
 			variant="link"

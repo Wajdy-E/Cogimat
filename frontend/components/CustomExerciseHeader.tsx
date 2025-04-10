@@ -1,25 +1,24 @@
 import { View, SafeAreaView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heading } from "@/components/ui/heading";
-import { useExercise } from "@/hooks/useExercise";
-import { Exercise } from "../store/data/dataSlice";
+import { CustomExercise, updateCustomExercise } from "../store/data/dataSlice";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { ArrowLeft, Star } from "lucide-react-native";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
-import { setFavourite } from "../store/data/dataSaga";
 import { useTheme } from "@/components/ui/ThemeProvider";
+import { useCustomExercise } from "@/hooks/useCustomExercise";
 
-export default function CustomExerciseHeader() {
+export default function Header() {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
-	const exercises = useExercise(parseInt(id[0])) as Exercise;
+	const exercises = useCustomExercise(parseInt(id as string)) as CustomExercise;
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
 	function onFavourite() {
 		const exerciseCopy = { ...exercises };
 		exerciseCopy.isFavourited = !exercises.isFavourited;
-		dispatch(setFavourite({ isFavourited: exerciseCopy.isFavourited, exerciseId: exerciseCopy.id }));
+		dispatch(updateCustomExercise(exerciseCopy));
 	}
 
 	return (
@@ -31,16 +30,16 @@ export default function CustomExerciseHeader() {
 							<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 						</Button>
 						<Heading className="text-typography-950" size="2xl">
-							{exercises!.name}
+							{exercises?.name}
 						</Heading>
 					</View>
 					<Button variant="link" onPress={onFavourite}>
 						<ButtonIcon
 							as={Star}
-							stroke={`${exercises.isFavourited ? "yellow" : "white"}`}
-							fill={`${exercises.isFavourited ? "yellow" : "white"}`}
+							stroke={`${exercises?.isFavourited ? "yellow" : "white"}`}
+							fill={`${exercises?.isFavourited ? "yellow" : "white"}`}
 							size="xl"
-							className={`${exercises.isFavourited ? "fill-yellow-300" : ""}`}
+							className={`${exercises?.isFavourited ? "fill-yellow-300" : ""}`}
 						/>
 					</Button>
 				</View>

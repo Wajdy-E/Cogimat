@@ -12,6 +12,7 @@ import { Input, InputField, InputSlot } from "@/components/ui/input";
 import { i18n } from "../i18n";
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
+import { AlertCircleIcon } from "@/components/ui/icon";
 
 interface FormInputProps {
 	label: string;
@@ -79,8 +80,8 @@ export default function FormInput(props: FormInputProps) {
 			)}
 			{props.formErrorKey && (
 				<FormControlError>
-					<FormControlErrorIcon />
-					<FormControlErrorText />
+					<FormControlErrorIcon as={AlertCircleIcon} />
+					<FormControlErrorText size="sm">{i18n.t(props.formErrorKey)}</FormControlErrorText>
 				</FormControlError>
 			)}
 		</FormControl>

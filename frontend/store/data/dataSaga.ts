@@ -1,5 +1,19 @@
 import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Exercise, Goals, setExercises, setIsFavourite, setUserGoals, updateUserGoals } from "./dataSlice";
+import {
+	addCustomExercise,
+	CustomExercise,
+	Exercise,
+	ExerciseDifficulty,
+	Goals,
+	removeCustomExercise,
+	setCustomExerciseIsFavourite,
+	setCustomExercises,
+	setExercises,
+	setIsFavourite,
+	setUserGoals,
+	updateCustomExercise,
+	updateUserGoals,
+} from "./dataSlice";
 import axios from "axios";
 import { RootState } from "../store";
 import { Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
@@ -56,7 +70,7 @@ export const setFavourite = createAsyncThunk<any, { exerciseId: number; isFavour
 			const userId = getState().user.user.baseInfo?.id;
 			if (!userId) throw new Error("User is not authenticated");
 
-			const { data } = await axios.post(`${BASE_URL}/api/favourites`, {
+			const { data } = await axios.post(`${BASE_URL}/api/favourites/exercise`, {
 				user_id: userId,
 				exercise_id: exerciseId,
 				is_favourited: isFavourited,
@@ -170,5 +184,168 @@ export const uploadUserImage = createAsyncThunk<string | null, { uri: string }, 
 			console.error("Image upload failed:", error);
 			throw error;
 		}
+	}
+);
+
+export const createCustomExercise = createAsyncThunk<void, any, { state: RootState }>(
+	"exercise/createCustomExercise",
+	async (formData, { getState, dispatch }) => {
+		try {
+			const userId = getState().user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+
+			const payload = {
+				...formData,
+				clerk_id: userId,
+			};
+
+			const response = await axios.post(`${BASE_URL}/api/custom-exercise`, payload);
+
+			const returnedId: number = response.data.id;
+
+			const customExercise: CustomExercise = {
+				id: returnedId,
+				name: formData.name,
+				type: "custom",
+				difficulty: formData.difficulty as ExerciseDifficulty,
+				description: formData.description,
+				instructions: formData.instructions,
+				parameters: {
+					shapes: formData.shapes as Shape[],
+					colors: formData.colors as Color[],
+					numbers: formData.numbers as NumberEnum[],
+					letters: formData.letters as Letter[],
+				},
+				videoUrl: formData.videoUri,
+				imageFileUrl: formData.imageUri,
+				focus: formData.focus,
+				isFavourited: false,
+				customizableOptions: {
+					parameters: {
+						shapes: formData.shapes as Shape[],
+						colors: formData.colors as Color[],
+						numbers: formData.numbers as NumberEnum[],
+						letters: formData.letters as Letter[],
+					},
+					offScreenTime: formData.offScreenTime,
+					onScreenTime: formData.onScreenTime,
+					excerciseTime: formData.exerciseTime,
+					offScreenColor: formData.offScreenColor,
+					onScreenColor: formData.onScreenColor,
+					restTime: formData.restTime,
+				},
+			};
+
+			dispatch(addCustomExercise(customExercise));
+		} catch (err) {
+			console.error("Failed to create exercise:", err);
+			throw err;
+		}
+	}
+);
+
+export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, { state: RootState }>(
+	"exercise/updateCustomExercise",
+	async (exercise, { getState, dispatch }) => {
+		try {
+			const clerk_id = getState().user.user.baseInfo?.id;
+			if (!clerk_id) throw new Error("User not authenticated");
+
+			const payload = {
+				id: exercise.id,
+				clerk_id,
+				name: exercise.name,
+				description: exercise.description,
+				instructions: exercise.instructions,
+				difficulty: exercise.difficulty,
+				shapes: exercise.parameters.shapes ?? [],
+				letters: exercise.parameters.letters ?? [],
+				numbers: exercise.parameters.numbers ?? [],
+				colors: Array.isArray(exercise.parameters.colors)
+					? exercise.parameters.colors.map((c) => (typeof c === "string" ? c : c.name))
+					: [],
+				focus: exercise.focus ?? [],
+				imageUri: exercise.imageFileUrl,
+				videoUri: exercise.videoUrl,
+				isFavourited: exercise.isFavourited,
+				offScreenTime: exercise.customizableOptions.offScreenTime,
+				onScreenTime: exercise.customizableOptions.onScreenTime,
+				exerciseTime: exercise.customizableOptions.excerciseTime,
+				offScreenColor: exercise.customizableOptions.offScreenColor,
+				onScreenColor: exercise.customizableOptions.onScreenColor,
+				restTime: exercise.customizableOptions.restTime,
+			};
+
+			await axios.patch(`${BASE_URL}/api/custom-exercise`, payload);
+
+			dispatch(updateCustomExercise(exercise));
+		} catch (err) {
+			console.error("Failed to update exercise:", err);
+			throw err;
+		}
+	}
+);
+
+export const getCustomExercises = createAsyncThunk<void, void, { state: RootState }>(
+	"customExercise/getAll",
+	async (_, { getState, dispatch }) => {
+		const clerk_id = getState().user.user.baseInfo?.id;
+		if (!clerk_id) throw new Error("User not authenticated");
+
+		const res = await axios.get(`${BASE_URL}/api/custom-exercise`, {
+			params: { clerk_id },
+		});
+
+		const transformed: CustomExercise[] = res.data.exercises.map((ex: any) => ({
+			id: ex.id,
+			name: ex.name,
+			type: "custom",
+			difficulty: ex.difficulty as ExerciseDifficulty,
+			description: ex.description,
+			instructions: ex.instructions,
+			focus: ex.focus ?? [],
+			isFavourited: false,
+			imageFileUrl: ex.image_uri ?? undefined,
+			videoUrl: ex.video_uri ?? undefined,
+
+			parameters: {
+				shapes: ex.shapes ?? [],
+				letters: ex.letters ?? [],
+				numbers: ex.numbers ?? [],
+				colors: ex.colors ?? [],
+			},
+
+			customizableOptions: {
+				parameters: {
+					shapes: ex.shapes ?? [],
+					letters: ex.letters ?? [],
+					numbers: ex.numbers ?? [],
+					colors: ex.colors ?? [],
+				},
+				offScreenTime: ex.off_screen_time,
+				onScreenTime: ex.on_screen_time,
+				excerciseTime: ex.exercise_time,
+				offScreenColor: ex.off_screen_color,
+				onScreenColor: ex.on_screen_color,
+				restTime: ex.rest_time,
+			},
+		}));
+
+		dispatch(setCustomExercises(transformed));
+	}
+);
+
+export const deleteCustomExercise = createAsyncThunk<number, number, { state: RootState }>(
+	"customExercise/delete",
+	async (exerciseId, { getState, dispatch }) => {
+		const clerk_id = getState().user.user.baseInfo?.id;
+		if (!clerk_id) throw new Error("User not authenticated");
+
+		await axios.delete(`${BASE_URL}/api/custom-exercise`, {
+			data: { id: exerciseId, clerk_id },
+		});
+
+		dispatch(removeCustomExercise(exerciseId));
+		return exerciseId;
 	}
 );

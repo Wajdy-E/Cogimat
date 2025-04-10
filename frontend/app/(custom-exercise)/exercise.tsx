@@ -7,7 +7,7 @@ import { Letter, NumberEnum } from "../../data/program/Program";
 import { LucideIcon, Pause, Play, X, Square, Triangle, Circle, Diamond, Icon } from "lucide-react-native";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { Icon as GlueStackIcon } from "@/components/ui/icon";
-import { Exercise } from "../../store/data/dataSlice";
+import { CustomExercise } from "../../store/data/dataSlice";
 
 interface IconWithColor {
 	icon: LucideIcon;
@@ -15,16 +15,16 @@ interface IconWithColor {
 }
 
 function ExerciseScreen() {
-	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise) as Exercise;
+	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise) as CustomExercise;
 
 	if (!currentExercise) return null;
 
 	const [showCountdown, setShowCountdown] = useState(true);
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
-	const [timeLeft, setTimeLeft] = useState(parseInt(currentExercise?.timeToComplete) || 60);
+	const [timeLeft, setTimeLeft] = useState(currentExercise?.customizableOptions.excerciseTime || 60);
 	const [isPaused, setIsPaused] = useState(false);
-	const timeToComplete = parseInt(currentExercise?.timeToComplete) || 60;
+	const timeToComplete = currentExercise?.customizableOptions.excerciseTime || 60;
 	const shapes = ["SQUARE", "CIRCLE", "TRIANGLE", "DIAMOND"];
 	useEffect(() => {
 		if (showCountdown || !currentExercise || !currentExercise.parameters) return;

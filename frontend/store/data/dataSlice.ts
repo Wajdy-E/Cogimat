@@ -25,8 +25,7 @@ export interface CustomizableExerciseOptions {
 	excerciseTime: number;
 	offScreenColor: string;
 	onScreenColor: string;
-	breakTime: number;
-	repetitions: number;
+	restTime: number;
 }
 
 export interface CustomExercise {
@@ -38,15 +37,15 @@ export interface CustomExercise {
 	instructions: string;
 	parameters: ExerciseParameters;
 	videoUrl?: string;
-	imageFileName?: string;
-	isFavourited?: boolean;
+	imageFileUrl?: string;
+	isFavourited: boolean;
 	focus?: string[];
-	customizableOptions?: CustomizableExerciseOptions;
+	customizableOptions: CustomizableExerciseOptions;
 }
 
 export interface ExerciseParameters {
 	shapes?: Shape[];
-	colors?: ColorOption[];
+	colors?: ColorOption[] | Color[];
 	numbers?: NumberEnum[];
 	letters?: Letter[];
 }
@@ -65,9 +64,10 @@ export interface Goals {
 
 export interface DataState {
 	exercises: Exercise[];
-	selectedExercise: Exercise | null;
+	selectedExercise: Exercise | CustomExercise | null;
 	progress: Record<number, any>;
 	goals: Goals[];
+	customExercises: CustomExercise[];
 }
 
 const initialState: DataState = {
@@ -75,6 +75,7 @@ const initialState: DataState = {
 	selectedExercise: null,
 	progress: {},
 	goals: [],
+	customExercises: [],
 };
 
 const dataSlice = createSlice({
@@ -84,14 +85,13 @@ const dataSlice = createSlice({
 		setExercises(state, action: PayloadAction<Exercise[]>) {
 			state.exercises = action.payload;
 		},
-		setCurrentExericse(state, { payload }: PayloadAction<Exercise>) {
+		setCurrentExercise(state, { payload }: PayloadAction<Exercise>) {
 			state.selectedExercise = payload;
 		},
 		selectExercise(state, action: PayloadAction<number>) {
 			const exercise = state.exercises.find((ex) => ex.id === action.payload);
 			state.selectedExercise = exercise || null;
 		},
-
 		updateProgress(state, action: PayloadAction<{ exerciseId: number; progress: any }>) {
 			state.progress[action.payload.exerciseId] = action.payload.progress;
 		},
@@ -99,6 +99,12 @@ const dataSlice = createSlice({
 			const exerciseIndex = state.exercises.findIndex((exercise) => exercise.id === payload.exerciseId);
 			if (exerciseIndex !== -1) {
 				state.exercises[exerciseIndex].isFavourited = !state.exercises[exerciseIndex].isFavourited;
+			}
+		},
+		setCustomExerciseIsFavourite(state, { payload }: PayloadAction<{ exerciseId: number; isFavourite: boolean }>) {
+			const exerciseIndex = state.customExercises.findIndex((exercise) => exercise.id === payload.exerciseId);
+			if (exerciseIndex !== -1) {
+				state.customExercises[exerciseIndex].isFavourited = !state.customExercises[exerciseIndex].isFavourited;
 			}
 		},
 		clearSelectedExercise(state) {
@@ -109,7 +115,6 @@ const dataSlice = createSlice({
 		},
 		updateUserGoals(state, { payload }: PayloadAction<Goals>) {
 			const index = state.goals.findIndex((goal) => goal.id === payload.id);
-
 			if (index !== -1) {
 				state.goals[index] = payload;
 			} else {
@@ -119,19 +124,43 @@ const dataSlice = createSlice({
 		clearGoals(state) {
 			state.goals = [];
 		},
+		setCustomExercises(state, { payload }: PayloadAction<CustomExercise[]>) {
+			state.customExercises = payload;
+		},
+		addCustomExercise(state, { payload }: PayloadAction<CustomExercise>) {
+			state.customExercises.push(payload);
+		},
+		setCurrentCustomExercise(state, { payload }: PayloadAction<CustomExercise>) {
+			state.selectedExercise = payload as CustomExercise;
+		},
+		updateCustomExercise(state, { payload }: PayloadAction<CustomExercise>) {
+			const index = state.customExercises.findIndex((e) => e.id === payload.id);
+			if (index !== -1) {
+				state.customExercises[index] = payload;
+			}
+		},
+		removeCustomExercise(state, { payload }: PayloadAction<number>) {
+			state.customExercises = state.customExercises.filter((ex) => ex.id !== payload);
+		},
 	},
 });
 
 export const {
 	setExercises,
 	selectExercise,
-	setCurrentExericse,
+	setCurrentExercise,
 	setIsFavourite,
+	setCustomExerciseIsFavourite,
 	updateProgress,
 	clearSelectedExercise,
 	setUserGoals,
 	updateUserGoals,
 	clearGoals,
+	setCustomExercises,
+	addCustomExercise,
+	updateCustomExercise,
+	setCurrentCustomExercise,
+	removeCustomExercise,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

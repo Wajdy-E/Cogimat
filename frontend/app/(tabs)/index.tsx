@@ -9,18 +9,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { useExercise } from "@/hooks/useExercise";
-import { Exercise, ExerciseDifficulty } from "../../store/data/dataSlice";
+import { CustomExercise, Exercise, ExerciseDifficulty } from "../../store/data/dataSlice";
 import { Center } from "@/components/ui/center";
 import { VStack } from "@/components/ui/vstack";
 import BlogCard from "../../components/CardWithImage";
 import { i18n } from "../../i18n";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Box } from "@/components/ui/box";
+import { useCustomExercise } from "@/hooks/useCustomExercise";
+import CustomExerciseCard from "../../components/CustomExerciseCard";
 
 function Home() {
 	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
-
+	const customExercises = useCustomExercise(null) as CustomExercise[];
 	const tabs: TabItem[] = [
 		{
 			title: i18n.t("home.tabs.allExercises"),
@@ -31,6 +33,7 @@ function Home() {
 						heading={i18n.t("home.exercisePrograms.title")}
 						text={i18n.t("home.exercisePrograms.seeAll")}
 						classes="justify-between"
+						to="/(tabs)/all-exercises"
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
@@ -61,7 +64,33 @@ function Home() {
 		{
 			title: i18n.t("home.tabs.myCustomExercises"),
 			iconName: "ClipboardPen",
-			content: <Text>{i18n.t("home.tabs.myCustomExercises")} Content</Text>,
+			content: (
+				<View>
+					<NavigateTo
+						heading={i18n.t("home.exercisePrograms.title")}
+						text={i18n.t("home.exercisePrograms.seeAll")}
+						classes="justify-between"
+					/>
+					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+						<HStack space="md">
+							{customExercises.map((exercise) => (
+								<CustomExerciseCard
+									key={exercise.id}
+									name={exercise.name}
+									imageFileUrl={exercise.imageFileUrl}
+									time={exercise.customizableOptions.excerciseTime.toString()}
+									difficulty={exercise.difficulty}
+									id={exercise.id}
+									exercise={exercise}
+									classes="w-[250px]"
+									isFavourited={exercise.isFavourited}
+									variant="elevated"
+								/>
+							))}
+						</HStack>
+					</ScrollView>
+				</View>
+			),
 		},
 		{
 			title: i18n.t("home.tabs.community"),

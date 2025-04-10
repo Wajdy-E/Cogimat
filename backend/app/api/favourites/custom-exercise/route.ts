@@ -1,10 +1,9 @@
-import { query } from "../../../lib/db";
+import { query } from "../../../../lib/db";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 	try {
 		const { user_id, exercise_id, is_favourited } = await req.json();
-		console.log(user_id, exercise_id, is_favourited);
 		if (!user_id || !exercise_id) {
 			return NextResponse.json({ message: "Missing user_id or exercise_id" }, { status: 400 });
 		}

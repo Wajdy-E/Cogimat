@@ -123,12 +123,17 @@ const translations = {
 				delete: "Delete",
 				edit: "Edit",
 			},
+			time: {
+				seconds: "seconds",
+				minutes: "minutes",
+				hours: "hours",
+				days: "days",
+			},
 		},
 		createExercise: {
 			steps: {
-				name: "Exercise details",
-				description: "Description",
-				difficulty: "Difficulty Level",
+				description: "Exercise details",
+				settings: "Settings",
 			},
 			form: {
 				nameLabel: "Exercise Name",
@@ -142,6 +147,10 @@ const translations = {
 				difficultyLabel: "Difficulty",
 				difficultyPlaceholder: "Difficulty (Easy, Medium, Hard)",
 				focusHelper: "Comma separated list of focus areas",
+				sets: "Sets",
+				reps: "Reps",
+				restTime: "Rest Time",
+				restTimePlaceholder: "Enter rest time",
 			},
 		},
 		exercise: {
@@ -154,14 +163,59 @@ const translations = {
 				offScreenTime: "Off screen time",
 				onScreenTime: "On screen time",
 				exerciseTime: "Exercise time",
-				offScreenColor: "Off screen color",
-				onScreenColor: "On screen color",
+				offScreenColor: "Off screen color {{offScreenColor}}",
+				onScreenColor: "On screen color {{onScreenColor}}",
 				startNow: "Start Now",
 			},
 			sections: {
 				customization: "Customization",
 				durationSettings: "Duration Settings",
 				colorSettings: "Color Settings",
+			},
+		},
+		yupErrors: {
+			form: {
+				nameRequired: "Name is required",
+				nameMin: "Name must be at least 3 characters",
+				nameMax: "Name cannot exceed 50 characters",
+
+				descriptionRequired: "Description is required",
+				descriptionMin: "Description must be at least 10 characters",
+				descriptionMax: "Description cannot exceed 500 characters",
+
+				instructionsRequired: "Instructions are required",
+				instructionsMin: "Instructions must be at least 10 characters",
+				instructionsMax: "Instructions cannot exceed 1000 characters",
+
+				focusMin: "Focus must be a word",
+				focusMax: "Maximum 5 focus points",
+
+				difficultyRequired: "Difficulty is required",
+				difficultyInvalid: "Invalid difficulty level",
+
+				visualInputMissing: "Select at least one of shapes, letters, numbers, or colors",
+
+				offScreenTime: "Off screen time must be at least 0.5 seconds",
+				onScreenTime: "On screen time must be at least 0.5 seconds",
+				exerciseTime: "Exercise time must be at least 1 minute",
+				restTime: "Rest time must be at least 1 second",
+
+				offScreenColor: "Off screen color is required",
+				onScreenColor: "On screen color is required",
+
+				invalidUrl: "Must be a valid URL",
+
+				firstNameRequired: "First name is required",
+				firstNameMin: "First name must be at least 2 characters",
+
+				lastNameRequired: "Last name is required",
+				lastNameMin: "Last name must be at least 2 characters",
+
+				emailRequired: "Email is required",
+				emailInvalid: "Invalid email address",
+
+				passwordRequired: "Password is required",
+				passwordMin: "Password must be at least 6 characters",
 			},
 		},
 	},

@@ -31,6 +31,7 @@
     "@gluestack-ui/overlay": "^0.1.16",
     "@gluestack-ui/radio": "^0.1.34",
     "@gluestack-ui/select": "^0.1.30",
+    "@gluestack-ui/slider": "^0.1.32",
     "@gluestack-ui/spinner": "^0.1.15",
     "@gluestack-ui/switch": "^0.1.23",
     "@gluestack-ui/textarea": "^0.1.24",

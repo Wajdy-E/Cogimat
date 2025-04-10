@@ -40,6 +40,7 @@ export default function Layout() {
 			Purchases.configure({ apiKey: "your_revenuecat_google_sdk_key" });
 		}
 	}, []);
+
 	return (
 		<ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
 			<ClerkLoaded>
