@@ -18,6 +18,7 @@ export interface CustomSliderProps extends ISliderProps {
 	prefix?: string;
 	width?: number;
 	height?: number;
+	isReadOnly?: boolean;
 }
 export default function CustomSlider(props: CustomSliderProps & Size) {
 	const [currentValue, setCurrentValue] = useState(props.value || props.defaultValue || 0);

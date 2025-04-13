@@ -22,9 +22,9 @@ function ExerciseScreen() {
 	const [showCountdown, setShowCountdown] = useState(true);
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
-	const [timeLeft, setTimeLeft] = useState(currentExercise?.customizableOptions.excerciseTime || 60);
+	const [timeLeft, setTimeLeft] = useState(currentExercise?.customizableOptions.exerciseTime || 60);
 	const [isPaused, setIsPaused] = useState(false);
-	const timeToComplete = currentExercise?.customizableOptions.excerciseTime || 60;
+	const timeToComplete = currentExercise?.customizableOptions.exerciseTime || 60;
 	const shapes = ["SQUARE", "CIRCLE", "TRIANGLE", "DIAMOND"];
 	useEffect(() => {
 		if (showCountdown || !currentExercise || !currentExercise.parameters) return;

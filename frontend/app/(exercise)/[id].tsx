@@ -1,63 +1,83 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Animated, ScrollView, View } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
-import { shallowEqual } from "react-redux";
-import WebView from "react-native-webview";
-import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { ArrowRight, CirclePlay, Edit } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
-import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
-import { Flame, Clock, Brain } from "lucide-react-native";
-import { Heading } from "@/components/ui/heading";
-import { VStack } from "@/components/ui/vstack";
-import { useDispatch } from "react-redux";
-import { setCurrentExercise } from "../../store/data/dataSlice";
-import { Box } from "@/components/ui/box";
-import { Divider } from "@/components/ui/divider";
+
+import { Animated, ScrollView, View } from "react-native";
+
+import { useLocalSearchParams, useRouter } from "expo-router";
+
+import WebView from "react-native-webview";
 import WheelColorPicker from "react-native-wheel-color-picker";
-import ModalComponent from "../../components/Modal";
+import { ArrowRight, CirclePlay, Edit, Rocket, Sprout, Trophy } from "lucide-react-native";
+import { Flame, Clock, Brain } from "lucide-react-native";
+import { shallowEqual } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+
+import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
+import { Box } from "@/components/ui/box";
+import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Divider } from "@/components/ui/divider";
+import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
-import FormInput from "../../components/FormInput";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+
+import CustomSlider from "../../components/CustomSlider";
+import ModalComponent from "../../components/Modal";
+import {
+	CustomizableExerciseOptions,
+	ExerciseDifficulty,
+	setCurrentExercise,
+	updateExercise,
+} from "../../store/data/dataSlice";
+import { RootState } from "../../store/store";
 import { i18n } from "../../i18n";
 
 function ExerciseProgram() {
+	const dispatch = useDispatch();
 	const params = useLocalSearchParams();
 	const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
 	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
-	const floatAnim = useRef(new Animated.Value(0)).current;
-	const dispatch = useDispatch();
 	dispatch(setCurrentExercise(exercise));
+	const floatAnim = useRef(new Animated.Value(0)).current;
 	const router = useRouter();
-
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
 	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
 	const [onScreenColor, setOnScreenColor] = useState("#000000");
-	const [offScreenColor, setOffScreenColor] = useState("#FFFFFF");
+	const [offScreenColor, setOffScreenColor] = useState("#ffffff");
 	const [isEditing, setIsEditing] = useState(false);
-	const [durationSettings, setDurationSettings] = useState({
-		offScreenTime: "0.5",
-		onScreenTime: "0.5",
-		exerciseTime: exercise.timeToComplete || "60",
-	});
+	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
+		exercise.customizableOptions
+	);
 
-	const handleOffScreenTimeChange = (value: string) => {
-		setDurationSettings((prev) => ({ ...prev, offScreenTime: value }));
-	};
+	function onScreenColorConfirm() {
+		if (durationSettings) dispatch(updateExercise({ ...durationSettings, onScreenColor }));
+		setShowOnScreenColorPicker(false);
+	}
 
-	const handleOnScreenTimeChange = (value: string) => {
-		setDurationSettings((prev) => ({ ...prev, onScreenTime: value }));
-	};
+	function offScreenColorConfirm() {
+		if (durationSettings) dispatch(updateExercise({ ...durationSettings, offScreenColor }));
+		setShowOffScreenColorPicker(false);
+	}
 
-	const handleExerciseTimeChange = (value: string) => {
-		setDurationSettings((prev) => ({ ...prev, exerciseTime: value }));
-	};
+	function onDurationSettingsUpdated() {
+		if (durationSettings) {
+			dispatch(updateExercise({ ...durationSettings }));
+		}
 
-	function onScreenColorConfirm() {}
+		setIsEditing((prev) => !prev);
+	}
+	function getIconForType(difficulty: ExerciseDifficulty) {
+		return difficulty === ExerciseDifficulty.Beginner
+			? Sprout
+			: difficulty === ExerciseDifficulty.Intermediate
+				? Rocket
+				: Trophy;
+	}
 
-	function offScreenColorConfirm() {}
+	useEffect(() => {
+		setDurationSettings(exercise.customizableOptions);
+	}, [exercise.customizableOptions]);
 
 	useEffect(() => {
 		Animated.loop(
@@ -99,10 +119,10 @@ function ExerciseProgram() {
 				</View>
 
 				<View className="flex items-center py-5">
-					<VStack className="w-[90%]" space="md">
+					<VStack className="w-[90%]" space="lg">
 						<View className="flex-row justify-start gap-4">
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
-								<BadgeIcon as={Flame} />
+								<BadgeIcon as={getIconForType(exercise.difficulty)} />
 								<BadgeText size="lg">{exercise.difficulty}</BadgeText>
 							</Badge>
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
@@ -124,11 +144,13 @@ function ExerciseProgram() {
 							</Badge>
 						</View>
 
-						<Heading>{exercise.name}</Heading>
+						<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>
+						<Text>{exercise.description}</Text>
+						<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
 						<Text>{exercise.instructions}</Text>
 
 						<Heading>{i18n.t("exercise.sections.customization")}</Heading>
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
+						<Box className="bg-secondary-500 p-6 rounded-2xl">
 							<VStack space="lg">
 								<View>
 									<View className="flex-row justify-between items-center">
@@ -141,52 +163,40 @@ function ExerciseProgram() {
 									</View>
 									<Divider className="bg-slate-400" />
 								</View>
-
-								<FormInput
-									inputSize="sm"
-									formSize="sm"
-									inputType="text"
-									label="exercise.form.offScreenTime"
-									displayAsRow
-									onChange={handleOffScreenTimeChange}
-									defaultValue={durationSettings.offScreenTime}
-									value={durationSettings.offScreenTime}
-									isDisabled={!isEditing}
-									suffix="Seconds"
-								/>
-
-								<FormInput
-									inputSize="sm"
-									formSize="sm"
-									inputType="text"
-									onChange={handleOnScreenTimeChange}
-									defaultValue={durationSettings.onScreenTime}
-									label="exercise.form.onScreenTime"
-									value={durationSettings.onScreenTime}
-									displayAsRow
-									isDisabled={!isEditing}
-									suffix="Seconds"
-								/>
-
-								<FormInput
-									inputSize="sm"
-									formSize="sm"
-									inputType="text"
-									label="exercise.form.exerciseTime"
-									displayAsRow
-									onChange={handleExerciseTimeChange}
-									defaultValue={durationSettings.exerciseTime}
-									value={durationSettings.exerciseTime}
-									isDisabled={!isEditing}
-									suffix="Seconds"
-								/>
-
+								<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
+									{Object.entries(durationSettings || {}).map(([key, value]) =>
+										key !== "onScreenColor" && key !== "offScreenColor" ? (
+											<CustomSlider
+												key={key}
+												title={`exercise.form.${key}`}
+												size="md"
+												minValue={key === "exerciseTime" ? 1 : 0.5}
+												maxValue={key === "exerciseTime" ? 5 : 15}
+												step={key === "exerciseTime" ? 0.5 : 0.1}
+												value={parseFloat(value.toString())}
+												defaultValue={parseFloat(value.toString())}
+												suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+												isReadOnly={!isEditing}
+												onChange={(newValue) =>
+													setDurationSettings((prev) =>
+														prev
+															? {
+																	...prev,
+																	[key]: newValue.toString(),
+																}
+															: undefined
+													)
+												}
+											/>
+										) : null
+									)}
+								</VStack>
 								{isEditing && (
-									<ButtonGroup className="flex-row self-end">
+									<ButtonGroup className="flex-row self-end py-3">
 										<Button variant="outline" onPress={() => setIsEditing(false)} action="secondary" size="md">
 											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
 										</Button>
-										<Button onPress={() => setIsEditing(!isEditing)} action="primary" size="md">
+										<Button onPress={onDurationSettingsUpdated} action="primary" size="md">
 											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
 										</Button>
 									</ButtonGroup>
@@ -203,13 +213,13 @@ function ExerciseProgram() {
 									<Divider className="bg-slate-400" />
 								</View>
 								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.offScreenColor")}</Heading>
+									<Heading size="sm">{i18n.t("exercise.form.offScreenColor", { offScreenColor })}</Heading>
 									<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
 										<Icon as={ArrowRight} size="md" />
 									</Button>
 								</View>
 								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.onScreenColor")}</Heading>
+									<Heading size="sm">{i18n.t("exercise.form.onScreenColor", { onScreenColor })}</Heading>
 									<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
 										<Icon as={ArrowRight} size="md" />
 									</Button>
@@ -245,7 +255,14 @@ function ExerciseProgram() {
 				}}
 			>
 				<Button
-					onPress={() => router.push("/exercise")}
+					onPress={() =>
+						router.navigate({
+							pathname: "/exercise",
+							params: {
+								data: JSON.stringify(exercise),
+							},
+						})
+					}
 					className="rounded-full w-full"
 					variant="solid"
 					action="primary"

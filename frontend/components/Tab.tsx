@@ -43,7 +43,7 @@ export default function TabComponent(props: TabComponentProps) {
 				horizontal
 				showsHorizontalScrollIndicator={false}
 				contentContainerStyle={{ alignItems: "center" }}
-				className="py-3 w-[90%]"
+				className="py-3 w-[90%] self-center"
 			>
 				{props.tabs.map((tab, index) => {
 					const IconComponent = tab.iconName ? icons[tab.iconName] : undefined;
@@ -52,7 +52,7 @@ export default function TabComponent(props: TabComponentProps) {
 							{index > 0 && <View className="w-px self-center mx-1" />}
 							<Button
 								variant={props.tabVariant}
-								className={`flex-1 items-center px-2 gap-2 ${props.iconTop ? "flex-col" : ""} ${props.roundedFull ? "rounded-full" : ""}`}
+								className={`flex flex-1 items-center px-2 gap-2 ${props.iconTop ? "flex-col" : ""} ${props.roundedFull ? "rounded-full" : ""}`}
 								action={index === activeTabIndex ? "primary" : "secondary"}
 								onPress={() => handleTabPress(index)}
 							>
@@ -68,7 +68,8 @@ export default function TabComponent(props: TabComponentProps) {
 									numberOfLines={1}
 									ellipsizeMode="tail"
 									action={index === activeTabIndex ? "primary" : "secondary"}
-									className="w-[80px]"
+									className="max-w-[110px]"
+									size="lg"
 								>
 									{tab.title}
 								</ButtonText>

@@ -45,6 +45,8 @@ export async function POST(req: NextRequest) {
 			onScreenColor,
 			restTime,
 			isFavourited,
+			publicAccess,
+			youtubeUrl,
 		} = body;
 
 		// let imageUriBlob = imageUri;
@@ -77,12 +79,14 @@ export async function POST(req: NextRequest) {
 				off_screen_color,
 				on_screen_color,
 				rest_time,
-				is_favourited
+				is_favourited,
+				public_access,
+				youtube_url
 			) VALUES (
 				$1, $2, $3, $4, $5,
 				$6, $7, $8, $9, $10,
 				$11, $12, $13, $14, $15,
-				$16, $17, $18, $19
+				$16, $17, $18, $19, $20, $21
 			) RETURNING id`,
 			[
 				clerk_id,
@@ -104,6 +108,8 @@ export async function POST(req: NextRequest) {
 				onScreenColor,
 				restTime,
 				isFavourited,
+				publicAccess,
+				youtubeUrl,
 			]
 		);
 
@@ -138,6 +144,8 @@ export async function PATCH(req: NextRequest) {
 			offScreenColor,
 			onScreenColor,
 			restTime,
+			publicAccess,
+			youtubeUrl,
 		} = body;
 
 		if (!id || !clerk_id) {
@@ -164,6 +172,8 @@ export async function PATCH(req: NextRequest) {
 				on_screen_color = $16,
 				rest_time = $17,
 				is_favourited = $20,
+				public_access = $21,
+				youtube_url = $22,
 				updated_at = CURRENT_TIMESTAMP
 			WHERE id = $18 AND clerk_id = $19`,
 			[
@@ -187,6 +197,8 @@ export async function PATCH(req: NextRequest) {
 				id,
 				clerk_id,
 				isFavourited,
+				publicAccess,
+				youtubeUrl,
 			]
 		);
 

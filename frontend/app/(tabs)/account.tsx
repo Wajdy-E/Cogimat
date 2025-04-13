@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ScrollView, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as Notifications from "expo-notifications";
@@ -24,6 +24,7 @@ import { deleteUserThunk } from "../../store/auth/authSaga";
 import { Pencil } from "lucide-react-native";
 import ModalComponent from "../../components/Modal";
 import FormInput from "../../components/FormInput";
+import FormSelect from "../../components/FormSelect";
 
 export const resetState = createAction("RESET_STATE");
 
@@ -49,6 +50,16 @@ function Account() {
 			notifications: state.user.user.settings?.allowNotifications ?? false,
 		}),
 		shallowEqual
+	);
+
+	const [selectedLanguage, setSelectedLanguage] = useState(i18n.locale);
+	const languageOptions = useMemo(
+		() => [
+			{ label: "account.english", value: "en" },
+			{ label: "account.français", value: "fr" },
+			{ label: "account.日本語", value: "ja" },
+		],
+		[]
 	);
 
 	async function askNotificationPermission() {
@@ -177,6 +188,18 @@ function Account() {
 								setTimeout(() => updateNotificationSettings(), 2);
 							}}
 						/>
+
+						<FormSelect
+							size="lg"
+							label="account.appLanguage"
+							value={selectedLanguage}
+							variant="outline"
+							onValueChange={(value) => setSelectedLanguage(value)}
+							options={languageOptions}
+							title="account.appLanguage"
+							selectedValue={selectedLanguage}
+							displayAsRow
+						/>
 					</VStack>
 					<VStack space="md">
 						<Heading className="text-primary-500">{i18n.t("account.help")}</Heading>
@@ -203,15 +226,18 @@ function Account() {
 				isOpen={showSignoutModal}
 				onClose={() => setShowSignoutModal(false)}
 				onConfirm={handleSignOut}
-				headingKey="Are you sure you want to sign out?"
-				buttonKey="Sign Out"
+				headingKey="account.signOutConfirm"
+				buttonKey="account.signout"
+				cancelKey={undefined}
 			/>
 			<AlertModal
 				isOpen={showDeleteModal}
 				onClose={() => setShowDeleteModal(false)}
 				onConfirm={handleAccountDeletion}
-				headingKey="Are you sure you want delete your account?"
-				buttonKey="Sign Out"
+				headingKey="account.deleteAccountConfirm"
+				buttonKey="account.deleteAccount"
+				cancelKey={undefined}
+				action="negative"
 			/>
 
 			<ModalComponent onClose={() => setShowUsernameModal(false)} isOpen={showUsernameModal} onConfirm={updateUsername}>

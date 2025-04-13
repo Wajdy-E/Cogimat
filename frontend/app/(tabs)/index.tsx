@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { useExercise } from "@/hooks/useExercise";
-import { CustomExercise, Exercise, ExerciseDifficulty } from "../../store/data/dataSlice";
+import { CustomExercise, Exercise, ExerciseDifficulty, FilterType, setCurrentFilter } from "../../store/data/dataSlice";
 import { Center } from "@/components/ui/center";
 import { VStack } from "@/components/ui/vstack";
 import BlogCard from "../../components/CardWithImage";
@@ -18,22 +18,34 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Box } from "@/components/ui/box";
 import { useCustomExercise } from "@/hooks/useCustomExercise";
 import CustomExerciseCard from "../../components/CustomExerciseCard";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { shallowEqual } from "react-redux";
 
 function Home() {
 	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
 	const customExercises = useCustomExercise(null) as CustomExercise[];
+	const publicExercises = useSelector((state: RootState) => state.data.publicExercises, shallowEqual);
+	const dispatch = useDispatch();
+	const dailyChallenge = exercises.find((ex) => ex.isChallenge);
+	const onPressAllExercises = (isCustom: boolean) => {
+		dispatch(setCurrentFilter(isCustom ? [FilterType.Custom] : [FilterType.Standard]));
+	};
+
 	const tabs: TabItem[] = [
 		{
 			title: i18n.t("home.tabs.allExercises"),
-			iconName: "FileChartColumn",
+			iconName: "Brain",
 			content: (
 				<View>
 					<NavigateTo
-						heading={i18n.t("home.exercisePrograms.title")}
+						heading={i18n.t("home.exercisePrograms.allTitle")}
 						text={i18n.t("home.exercisePrograms.seeAll")}
 						classes="justify-between"
 						to="/(tabs)/all-exercises"
+						onPress={() => onPressAllExercises(false)}
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
@@ -57,19 +69,16 @@ function Home() {
 			),
 		},
 		{
-			title: i18n.t("home.tabs.interactiveExercises"),
-			iconName: "Brain",
-			content: <Text>{i18n.t("home.tabs.interactiveExercises")} Content</Text>,
-		},
-		{
 			title: i18n.t("home.tabs.myCustomExercises"),
 			iconName: "ClipboardPen",
 			content: (
 				<View>
 					<NavigateTo
-						heading={i18n.t("home.exercisePrograms.title")}
+						heading={i18n.t("home.exercisePrograms.customTitle")}
 						text={i18n.t("home.exercisePrograms.seeAll")}
 						classes="justify-between"
+						to="/(tabs)/all-exercises"
+						onPress={() => onPressAllExercises(true)}
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
@@ -78,7 +87,7 @@ function Home() {
 									key={exercise.id}
 									name={exercise.name}
 									imageFileUrl={exercise.imageFileUrl}
-									time={exercise.customizableOptions.excerciseTime.toString()}
+									time={exercise.customizableOptions.exerciseTime.toString()}
 									difficulty={exercise.difficulty}
 									id={exercise.id}
 									exercise={exercise}
@@ -95,7 +104,35 @@ function Home() {
 		{
 			title: i18n.t("home.tabs.community"),
 			iconName: "UsersRound",
-			content: <Text>{i18n.t("home.tabs.community")} Content</Text>,
+			content: (
+				<View>
+					<NavigateTo
+						heading={i18n.t("home.exercisePrograms.communityTitle")}
+						text={i18n.t("home.exercisePrograms.seeAll")}
+						classes="justify-between"
+						to="/(tabs)/all-exercises"
+						onPress={() => onPressAllExercises(true)}
+					/>
+					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+						<HStack space="md">
+							{publicExercises?.map((exercise) => (
+								<CustomExerciseCard
+									key={exercise.id}
+									name={exercise.name}
+									imageFileUrl={exercise.imageFileUrl}
+									time={exercise.customizableOptions.exerciseTime.toString()}
+									difficulty={exercise.difficulty}
+									id={exercise.id}
+									exercise={exercise}
+									classes="w-[250px]"
+									isFavourited={exercise.isFavourited}
+									variant="elevated"
+								/>
+							))}
+						</HStack>
+					</ScrollView>
+				</View>
+			),
 		},
 	];
 
@@ -116,25 +153,24 @@ function Home() {
 			</SafeAreaView>
 			<Tab tabs={tabs} tabVariant="link" iconTop buttonIconHeight={25} />
 
-			<Center className="bg-primary-700 py-7 mt-6">
-				<VStack space="md">
-					<Heading size="2xl" className="self-center">
-						{i18n.t("home.exerciseOfTheDay")}
-					</Heading>
+			<VStack space="md" className="w-[80%] self-center py-7">
+				<Heading size="2xl" className="self-center">
+					{i18n.t("home.exerciseOfTheDay")}
+				</Heading>
+				{dailyChallenge ? (
 					<ExerciseCard
-						name={"exercise.name"}
-						imageFileName={"placeholder.png"}
-						time={"exercise.timeToComplete"}
-						difficulty={ExerciseDifficulty.Intermediate}
-						id={1}
-						classes="w-[90%]"
+						name={dailyChallenge.name}
+						imageFileName={dailyChallenge.imageFileName}
+						time={dailyChallenge.timeToComplete}
+						difficulty={dailyChallenge.difficulty}
+						id={dailyChallenge.id}
 						variant="elevated"
-						isFavourited={true}
-						exercise={exercises[0]}
+						isFavourited={dailyChallenge.isFavourited}
+						exercise={dailyChallenge}
 					/>
-				</VStack>
-			</Center>
-			<Box className=" w-[90%] self-center">
+				) : null}
+			</VStack>
+			<Box className="w-[90%] self-center">
 				<NavigateTo heading="Articles & Tips" text={i18n.t("home.exercisePrograms.seeAll")} classes="justify-between" />
 				<ScrollView
 					horizontal

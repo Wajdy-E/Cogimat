@@ -57,6 +57,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 			/>
 		);
 	}
+
 	return (
 		<Card
 			variant={props.variant ? props.variant : "outline"}

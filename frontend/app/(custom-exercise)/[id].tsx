@@ -1,25 +1,29 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Animated, ScrollView, View } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
-import { shallowEqual } from "react-redux";
-import WebView from "react-native-webview";
-import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { ArrowRight, CirclePlay, Edit } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
-import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
-import { Flame, Clock, Brain } from "lucide-react-native";
-import { Heading } from "@/components/ui/heading";
-import { VStack } from "@/components/ui/vstack";
-import { useDispatch } from "react-redux";
-import { setCurrentCustomExercise } from "../../store/data/dataSlice";
-import { Box } from "@/components/ui/box";
-import { Divider } from "@/components/ui/divider";
+
+import { Animated, ScrollView, View } from "react-native";
+
+import { useLocalSearchParams, useRouter } from "expo-router";
+
+import WebView from "react-native-webview";
 import WheelColorPicker from "react-native-wheel-color-picker";
-import ModalComponent from "../../components/Modal";
+import { ArrowRight, CirclePlay, Edit, Rocket, Sprout, Trophy, Clock, Brain } from "lucide-react-native";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
+import { useVideoPlayer, VideoView } from "expo-video";
+
+import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
+import { Box } from "@/components/ui/box";
+import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Divider } from "@/components/ui/divider";
+import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+
 import FormInput from "../../components/FormInput";
+import ModalComponent from "../../components/Modal";
+import { ExerciseDifficulty, setCurrentCustomExercise } from "../../store/data/dataSlice";
+import { RootState } from "../../store/store";
 import { i18n } from "../../i18n";
 
 function ExerciseProgram() {
@@ -40,7 +44,7 @@ function ExerciseProgram() {
 	const [durationSettings, setDurationSettings] = useState({
 		offScreenTime: "0.5",
 		onScreenTime: "0.5",
-		exerciseTime: exercise.customizableOptions?.excerciseTime.toString() || "60",
+		exerciseTime: exercise.customizableOptions?.exerciseTime.toString() || "60",
 	});
 
 	const handleOffScreenTimeChange = (value: string) => {
@@ -55,9 +59,19 @@ function ExerciseProgram() {
 		setDurationSettings((prev) => ({ ...prev, exerciseTime: value }));
 	};
 
+	const placeHolder = require("../../assets/exercise-thumbnails/placeholder.png");
+
 	function onScreenColorConfirm() {}
 
 	function offScreenColorConfirm() {}
+
+	function getIconForType(difficulty: ExerciseDifficulty) {
+		return difficulty === ExerciseDifficulty.Beginner
+			? Sprout
+			: difficulty === ExerciseDifficulty.Intermediate
+				? Rocket
+				: Trophy;
+	}
 
 	useEffect(() => {
 		Animated.loop(
@@ -81,38 +95,82 @@ function ExerciseProgram() {
 	true;
 	`;
 
+	const player = useVideoPlayer(exercise.videoUrl ?? null, (player) => {
+		player.loop = false;
+		player.play();
+	});
+
+	console.log(exercise);
+
 	return (
 		<View className="relative bg-background-700">
 			<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
 				<View style={{ flex: 1, height: 250, maxHeight: 250 }} className="bg-primary-700 py-5">
-					<WebView
-						source={{ uri: "https://www.youtube.com/embed/16LuvR2CARA?si=SWqkZtlRD8J8sBL-" }}
-						injectedJavaScriptBeforeContentLoaded={runFirst}
-						style={{
-							height: 250,
-							maxHeight: 250,
-							width: "90%",
-							alignSelf: "center",
-							borderRadius: 20,
-						}}
-					/>
+					{exercise.youtubeUrl ? (
+						<WebView
+							source={{ uri: exercise.youtubeUrl }}
+							injectedJavaScriptBeforeContentLoaded={runFirst}
+							style={{
+								height: 200,
+								maxHeight: 200,
+								width: "90%",
+								alignSelf: "center",
+								borderRadius: 20,
+							}}
+						/>
+					) : exercise.videoUrl ? (
+						<VideoView
+							player={player}
+							allowsFullscreen
+							allowsPictureInPicture
+							style={{
+								height: 200,
+								maxHeight: 200,
+								width: "90%",
+								alignSelf: "center",
+								borderRadius: 20,
+							}}
+							contentFit="cover"
+						/>
+					) : exercise.imageFileUrl ? (
+						<Image
+							source={{ uri: exercise.imageFileUrl }}
+							alt="Exercise thumbnail image"
+							className="w-[90%] self-center h-[200px] rounded-xl"
+							resizeMode="cover"
+						/>
+					) : placeHolder ? (
+						<Image
+							source={placeHolder}
+							alt="Exercise thumbnail image"
+							resizeMode="cover"
+							className="w-[90%] self-center h-[200px] rounded-xl"
+						/>
+					) : (
+						<Text>Image failed to load.</Text>
+					)}
 				</View>
-
 				<View className="flex items-center py-5">
 					<VStack className="w-[90%]" space="md">
-						<View className="flex-row justify-start gap-4">
+						<View className="flex-row justify-start flex-wrap gap-4">
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
-								<BadgeIcon as={Flame} />
+								<BadgeIcon as={getIconForType(exercise.difficulty)} />
 								<BadgeText size="lg">{exercise.difficulty}</BadgeText>
 							</Badge>
-							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
-								<BadgeIcon as={Brain} />
-								<BadgeText>{exercise.focus}</BadgeText>
-							</Badge>
+							{(exercise.focus ?? []).length > 0
+								? (exercise.focus ?? []).map((f: string) => {
+										return (
+											<Badge size="lg" variant="solid" action="info" className="flex-row gap-3" key={f}>
+												<BadgeIcon as={Brain} />
+												<BadgeText>{f}</BadgeText>
+											</Badge>
+										);
+									})
+								: null}
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 								<BadgeIcon as={Clock} />
 								{(() => {
-									const totalMinutes = parseFloat(exercise.customizableOptions?.excerciseTime.toString() || "60");
+									const totalMinutes = parseFloat(exercise.customizableOptions?.exerciseTime.toString() || "60");
 									const minutes = Math.floor(totalMinutes);
 									const seconds = Math.round((totalMinutes - minutes) * 60);
 									return (
@@ -124,7 +182,9 @@ function ExerciseProgram() {
 							</Badge>
 						</View>
 
-						<Heading>{exercise.name}</Heading>
+						<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>
+						<Text>{exercise.description}</Text>
+						<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
 						<Text>{exercise.instructions}</Text>
 
 						<Heading>{i18n.t("exercise.sections.customization")}</Heading>

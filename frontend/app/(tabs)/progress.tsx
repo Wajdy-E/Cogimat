@@ -24,13 +24,14 @@ function Progress() {
 	const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [newGoalText, setNewGoalText] = useState("");
+
 	function handleAddGoal() {
 		if (!newGoalText.trim()) return;
 
 		appDispatch(
 			addGoal({
 				newGoal: {
-					goal: newGoalText, // make sure this is not empty
+					goal: newGoalText,
 					completed: false,
 				},
 			})
@@ -69,27 +70,30 @@ function Progress() {
 					}}
 				>
 					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-						<Heading size="sm">WORKOUTS</Heading>
+						<Heading size="sm">{i18n.t("progress.goals.workouts")}</Heading>
 						<Text>0</Text>
 					</GridItem>
 					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-						<Heading size="sm">MILESTONES</Heading>
+						<Heading size="sm">{i18n.t("progress.goals.milestones")}</Heading>
 						<Text>0</Text>
 					</GridItem>
 					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-						<Heading size="sm">WEEKLY GOAL</Heading>
+						<Heading size="sm">{i18n.t("progress.goals.weeklyGoal")}</Heading>
 						<Text>0</Text>
 					</GridItem>
 					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-						<Heading size="sm">TBD</Heading>
+						<Heading size="sm">{i18n.t("progress.goals.tbd")}</Heading>
 						<Text>0</Text>
 					</GridItem>
 				</Grid>
-				<Heading size="lg">My Custom Goals</Heading>
+
+				<Heading size="lg">{i18n.t("progress.goals.customGoalsTitle")}</Heading>
+
 				<Button size="lg" variant="solid" action="primary" className="mb-3" onPress={() => setShowAddGoalModal(true)}>
-					<ButtonText>Set a new goal</ButtonText>
+					<ButtonText>{i18n.t("progress.goals.setGoalButton")}</ButtonText>
 					<ButtonIcon as={Edit} size="md" />
 				</Button>
+
 				{goals?.map((goal) => (
 					<GoalCard
 						key={goal.id}
@@ -116,8 +120,8 @@ function Progress() {
 			<ModalComponent onClose={() => setShowAddGoalModal(false)} isOpen={showAddGoalModal} onConfirm={handleAddGoal}>
 				<FormInput
 					formSize="md"
-					label="Set a goal"
-					placeholder="e.g. Complete 5 workouts"
+					label="progress.goals.modal.label"
+					placeholder="progress.goals.modal.placeholder"
 					inputType="text"
 					inputSize="md"
 					value={newGoalText}
@@ -129,8 +133,10 @@ function Progress() {
 				isOpen={showDeleteModal}
 				onClose={() => setShowDeleteModal(false)}
 				onConfirm={handleDeleteGoal}
-				headingKey="Are you sure you want delete your account?"
-				buttonKey="Sign Out"
+				headingKey="progress.actions.deleteGoal"
+				buttonKey="general.buttons.delete"
+				action="negative"
+				cancelKey={undefined}
 			/>
 		</ScrollView>
 	);

@@ -2,14 +2,15 @@ import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
 	addCustomExercise,
 	CustomExercise,
+	CustomizableExerciseOptions,
 	Exercise,
 	ExerciseDifficulty,
 	Goals,
 	removeCustomExercise,
-	setCustomExerciseIsFavourite,
 	setCustomExercises,
 	setExercises,
 	setIsFavourite,
+	setPublicExercises,
 	setUserGoals,
 	updateCustomExercise,
 	updateUserGoals,
@@ -27,7 +28,6 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 		const userId = state.user.user.baseInfo?.id;
 		if (!userId) throw new Error("User is not authenticated");
 		const response = await axios.get(`${BASE_URL}/api/data/exercises`, { params: { userId } });
-
 		const formattedExercises: Exercise[] = response.data.exercises.map((ex: any) => ({
 			id: ex.id,
 			name: ex.name,
@@ -35,7 +35,7 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 			difficulty: ex.difficulty,
 			description: ex.description,
 			instructions: ex.instructions,
-			isChallenge: ex.isChallenge,
+			isChallenge: ex.is_challenge,
 			trackingData: ex.tracking_data,
 			videoUrl: ex.video_url,
 			imageFileName: ex.image_file_name,
@@ -53,6 +53,14 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 				),
 				letters: ex.parameters.letters?.map((letter: string) => Letter[letter as keyof typeof Letter]),
 			},
+			customizableOptions: {
+				offScreenTime: ex.off_screen_time,
+				onScreenTime: ex.on_screen_time,
+				exerciseTime: ex.exercise_time,
+				offScreenColor: ex.off_screen_color,
+				onScreenColor: ex.on_screen_color,
+				restTime: ex.rest_time,
+			} as CustomizableExerciseOptions,
 		}));
 
 		dispatch(setExercises(formattedExercises));
@@ -218,8 +226,10 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 				},
 				videoUrl: formData.videoUri,
 				imageFileUrl: formData.imageUri,
+				youtubeUrl: formData.youtubeUrl,
 				focus: formData.focus,
 				isFavourited: false,
+				publicAccess: false,
 				customizableOptions: {
 					parameters: {
 						shapes: formData.shapes as Shape[],
@@ -229,7 +239,7 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 					},
 					offScreenTime: formData.offScreenTime,
 					onScreenTime: formData.onScreenTime,
-					excerciseTime: formData.exerciseTime,
+					exerciseTime: formData.exerciseTime,
 					offScreenColor: formData.offScreenColor,
 					onScreenColor: formData.onScreenColor,
 					restTime: formData.restTime,
@@ -270,10 +280,11 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 				isFavourited: exercise.isFavourited,
 				offScreenTime: exercise.customizableOptions.offScreenTime,
 				onScreenTime: exercise.customizableOptions.onScreenTime,
-				exerciseTime: exercise.customizableOptions.excerciseTime,
+				exerciseTime: exercise.customizableOptions.exerciseTime,
 				offScreenColor: exercise.customizableOptions.offScreenColor,
 				onScreenColor: exercise.customizableOptions.onScreenColor,
 				restTime: exercise.customizableOptions.restTime,
+				publicAccess: exercise.publicAccess,
 			};
 
 			await axios.patch(`${BASE_URL}/api/custom-exercise`, payload);
@@ -307,7 +318,7 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 			isFavourited: false,
 			imageFileUrl: ex.image_uri ?? undefined,
 			videoUrl: ex.video_uri ?? undefined,
-
+			publicAccess: ex.public_access,
 			parameters: {
 				shapes: ex.shapes ?? [],
 				letters: ex.letters ?? [],
@@ -324,7 +335,7 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 				},
 				offScreenTime: ex.off_screen_time,
 				onScreenTime: ex.on_screen_time,
-				excerciseTime: ex.exercise_time,
+				exerciseTime: ex.exercise_time,
 				offScreenColor: ex.off_screen_color,
 				onScreenColor: ex.on_screen_color,
 				restTime: ex.rest_time,
@@ -347,5 +358,52 @@ export const deleteCustomExercise = createAsyncThunk<number, number, { state: Ro
 
 		dispatch(removeCustomExercise(exerciseId));
 		return exerciseId;
+	}
+);
+
+export const getPublicExercises = createAsyncThunk<void, void, { state: RootState }>(
+	"publicExercises/getAll",
+	async (_, { getState, dispatch }) => {
+		const clerk_id = getState().user.user.baseInfo?.id;
+		if (!clerk_id) throw new Error("User not authenticated");
+
+		const res = await axios.get(`${BASE_URL}/api/public-exercises`);
+
+		const transformed: CustomExercise[] = res.data.exercises.map((ex: any) => ({
+			id: ex.id,
+			name: ex.name,
+			type: "custom",
+			difficulty: ex.difficulty as ExerciseDifficulty,
+			description: ex.description,
+			instructions: ex.instructions,
+			focus: ex.focus ?? [],
+			isFavourited: false,
+			imageFileUrl: ex.image_uri ?? undefined,
+			videoUrl: ex.video_uri ?? undefined,
+			publicAccess: ex.public_access,
+			parameters: {
+				shapes: ex.shapes ?? [],
+				letters: ex.letters ?? [],
+				numbers: ex.numbers ?? [],
+				colors: ex.colors ?? [],
+			},
+
+			customizableOptions: {
+				parameters: {
+					shapes: ex.shapes ?? [],
+					letters: ex.letters ?? [],
+					numbers: ex.numbers ?? [],
+					colors: ex.colors ?? [],
+				},
+				offScreenTime: ex.off_screen_time,
+				onScreenTime: ex.on_screen_time,
+				exerciseTime: ex.exercise_time,
+				offScreenColor: ex.off_screen_color,
+				onScreenColor: ex.on_screen_color,
+				restTime: ex.rest_time,
+			},
+		}));
+
+		dispatch(setPublicExercises(transformed));
 	}
 );

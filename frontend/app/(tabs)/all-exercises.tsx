@@ -1,117 +1,169 @@
-import { ScrollView, View } from "react-native";
-import { useUser } from "@clerk/clerk-expo";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native";
+import { useState, useMemo, useEffect } from "react";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
-import { useExercise } from "@/hooks/useExercise";
-import { useCustomExercise } from "@/hooks/useCustomExercise";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { Box } from "@/components/ui/box";
-import { CustomExercise, Exercise, ExerciseDifficulty } from "../../store/data/dataSlice";
 import { i18n } from "../../i18n";
+import { useExercise } from "@/hooks/useExercise";
+import { useCustomExercise } from "@/hooks/useCustomExercise";
 import ExerciseCard from "../../components/ExerciseCard";
 import CustomExerciseCard from "../../components/CustomExerciseCard";
+import { Exercise, CustomExercise, ExerciseDifficulty, FilterType, setCurrentFilter } from "../../store/data/dataSlice";
+import FormSelect from "../../components/FormSelect";
+import { Checkbox, CheckboxGroup, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from "@/components/ui/checkbox";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { CheckIcon } from "@/components/ui/icon";
+
+type UnifiedExercise = (Exercise & { isCustom: false }) | (CustomExercise & { isCustom: true });
 
 function AllExercises() {
-	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
 	const customExercises = useCustomExercise(null) as CustomExercise[];
+	const dispatch = useDispatch();
 
-	const getExercisesByDifficulty = (difficulty: ExerciseDifficulty) =>
-		exercises.filter((ex) => ex.difficulty === difficulty);
+	const activeFilter = useSelector((state: RootState) => state.data.currentFilter);
+	const [showSources, setShowSources] = useState(activeFilter);
+
+	const [showOnlyFavourited, setShowOnlyFavourited] = useState(false);
+	const [difficultyFilter, setDifficultyFilter] = useState<ExerciseDifficulty | "All">("All");
+	const [sortAlpha, setSortAlpha] = useState<"asc" | "desc">("asc");
+
+	const filteredExercises = useMemo(() => {
+		let all: UnifiedExercise[] = [];
+
+		if (showSources.includes(FilterType.Standard)) {
+			all = all.concat(exercises.map((e) => ({ ...e, isCustom: false })));
+		}
+		if (showSources.includes(FilterType.Custom)) {
+			all = all.concat(customExercises.map((e) => ({ ...e, isCustom: true })));
+		}
+		if (difficultyFilter !== "All") {
+			all = all.filter((e) => e.difficulty === difficultyFilter);
+		}
+		if (showOnlyFavourited) {
+			all = all.filter((e) => e.isFavourited);
+		}
+		all = all.sort((a, b) => (sortAlpha === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)));
+		return all;
+	}, [exercises, customExercises, showSources, showOnlyFavourited, difficultyFilter, sortAlpha]);
+
+	const difficultyOptions = [
+		{ label: "general.filters.all", value: "all" },
+		{ label: "exercise.difficulty.beginner", value: "Beginner" },
+		{ label: "exercise.difficulty.intermediate", value: "Intermediate" },
+		{ label: "exercise.difficulty.advanced", value: "Advanced" },
+	];
+
+	const sortOptions: { label: string; value: "asc" | "desc" }[] = [
+		{ label: "general.filters.sortAZ", value: "asc" },
+		{ label: "general.filters.sortZA", value: "desc" },
+	];
+
+	const onCheckBoxGroup = (isSelected: any) => {
+		dispatch(setCurrentFilter(isSelected));
+		setShowSources(isSelected);
+	};
+
+	useEffect(() => {
+		setShowSources(activeFilter);
+	}, [activeFilter]);
 
 	return (
 		<ScrollView className="bg-background-700">
-			<SafeAreaView className="px-4">
-				<Heading className="text-primary-500 mb-4" size="2xl">
-					{i18n.t("allExercises.title")}
-				</Heading>
+			<VStack space="lg" className="mb-6 w-[90%] self-center">
+				<HStack space="lg" className="flex-row flex-wrap self-end">
+					<FormSelect
+						{...({
+							title: "general.filters.difficulty",
+							options: difficultyOptions,
+							selectedValue: difficultyFilter,
+							onValueChange: (val: any) => setDifficultyFilter(val as ExerciseDifficulty | "All"),
+							variant: "rounded",
+							size: "md",
+							placeholder: i18n.t("general.filters.difficulty"),
+							className: "flex-row items-center gap-2",
+							labelSize: "lg",
+						} as any)}
+					/>
 
-				{/* Beginner */}
-				<VStack space="md" className="mb-6">
-					<Heading size="xl">{i18n.t("difficulty.beginner")}</Heading>
-					<HStack space="md">
-						{getExercisesByDifficulty(ExerciseDifficulty.Beginner).map((exercise) => (
-							<ExerciseCard
-								key={exercise.id}
-								name={exercise.name}
-								imageFileName={exercise.imageFileName}
-								time={exercise.timeToComplete}
-								difficulty={exercise.difficulty}
-								id={exercise.id}
-								exercise={exercise}
-								isFavourited={exercise.isFavourited}
-								classes="w-[48%]"
-								variant="elevated"
-							/>
-						))}
-					</HStack>
-				</VStack>
+					<FormSelect
+						{...({
+							title: "general.filters.sort",
+							options: sortOptions,
+							selectedValue: sortAlpha,
+							onValueChange: (val: any) => setSortAlpha(val as "asc" | "desc"),
+							variant: "rounded",
+							size: "md",
+							placeholder: i18n.t("general.filters.sort"),
+							className: "flex-row items-center gap-2",
+							labelSize: "lg",
+						} as any)}
+					/>
+				</HStack>
+				<HStack space="md" className="flex-row flex-wrap self-center">
+					<CheckboxGroup value={showSources} onChange={onCheckBoxGroup}>
+						<HStack space="lg">
+							<Checkbox value="standard">
+								<CheckboxIndicator>
+									<CheckboxIcon as={CheckIcon} />
+								</CheckboxIndicator>
+								<CheckboxLabel>{i18n.t("general.filters.standard")}</CheckboxLabel>
+							</Checkbox>
+							<Checkbox value="custom">
+								<CheckboxIndicator>
+									<CheckboxIcon as={CheckIcon} />
+								</CheckboxIndicator>
+								<CheckboxLabel>{i18n.t("general.filters.custom")}</CheckboxLabel>
+							</Checkbox>
+						</HStack>
+					</CheckboxGroup>
 
-				{/* Intermediate */}
-				<VStack space="md" className="mb-6">
-					<Heading size="xl">{i18n.t("difficulty.intermediate")}</Heading>
-					<HStack space="md">
-						{getExercisesByDifficulty(ExerciseDifficulty.Intermediate).map((exercise) => (
-							<ExerciseCard
-								key={exercise.id}
-								name={exercise.name}
-								imageFileName={exercise.imageFileName}
-								time={exercise.timeToComplete}
-								difficulty={exercise.difficulty}
-								id={exercise.id}
-								exercise={exercise}
-								isFavourited={exercise.isFavourited}
-								classes="w-[48%]"
-								variant="elevated"
-							/>
-						))}
-					</HStack>
-				</VStack>
+					<Checkbox isChecked={showOnlyFavourited} onChange={setShowOnlyFavourited} value="favourite">
+						<CheckboxIndicator>
+							<CheckboxIcon as={CheckIcon} />
+						</CheckboxIndicator>
+						<CheckboxLabel>{i18n.t("general.filters.favouritesOnly")}</CheckboxLabel>
+					</Checkbox>
+				</HStack>
+			</VStack>
 
-				{/* Advanced */}
-				<VStack space="md" className="mb-6">
-					<Heading size="xl">{i18n.t("difficulty.advanced")}</Heading>
-					<HStack space="md">
-						{getExercisesByDifficulty(ExerciseDifficulty.Advanced).map((exercise) => (
-							<ExerciseCard
-								key={exercise.id}
-								name={exercise.name}
-								imageFileName={exercise.imageFileName}
-								time={exercise.timeToComplete}
-								difficulty={exercise.difficulty}
-								id={exercise.id}
-								exercise={exercise}
-								isFavourited={exercise.isFavourited}
-								classes="w-[48%]"
-								variant="elevated"
-							/>
-						))}
-					</HStack>
-				</VStack>
+			<VStack space="md" className="items-center mb-10">
+				{filteredExercises.map((ex) =>
+					ex.isCustom ? (
+						<CustomExerciseCard
+							key={`custom-${ex.id}`}
+							name={ex.name}
+							imageFileUrl={ex.imageFileUrl}
+							time={ex.customizableOptions?.exerciseTime.toString()}
+							difficulty={ex.difficulty}
+							id={ex.id}
+							exercise={ex}
+							isFavourited={ex.isFavourited}
+							variant="elevated"
+							classes="w-[90%]"
+						/>
+					) : (
+						<ExerciseCard
+							key={`standard-${ex.id}`}
+							name={ex.name}
+							imageFileName={ex.imageFileName}
+							time={ex.timeToComplete}
+							difficulty={ex.difficulty}
+							id={ex.id}
+							exercise={ex}
+							isFavourited={ex.isFavourited}
+							variant="elevated"
+							classes="w-[90%]"
+						/>
+					)
+				)}
 
-				{/* Custom Exercises */}
-				<VStack space="md" className="mb-10">
-					<Heading size="xl">{i18n.t("allExercises.custom")}</Heading>
-					<HStack space="md">
-						{customExercises.map((exercise) => (
-							<CustomExerciseCard
-								key={exercise.id}
-								name={exercise.name}
-								imageFileUrl={exercise.imageFileUrl}
-								time={exercise.customizableOptions.excerciseTime.toString()}
-								difficulty={exercise.difficulty}
-								id={exercise.id}
-								exercise={exercise}
-								isFavourited={exercise.isFavourited}
-								classes="w-[48%]"
-								variant="elevated"
-							/>
-						))}
-					</HStack>
-				</VStack>
-			</SafeAreaView>
+				{filteredExercises.length === 0 && (
+					<Text className="text-center text-muted-foreground mt-6">{i18n.t("general.noExercisesFound")}</Text>
+				)}
+			</VStack>
 		</ScrollView>
 	);
 }

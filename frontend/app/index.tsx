@@ -4,7 +4,7 @@ import { Image } from "react-native";
 import { useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchExercises, getCustomExercises } from "../store/data/dataSaga";
+import { fetchExercises, getCustomExercises, getPublicExercises } from "../store/data/dataSaga";
 import { AppDispatch, RootState } from "../store/store";
 import { useAuth } from "@clerk/clerk-expo";
 
@@ -17,6 +17,7 @@ export default function Home() {
 	useEffect(() => {
 		dispatch(fetchExercises());
 		dispatch(getCustomExercises());
+		dispatch(getPublicExercises());
 		if (isSignedIn) {
 			setTimeout(() => {
 				router.push("/(tabs)/");

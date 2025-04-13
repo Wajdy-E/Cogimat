@@ -15,14 +15,15 @@ export interface Exercise {
 	imageFileName: string;
 	isFavourited: boolean;
 	focus: string;
+	isChallenge: boolean;
 	customizableOptions?: CustomizableExerciseOptions;
 }
 
 export interface CustomizableExerciseOptions {
-	parameters: ExerciseParameters;
+	parameters?: ExerciseParameters;
 	offScreenTime: number;
 	onScreenTime: number;
-	excerciseTime: number;
+	exerciseTime: number;
 	offScreenColor: string;
 	onScreenColor: string;
 	restTime: number;
@@ -40,6 +41,8 @@ export interface CustomExercise {
 	imageFileUrl?: string;
 	isFavourited: boolean;
 	focus?: string[];
+	publicAccess: boolean;
+	youtubeUrl?: string;
 	customizableOptions: CustomizableExerciseOptions;
 }
 
@@ -56,6 +59,11 @@ export enum ExerciseDifficulty {
 	Advanced = "Advanced",
 }
 
+export enum FilterType {
+	Standard = "standard",
+	Custom = "custom",
+}
+
 export interface Goals {
 	goal: string;
 	id?: string;
@@ -68,6 +76,9 @@ export interface DataState {
 	progress: Record<number, any>;
 	goals: Goals[];
 	customExercises: CustomExercise[];
+	currentFilter: FilterType[];
+	publicExercises: CustomExercise[];
+	customizedExercises: Record<number, CustomizableExerciseOptions>;
 }
 
 const initialState: DataState = {
@@ -76,6 +87,9 @@ const initialState: DataState = {
 	progress: {},
 	goals: [],
 	customExercises: [],
+	currentFilter: [FilterType.Standard],
+	publicExercises: [],
+	customizedExercises: {} as Record<number, CustomizableExerciseOptions>,
 };
 
 const dataSlice = createSlice({
@@ -91,6 +105,20 @@ const dataSlice = createSlice({
 		selectExercise(state, action: PayloadAction<number>) {
 			const exercise = state.exercises.find((ex) => ex.id === action.payload);
 			state.selectedExercise = exercise || null;
+		},
+		updateExercise(state, { payload }: PayloadAction<CustomizableExerciseOptions>) {
+			if (state.selectedExercise && "publicAccess"! in state.selectedExercise) {
+				state.selectedExercise.customizableOptions = payload;
+
+				const exerciseIndex = state.exercises.findIndex((ex) => ex.id === state.selectedExercise?.id);
+				if (exerciseIndex !== -1) {
+					state.exercises[exerciseIndex] = state.selectedExercise as unknown as Exercise;
+				}
+			}
+		},
+		updateCustomOptions(state, action) {
+			const { id, options } = action.payload;
+			state.customizedExercises[id] = options;
 		},
 		updateProgress(state, action: PayloadAction<{ exerciseId: number; progress: any }>) {
 			state.progress[action.payload.exerciseId] = action.payload.progress;
@@ -142,6 +170,12 @@ const dataSlice = createSlice({
 		removeCustomExercise(state, { payload }: PayloadAction<number>) {
 			state.customExercises = state.customExercises.filter((ex) => ex.id !== payload);
 		},
+		setCurrentFilter(state, { payload }: PayloadAction<FilterType[]>) {
+			state.currentFilter = payload;
+		},
+		setPublicExercises(state, { payload }: PayloadAction<CustomExercise[]>) {
+			state.publicExercises = payload;
+		},
 	},
 });
 
@@ -152,6 +186,8 @@ export const {
 	setIsFavourite,
 	setCustomExerciseIsFavourite,
 	updateProgress,
+	updateCustomOptions,
+	updateExercise,
 	clearSelectedExercise,
 	setUserGoals,
 	updateUserGoals,
@@ -161,6 +197,8 @@ export const {
 	updateCustomExercise,
 	setCurrentCustomExercise,
 	removeCustomExercise,
+	setCurrentFilter,
+	setPublicExercises,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

@@ -20,7 +20,9 @@ const translations = {
 				community: "Community",
 			},
 			exercisePrograms: {
-				title: "Exercise programs",
+				allTitle: "Exercise programs",
+				customTitle: "My Custom Exercises",
+				communityTitle: "Community Exercises",
 				seeAll: "See All",
 			},
 			exerciseOfTheDay: "Exercise of the day",
@@ -28,6 +30,8 @@ const translations = {
 		},
 		account: {
 			signout: "Sign out",
+			signOutConfirm: "Are you sure you want to sign out?",
+			deleteAccountConfirm: "Are you sure you want to delete your account?",
 			deleteAccount: "Delete account",
 			title: "Account",
 			email: "Email Address",
@@ -40,7 +44,10 @@ const translations = {
 			notifications: "Notifications",
 			darkMode: "Dark Mode",
 			emailMarketing: "Email Marketing",
-
+			appLanguage: "App Language",
+			english: "🇬🇧 English",
+			français: "🇫🇷 Français",
+			日本語: "🇯🇵 日本語",
 			help: "Help",
 			billingHelp: "Account & Billing Help",
 			contactSupport: "Contact Support",
@@ -129,6 +136,21 @@ const translations = {
 				hours: "hours",
 				days: "days",
 			},
+			pageSubHeadings: {
+				allExercises: "All Exercises",
+				myCustomExercises: "My Custom Exercises",
+			},
+			filters: {
+				all: "All",
+				standard: "Our Exercises",
+				custom: "My Exercises",
+				favouritesOnly: "Favourited",
+				difficulty: "Difficulty",
+				sort: "Sort",
+				sortAZ: "A → Z",
+				sortZA: "Z → A",
+			},
+			noExercisesFound: "No exercises found",
 		},
 		createExercise: {
 			steps: {
@@ -151,6 +173,9 @@ const translations = {
 				reps: "Reps",
 				restTime: "Rest Time",
 				restTimePlaceholder: "Enter rest time",
+				ytUrl: "Youtube URL",
+				ytUrlPlaceholder: "Enter Youtube URL",
+				ytUrlHelper: "When entered overrides uploaded video below",
 			},
 		},
 		exercise: {
@@ -163,6 +188,7 @@ const translations = {
 				offScreenTime: "Off screen time",
 				onScreenTime: "On screen time",
 				exerciseTime: "Exercise time",
+				restTime: "Rest Time",
 				offScreenColor: "Off screen color {{offScreenColor}}",
 				onScreenColor: "On screen color {{onScreenColor}}",
 				startNow: "Start Now",
@@ -171,6 +197,27 @@ const translations = {
 				customization: "Customization",
 				durationSettings: "Duration Settings",
 				colorSettings: "Color Settings",
+			},
+			page: {
+				description: "Description",
+				instructions: "Instructions",
+			},
+		},
+		progress: {
+			actions: {
+				deleteGoal: "Are you sure you want to delete this goal?",
+			},
+			goals: {
+				workouts: "WORKOUTS",
+				milestones: "MILESTONES",
+				weeklyGoal: "WEEKLY GOAL",
+				tbd: "TBD",
+				customGoalsTitle: "My Custom Goals",
+				setGoalButton: "Set a new goal",
+				modal: {
+					label: "Set a goal",
+					placeholder: "e.g. Complete 5 workouts",
+				},
 			},
 		},
 		yupErrors: {
