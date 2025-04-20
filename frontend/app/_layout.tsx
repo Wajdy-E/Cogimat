@@ -11,8 +11,7 @@ import { useEffect } from "react";
 import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
+const publishableKey = process.env.CLERK_PROD_KEY!;
 function ThemedApp() {
 	const { theme } = useTheme();
 

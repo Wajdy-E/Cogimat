@@ -16,6 +16,9 @@ const translations = {
 			tabs: {
 				allExercises: "All Exercises",
 				interactiveExercises: "Interactive Exercises",
+				noCustomExercises: "You have not created any custom exercises",
+				createCustomExercise: "Create my first custom exercise",
+				noPublicExercises: "There are no public exercises. Please check again later.",
 				myCustomExercises: "My Custom Exercises",
 				community: "Community",
 			},
@@ -30,6 +33,7 @@ const translations = {
 		},
 		account: {
 			signout: "Sign out",
+			username: "Username",
 			signOutConfirm: "Are you sure you want to sign out?",
 			deleteAccountConfirm: "Are you sure you want to delete your account?",
 			deleteAccount: "Delete account",
@@ -207,6 +211,15 @@ const translations = {
 			actions: {
 				deleteGoal: "Are you sure you want to delete this goal?",
 			},
+			days: {
+				monday: "Monday",
+				tuesday: "Tuesday",
+				wednesday: "Wednesday",
+				thursday: "Thursday",
+				friday: "Friday",
+				saturday: "Saturday",
+				sunday: "Sunday",
+			},
 			goals: {
 				workouts: "WORKOUTS",
 				milestones: "MILESTONES",
@@ -265,6 +278,43 @@ const translations = {
 				passwordMin: "Password must be at least 6 characters",
 			},
 		},
+		milestones: {
+			exercisesCompleted: {
+				heading: "Total Exercises Completed",
+				description: "Track the total number of exercises you've completed across all types.",
+				subtext: "{{count}}% of your goal",
+			},
+			beginner: {
+				heading: "Beginner Exercises",
+				description: "Build your foundation by completing beginner-level training.",
+				subtext: "{{count}}% of your goal",
+			},
+			intermediate: {
+				heading: "Intermediate Exercises",
+				description: "Challenge yourself with intermediate-level tasks.",
+				subtext: "{{count}}% of your goal",
+			},
+			advanced: {
+				heading: "Advanced Exercises",
+				description: "Prove your skills with advanced difficulty exercises.",
+				subtext: "{{count}}% of your goal",
+			},
+			customCreated: {
+				heading: "Custom Exercises Created",
+				description: "Create and personalize your own training routines.",
+				subtext: "{{count}}% of your goal",
+			},
+			goals: {
+				heading: "Goals Created",
+				description: "Set goals to stay motivated and on track with your progress.",
+				subtext: "{{count}}% of your goal",
+			},
+			articles: {
+				heading: "Educational Articles Read",
+				description: "Expand your knowledge by completing learning materials.",
+				subtext: "{{count}}% of your goal",
+			},
+		},
 	},
 };
 export const i18n = new I18n(translations);
@@ -272,4 +322,3 @@ export const i18n = new I18n(translations);
 i18n.locale = getLocales()[0].languageCode ?? "en";
 
 i18n.enableFallback = true;
-i18n.locale = "ja";

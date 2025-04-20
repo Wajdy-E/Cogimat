@@ -15,7 +15,6 @@ export async function GET(req: Request) {
 			query("SELECT exercise_id FROM favorites WHERE user_id = $1", [userId]),
 		]);
 
-		console.log(exercises);
 		exercises.forEach((exercise) => {
 			exercise.isFavourited = favoriteIds.some((fav) => fav.exercise_id === exercise.id);
 		});

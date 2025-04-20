@@ -26,7 +26,7 @@ interface ModalProps {
 
 export default function ModalComponent(props: PropsWithChildren<ModalProps>) {
 	return (
-		<Modal isOpen={props.isOpen} onClose={props.onClose} size="md">
+		<Modal isOpen={props.isOpen} onClose={props.onClose} size="md" useRNModal={false}>
 			<ModalBackdrop />
 			<ModalContent>
 				<ModalHeader>

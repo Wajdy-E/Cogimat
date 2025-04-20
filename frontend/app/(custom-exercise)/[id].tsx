@@ -20,11 +20,11 @@ import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-import FormInput from "../../components/FormInput";
 import ModalComponent from "../../components/Modal";
-import { ExerciseDifficulty, setCurrentCustomExercise } from "../../store/data/dataSlice";
+import { CustomizableExerciseOptions, ExerciseDifficulty, setCurrentCustomExercise } from "../../store/data/dataSlice";
 import { RootState } from "../../store/store";
 import { i18n } from "../../i18n";
+import CustomSlider from "../../components/CustomSlider";
 
 function ExerciseProgram() {
 	const params = useLocalSearchParams();
@@ -33,7 +33,13 @@ function ExerciseProgram() {
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const dispatch = useDispatch();
-	dispatch(setCurrentCustomExercise(exercise));
+
+	useEffect(() => {
+		if (exercise) {
+			dispatch(setCurrentCustomExercise(exercise));
+		}
+	}, [exercise]);
+
 	const router = useRouter();
 
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
@@ -41,23 +47,10 @@ function ExerciseProgram() {
 	const [onScreenColor, setOnScreenColor] = useState("#000000");
 	const [offScreenColor, setOffScreenColor] = useState("#FFFFFF");
 	const [isEditing, setIsEditing] = useState(false);
-	const [durationSettings, setDurationSettings] = useState({
-		offScreenTime: "0.5",
-		onScreenTime: "0.5",
-		exerciseTime: exercise.customizableOptions?.exerciseTime.toString() || "60",
-	});
 
-	const handleOffScreenTimeChange = (value: string) => {
-		setDurationSettings((prev) => ({ ...prev, offScreenTime: value }));
-	};
-
-	const handleOnScreenTimeChange = (value: string) => {
-		setDurationSettings((prev) => ({ ...prev, onScreenTime: value }));
-	};
-
-	const handleExerciseTimeChange = (value: string) => {
-		setDurationSettings((prev) => ({ ...prev, exerciseTime: value }));
-	};
+	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
+		exercise.customizableOptions
+	);
 
 	const placeHolder = require("../../assets/exercise-thumbnails/placeholder.png");
 
@@ -99,8 +92,6 @@ function ExerciseProgram() {
 		player.loop = false;
 		player.play();
 	});
-
-	console.log(exercise);
 
 	return (
 		<View className="relative bg-background-700">
@@ -202,47 +193,37 @@ function ExerciseProgram() {
 									<Divider className="bg-slate-400" />
 								</View>
 
-								<FormInput
-									inputSize="sm"
-									formSize="sm"
-									inputType="text"
-									label="exercise.form.offScreenTime"
-									displayAsRow
-									onChange={handleOffScreenTimeChange}
-									defaultValue={durationSettings.offScreenTime}
-									value={durationSettings.offScreenTime}
-									isDisabled={!isEditing}
-									suffix="Seconds"
-								/>
-
-								<FormInput
-									inputSize="sm"
-									formSize="sm"
-									inputType="text"
-									onChange={handleOnScreenTimeChange}
-									defaultValue={durationSettings.onScreenTime}
-									label="exercise.form.onScreenTime"
-									value={durationSettings.onScreenTime}
-									displayAsRow
-									isDisabled={!isEditing}
-									suffix="Seconds"
-								/>
-
-								<FormInput
-									inputSize="sm"
-									formSize="sm"
-									inputType="text"
-									label="exercise.form.exerciseTime"
-									displayAsRow
-									onChange={handleExerciseTimeChange}
-									defaultValue={durationSettings.exerciseTime}
-									value={durationSettings.exerciseTime}
-									isDisabled={!isEditing}
-									suffix="Seconds"
-								/>
+								<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
+									{Object.entries(durationSettings || {}).map(([key, value]) =>
+										key !== "onScreenColor" && key !== "offScreenColor" && key !== "parameters" ? (
+											<CustomSlider
+												key={key}
+												title={`exercise.form.${key}`}
+												size="md"
+												minValue={key === "exerciseTime" ? 1 : 0.5}
+												maxValue={key === "exerciseTime" ? 5 : 15}
+												step={key === "exerciseTime" ? 0.5 : 0.1}
+												value={parseFloat(value.toString())}
+												defaultValue={parseFloat(value.toString())}
+												suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+												isReadOnly={!isEditing}
+												onChange={(newValue) =>
+													setDurationSettings((prev) =>
+														prev
+															? {
+																	...prev,
+																	[key]: newValue.toString(),
+																}
+															: undefined
+													)
+												}
+											/>
+										) : null
+									)}
+								</VStack>
 
 								{isEditing && (
-									<ButtonGroup className="flex-row self-end">
+									<ButtonGroup className="flex-row self-end py-3">
 										<Button variant="outline" onPress={() => setIsEditing(false)} action="secondary" size="md">
 											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
 										</Button>
@@ -263,13 +244,13 @@ function ExerciseProgram() {
 									<Divider className="bg-slate-400" />
 								</View>
 								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.offScreenColor")}</Heading>
+									<Heading size="sm">{i18n.t("exercise.form.offScreenColor", { offScreenColor })}</Heading>
 									<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
 										<Icon as={ArrowRight} size="md" />
 									</Button>
 								</View>
 								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.onScreenColor")}</Heading>
+									<Heading size="sm">{i18n.t("exercise.form.onScreenColor", { onScreenColor })}</Heading>
 									<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
 										<Icon as={ArrowRight} size="md" />
 									</Button>

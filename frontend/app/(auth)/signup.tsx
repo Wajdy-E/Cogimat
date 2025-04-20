@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, View, Platform, SafeAreaView } from "react-native";
-import * as AppleAuthentication from "expo-apple-authentication";
 import { Button, ButtonText } from "../components/ui/button";
 import FormInput from "../../components/FormInput";
 import { VStack } from "@/components/ui/vstack";
 import { Center } from "@/components/ui/center";
-import { Divider } from "@/components/ui/divider";
 import { Link, useRouter } from "expo-router";
 import BackButton from "../../components/BackButton";
 import * as Yup from "yup";
@@ -23,6 +21,7 @@ import Google from "../../assets/google.svg";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { InputIcon } from "@/components/ui/input";
 import { Eye, EyeClosed } from "lucide-react-native";
+
 export const useWarmUpBrowser = () => {
 	useEffect(() => {
 		void WebBrowser.warmUpAsync();
@@ -65,27 +64,33 @@ export default function SignUp() {
 	useWarmUpBrowser();
 
 	const { startSSOFlow } = useSSO();
-	const { user } = useUser();
+	const { user, isSignedIn } = useUser();
 
 	const onProviderSignIn = useCallback(async (strategy: string) => {
+		console.log("Launching sign-in for:", strategy); // Add this
+
 		try {
 			const { createdSessionId, setActive } = await startSSOFlow({
 				strategy: `oauth_${strategy}` as OAuthStrategy,
-				redirectUrl: AuthSession.makeRedirectUri(),
+				redirectUrl: AuthSession.makeRedirectUri({
+					scheme: "cogimat",
+					path: "oauth-callback",
+				}),
 			});
 
+			console.log("SSO Flow response:", createdSessionId);
+
 			if (createdSessionId) {
-				setActive!({ session: createdSessionId });
+				await setActive?.({ session: createdSessionId });
+				console.log("started");
 			}
 		} catch (err) {
-			// See https://clerk.com/docs/custom-flows/error-handling
-			// for more info on error handling
-			console.error(JSON.stringify(err, null, 2));
+			console.error("OAuth Error:", JSON.stringify(err, null, 2));
 		}
 	}, []);
 
 	useEffect(() => {
-		if (user) {
+		if (user && !isSignedIn) {
 			const { firstName, lastName, emailAddresses, id, username } = user;
 			const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0].emailAddress;
 

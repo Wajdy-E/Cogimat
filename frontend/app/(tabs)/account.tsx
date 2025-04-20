@@ -212,9 +212,10 @@ function Account() {
 						<Heading className="text-primary-500">{i18n.t("account.legal")}</Heading>
 						<AccountLink title="account.terms" link="unknown" isExternal />
 						<AccountLink title="account.privacy" link="unknown" isExternal />
+						<Divider className="bg-secondary-100" />
 						<View className="flex-row justify-between w-full">
 							<Heading size="sm">{i18n.t("account.version")}</Heading>
-							<Heading size="sm">1.0</Heading>
+							<Heading size="sm">1.0.0</Heading>
 						</View>
 					</VStack>
 					<Center>
@@ -243,7 +244,7 @@ function Account() {
 			<ModalComponent onClose={() => setShowUsernameModal(false)} isOpen={showUsernameModal} onConfirm={updateUsername}>
 				<FormInput
 					formSize="md"
-					label="Username"
+					label="account.username"
 					placeholder={user?.username ?? ""}
 					inputType="text"
 					inputSize="md"

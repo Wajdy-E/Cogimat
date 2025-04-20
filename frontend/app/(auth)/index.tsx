@@ -1,4 +1,3 @@
-import { ButtonText } from "@/components/ui/button";
 import { useUser } from "@clerk/clerk-expo";
 import { Link } from "expo-router";
 import { Button, Text } from "react-native";

@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { fetchExercises, getCustomExercises, getPublicExercises } from "../store/data/dataSaga";
 import { AppDispatch, RootState } from "../store/store";
 import { useAuth } from "@clerk/clerk-expo";
+import { fetchUserMilestones } from "../store/auth/authSaga";
 
 export default function Home() {
 	const backgroundImage = require("../assets/index.png");
@@ -18,6 +19,7 @@ export default function Home() {
 		dispatch(fetchExercises());
 		dispatch(getCustomExercises());
 		dispatch(getPublicExercises());
+		dispatch(fetchUserMilestones());
 		if (isSignedIn) {
 			setTimeout(() => {
 				router.push("/(tabs)/");

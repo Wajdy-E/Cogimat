@@ -89,7 +89,10 @@ function Login() {
 		try {
 			const { createdSessionId, setActive } = await startSSOFlow({
 				strategy: `oauth_${strategy}` as OAuthStrategy,
-				redirectUrl: AuthSession.makeRedirectUri(),
+				redirectUrl: AuthSession.makeRedirectUri({
+					scheme: "cogimat",
+					path: "oauth-callback",
+				}),
 			});
 			if (createdSessionId) {
 				setActive!({ session: createdSessionId });
@@ -194,7 +197,7 @@ function Login() {
 									{i18n.t("login.signUp")}
 								</Link>
 							</Text>
-							<Link href="/signup" className="underline text-primary-500">
+							<Link href="/ForgotPassword" className="underline text-primary-500">
 								{i18n.t("login.forgotPassword")}
 							</Link>
 						</Center>

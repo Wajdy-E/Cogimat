@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { REHYDRATE } from "redux-persist/lib/constants";
 export interface UserSubscriptionState {
 	isMonthly: boolean;
 	isSubscribed: boolean;
@@ -40,9 +39,30 @@ export interface User {
 	settings: UserSettings | null;
 }
 
+export interface UserMilestones {
+	exercisesCompleted: number;
+	beginnerExercisesCompleted: number;
+	intermediateExercisesCompleted: number;
+	advancedExercisesCompleted: number;
+	communityExercisesCompleted: number;
+	customExercisesCompleted: number;
+	customExercisesCreated: number;
+	goalsCreated: number;
+	educationalArticlesCompleted: number;
+}
+
+export interface MilestoneCardConfig {
+	key: keyof UserMilestones;
+	headingKey: string;
+	descriptionKey: string;
+	subTextKey: string;
+	goalTarget: number;
+}
+
 export interface UserState {
 	user: User;
 	isSignedIn: boolean;
+	milestones: UserMilestones | null;
 }
 
 const initialState: UserState = {
@@ -57,6 +77,7 @@ const initialState: UserState = {
 		},
 	},
 	isSignedIn: false,
+	milestones: null,
 };
 
 const userSlice = createSlice({
@@ -78,8 +99,12 @@ const userSlice = createSlice({
 		setIsSignedIn(state) {
 			state.isSignedIn = !state.isSignedIn;
 		},
+		setMilestonesProgress(state, { payload }: PayloadAction<UserMilestones>) {
+			state.milestones = payload;
+		},
 	},
 });
 
-export const { setCurrentUser, toggleTheme, setTheme, setNotifications, setIsSignedIn } = userSlice.actions;
+export const { setCurrentUser, toggleTheme, setTheme, setNotifications, setIsSignedIn, setMilestonesProgress } =
+	userSlice.actions;
 export default userSlice.reducer;

@@ -38,7 +38,13 @@ function ExerciseProgram() {
 	const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
 	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
-	dispatch(setCurrentExercise(exercise));
+
+	useEffect(() => {
+		if (exercise) {
+			dispatch(setCurrentExercise(exercise));
+		}
+	}, [exercise]);
+
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const router = useRouter();
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
@@ -120,7 +126,7 @@ function ExerciseProgram() {
 
 				<View className="flex items-center py-5">
 					<VStack className="w-[90%]" space="lg">
-						<View className="flex-row justify-start gap-4">
+						<View className="flex-row flex-wrap justify-start gap-4">
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 								<BadgeIcon as={getIconForType(exercise.difficulty)} />
 								<BadgeText size="lg">{exercise.difficulty}</BadgeText>
@@ -150,8 +156,8 @@ function ExerciseProgram() {
 						<Text>{exercise.instructions}</Text>
 
 						<Heading>{i18n.t("exercise.sections.customization")}</Heading>
-						<Box className="bg-secondary-500 p-6 rounded-2xl">
-							<VStack space="lg">
+						<Box className="bg-secondary-500 p-5 rounded-2xl">
+							<VStack space="lg" className="pb-3">
 								<View>
 									<View className="flex-row justify-between items-center">
 										<Heading size="md" className="text-primary-500">

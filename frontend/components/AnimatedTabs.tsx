@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		marginTop: 16,
-		paddingHorizontal: 16,
 	},
 });
 

@@ -7,13 +7,18 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { Theme } from "../../store/auth/authSlice";
 import { useTheme } from "@/components/ui/ThemeProvider";
+import { shallowEqual } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setCustomExerciseModalPopup } from "../../store/data/dataSlice";
 
 export default function TabsLayout() {
 	const activeColor = "#64dac4";
 	const inactiveColor = "#d3d3d3";
 
-	const [showModal, setShowModal] = useState<boolean>(false);
+	const dispatch = useDispatch();
 	const { themeBackgroundColor, themeTextColor } = useTheme();
+
+	const isOpen = useSelector((state: RootState) => state.data.popupStates.customExerciseModalIsOpen ?? false);
 
 	return (
 		<View className="h-screen">
@@ -49,6 +54,15 @@ export default function TabsLayout() {
 						href: null,
 					}}
 				/>
+
+				<Tabs.Screen
+					name="WeeklyGoal"
+					options={{
+						title: "Weekly workout goal",
+						href: null,
+					}}
+				/>
+
 				<Tabs.Screen
 					name="progress"
 					options={{
@@ -64,7 +78,7 @@ export default function TabsLayout() {
 						title: "",
 						tabBarButton: () => (
 							<Pressable
-								onPress={() => setShowModal(true)}
+								onPress={() => dispatch(setCustomExerciseModalPopup(true))}
 								style={{
 									position: "absolute",
 									bottom: 20,
@@ -98,7 +112,7 @@ export default function TabsLayout() {
 					}}
 				/>
 			</Tabs>
-			<CreateExerciseModal isOpen={showModal} onClose={() => setShowModal(false)} />
+			<CreateExerciseModal isOpen={isOpen} onClose={() => dispatch(setCustomExerciseModalPopup(false))} />
 		</View>
 	);
 }

@@ -72,7 +72,7 @@ function AllExercises() {
 
 	return (
 		<ScrollView className="bg-background-700">
-			<VStack space="lg" className="mb-6 w-[90%] self-center">
+			<VStack space="lg" className="my-6 w-[90%] self-center">
 				<HStack space="lg" className="flex-row flex-wrap self-end">
 					<FormSelect
 						{...({

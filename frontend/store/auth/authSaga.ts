@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { setCurrentUser, UserBase } from "./authSlice";
+import { setCurrentUser, setMilestonesProgress, UserBase, UserMilestones } from "./authSlice";
+import { RootState } from "../store";
 
 const BASE_URL = process.env.BASE_URL;
 export const createUser = createAsyncThunk<UserBase, UserBase>(
@@ -46,3 +47,19 @@ export const deleteUserThunk = createAsyncThunk("auth/deleteUser", async (clerk_
 		throw error;
 	}
 });
+
+export const fetchUserMilestones = createAsyncThunk(
+	"milestones/fetchUserMilestones",
+	async (_, { getState, dispatch }) => {
+		try {
+			const state = getState() as RootState;
+			const userId = state.user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+			const response = await axios.get<UserMilestones>(`${BASE_URL}/api/user-milestones`, { params: { userId } });
+			dispatch(setMilestonesProgress(response.data));
+		} catch (error) {
+			console.error("Error fetching milestones progress:", error);
+			throw error;
+		}
+	}
+);

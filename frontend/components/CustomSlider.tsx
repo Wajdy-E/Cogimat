@@ -31,7 +31,7 @@ export default function CustomSlider(props: CustomSliderProps & Size) {
 
 	return (
 		<Box className="flex-row justify-between items-center">
-			<View>{props.title && <Heading>{i18n.t(props.title)}</Heading>}</View>
+			<View>{props.title && <Heading size="sm">{i18n.t(props.title)}</Heading>}</View>
 			<Center style={{ width: props.width || 150, height: props.height || 20 }} className="gap-4">
 				<Text>
 					{props.prefix && `${i18n.t(props.prefix)} `}

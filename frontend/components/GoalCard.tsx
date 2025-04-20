@@ -30,7 +30,7 @@ export default function GoalCard({ text, onDelete, onCheck }: GoalCardProps) {
 				>
 					{checked && <Check size={14} color="#1C1C1E" />}
 				</View>
-				<Text className="text-white text-base">{text}</Text>
+				<Text className="text-typography-950 text-base">{text}</Text>
 			</Pressable>
 
 			<Button

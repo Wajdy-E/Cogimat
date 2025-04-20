@@ -70,6 +70,10 @@ export interface Goals {
 	completed: boolean;
 }
 
+export interface PopupStates {
+	customExerciseModalIsOpen: boolean;
+}
+
 export interface DataState {
 	exercises: Exercise[];
 	selectedExercise: Exercise | CustomExercise | null;
@@ -79,6 +83,7 @@ export interface DataState {
 	currentFilter: FilterType[];
 	publicExercises: CustomExercise[];
 	customizedExercises: Record<number, CustomizableExerciseOptions>;
+	popupStates: PopupStates;
 }
 
 const initialState: DataState = {
@@ -90,6 +95,9 @@ const initialState: DataState = {
 	currentFilter: [FilterType.Standard],
 	publicExercises: [],
 	customizedExercises: {} as Record<number, CustomizableExerciseOptions>,
+	popupStates: {
+		customExerciseModalIsOpen: false,
+	},
 };
 
 const dataSlice = createSlice({
@@ -176,6 +184,9 @@ const dataSlice = createSlice({
 		setPublicExercises(state, { payload }: PayloadAction<CustomExercise[]>) {
 			state.publicExercises = payload;
 		},
+		setCustomExerciseModalPopup(state, { payload }: PayloadAction<boolean>) {
+			state.popupStates.customExerciseModalIsOpen = payload;
+		},
 	},
 });
 
@@ -183,6 +194,7 @@ export const {
 	setExercises,
 	selectExercise,
 	setCurrentExercise,
+	setCustomExerciseModalPopup,
 	setIsFavourite,
 	setCustomExerciseIsFavourite,
 	updateProgress,

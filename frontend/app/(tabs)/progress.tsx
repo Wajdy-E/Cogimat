@@ -16,10 +16,73 @@ import { AppDispatch, RootState } from "../../store/store";
 import { addGoal, deleteGoal, updateGoal } from "../../store/data/dataSaga";
 import { clearGoals } from "../../store/data/dataSlice";
 import AlertModal from "../../components/AlertModal";
+import { useRouter } from "expo-router";
+import { MilestoneCardConfig, UserMilestones } from "../../store/auth/authSlice";
+import ProgressCard from "../../components/ProgressCard";
+import { shallowEqual } from "react-redux";
+
+export const milestoneCardConfigs: MilestoneCardConfig[] = [
+	{
+		key: "exercisesCompleted",
+		headingKey: "milestones.exercisesCompleted.heading",
+		descriptionKey: "milestones.exercisesCompleted.description",
+		subTextKey: "milestones.exercisesCompleted.subtext",
+		goalTarget: 100,
+	},
+	{
+		key: "beginnerExercisesCompleted",
+		headingKey: "milestones.beginner.heading",
+		descriptionKey: "milestones.beginner.description",
+		subTextKey: "milestones.beginner.subtext",
+		goalTarget: 20,
+	},
+	{
+		key: "intermediateExercisesCompleted",
+		headingKey: "milestones.intermediate.heading",
+		descriptionKey: "milestones.intermediate.description",
+		subTextKey: "milestones.intermediate.subtext",
+		goalTarget: 20,
+	},
+	{
+		key: "advancedExercisesCompleted",
+		headingKey: "milestones.advanced.heading",
+		descriptionKey: "milestones.advanced.description",
+		subTextKey: "milestones.advanced.subtext",
+		goalTarget: 20,
+	},
+	{
+		key: "customExercisesCreated",
+		headingKey: "milestones.customCreated.heading",
+		descriptionKey: "milestones.customCreated.description",
+		subTextKey: "milestones.customCreated.subtext",
+		goalTarget: 10,
+	},
+	{
+		key: "goalsCreated",
+		headingKey: "milestones.goals.heading",
+		descriptionKey: "milestones.goals.description",
+		subTextKey: "milestones.goals.subtext",
+		goalTarget: 5,
+	},
+	{
+		key: "educationalArticlesCompleted",
+		headingKey: "milestones.articles.heading",
+		descriptionKey: "milestones.articles.description",
+		subTextKey: "milestones.articles.subtext",
+		goalTarget: 10,
+	},
+];
 
 function Progress() {
 	const appDispatch: AppDispatch = useDispatch();
-	const goals = useSelector((state: RootState) => state.data.goals);
+	const router = useRouter();
+	const { goals, userMilestones } = useSelector(
+		(state: RootState) => ({
+			goals: state.data.goals,
+			userMilestones: state.user.milestones ?? ([] as unknown as UserMilestones),
+		}),
+		shallowEqual
+	);
 	const [showAddGoalModal, setShowAddGoalModal] = useState(false);
 	const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -61,62 +124,84 @@ function Progress() {
 	}
 
 	const tabs = [
-		<View>
-			<VStack space="xl">
-				<Grid
-					className="gap-5"
-					_extra={{
-						className: "grid-cols-12",
-					}}
-				>
-					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+		<VStack space="xl">
+			<Grid
+				className="gap-5"
+				_extra={{
+					className: "grid-cols-12",
+				}}
+			>
+				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.workouts")}</Heading>
 						<Text>0</Text>
-					</GridItem>
-					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+					</Button>
+				</GridItem>
+				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.milestones")}</Heading>
 						<Text>0</Text>
-					</GridItem>
-					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+					</Button>
+				</GridItem>
+				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.weeklyGoal")}</Heading>
 						<Text>0</Text>
-					</GridItem>
-					<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+					</Button>
+				</GridItem>
+				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
+					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.tbd")}</Heading>
 						<Text>0</Text>
-					</GridItem>
-				</Grid>
+					</Button>
+				</GridItem>
+			</Grid>
 
-				<Heading size="lg">{i18n.t("progress.goals.customGoalsTitle")}</Heading>
+			<Heading size="lg">{i18n.t("progress.goals.customGoalsTitle")}</Heading>
 
-				<Button size="lg" variant="solid" action="primary" className="mb-3" onPress={() => setShowAddGoalModal(true)}>
-					<ButtonText>{i18n.t("progress.goals.setGoalButton")}</ButtonText>
-					<ButtonIcon as={Edit} size="md" />
-				</Button>
+			<Button size="lg" variant="solid" action="primary" className="mb-3" onPress={() => setShowAddGoalModal(true)}>
+				<ButtonText>{i18n.t("progress.goals.setGoalButton")}</ButtonText>
+				<ButtonIcon as={Edit} size="md" />
+			</Button>
 
-				{goals?.map((goal) => (
-					<GoalCard
-						key={goal.id}
-						text={goal.goal}
-						onDelete={() => {
-							setGoalToDelete(goal.id ?? null);
-							setShowDeleteModal(true);
-						}}
-						onCheck={() => handleToggleCheck(goal.id ?? null)}
+			{goals?.map((goal) => (
+				<GoalCard
+					key={goal.id}
+					text={goal.goal}
+					onDelete={() => {
+						setGoalToDelete(goal.id ?? null);
+						setShowDeleteModal(true);
+					}}
+					onCheck={() => handleToggleCheck(goal.id ?? null)}
+				/>
+			))}
+		</VStack>,
+
+		<VStack space="lg">
+			{milestoneCardConfigs.map((config) => {
+				const rawValue = userMilestones[config.key] ?? 0;
+				const progressPercent = config.goalTarget ? Math.min(100, (rawValue / config.goalTarget) * 100) : 0;
+
+				return (
+					<ProgressCard
+						key={config.key}
+						value={progressPercent}
+						headingKey={config.headingKey}
+						descriptionKey={config.descriptionKey}
+						subTextKey={config.subTextKey}
 					/>
-				))}
-			</VStack>
-		</View>,
-
-		<Text>to be determined Content</Text>,
+				);
+			})}
+		</VStack>,
 	];
 
 	return (
-		<ScrollView showsHorizontalScrollIndicator={false} className="bg-background-700">
-			<View className="w-[90%] self-center mt-5">
-				<AnimatedTab options={["Tab A", "Tab B"]} content={tabs} />
+		<ScrollView showsHorizontalScrollIndicator={false} className="bg-background-700 min-h-full">
+			<View className="w-[90%] self-center">
+				<View className="mt-5 flex self-center">
+					<AnimatedTab options={["Tab A", "Tab B"]} content={tabs} />
+				</View>
 			</View>
-
 			<ModalComponent onClose={() => setShowAddGoalModal(false)} isOpen={showAddGoalModal} onConfirm={handleAddGoal}>
 				<FormInput
 					formSize="md"

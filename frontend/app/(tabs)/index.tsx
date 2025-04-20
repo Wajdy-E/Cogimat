@@ -1,6 +1,5 @@
 import { ScrollView, View } from "react-native";
 import Tab, { TabItem } from "../../components/Tab";
-import { Brain, FileChartColumn, UsersRound, ClipboardPen } from "lucide-react-native";
 import { useUser } from "@clerk/clerk-expo";
 import ExerciseCard from "../../components/ExerciseCard";
 import NavigateTo from "../../components/NavigateTo";
@@ -9,8 +8,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { useExercise } from "@/hooks/useExercise";
-import { CustomExercise, Exercise, ExerciseDifficulty, FilterType, setCurrentFilter } from "../../store/data/dataSlice";
-import { Center } from "@/components/ui/center";
+import {
+	CustomExercise,
+	Exercise,
+	FilterType,
+	setCurrentFilter,
+	setCustomExerciseModalPopup,
+} from "../../store/data/dataSlice";
 import { VStack } from "@/components/ui/vstack";
 import BlogCard from "../../components/CardWithImage";
 import { i18n } from "../../i18n";
@@ -22,12 +26,21 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { shallowEqual } from "react-redux";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react-native";
+import CreateExerciseModal from "../../components/program-components/CreateExerciseModal";
 
 function Home() {
 	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
 	const customExercises = useCustomExercise(null) as CustomExercise[];
-	const publicExercises = useSelector((state: RootState) => state.data.publicExercises, shallowEqual);
+	const { publicExercises, isOpen } = useSelector(
+		(state: RootState) => ({
+			publicExercises: state.data.publicExercises,
+			isOpen: state.data.popupStates?.customExerciseModalIsOpen ?? false,
+		}),
+		shallowEqual
+	);
 	const dispatch = useDispatch();
 	const dailyChallenge = exercises.find((ex) => ex.isChallenge);
 	const onPressAllExercises = (isCustom: boolean) => {
@@ -49,7 +62,7 @@ function Home() {
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
-							{exercises.map((exercise) => (
+							{exercises.slice(0, 10).map((exercise) => (
 								<ExerciseCard
 									key={exercise.id}
 									name={exercise.name}
@@ -82,20 +95,37 @@ function Home() {
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
-							{customExercises.map((exercise) => (
-								<CustomExerciseCard
-									key={exercise.id}
-									name={exercise.name}
-									imageFileUrl={exercise.imageFileUrl}
-									time={exercise.customizableOptions.exerciseTime.toString()}
-									difficulty={exercise.difficulty}
-									id={exercise.id}
-									exercise={exercise}
-									classes="w-[250px]"
-									isFavourited={exercise.isFavourited}
-									variant="elevated"
-								/>
-							))}
+							{customExercises.length === 0 ? (
+								<VStack space="lg" className="bg-background-500 rounded-md p-3 w-full">
+									<Text size="lg">{i18n.t("home.tabs.noCustomExercises")}</Text>
+									<Button
+										variant="solid"
+										onPress={() => dispatch(setCustomExerciseModalPopup(true))}
+										action="primary"
+										size="md"
+									>
+										<ButtonText>{i18n.t("home.tabs.createCustomExercise")}</ButtonText>
+										<ButtonIcon as={ChevronRight} />
+									</Button>
+								</VStack>
+							) : (
+								customExercises
+									.slice(0, 10)
+									.map((exercise) => (
+										<CustomExerciseCard
+											key={exercise.id}
+											name={exercise.name}
+											imageFileUrl={exercise.imageFileUrl}
+											time={exercise.customizableOptions.exerciseTime.toString()}
+											difficulty={exercise.difficulty}
+											id={exercise.id}
+											exercise={exercise}
+											classes="w-[250px]"
+											isFavourited={exercise.isFavourited}
+											variant="elevated"
+										/>
+									))
+							)}
 						</HStack>
 					</ScrollView>
 				</View>
@@ -115,20 +145,26 @@ function Home() {
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
-							{publicExercises?.map((exercise) => (
-								<CustomExerciseCard
-									key={exercise.id}
-									name={exercise.name}
-									imageFileUrl={exercise.imageFileUrl}
-									time={exercise.customizableOptions.exerciseTime.toString()}
-									difficulty={exercise.difficulty}
-									id={exercise.id}
-									exercise={exercise}
-									classes="w-[250px]"
-									isFavourited={exercise.isFavourited}
-									variant="elevated"
-								/>
-							))}
+							{publicExercises.length === 0 ? (
+								<VStack space="lg" className="bg-background-500 rounded-md p-3 w-full">
+									<Text size="lg">{i18n.t("home.tabs.noPublicExercises")}</Text>
+								</VStack>
+							) : (
+								publicExercises?.map((exercise) => (
+									<CustomExerciseCard
+										key={exercise.id}
+										name={exercise.name}
+										imageFileUrl={exercise.imageFileUrl}
+										time={exercise.customizableOptions.exerciseTime.toString()}
+										difficulty={exercise.difficulty}
+										id={exercise.id}
+										exercise={exercise}
+										classes="w-[250px]"
+										isFavourited={exercise.isFavourited}
+										variant="elevated"
+									/>
+								))
+							)}
 						</HStack>
 					</ScrollView>
 				</View>
@@ -206,6 +242,7 @@ function Home() {
 					</HStack>
 				</ScrollView>
 			</Box>
+			<CreateExerciseModal isOpen={isOpen} onClose={() => dispatch(setCustomExerciseModalPopup(false))} />
 		</ScrollView>
 	);
 }

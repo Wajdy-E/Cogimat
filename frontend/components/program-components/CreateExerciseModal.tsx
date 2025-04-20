@@ -156,7 +156,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	const handleSubmit = async () => {
 		const valid = await validateForm();
 		if (!valid) return;
-		console.log(formData);
 		await dispatch(createCustomExercise(formData)).unwrap();
 		props.onClose();
 	};
