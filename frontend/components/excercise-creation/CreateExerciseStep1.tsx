@@ -30,7 +30,7 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 				isRequired
 				label="createExercise.form.nameLabel"
 				placeholder="createExercise.form.namePlaceholder"
-				value={formData.name}
+				defaultValue={formData.name}
 				inputSize="md"
 				onChange={(text) => onChange("name", text)}
 				inputType="text"
@@ -41,7 +41,7 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 
 			<FormInput
 				placeholder="createExercise.form.descriptionPlaceholder"
-				value={formData.description}
+				defaultValue={formData.description}
 				label="createExercise.form.descriptionLabel"
 				inputSize="md"
 				onChange={(text) => onChange("description", text)}
@@ -59,7 +59,7 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 				<Textarea size="lg">
 					<TextareaInput
 						placeholder={i18n.t("createExercise.form.instructionsPlaceholder")}
-						value={formData.instructions}
+						defaultValue={formData.instructions}
 						onChangeText={(text) => onChange("instructions", text)}
 					/>
 				</Textarea>
@@ -71,7 +71,7 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 
 			<FormInput
 				placeholder="createExercise.form.focusPlaceholder"
-				value={focus}
+				defaultValue={focus}
 				label="createExercise.form.focusLabel"
 				inputSize="md"
 				onChange={(text) => onChange("focus", text)}

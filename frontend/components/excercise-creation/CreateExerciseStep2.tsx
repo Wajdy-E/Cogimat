@@ -28,6 +28,8 @@ export default function CreateExerciseStepTwo({
 	setDurationSettings,
 	setShowOffScreenColorPicker,
 	setShowOnScreenColorPicker,
+	showOffScreenColorPicker,
+	showOnScreenColorPicker,
 	onScreenColor,
 	offScreenColor,
 	onColorChange,
@@ -114,14 +116,14 @@ export default function CreateExerciseStepTwo({
 			</View>
 
 			<ColorPickerModal
-				isOpen={formData.showOffScreenColorPicker}
+				isOpen={showOffScreenColorPicker}
 				onClose={() => setShowOffScreenColorPicker(false)}
 				onConfirm={onConfirm.off}
 				onColorChange={onColorChange.off}
 			/>
 
 			<ColorPickerModal
-				isOpen={formData.showOnScreenColorPicker}
+				isOpen={showOnScreenColorPicker}
 				onClose={() => setShowOnScreenColorPicker(false)}
 				onConfirm={onConfirm.on}
 				onColorChange={onColorChange.on}

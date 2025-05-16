@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { ScrollView, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as Notifications from "expo-notifications";
@@ -43,7 +43,8 @@ function Account() {
 	const [showSignoutModal, setShowSignoutModal] = useState(false);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [showUsernameModal, setShowUsernameModal] = useState(false);
-	const [username, setUsername] = useState<string>(user?.username ?? "");
+	const usernameRef = useRef(user?.username ?? "");
+
 	const { theme, toggleTheme, themeTextColor } = useTheme();
 	const { notifications } = useSelector(
 		(state: RootState) => ({
@@ -117,7 +118,7 @@ function Account() {
 	}
 
 	async function updateUsername() {
-		if (user) await user.update({ username: username });
+		if (user) await user.update({ username: usernameRef.current });
 		setShowUsernameModal(false);
 	}
 
@@ -248,8 +249,8 @@ function Account() {
 					placeholder={user?.username ?? ""}
 					inputType="text"
 					inputSize="md"
-					onChange={(text) => setUsername(text)}
-					value={username}
+					onChange={(text) => (usernameRef.current = text)}
+					defaultValue={usernameRef.current}
 				/>
 			</ModalComponent>
 		</ScrollView>

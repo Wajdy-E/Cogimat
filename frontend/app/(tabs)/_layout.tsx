@@ -1,15 +1,14 @@
-import { useState } from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import CreateExerciseModal from "../../components/program-components/CreateExerciseModal";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { Theme } from "../../store/auth/authSlice";
 import { useTheme } from "@/components/ui/ThemeProvider";
-import { shallowEqual } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setCustomExerciseModalPopup } from "../../store/data/dataSlice";
+import { Button, ButtonIcon } from "@/components/ui/button";
+import { PlusCircleIcon, PlusIcon } from "lucide-react-native";
 
 export default function TabsLayout() {
 	const activeColor = "#64dac4";
@@ -77,19 +76,21 @@ export default function TabsLayout() {
 					options={{
 						title: "",
 						tabBarButton: () => (
-							<Pressable
+							<Button
 								onPress={() => dispatch(setCustomExerciseModalPopup(true))}
+								variant="solid"
 								style={{
 									position: "absolute",
 									bottom: 20,
 									left: "50%",
 									marginLeft: -28,
-									backgroundColor: "#000000",
 									borderRadius: 50,
+									height: 50,
+									width: 50,
 								}}
 							>
-								<Ionicons name="add-circle" size={56} color={activeColor} />
-							</Pressable>
+								<ButtonIcon as={PlusIcon} color={"white"} height={30} width={30} />
+							</Button>
 						),
 					}}
 				/>

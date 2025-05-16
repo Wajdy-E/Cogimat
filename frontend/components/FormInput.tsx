@@ -27,7 +27,7 @@ interface FormInputProps {
 	isRequired?: boolean;
 	inputType: "text" | "password" | undefined;
 	defaultValue?: string;
-	onChange: (text: string) => void;
+	onChange?: (text: string) => void;
 	displayAsRow?: boolean;
 	onIconClick?: () => void;
 	inputIcon?: React.ReactNode;
@@ -36,7 +36,8 @@ interface FormInputProps {
 	suffix?: string;
 	labelSize?: "sm" | "md" | "lg" | undefined;
 }
-export default function FormInput(props: FormInputProps) {
+
+function FormInputComponent(props: FormInputProps) {
 	return (
 		<FormControl
 			isInvalid={props.invalid}
@@ -56,10 +57,9 @@ export default function FormInput(props: FormInputProps) {
 				>
 					<InputField
 						placeholder={i18n.t(props.placeholder ?? "")}
-						value={props.value}
 						type={props.inputType}
-						onChangeText={props.onChange}
 						defaultValue={props.defaultValue}
+						onChange={(e) => props.onChange?.(e.nativeEvent.text)}
 					/>
 					{props.onIconClick && props.inputIcon && (
 						<InputSlot className="pr-3" onPress={props.onIconClick}>
@@ -87,3 +87,5 @@ export default function FormInput(props: FormInputProps) {
 		</FormControl>
 	);
 }
+
+export default FormInputComponent;

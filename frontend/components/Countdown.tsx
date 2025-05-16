@@ -1,24 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text } from "react-native";
 
-interface ExerciseStartingProps {
+interface CountdownProps {
 	seconds: number;
 	onComplete: () => void;
 	isVisible: boolean;
 }
 
-export default function Countdown({ seconds, onComplete, isVisible }: ExerciseStartingProps) {
+export default function Countdown({ seconds, onComplete, isVisible }: CountdownProps) {
 	const [timeLeft, setTimeLeft] = useState(seconds);
+	const hasStarted = useRef(false); // Prevent multiple starts
 
 	useEffect(() => {
-		if (!isVisible || seconds <= 0) return;
+		if (!isVisible || seconds <= 0 || hasStarted.current) return;
 
+		hasStarted.current = true; // Mark as started
 		setTimeLeft(seconds);
 		const timer = setInterval(() => {
 			setTimeLeft((prev) => {
 				if (prev <= 1) {
 					clearInterval(timer);
-					onComplete?.();
 					return 0;
 				}
 				return prev - 1;
@@ -27,6 +28,13 @@ export default function Countdown({ seconds, onComplete, isVisible }: ExerciseSt
 
 		return () => clearInterval(timer);
 	}, [isVisible, seconds]);
+
+	useEffect(() => {
+		if (timeLeft === 0 && hasStarted.current) {
+			hasStarted.current = false; // Reset for potential reuse
+			onComplete?.();
+		}
+	}, [timeLeft, onComplete]);
 
 	if (!isVisible) return null;
 

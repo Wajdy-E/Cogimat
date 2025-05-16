@@ -61,7 +61,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 	return (
 		<Card
 			variant={props.variant ? props.variant : "outline"}
-			className={`p-0 rounded-2xl overflow-hidden ${props.classes}`}
+			className={`p-0 rounded-md overflow-hidden ${props.classes}`}
 		>
 			<VStack space="sm" className="content relative">
 				<View className="relative">

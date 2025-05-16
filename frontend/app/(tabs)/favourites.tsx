@@ -64,6 +64,7 @@ function Favourites() {
 											exercise={exercise}
 											classes="w-full"
 											isFavourited={exercise.isFavourited}
+											variant="elevated"
 										/>
 									))}
 							</VStack>
@@ -93,6 +94,7 @@ function Favourites() {
 											exercise={exercise}
 											classes="w-full"
 											isFavourited={exercise.isFavourited}
+											variant="elevated"
 										/>
 									))}
 							</VStack>

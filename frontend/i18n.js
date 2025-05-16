@@ -208,6 +208,8 @@ const translations = {
 			},
 		},
 		progress: {
+			milestones: "Milestones",
+			overview: "Overview",
 			actions: {
 				deleteGoal: "Are you sure you want to delete this goal?",
 			},
@@ -314,6 +316,10 @@ const translations = {
 				description: "Expand your knowledge by completing learning materials.",
 				subtext: "{{count}}% of your goal",
 			},
+		},
+		exerciseProgress: {
+			stimulus: "Stimulus",
+			count: "Count",
 		},
 	},
 };

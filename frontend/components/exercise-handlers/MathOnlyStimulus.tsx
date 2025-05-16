@@ -1,0 +1,126 @@
+// components/exerciseHandlers/MathOnlyStimulus.tsx
+
+import { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Play, Pause, X } from "lucide-react-native";
+import Countdown from "../Countdown";
+import { Exercise } from "../../store/data/dataSlice";
+
+export default function MathOnlyStimulus({ exercise }: { exercise: Exercise }) {
+	const [problem, setProblem] = useState<string | null>(null);
+	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
+	const [isPaused, setIsPaused] = useState(false);
+	const [timeLeft, setTimeLeft] = useState(parseInt(exercise.timeToComplete) || 60);
+
+	const custom = exercise.customizableOptions;
+	const offScreenTime = custom?.offScreenTime ?? 0.5;
+	const onScreenTime = custom?.onScreenTime ?? 1;
+	const totalDuration = parseInt(exercise.timeToComplete) || 60;
+
+	useEffect(() => {
+		let elapsed = 0;
+		let active = true;
+
+		const runCycle = async () => {
+			while (active && elapsed < totalDuration && !isPaused) {
+				setIsWhiteScreen(false);
+				setProblem(generateValidMathProblem());
+				await delay(onScreenTime * 1000);
+
+				setIsWhiteScreen(true);
+				await delay(offScreenTime * 1000);
+
+				elapsed += onScreenTime + offScreenTime;
+				setTimeLeft((prev) => Math.max(prev - (onScreenTime + offScreenTime), 0));
+			}
+		};
+
+		runCycle();
+		return () => {
+			active = false;
+		};
+	}, [isPaused]);
+
+	const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+	const generateValidMathProblem = (): string => {
+		while (true) {
+			const operations = ["+", "-", "x", "/"];
+			const op = operations[Math.floor(Math.random() * operations.length)];
+
+			let a = 1 + Math.floor(Math.random() * 4);
+			let b = 1 + Math.floor(Math.random() * 4);
+
+			let result: number = 0;
+			let problem: string;
+
+			switch (op) {
+				case "+":
+					result = a + b;
+					problem = `${a} + ${b}`;
+					break;
+				case "-":
+					[a, b] = a >= b ? [a, b] : [b, a];
+					result = a - b;
+					problem = `${a} - ${b}`;
+					break;
+				case "x":
+					result = a * b;
+					problem = `${a} x ${b}`;
+					break;
+				case "/":
+					result = a;
+					problem = `${a * b} / ${b}`;
+					break;
+			}
+
+			if (result >= 1 && result <= 4) return problem!;
+		}
+	};
+
+	const renderStimulus = () => {
+		if (isWhiteScreen)
+			return (
+				<View className="absolute inset-0" style={{ backgroundColor: exercise.customizableOptions?.offScreenColor }} />
+			);
+
+		if (!problem) return null;
+
+		return (
+			<View className="absolute inset-0 justify-center items-center bg-background-700">
+				<Text style={{ fontSize: 150 }} className="text-typography-950 font-bold">
+					{problem}
+				</Text>
+			</View>
+		);
+	};
+
+	return (
+		<>
+			{renderStimulus()}
+
+			<View className="bg-gray-800 rounded-full absolute px-10 py-3 right-5 top-5">
+				<Text className="text-white text-xl font-bold">{Math.ceil(timeLeft)}s</Text>
+			</View>
+
+			<TouchableOpacity
+				className="bg-primary-500 p-4 rounded-full absolute bottom-5 left-5"
+				onPress={() => setIsPaused((prev) => !prev)}
+			>
+				{isPaused ? <Play size={30} color="black" /> : <Pause size={30} color="black" />}
+			</TouchableOpacity>
+
+			<TouchableOpacity
+				className="bg-red-600 p-4 rounded-full absolute bottom-5 right-5"
+				onPress={() => {
+					setProblem(null);
+					setIsWhiteScreen(false);
+					setIsPaused(false);
+					setTimeLeft(totalDuration);
+				}}
+			>
+				<X size={30} color="white" />
+			</TouchableOpacity>
+		</>
+	);
+}

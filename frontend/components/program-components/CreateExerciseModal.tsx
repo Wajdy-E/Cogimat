@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
 	Drawer,
 	DrawerBackdrop,
@@ -42,6 +42,11 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	const [durationSettings, setDurationSettings] = useState(defaultDurationSettings);
 
 	const dispatch: AppDispatch = useDispatch();
+	const nameRef = useRef("");
+	const descriptionRef = useRef("");
+	const instructionsRef = useRef("");
+	const focusRef = useRef("");
+	const youtubeUrlRef = useRef("");
 
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
 	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
@@ -68,8 +73,8 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		offScreenColor: string;
 		onScreenColor: string;
 		restTime: number;
-		youtubeUrl: string;
-	}>({
+		youtubeUrl?: string;
+	} | null>({
 		name: "",
 		description: "",
 		instructions: "",
@@ -87,13 +92,13 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		offScreenColor: offScreenColor,
 		onScreenColor: onScreenColor,
 		restTime: durationSettings.restTime,
-		youtubeUrl: "",
+		youtubeUrl: undefined,
 	});
 
-	const updateDuration = (key: keyof typeof durationSettings, value: number) => {
-		setDurationSettings((prev) => ({ ...prev, [key]: value }));
-		setFormData((prev) => ({ ...prev, [key]: value }));
-	};
+	// const updateDuration = (key: keyof typeof durationSettings, value: number) => {
+	// 	setDurationSettings((prev) => ({ ...prev, [key]: value }));
+	// 	setFormData((prev) => ({ ...prev, [key]: value }));
+	// };
 
 	const validateForm = async () => {
 		try {
@@ -112,37 +117,37 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	};
 
 	function onScreenColorConfirm() {
-		setFormData((prev) => ({ ...prev, onScreenColor }));
+		setFormData((prev) => (prev ? { ...prev, onScreenColor } : prev));
 		setShowOnScreenColorPicker(false);
 	}
 
 	function offScreenColorConfirm() {
-		setFormData((prev) => ({ ...prev, offScreenColor }));
+		setFormData((prev) => (prev ? { ...prev, offScreenColor } : prev));
 		setShowOffScreenColorPicker(false);
 	}
 
 	const handleBack = () => setStep((prev) => (prev === Step.DESCRIPTION ? prev : ((prev - 1) as Step)));
-	const handleChange = async (name: keyof typeof formData, value: any) => {
+	function handleChange(name: keyof typeof formData, value: string) {
 		if (name === "focus") {
+			focusRef.current = value;
 			setFocus(value);
-			setFormData((prev) => ({ ...prev, [name]: value.split(",") }));
+			setFormData((prev) => (prev ? { ...prev, focus: value.split(",") } : prev));
+		} else if (name === "name") {
+			nameRef.current = value;
+			setFormData((prev) => (prev ? { ...prev, name: value } : prev));
+		} else if (name === "description") {
+			descriptionRef.current = value;
+			setFormData((prev) => (prev ? { ...prev, description: value } : prev));
+		} else if (name === "instructions") {
+			instructionsRef.current = value;
+			setFormData((prev) => (prev ? { ...prev, instructions: value } : prev));
+		} else if (name === "youtubeUrl") {
+			youtubeUrlRef.current = value;
+			setFormData((prev) => (prev ? { ...prev, youtubeUrl: value } : prev));
 		} else {
-			setFormData((prev) => ({ ...prev, [name]: value }));
+			setFormData((prev) => (prev ? { ...prev, [name]: value } : prev));
 		}
-
-		console.log("data", formData);
-		try {
-			const schema = step === Step.DESCRIPTION ? createExerciseSchemaStep1 : createExerciseSchemaStep2;
-			await schema.validateAt(name, { ...formData, [name]: value });
-			setFormErrors((prev) => {
-				const updated = { ...prev };
-				delete updated[name];
-				return updated;
-			});
-		} catch (err: any) {
-			setFormErrors((prev) => ({ ...prev, [name]: err.message }));
-		}
-	};
+	}
 
 	const handleNext = async () => {
 		if (step === Step.DESCRIPTION) {
@@ -158,14 +163,8 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		if (!valid) return;
 		await dispatch(createCustomExercise(formData)).unwrap();
 		props.onClose();
+		setFormData(null);
 	};
-
-	const clearFormError = (field: string) =>
-		setFormErrors((prev) => {
-			const newErrors = { ...prev };
-			delete newErrors[field];
-			return newErrors;
-		});
 
 	const renderFooterButton = () => {
 		if (step === Step.SETTINGS) {
@@ -181,7 +180,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 			</Button>
 		);
 	};
-	0;
+
 	return (
 		<Drawer isOpen={props.isOpen} onClose={props.onClose} size="lg" anchor="bottom">
 			<DrawerBackdrop />
@@ -215,6 +214,8 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 								setDurationSettings={setDurationSettings}
 								setShowOffScreenColorPicker={setShowOffScreenColorPicker}
 								setShowOnScreenColorPicker={setShowOnScreenColorPicker}
+								showOffScreenColorPicker={showOffScreenColorPicker}
+								showOnScreenColorPicker={showOnScreenColorPicker}
 								onScreenColor={onScreenColor}
 								offScreenColor={offScreenColor}
 								onColorChange={{ on: setOnScreenColor, off: setOffScreenColor }}

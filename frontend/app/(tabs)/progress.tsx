@@ -8,7 +8,7 @@ import { Heading } from "@/components/ui/heading";
 import GoalCard from "../../components/GoalCard";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Edit } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ModalComponent from "../../components/Modal";
 import FormInput from "../../components/FormInput";
 import { useDispatch, useSelector } from "react-redux";
@@ -86,21 +86,15 @@ function Progress() {
 	const [showAddGoalModal, setShowAddGoalModal] = useState(false);
 	const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
-	const [newGoalText, setNewGoalText] = useState("");
+	const newGoalTextValueRef = useRef("");
 
 	function handleAddGoal() {
-		if (!newGoalText.trim()) return;
+		const trimmed = newGoalTextValueRef.current.trim();
+		if (!trimmed) return;
 
-		appDispatch(
-			addGoal({
-				newGoal: {
-					goal: newGoalText,
-					completed: false,
-				},
-			})
-		);
+		appDispatch(addGoal({ newGoal: { goal: trimmed, completed: false } }));
 
-		setNewGoalText("");
+		newGoalTextValueRef.current = "";
 		setShowAddGoalModal(false);
 	}
 
@@ -115,11 +109,7 @@ function Progress() {
 		if (!goalId) return;
 		const goalToUpdate = goals.find((goal) => goal.id === goalId);
 		if (goalToUpdate) {
-			appDispatch(
-				updateGoal({
-					newGoal: { ...goalToUpdate, completed: !goalToUpdate.completed },
-				})
-			);
+			appDispatch(updateGoal({ newGoal: { ...goalToUpdate, completed: !goalToUpdate.completed } }));
 		}
 	}
 
@@ -199,18 +189,18 @@ function Progress() {
 		<ScrollView showsHorizontalScrollIndicator={false} className="bg-background-700 min-h-full">
 			<View className="w-[90%] self-center">
 				<View className="mt-5 flex self-center">
-					<AnimatedTab options={["Tab A", "Tab B"]} content={tabs} />
+					<AnimatedTab options={[i18n.t("progress.overview"), i18n.t("progress.milestones")]} content={tabs} />
 				</View>
 			</View>
-			<ModalComponent onClose={() => setShowAddGoalModal(false)} isOpen={showAddGoalModal} onConfirm={handleAddGoal}>
+			<ModalComponent isOpen={showAddGoalModal} onClose={() => setShowAddGoalModal(false)} onConfirm={handleAddGoal}>
 				<FormInput
 					formSize="md"
 					label="progress.goals.modal.label"
 					placeholder="progress.goals.modal.placeholder"
 					inputType="text"
 					inputSize="md"
-					value={newGoalText}
-					onChange={(text) => setNewGoalText(text)}
+					defaultValue=""
+					onChange={(text) => (newGoalTextValueRef.current = text)}
 				/>
 			</ModalComponent>
 
