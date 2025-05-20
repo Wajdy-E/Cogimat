@@ -29,7 +29,7 @@ import { shallowEqual } from "react-redux";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react-native";
 import CreateExerciseModal from "../../components/program-components/CreateExerciseModal";
-
+import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 function Home() {
 	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
@@ -41,6 +41,7 @@ function Home() {
 		}),
 		shallowEqual
 	);
+
 	const dispatch = useDispatch();
 	const dailyChallenge = exercises.find((ex) => ex.isChallenge);
 	const onPressAllExercises = (isCustom: boolean) => {

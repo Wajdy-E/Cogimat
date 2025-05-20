@@ -28,7 +28,12 @@ interface AlertModalProps {
 
 export default function AlertModal(props: AlertModalProps) {
 	return (
-		<AlertDialog isOpen={props.isOpen} onClose={props.onClose} size="lg">
+		<AlertDialog
+			isOpen={props.isOpen}
+			onClose={props.onClose}
+			size="lg"
+			accessibilityLabel={i18n.t("general.alerts.warning")}
+		>
 			<AlertDialogBackdrop />
 			<AlertDialogContent size="lg">
 				<VStack space="lg">
@@ -46,12 +51,23 @@ export default function AlertModal(props: AlertModalProps) {
 						</AlertDialogBody>
 					)}
 					<AlertDialogFooter>
-						<Button variant="outline" action="secondary" onPress={props.onClose} size="sm">
+						<Button
+							variant="outline"
+							action="secondary"
+							onPress={props.onClose}
+							size="sm"
+							accessibilityLabel={i18n.t(props.cancelKey ?? "general.buttons.cancel")}
+						>
 							<ButtonText>{i18n.t(props.cancelKey ?? "general.buttons.cancel")}</ButtonText>
 						</Button>
 
 						{props.onConfirm && props.buttonKey && (
-							<Button size="sm" onPress={props.onConfirm} action={props.action}>
+							<Button
+								size="sm"
+								onPress={props.onConfirm}
+								action={props.action}
+								accessibilityLabel={i18n.t(props.buttonKey)}
+							>
 								<ButtonText>{i18n.t(props.buttonKey)}</ButtonText>
 							</Button>
 						)}

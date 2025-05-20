@@ -25,6 +25,9 @@ import { Pencil } from "lucide-react-native";
 import ModalComponent from "../../components/Modal";
 import FormInput from "../../components/FormInput";
 import FormSelect from "../../components/FormSelect";
+import Purchases from "react-native-purchases";
+import { setPaywallModalPopup } from "../../store/data/dataSlice";
+import PaywallDrawer from "../../components/PaywallDrawer";
 
 export const resetState = createAction("RESET_STATE");
 
@@ -53,7 +56,21 @@ function Account() {
 		shallowEqual
 	);
 
-	const [selectedLanguage, setSelectedLanguage] = useState(i18n.locale);
+	const getDefaultLanguageLabel = () => {
+		switch (i18n.locale) {
+			case "en":
+				return i18n.t("account.english");
+			case "fr":
+				return i18n.t("account.français");
+			case "ja":
+				return i18n.t("account.日本語");
+			default:
+				return i18n.t("account.english");
+		}
+	};
+
+	const [selectedLanguage, setSelectedLanguage] = useState(getDefaultLanguageLabel());
+
 	const languageOptions = useMemo(
 		() => [
 			{ label: "account.english", value: "en" },
@@ -62,6 +79,8 @@ function Account() {
 		],
 		[]
 	);
+
+	const isPaywallOpen = useSelector((state: RootState) => state.data.popupStates.paywallIsOpen);
 
 	async function askNotificationPermission() {
 		const { status } = await Notifications.requestPermissionsAsync();
@@ -99,11 +118,16 @@ function Account() {
 	};
 
 	async function handleSignOut() {
-		setShowSignoutModal(false);
-		await signOut();
-		persistor.purge();
-		dispatch(resetState());
-		router.push("/AppLoaded");
+		try {
+			setShowSignoutModal(false);
+			dispatch(resetState());
+			await persistor.purge();
+			await signOut();
+			router.push("/AppLoaded");
+		} catch (error) {
+			console.error("Error during sign out:", error);
+			router.push("/AppLoaded");
+		}
 	}
 
 	async function handleAccountDeletion() {
@@ -160,7 +184,7 @@ function Account() {
 							<Heading size="sm">{i18n.t("account.email")}</Heading>
 							{emailAddress.length > 0 && <Heading size="sm">{emailAddress}</Heading>}
 						</View>
-						<AccountLink title="account.subscribe" link="unknown" />
+						<AccountLink title="account.subscribe" onPress={() => dispatch(setPaywallModalPopup(true))} />
 						<AccountLink title="account.subscriptionCode" link="unknown" />
 						<AccountLink title="account.viewReport" link="unknown" />
 						<AccountLink title="account.signout" onPress={() => setShowSignoutModal(true)} />
@@ -253,6 +277,8 @@ function Account() {
 					defaultValue={usernameRef.current}
 				/>
 			</ModalComponent>
+
+			<PaywallDrawer isOpen={isPaywallOpen} onClose={() => dispatch(setPaywallModalPopup(false))} />
 		</ScrollView>
 	);
 }

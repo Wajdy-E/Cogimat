@@ -67,8 +67,6 @@ export default function SignUp() {
 	const { user, isSignedIn } = useUser();
 
 	const onProviderSignIn = useCallback(async (strategy: string) => {
-		console.log("Launching sign-in for:", strategy); // Add this
-
 		try {
 			const { createdSessionId, setActive } = await startSSOFlow({
 				strategy: `oauth_${strategy}` as OAuthStrategy,
@@ -78,11 +76,8 @@ export default function SignUp() {
 				}),
 			});
 
-			console.log("SSO Flow response:", createdSessionId);
-
 			if (createdSessionId) {
 				await setActive?.({ session: createdSessionId });
-				console.log("started");
 			}
 		} catch (err) {
 			console.error("OAuth Error:", JSON.stringify(err, null, 2));

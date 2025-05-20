@@ -9,7 +9,6 @@ import FormInput from "../../components/FormInput";
 import * as Yup from "yup";
 import BackButton from "../../components/BackButton";
 import { Center } from "@/components/ui/center";
-import { Divider } from "@/components/ui/divider";
 import { OAuthStrategy } from "@clerk/types";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
@@ -130,11 +129,11 @@ function Login() {
 		<SafeAreaView className="h-screen bg-background-700">
 			<View className="w-full flex-row items-center justify-between text-center">
 				<BackButton />
-				<Heading className="text-2xl font-bold mb-6 w-[90%]">Log In</Heading>
+				<Heading className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("login.title")}</Heading>
 			</View>
 			<View className="flex-1 justify-around p-4">
 				<Box>
-					<Heading size="4xl">Welcome Back!</Heading>
+					<Heading size="4xl">{i18n.t("login.welcomeBack")}</Heading>
 				</Box>
 				<Box>
 					<VStack space="lg">

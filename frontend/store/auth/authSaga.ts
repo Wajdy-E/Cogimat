@@ -1,6 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { setCurrentUser, setMilestonesProgress, UserBase, UserMilestones } from "./authSlice";
+import {
+	setCurrentUser,
+	setMilestonesProgress,
+	setSubscriptionStatus,
+	UserBase,
+	UserMilestones,
+	UserSubscriptionState,
+} from "./authSlice";
 import { RootState } from "../store";
 
 const BASE_URL = process.env.BASE_URL;
@@ -26,6 +33,7 @@ export const setCurrentUserThunk = createAsyncThunk<UserBase, UserBase>(
 	"auth/setCurrentUser",
 	async (userData: UserBase, { dispatch }) => {
 		try {
+			console.log("userData", userData);
 			dispatch(setCurrentUser(userData as UserBase));
 			return userData;
 		} catch (error) {
@@ -59,6 +67,28 @@ export const fetchUserMilestones = createAsyncThunk(
 			dispatch(setMilestonesProgress(response.data));
 		} catch (error) {
 			console.error("Error fetching milestones progress:", error);
+			throw error;
+		}
+	}
+);
+
+export const updateSubscriptionStatus = createAsyncThunk<void, UserSubscriptionState>(
+	"auth/updateSubscriptionStatus",
+	async (subscriptionData: UserSubscriptionState, { dispatch, getState }) => {
+		try {
+			const state = getState() as RootState;
+			const userId = state.user.user.baseInfo?.id;
+
+			if (!userId) throw new Error("User is not authenticated");
+
+			await axios.post(`${BASE_URL}/api/auth/update-subscription`, {
+				userId,
+				isSubscribed: subscriptionData.isSubscribed,
+			});
+
+			dispatch(setSubscriptionStatus(subscriptionData));
+		} catch (error) {
+			console.error("Error updating subscription status:", error);
 			throw error;
 		}
 	}

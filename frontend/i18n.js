@@ -101,6 +101,7 @@ const translations = {
 		},
 		login: {
 			title: "Log In",
+			welcomeBack: "Welcome Back!",
 			email: "Email",
 			emailPlaceholder: "Enter your email",
 			password: "Password",
@@ -123,6 +124,22 @@ const translations = {
 				passwordRequired: "Password is required",
 			},
 		},
+		forgotPassword: {
+			title: "Forgot Password",
+			email: "Email",
+			emailPlaceholder: "Enter your email",
+			enterResetCode: "Enter the reset",
+			resetCodePlaceholder: "Enter reset code",
+			sendPasswordResetCode: "Send password reset code",
+			passwordResetCodeSent: "Password reset code sent",
+			passwordResetCodeSentMessage: "Please check your email for a password reset code.",
+			reset: "Reset",
+			resetCode: "Reset Code",
+			newPassword: "New Password",
+			newPasswordPlaceholder: "Enter new password",
+			resetCodeRequired: "Reset code is required",
+		},
+
 		general: {
 			buttons: {
 				next: "Next",
@@ -133,6 +150,8 @@ const translations = {
 				submit: "Submit",
 				delete: "Delete",
 				edit: "Edit",
+				play: "Play Exercise",
+				favorite: "Toggle Favorite",
 			},
 			time: {
 				seconds: "seconds",
@@ -155,6 +174,12 @@ const translations = {
 				sortZA: "Z → A",
 			},
 			noExercisesFound: "No exercises found",
+			alerts: {
+				warning: "Warning",
+				error: "Error",
+				success: "Success",
+				info: "Information",
+			},
 		},
 		createExercise: {
 			steps: {
@@ -197,6 +222,12 @@ const translations = {
 				onScreenColor: "On screen color {{onScreenColor}}",
 				startNow: "Start Now",
 			},
+			premium: {
+				locked: "Premium",
+				unlocked: "Premium ✓",
+				upgradeTitle: "Upgrade to Access",
+				upgradeMessage: "This is a premium exercise. Upgrade to CogiPro to access this and other premium features.",
+			},
 			sections: {
 				customization: "Customization",
 				durationSettings: "Duration Settings",
@@ -205,6 +236,11 @@ const translations = {
 			page: {
 				description: "Description",
 				instructions: "Instructions",
+			},
+			card: {
+				minutes: "min",
+				seconds: "sec",
+				imageAlt: "Exercise thumbnail",
 			},
 		},
 		progress: {
@@ -320,6 +356,31 @@ const translations = {
 		exerciseProgress: {
 			stimulus: "Stimulus",
 			count: "Count",
+		},
+		paywall: {
+			title: "Upgrade to CogiPro",
+			subtitle: "Unlock all premium features",
+			features: {
+				title: "What you'll get",
+				list: [
+					"Unlimited custom exercises",
+					"Advanced exercise tracking",
+					"Priority support",
+					"Ad-free experience",
+					"Exclusive content updates",
+				],
+			},
+			pricing: {
+				monthly: "Monthly",
+				annual: "Annual",
+				monthlyPrice: "$9.99/month",
+				annualPrice: "$79.99/year",
+				annualSaving: "Save 33%",
+			},
+			buttons: {
+				subscribe: "Continue",
+				restore: "Restore Purchases",
+			},
 		},
 	},
 };

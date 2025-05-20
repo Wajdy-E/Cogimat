@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface UserSubscriptionState {
 	isMonthly: boolean;
 	isSubscribed: boolean;
+	isYearly: boolean;
 }
 
 export interface UserBase {
@@ -68,7 +69,11 @@ export interface UserState {
 const initialState: UserState = {
 	user: {
 		baseInfo: null,
-		subscription: null,
+		subscription: {
+			isMonthly: false,
+			isSubscribed: false,
+			isYearly: false,
+		},
 		settings: {
 			theme: Theme.Light, // Default to light theme
 			allowNotifications: true,
@@ -87,6 +92,9 @@ const userSlice = createSlice({
 		setCurrentUser(state, action: PayloadAction<UserBase>) {
 			state.user.baseInfo = action.payload;
 		},
+		setSubscriptionStatus(state, action: PayloadAction<UserSubscriptionState>) {
+			state.user.subscription = action.payload;
+		},
 		toggleTheme(state) {
 			state.user.settings!.theme = state.user.settings!.theme === Theme.Light ? Theme.Dark : Theme.Light;
 		},
@@ -102,9 +110,17 @@ const userSlice = createSlice({
 		setMilestonesProgress(state, { payload }: PayloadAction<UserMilestones>) {
 			state.milestones = payload;
 		},
+		resetState: () => initialState,
 	},
 });
 
-export const { setCurrentUser, toggleTheme, setTheme, setNotifications, setIsSignedIn, setMilestonesProgress } =
-	userSlice.actions;
+export const {
+	setCurrentUser,
+	toggleTheme,
+	setTheme,
+	setNotifications,
+	setIsSignedIn,
+	setMilestonesProgress,
+	setSubscriptionStatus,
+} = userSlice.actions;
 export default userSlice.reducer;

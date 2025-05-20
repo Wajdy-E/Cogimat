@@ -5,6 +5,7 @@ export interface UserBase {
 	username?: string | null;
 	createdAt?: Date | null;
 	id: string;
+	isSubscribed: boolean;
 }
 
 export interface Exercise {
@@ -21,6 +22,7 @@ export interface Exercise {
 	imageFileName: string;
 	isFavourited: boolean;
 	focus: string;
+	isPremium: boolean;
 }
 
 export interface ExerciseParameters {

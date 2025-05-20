@@ -4,7 +4,7 @@ import { Exercise, ExerciseDifficulty } from "../store/data/dataSlice";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
-import { Flame, Clock, Sprout, Rocket, Trophy } from "lucide-react-native";
+import { Flame, Clock, Sprout, Rocket, Trophy, Crown } from "lucide-react-native";
 import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import PlayButton from "./PlayButton";
@@ -12,11 +12,14 @@ import FavouriteButton from "./FavouriteButton";
 import { setFavourite } from "../store/data/dataSaga";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
+import { i18n } from "../i18n";
+import { useSubscriptionStatus } from "../app/hooks/useSubscriptionStatus";
+
 interface ExerciseCardProps {
 	name: string;
 	difficulty: ExerciseDifficulty;
 	time: string;
-	imageFileName: string;
+	imageFileUrl?: string;
 	isFavourited: boolean;
 	id?: number;
 	exercise: Exercise;
@@ -24,18 +27,12 @@ interface ExerciseCardProps {
 	variant?: "elevated" | "outline" | "ghost" | "filled" | undefined;
 }
 
-const imageMap: Record<string, any> = {
-	"placeholder.png": require("../assets/exercise-thumbnails/placeholder.png"),
-	"color-matching.png": require("../assets/exercise-thumbnails/color-matching.png"),
-	"shape-matching.png": require("../assets/exercise-thumbnails/shape-matching.png"),
-	"letter-matching.png": require("../assets/exercise-thumbnails/letter-matching.png"),
-	"number-matching.png": require("../assets/exercise-thumbnails/number-matching.png"),
-};
+const placeHolder = require("../assets/exercise-thumbnails/placeholder.png");
 
 function ExerciseCard(props: ExerciseCardProps) {
 	const dispatch: AppDispatch = useDispatch();
-
-	const exerciseImage = imageMap[props.imageFileName];
+	const { isSubscribed } = useSubscriptionStatus();
+	const exerciseImage = props.imageFileUrl ? { uri: props.imageFileUrl } : placeHolder;
 
 	function onFavourite() {
 		const exerciseCopy = { ...props.exercise };
@@ -80,7 +77,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 								const seconds = totalSeconds % 60;
 								return (
 									<Text>
-										{minutes} min {seconds} sec
+										{minutes} {i18n.t("exercise.card.minutes")} {seconds} {i18n.t("exercise.card.seconds")}
 									</Text>
 								);
 							})()}
@@ -88,7 +85,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 						<View className="flex-row items-center gap-1" style={{ maxWidth: "100%" }}>
 							{getIconForType()}
 							<Text size="lg" ellipsizeMode="tail" numberOfLines={1}>
-								{props.difficulty}
+								{i18n.t(`exercise.difficulty.${props.difficulty.toLowerCase()}`)}
 							</Text>
 						</View>
 					</View>

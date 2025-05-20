@@ -3,6 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import { useRouter } from "expo-router";
 import { Play } from "lucide-react-native";
 import { CustomExercise, Exercise } from "../store/data/dataSlice";
+import { i18n } from "../i18n";
 
 interface PlayButtonProps {
 	id?: number;
@@ -24,6 +25,7 @@ function PlayButton(props: PlayButtonProps) {
 				});
 			}}
 			style={{ transform: [{ translateX: -15 }, { translateY: 18 }] }}
+			accessibilityLabel={i18n.t("general.buttons.play")}
 		>
 			<Icon as={Play} size="lg" fill="white" className="fill-white stroke-white" />
 		</Button>

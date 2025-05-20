@@ -42,6 +42,7 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 			timeToComplete: ex.time_to_complete,
 			isFavourited: ex.isFavourited,
 			focus: ex.focus,
+			isPremium: ex.is_premium,
 			parameters: {
 				shapes: ex.parameters.shapes?.map((shape: string) => Shape[shape as keyof typeof Shape]),
 				colors: ex.parameters.colors?.map((color: string) => {
@@ -302,10 +303,12 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 	async (_, { getState, dispatch }) => {
 		const clerk_id = getState().user.user.baseInfo?.id;
 		if (!clerk_id) throw new Error("User not authenticated");
-
+		console.log("clerk_id", clerk_id);
 		const res = await axios.get(`${BASE_URL}/api/custom-exercise`, {
 			params: { clerk_id },
 		});
+
+		console.log("res", res.data);
 
 		const transformed: CustomExercise[] = res.data.exercises.map((ex: any) => ({
 			id: ex.id,

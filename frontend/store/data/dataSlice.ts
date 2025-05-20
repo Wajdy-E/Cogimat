@@ -17,6 +17,7 @@ export interface Exercise {
 	focus: string;
 	isChallenge: boolean;
 	customizableOptions?: CustomizableExerciseOptions;
+	isPremium?: boolean;
 }
 
 export interface CustomizableExerciseOptions {
@@ -72,6 +73,7 @@ export interface Goals {
 
 export interface PopupStates {
 	customExerciseModalIsOpen: boolean;
+	paywallIsOpen: boolean;
 }
 
 export interface DataState {
@@ -97,6 +99,7 @@ const initialState: DataState = {
 	customizedExercises: {} as Record<number, CustomizableExerciseOptions>,
 	popupStates: {
 		customExerciseModalIsOpen: false,
+		paywallIsOpen: false,
 	},
 };
 
@@ -187,6 +190,10 @@ const dataSlice = createSlice({
 		setCustomExerciseModalPopup(state, { payload }: PayloadAction<boolean>) {
 			state.popupStates.customExerciseModalIsOpen = payload;
 		},
+		setPaywallModalPopup(state, { payload }: PayloadAction<boolean>) {
+			state.popupStates.paywallIsOpen = payload;
+		},
+		resetState: () => initialState,
 	},
 });
 
@@ -195,6 +202,7 @@ export const {
 	selectExercise,
 	setCurrentExercise,
 	setCustomExerciseModalPopup,
+	setPaywallModalPopup,
 	setIsFavourite,
 	setCustomExerciseIsFavourite,
 	updateProgress,
@@ -211,6 +219,7 @@ export const {
 	removeCustomExercise,
 	setCurrentFilter,
 	setPublicExercises,
+	resetState,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

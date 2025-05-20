@@ -12,6 +12,8 @@ import FavouriteButton from "./FavouriteButton";
 import { updateCustomExerciseThunk } from "../store/data/dataSaga";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
+import { i18n } from "../i18n";
+
 interface ExerciseCardProps {
 	name: string;
 	difficulty: ExerciseDifficulty;
@@ -58,7 +60,12 @@ function ExerciseCard(props: ExerciseCardProps) {
 		>
 			<VStack space="sm" className="content relative">
 				<View className="relative">
-					<Image className="w-full h-36" source={exerciseImage} alt={props?.name} resizeMode="cover" />
+					<Image
+						className="w-full h-36"
+						source={exerciseImage}
+						alt={i18n.t("exercise.card.imageAlt")}
+						resizeMode="cover"
+					/>
 					<FavouriteButton isFavourited={props.isFavourited ? true : false} onFavourite={onFavourite} />
 					<PlayButton id={props.id} exercise={props.exercise} isCustomExercise />
 				</View>
@@ -73,7 +80,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 								const seconds = totalSeconds % 60;
 								return (
 									<Text>
-										{minutes} min {seconds} sec
+										{minutes} {i18n.t("exercise.card.minutes")} {seconds} {i18n.t("exercise.card.seconds")}
 									</Text>
 								);
 							})()}
@@ -81,7 +88,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 						<View className="flex-row items-center gap-1" style={{ maxWidth: "100%" }}>
 							{getIconForType()}
 							<Text size="lg" ellipsizeMode="tail" numberOfLines={1}>
-								{props.difficulty}
+								{i18n.t(`exercise.difficulty.${props.difficulty.toLowerCase()}`)}
 							</Text>
 						</View>
 					</View>

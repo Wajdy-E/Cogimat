@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Star } from "lucide-react-native";
+import { i18n } from "../i18n";
 
 interface FavouriteButtonProps {
 	isFavourited: boolean;
@@ -13,6 +14,7 @@ function FavouriteButton(props: FavouriteButtonProps) {
 			style={{ transform: [{ translateX: -15 }, { translateY: 2 }] }}
 			onPress={props.onFavourite}
 			variant="link"
+			accessibilityLabel={i18n.t("general.buttons.favorite")}
 		>
 			<Icon
 				as={Star}

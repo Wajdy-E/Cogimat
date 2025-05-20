@@ -34,9 +34,9 @@ export default function Layout() {
 		Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
 
 		if (Platform.OS === "ios") {
-			Purchases.configure({ apiKey: "appl_oaZgMRHYuPQbxdagqiyBGOKFpEB" });
+			Purchases.configure({ apiKey: process.env.IOS_REVENUECAT_KEY });
 		} else if (Platform.OS === "android") {
-			Purchases.configure({ apiKey: "your_revenuecat_google_sdk_key" });
+			Purchases.configure({ apiKey: process.env.ANDROID_REVENUECAT_KEY });
 		}
 	}, []);
 
