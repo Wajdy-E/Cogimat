@@ -1,6 +1,6 @@
 # Cognitive Training Mat App (CTM App)
 
-A mobile application designed to enhance cognitive and physical engagement through interactive exercises using the Cognitive Training Mat. The app combines mental challenges with physical activity, creating a fun and rewarding experience for all users.
+A soon to be launched mobile application designed to enhance cognitive and physical engagement through interactive exercises using the Cognitive Training Mat. The app combines mental challenges with physical activity, creating a fun and rewarding experience for all users.
 
 ## 🚀 Features
 
@@ -78,3 +78,5 @@ This project is licensed under the MIT License.
 ---
 
 Built with ❤️ to help minds stay sharp and bodies active.
+
+Built for cogimat.com
