@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 			   last_name AS "lastName", 
 			   username AS "username", 
 			   creation_date AS "createdAt",
+			   is_admin AS "isAdmin"
 			 FROM users 
 			 WHERE email = $1`,
 			[email]

@@ -6,6 +6,7 @@ export interface UserBase {
 	createdAt?: Date | null;
 	id: string;
 	isSubscribed: boolean;
+	isAdmin: boolean;
 }
 
 export interface Exercise {
