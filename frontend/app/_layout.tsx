@@ -10,10 +10,18 @@ import { ThemeProvider, useTheme } from "./components/ui/ThemeProvider";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
+import { useLanguageInitialization } from "./hooks/useLanguageInitialization";
 
 const publishableKey = process.env.CLERK_PROD_KEY!;
+
 function ThemedApp() {
 	const { theme } = useTheme();
+	const isLanguageInitialized = useLanguageInitialization();
+
+	// Don't render until language is initialized
+	if (!isLanguageInitialized) {
+		return null; // Or a loading screen
+	}
 
 	return (
 		<GluestackUIProvider mode={theme}>

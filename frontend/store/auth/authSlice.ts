@@ -13,7 +13,7 @@ export interface UserBase {
 	createdAt?: Date | null;
 	id: string;
 	profileUri?: string | null;
-	isAdmin: boolean;
+	isAdmin?: boolean;
 }
 
 export enum Theme {

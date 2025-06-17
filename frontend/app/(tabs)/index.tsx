@@ -30,6 +30,7 @@ import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react-native";
 import CreateExerciseModal from "../../components/program-components/CreateExerciseModal";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
+import UpgradeCard from "../../components/UpgradeCard";
 function Home() {
 	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
@@ -63,20 +64,23 @@ function Home() {
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
-							{exercises.slice(0, 10).map((exercise) => (
-								<ExerciseCard
-									key={exercise.id}
-									name={exercise.name}
-									imageFileName={exercise.imageFileName}
-									time={exercise.timeToComplete}
-									difficulty={exercise.difficulty}
-									id={exercise.id}
-									exercise={exercise}
-									classes="w-[250px]"
-									isFavourited={exercise.isFavourited}
-									variant="elevated"
-								/>
-							))}
+							{exercises
+								.filter((exercise) => !exercise.isPremium)
+								.slice(0, 10)
+								.map((exercise) => (
+									<ExerciseCard
+										key={exercise.id}
+										name={exercise.name}
+										imageFileUrl={exercise.imageFileName}
+										time={exercise.timeToComplete}
+										difficulty={exercise.difficulty}
+										id={exercise.id}
+										exercise={exercise}
+										classes="w-[250px]"
+										isFavourited={exercise.isFavourited}
+										variant="elevated"
+									/>
+								))}
 						</HStack>
 					</ScrollView>
 				</View>
@@ -190,14 +194,14 @@ function Home() {
 			</SafeAreaView>
 			<Tab tabs={tabs} tabVariant="link" iconTop buttonIconHeight={25} />
 
-			<VStack space="md" className="w-[80%] self-center py-7">
+			<VStack space="md" className="w-[90%] self-center py-7">
 				<Heading size="2xl" className="self-center">
 					{i18n.t("home.exerciseOfTheDay")}
 				</Heading>
 				{dailyChallenge ? (
 					<ExerciseCard
 						name={dailyChallenge.name}
-						imageFileName={dailyChallenge.imageFileName}
+						imageFileUrl={dailyChallenge.imageFileName}
 						time={dailyChallenge.timeToComplete}
 						difficulty={dailyChallenge.difficulty}
 						id={dailyChallenge.id}
@@ -208,13 +212,37 @@ function Home() {
 				) : null}
 			</VStack>
 			<Box className="w-[90%] self-center">
+				<VStack space="lg">
+					<UpgradeCard />
+					<View style={{ filter: "blur(10px)" }}>
+						<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+							<HStack space="md">
+								{exercises
+									.filter((exercise) => exercise.isPremium)
+									.slice(0, 10)
+									.map((exercise) => (
+										<ExerciseCard
+											key={exercise.id}
+											name={exercise.name}
+											imageFileUrl={exercise.imageFileName}
+											time={exercise.timeToComplete}
+											difficulty={exercise.difficulty}
+											id={exercise.id}
+											exercise={exercise}
+											classes="w-[250px]"
+											isFavourited={exercise.isFavourited}
+											variant="elevated"
+										/>
+									))}
+							</HStack>
+						</ScrollView>
+					</View>
+				</VStack>
+			</Box>
+
+			<Box className="w-[90%] self-center">
 				<NavigateTo heading="Articles & Tips" text={i18n.t("home.exercisePrograms.seeAll")} classes="justify-between" />
-				<ScrollView
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					className="overflow-visible"
-					contentOffset={{ x: 185, y: 0 }}
-				>
+				<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 					<HStack space="md">
 						<BlogCard
 							imageUri="https://via.placeholder.com/150"

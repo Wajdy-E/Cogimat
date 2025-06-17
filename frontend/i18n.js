@@ -1,5 +1,27 @@
 import { getLocales } from "expo-localization";
 import { I18n } from "i18n-js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const LANGUAGE_STORAGE_KEY = "app_language";
+
+// Function to initialize language from storage
+export const initializeLanguage = async () => {
+	try {
+		const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+		if (savedLanguage && (savedLanguage === "en" || savedLanguage === "fr" || savedLanguage === "ja")) {
+			return savedLanguage;
+		}
+	} catch (error) {
+		console.error("Error loading saved language:", error);
+	}
+
+	// Fallback to device locale or English
+	const deviceLocale = getLocales()[0].languageCode;
+	if (deviceLocale === "fr" || deviceLocale === "ja") {
+		return deviceLocale;
+	}
+	return "en";
+};
 
 const translations = {
 	en: {
@@ -152,6 +174,7 @@ const translations = {
 				edit: "Edit",
 				play: "Play Exercise",
 				favorite: "Toggle Favorite",
+				confirm: "Confirm",
 			},
 			time: {
 				seconds: "seconds",
@@ -236,6 +259,10 @@ const translations = {
 			page: {
 				description: "Description",
 				instructions: "Instructions",
+				makePublic: "Make Exercise Public",
+				submitToCogipro: "Submit to Cogipro",
+				makePublicMessage:
+					"Are you sure you want to make this exercise public? This will allow other users to see and use it.",
 			},
 			card: {
 				minutes: "min",
@@ -382,10 +409,409 @@ const translations = {
 				restore: "Restore Purchases",
 			},
 		},
+		upgradeCard: {
+			title: "Upgrade to CogiPro",
+			description:
+				"Get exclusive access to unique and creative ways to use your Cogimat, featuring exercises designed by our expert team.",
+			button: "Upgrade",
+		},
+	},
+	fr: {
+		pages: {
+			home: "Accueil",
+			progress: "Progrès",
+			createExercise: "Créer un exercice",
+			favourites: "Favoris",
+			account: "Compte",
+		},
+		home: {
+			greeting: "Salut, {{name}}",
+			subtitle: "Il est temps de repousser vos limites.",
+			tabs: {
+				allExercises: "Tous les exercices",
+				interactiveExercises: "Exercices interactifs",
+				noCustomExercises: "Vous n'avez créé aucun exercice personnalisé",
+				createCustomExercise: "Créer mon premier exercice personnalisé",
+				noPublicExercises: "Il n'y a pas d'exercices publics. Veuillez vérifier plus tard.",
+				myCustomExercises: "Mes exercices personnalisés",
+				community: "Communauté",
+			},
+			exercisePrograms: {
+				allTitle: "Programmes d'exercices",
+				customTitle: "Mes exercices personnalisés",
+				communityTitle: "Exercices de la communauté",
+				seeAll: "Voir tout",
+			},
+			exerciseOfTheDay: "Exercice du jour",
+			articleDateFormat: "D MMMM YYYY",
+		},
+		account: {
+			signout: "Se déconnecter",
+			username: "Nom d'utilisateur",
+			signOutConfirm: "Êtes-vous sûr de vouloir vous déconnecter ?",
+			deleteAccountConfirm: "Êtes-vous sûr de vouloir supprimer votre compte ?",
+			deleteAccount: "Supprimer le compte",
+			title: "Compte",
+			email: "Adresse e-mail",
+			subscribe: "S'abonner à CogiPro",
+			subscriptionCode: "J'ai un code QR d'abonnement",
+			viewReport: "Voir le rapport de fitness",
+			askTeam: "Question de fitness ? Demandez à notre équipe",
+
+			appSettings: "Paramètres de l'application",
+			notifications: "Notifications",
+			darkMode: "Mode sombre",
+			emailMarketing: "Marketing par e-mail",
+			appLanguage: "Langue de l'application",
+			english: "🇬🇧 Anglais",
+			français: "🇫🇷 Français",
+			日本語: "🇯🇵 Japonais",
+			help: "Aide",
+			billingHelp: "Aide pour le compte et la facturation",
+			contactSupport: "Contacter le support",
+			restore: "Restaurer l'abonnement",
+
+			legal: "Mentions légales",
+			terms: "Conditions générales",
+			privacy: "Politique de confidentialité",
+			version: "Version",
+		},
+		signup: {
+			title: "S'inscrire",
+			verifyEmailTitle: "Vérifiez votre e-mail",
+			verify: "Vérifier",
+			verifyCode: "Code de vérification",
+			verifyCodePlaceholder: "Entrez votre code de vérification",
+			orSignUpWith: "Ou s'inscrire avec",
+			googleSignUp: "Continuer avec Google",
+			appleSignUp: "Continuer avec Apple",
+			alreadyHaveAccount: "Vous avez déjà un compte ?",
+			login: "Se connecter",
+			alert: {
+				invalidData: "Données d'inscription invalides",
+				verificationFailed: "La vérification a échoué",
+			},
+			form: {
+				firstName: "Prénom",
+				firstNamePlaceholder: "Entrez votre prénom",
+				lastName: "Nom de famille",
+				lastNamePlaceholder: "Entrez votre nom de famille",
+				email: "E-mail",
+				emailPlaceholder: "Entrez votre e-mail",
+				password: "Mot de passe",
+				passwordPlaceholder: "Entrez votre mot de passe",
+				signUp: "S'inscrire",
+			},
+			errors: {
+				firstNameShort: "Le prénom doit contenir au moins 2 caractères",
+				firstNameRequired: "Le prénom est requis",
+				lastNameShort: "Le nom de famille doit contenir au moins 2 caractères",
+				lastNameRequired: "Le nom de famille est requis",
+				invalidEmail: "Adresse e-mail invalide",
+				emailRequired: "L'e-mail est requis",
+				passwordShort: "Le mot de passe doit contenir au moins 6 caractères",
+				passwordRequired: "Le mot de passe est requis",
+			},
+		},
+		login: {
+			title: "Se connecter",
+			welcomeBack: "Bon retour !",
+			email: "E-mail",
+			emailPlaceholder: "Entrez votre e-mail",
+			password: "Mot de passe",
+			passwordPlaceholder: "Entrez votre mot de passe",
+			forgotPassword: "Mot de passe oublié ?",
+			loginButton: "Connexion",
+			orSignInWith: "Ou se connecter avec",
+			googleSignIn: "Continuer avec Google",
+			appleSignIn: "Continuer avec Apple",
+			noAccount: "Vous n'avez pas de compte ?",
+			signUp: "S'inscrire",
+			alerts: {
+				validationError: "Erreur de validation",
+				invalidCredentials: "La connexion a échoué. Veuillez vérifier vos identifiants.",
+			},
+			errors: {
+				invalidEmail: "Format d'e-mail invalide",
+				emailRequired: "L'e-mail est requis",
+				passwordShort: "Le mot de passe doit contenir au moins 6 caractères",
+				passwordRequired: "Le mot de passe est requis",
+			},
+		},
+		forgotPassword: {
+			title: "Mot de passe oublié",
+			email: "E-mail",
+			emailPlaceholder: "Entrez votre e-mail",
+			enterResetCode: "Entrez le code de réinitialisation",
+			resetCodePlaceholder: "Entrez le code de réinitialisation",
+			sendPasswordResetCode: "Envoyer le code de réinitialisation",
+			passwordResetCodeSent: "Code de réinitialisation envoyé",
+			passwordResetCodeSentMessage: "Veuillez vérifier votre e-mail pour le code de réinitialisation.",
+			reset: "Réinitialiser",
+			resetCode: "Code de réinitialisation",
+			newPassword: "Nouveau mot de passe",
+			newPasswordPlaceholder: "Entrez le nouveau mot de passe",
+			resetCodeRequired: "Le code de réinitialisation est requis",
+		},
+
+		general: {
+			buttons: {
+				next: "Suivant",
+				previous: "Précédent",
+				done: "Terminé",
+				cancel: "Annuler",
+				save: "Enregistrer",
+				submit: "Soumettre",
+				delete: "Supprimer",
+				edit: "Modifier",
+				play: "Jouer l'exercice",
+				favorite: "Basculer favori",
+				confirm: "Confirmer",
+			},
+			time: {
+				seconds: "secondes",
+				minutes: "minutes",
+				hours: "heures",
+				days: "jours",
+			},
+			pageSubHeadings: {
+				allExercises: "Tous les exercices",
+				myCustomExercises: "Mes exercices personnalisés",
+			},
+			filters: {
+				all: "Tous",
+				standard: "Nos exercices",
+				custom: "Mes exercices",
+				favouritesOnly: "Favoris uniquement",
+				difficulty: "Difficulté",
+				sort: "Trier",
+				sortAZ: "A → Z",
+				sortZA: "Z → A",
+			},
+			noExercisesFound: "Aucun exercice trouvé",
+			alerts: {
+				warning: "Avertissement",
+				error: "Erreur",
+				success: "Succès",
+				info: "Information",
+			},
+		},
+		createExercise: {
+			steps: {
+				description: "Détails de l'exercice",
+				settings: "Paramètres",
+			},
+			form: {
+				nameLabel: "Nom de l'exercice",
+				namePlaceholder: "Entrez le nom de l'exercice",
+				descriptionLabel: "Description",
+				focusLabel: "Focus",
+				focusPlaceholder: "Entrez les zones de focus",
+				descriptionPlaceholder: "Entrez la description",
+				instructionsLabel: "Instructions",
+				instructionsPlaceholder: "Votre texte ici...",
+				difficultyLabel: "Difficulté",
+				difficultyPlaceholder: "Difficulté (Facile, Moyen, Difficile)",
+				focusHelper: "Liste séparée par des virgules des zones de focus",
+				sets: "Séries",
+				reps: "Répétitions",
+				restTime: "Temps de repos",
+				restTimePlaceholder: "Entrez le temps de repos",
+				ytUrl: "URL YouTube",
+				ytUrlPlaceholder: "Entrez l'URL YouTube",
+				ytUrlHelper: "Lorsqu'entré, remplace la vidéo téléchargée ci-dessous",
+			},
+		},
+		exercise: {
+			difficulty: {
+				beginner: "Débutant",
+				intermediate: "Intermédiaire",
+				advanced: "Avancé",
+			},
+			form: {
+				offScreenTime: "Temps hors écran",
+				onScreenTime: "Temps à l'écran",
+				exerciseTime: "Temps d'exercice",
+				restTime: "Temps de repos",
+				offScreenColor: "Couleur hors écran {{offScreenColor}}",
+				onScreenColor: "Couleur à l'écran {{onScreenColor}}",
+				startNow: "Commencer maintenant",
+			},
+			premium: {
+				locked: "Premium",
+				unlocked: "Premium ✓",
+				upgradeTitle: "Mettre à niveau pour accéder",
+				upgradeMessage:
+					"Ceci est un exercice premium. Mettez à niveau vers CogiPro pour accéder à cette fonctionnalité et à d'autres fonctionnalités premium.",
+			},
+			sections: {
+				customization: "Personnalisation",
+				durationSettings: "Paramètres de durée",
+				colorSettings: "Paramètres de couleur",
+			},
+			page: {
+				description: "Description",
+				instructions: "Instructions",
+				makePublic: "Rendre l'exercice public",
+				makePublicMessage:
+					"Êtes-vous sûr de vouloir rendre cet exercice public ? Cela permettra à d'autres utilisateurs de le voir et de l'utiliser.",
+			},
+			card: {
+				minutes: "min",
+				seconds: "sec",
+				imageAlt: "Miniature de l'exercice",
+			},
+		},
+		progress: {
+			milestones: "Étapes importantes",
+			overview: "Aperçu",
+			actions: {
+				deleteGoal: "Êtes-vous sûr de vouloir supprimer cet objectif ?",
+			},
+			days: {
+				monday: "Lundi",
+				tuesday: "Mardi",
+				wednesday: "Mercredi",
+				thursday: "Jeudi",
+				friday: "Vendredi",
+				saturday: "Samedi",
+				sunday: "Dimanche",
+			},
+			goals: {
+				workouts: "ENTRAÎNEMENTS",
+				milestones: "ÉTAPES IMPORTANTES",
+				weeklyGoal: "OBJECTIF HEBDOMADAIRE",
+				tbd: "À DÉFINIR",
+				customGoalsTitle: "Mes objectifs personnalisés",
+				setGoalButton: "Définir un nouvel objectif",
+				modal: {
+					label: "Définir un objectif",
+					placeholder: "ex. Compléter 5 entraînements",
+				},
+			},
+		},
+		yupErrors: {
+			form: {
+				nameRequired: "Le nom est requis",
+				nameMin: "Le nom doit contenir au moins 3 caractères",
+				nameMax: "Le nom ne peut pas dépasser 50 caractères",
+
+				descriptionRequired: "La description est requise",
+				descriptionMin: "La description doit contenir au moins 10 caractères",
+				descriptionMax: "La description ne peut pas dépasser 500 caractères",
+
+				instructionsRequired: "Les instructions sont requises",
+				instructionsMin: "Les instructions doivent contenir au moins 10 caractères",
+				instructionsMax: "Les instructions ne peuvent pas dépasser 1000 caractères",
+
+				focusMin: "Le focus doit être un mot",
+				focusMax: "Maximum 5 points de focus",
+
+				difficultyRequired: "La difficulté est requise",
+				difficultyInvalid: "Niveau de difficulté invalide",
+
+				visualInputMissing: "Sélectionnez au moins une forme, lettre, nombre ou couleur",
+
+				offScreenTime: "Le temps hors écran doit être d'au moins 0,5 seconde",
+				onScreenTime: "Le temps à l'écran doit être d'au moins 0,5 seconde",
+				exerciseTime: "Le temps d'exercice doit être d'au moins 1 minute",
+				restTime: "Le temps de repos doit être d'au moins 1 seconde",
+
+				offScreenColor: "La couleur hors écran est requise",
+				onScreenColor: "La couleur à l'écran est requise",
+
+				invalidUrl: "Doit être une URL valide",
+
+				firstNameRequired: "Le prénom est requis",
+				firstNameMin: "Le prénom doit contenir au moins 2 caractères",
+
+				lastNameRequired: "Le nom de famille est requis",
+				lastNameMin: "Le nom de famille doit contenir au moins 2 caractères",
+
+				emailRequired: "L'e-mail est requis",
+				emailInvalid: "Adresse e-mail invalide",
+
+				passwordRequired: "Le mot de passe est requis",
+				passwordMin: "Le mot de passe doit contenir au moins 6 caractères",
+			},
+		},
+		milestones: {
+			exercisesCompleted: {
+				heading: "Total des exercices terminés",
+				description: "Suivez le nombre total d'exercices que vous avez terminés dans tous les types.",
+				subtext: "{{count}}% de votre objectif",
+			},
+			beginner: {
+				heading: "Exercices débutants",
+				description: "Construisez votre base en terminant l'entraînement de niveau débutant.",
+				subtext: "{{count}}% de votre objectif",
+			},
+			intermediate: {
+				heading: "Exercices intermédiaires",
+				description: "Défiez-vous avec des tâches de niveau intermédiaire.",
+				subtext: "{{count}}% de votre objectif",
+			},
+			advanced: {
+				heading: "Exercices avancés",
+				description: "Prouvez vos compétences avec des exercices de difficulté avancée.",
+				subtext: "{{count}}% de votre objectif",
+			},
+			customCreated: {
+				heading: "Exercices personnalisés créés",
+				description: "Créez et personnalisez vos propres routines d'entraînement.",
+				subtext: "{{count}}% de votre objectif",
+			},
+			goals: {
+				heading: "Objectifs créés",
+				description: "Définissez des objectifs pour rester motivé et sur la bonne voie avec vos progrès.",
+				subtext: "{{count}}% de votre objectif",
+			},
+			articles: {
+				heading: "Articles éducatifs lus",
+				description: "Élargissez vos connaissances en terminant les supports d'apprentissage.",
+				subtext: "{{count}}% de votre objectif",
+			},
+		},
+		exerciseProgress: {
+			stimulus: "Stimulus",
+			count: "Compteur",
+		},
+		paywall: {
+			title: "Mettre à niveau vers CogiPro",
+			subtitle: "Débloquez toutes les fonctionnalités premium",
+			features: {
+				title: "Ce que vous obtiendrez",
+				list: [
+					"Exercices personnalisés illimités",
+					"Suivi avancé des exercices",
+					"Support prioritaire",
+					"Expérience sans publicité",
+					"Mises à jour de contenu exclusives",
+				],
+			},
+			pricing: {
+				monthly: "Mensuel",
+				annual: "Annuel",
+				monthlyPrice: "9,99 €/mois",
+				annualPrice: "79,99 €/an",
+				annualSaving: "Économisez 33%",
+			},
+			buttons: {
+				subscribe: "Continuer",
+				restore: "Restaurer les achats",
+			},
+		},
+		upgradeCard: {
+			title: "Mettre à niveau vers CogiPro",
+			description:
+				"Obtenez un accès exclusif à des moyens uniques et créatifs d'utiliser votre Cogimat, avec des exercices conçus par notre équipe d'experts.",
+			button: "Mettre à niveau",
+		},
 	},
 };
 export const i18n = new I18n(translations);
 
+// Initialize with device locale, will be updated by initializeLanguage() when called
 i18n.locale = getLocales()[0].languageCode ?? "en";
 
 i18n.enableFallback = true;

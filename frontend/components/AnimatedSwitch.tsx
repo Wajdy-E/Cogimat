@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Easing, View } from "react-native";
 import { HStack } from "@/components/ui/hstack";
-import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Button, ButtonText } from "@/components/ui/button";
 interface AnimatedSwitchProps {
 	onChange: (value: boolean) => void;
 	defaultValue: boolean;
@@ -50,7 +49,7 @@ function AnimatedSwitch(props: AnimatedSwitchProps) {
 	};
 
 	return (
-		<Button onPress={toggle} variant="link">
+		<Button onPress={toggle} variant="link" className="w-fit">
 			<Box
 				className="rounded-full overflow-hidden justify-center relative"
 				style={{ width: SWITCH_WIDTH, height: SWITCH_HEIGHT }}

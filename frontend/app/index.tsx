@@ -20,9 +20,7 @@ export default function Home() {
 	useEffect(() => {
 		async function handleAuthState() {
 			if (isSignedIn && user) {
-				// Only fetch data if we have both isSignedIn and a valid user object
 				try {
-					// First set the current user in Redux to ensure we have the latest user ID
 					await dispatch(
 						setCurrentUserThunk({
 							firstName: user.firstName,
@@ -31,10 +29,11 @@ export default function Home() {
 								typeof user.emailAddresses === "string" ? user.emailAddresses : user.emailAddresses[0].emailAddress,
 							id: user.id,
 							username: user.username,
+							profileUri: user.imageUrl,
+							isAdmin: user.organizationMemberships[0].role === "org:admin",
 						})
 					).unwrap();
 
-					// Then fetch the rest of the data
 					await Promise.all([
 						dispatch(fetchExercises()).unwrap(),
 						dispatch(getCustomExercises()).unwrap(),

@@ -6,7 +6,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import WebView from "react-native-webview";
 import WheelColorPicker from "react-native-wheel-color-picker";
-import { ArrowRight, CirclePlay, Edit, Rocket, Sprout, Trophy, Clock, Brain } from "lucide-react-native";
+import { ArrowRight, CirclePlay, Edit, Rocket, Sprout, Trophy, Clock, Brain, EyeOff, Eye } from "lucide-react-native";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { useVideoPlayer, VideoView } from "expo-video";
 
@@ -21,18 +21,31 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
 import ModalComponent from "../../components/Modal";
-import { CustomizableExerciseOptions, ExerciseDifficulty, setCurrentCustomExercise } from "../../store/data/dataSlice";
-import { RootState } from "../../store/store";
+import {
+	CustomizableExerciseOptions,
+	Exercise,
+	ExerciseDifficulty,
+	setCurrentCustomExercise,
+} from "../../store/data/dataSlice";
+import { AppDispatch, RootState } from "../../store/store";
 import { i18n } from "../../i18n";
 import CustomSlider from "../../components/CustomSlider";
+import AnimatedSwitch from "../../components/AnimatedSwitch";
+import { submitExercise, updateCustomExerciseThunk } from "../../store/data/dataSaga";
+import AlertModal from "../../components/AlertModal";
+import { customExerciseToExercise } from "../../lib/helpers/helpers";
 
 function ExerciseProgram() {
 	const params = useLocalSearchParams();
 	const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
 	const exercises = useSelector((state: RootState) => state.data.customExercises, shallowEqual);
+	const user = useSelector((state: RootState) => state.user.user, shallowEqual);
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const dispatch = useDispatch();
+	const appDispatch: AppDispatch = useDispatch();
+	const [showAlertModal, setShowAlertModal] = useState(false);
+	const [showSubmitToCogiproAlertModal, setShowSubmitToCogiproAlertModal] = useState(false);
 
 	useEffect(() => {
 		if (exercise) {
@@ -93,6 +106,22 @@ function ExerciseProgram() {
 		player.play();
 	});
 
+	const handlePublicAccessChange = (value: boolean) => {
+		if (exercise.publicAccess === false) {
+			appDispatch(updateCustomExerciseThunk({ ...exercise, publicAccess: value, isFavourited: false }));
+			setShowAlertModal(true);
+		} else {
+			appDispatch(updateCustomExerciseThunk({ ...exercise, publicAccess: value }));
+			setShowAlertModal(false);
+		}
+	};
+
+	function submitToCogipro() {
+		const convertedExercise: Exercise = customExerciseToExercise(exercise);
+		appDispatch(submitExercise({ exercise: convertedExercise }));
+		setShowSubmitToCogiproAlertModal(false);
+	}
+
 	return (
 		<View className="relative bg-background-700">
 			<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
@@ -143,6 +172,30 @@ function ExerciseProgram() {
 				</View>
 				<View className="flex items-center py-5">
 					<VStack className="w-[90%]" space="md">
+						{user.baseInfo?.isAdmin && (
+							<View className="flex-row justify-between items-center">
+								<Heading size="lg">{i18n.t("exercise.page.submitToCogipro")}</Heading>
+								<AnimatedSwitch
+									defaultValue={exercise.publicAccess}
+									onChange={() => setShowSubmitToCogiproAlertModal(true)}
+									onIcon={<Icon as={Eye} />}
+									offIcon={<Icon as={EyeOff} />}
+									height={25}
+									thumbSize={20}
+								/>
+							</View>
+						)}
+						<View className="flex-row justify-between items-center">
+							<Heading size="lg">{i18n.t("exercise.page.makePublic")}</Heading>
+							<AnimatedSwitch
+								defaultValue={exercise.publicAccess}
+								onChange={handlePublicAccessChange}
+								onIcon={<Icon as={Eye} />}
+								offIcon={<Icon as={EyeOff} />}
+								height={25}
+								thumbSize={20}
+							/>
+						</View>
 						<View className="flex-row justify-start flex-wrap gap-4">
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 								<BadgeIcon as={getIconForType(exercise.difficulty)} />
@@ -296,6 +349,26 @@ function ExerciseProgram() {
 					<ButtonIcon as={CirclePlay} />
 				</Button>
 			</Animated.View>
+
+			<AlertModal
+				isOpen={showAlertModal}
+				onClose={() => setShowAlertModal(false)}
+				headingKey="exercise.page.makePublic"
+				textKey="exercise.page.makePublicMessage"
+				buttonKey="general.buttons.confirm"
+				onConfirm={() => handlePublicAccessChange(true)}
+				action="primary"
+			/>
+
+			<AlertModal
+				isOpen={showSubmitToCogiproAlertModal}
+				onClose={() => setShowSubmitToCogiproAlertModal(false)}
+				headingKey="exercise.page.makePublic"
+				textKey="exercise.page.makePublicMessage"
+				buttonKey="general.buttons.confirm"
+				onConfirm={() => submitToCogipro()}
+				action="primary"
+			/>
 		</View>
 	);
 }

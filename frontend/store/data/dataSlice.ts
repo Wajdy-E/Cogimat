@@ -113,6 +113,9 @@ const dataSlice = createSlice({
 		setCurrentExercise(state, { payload }: PayloadAction<Exercise>) {
 			state.selectedExercise = payload;
 		},
+		addExercise(state, { payload }: PayloadAction<Exercise>) {
+			state.exercises.push(payload);
+		},
 		selectExercise(state, action: PayloadAction<number>) {
 			const exercise = state.exercises.find((ex) => ex.id === action.payload);
 			state.selectedExercise = exercise || null;
@@ -201,6 +204,7 @@ export const {
 	setExercises,
 	selectExercise,
 	setCurrentExercise,
+	addExercise,
 	setCustomExerciseModalPopup,
 	setPaywallModalPopup,
 	setIsFavourite,

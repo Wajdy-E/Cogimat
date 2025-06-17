@@ -6,6 +6,7 @@ import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createAction } from "@reduxjs/toolkit";
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppDispatch, persistor, RootState } from "../../store/store";
 import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from "../components/ui/avatar";
 import { VStack } from "@/components/ui/vstack";
@@ -30,6 +31,8 @@ import { setPaywallModalPopup } from "../../store/data/dataSlice";
 import PaywallDrawer from "../../components/PaywallDrawer";
 
 export const resetState = createAction("RESET_STATE");
+
+const LANGUAGE_STORAGE_KEY = "app_language";
 
 function Account() {
 	const router = useRouter();
@@ -56,8 +59,8 @@ function Account() {
 		shallowEqual
 	);
 
-	const getDefaultLanguageLabel = () => {
-		switch (i18n.locale) {
+	const getLanguageLabel = (locale: string) => {
+		switch (locale) {
 			case "en":
 				return i18n.t("account.english");
 			case "fr":
@@ -69,7 +72,12 @@ function Account() {
 		}
 	};
 
+	const getDefaultLanguageLabel = () => {
+		return getLanguageLabel(i18n.locale);
+	};
+
 	const [selectedLanguage, setSelectedLanguage] = useState(getDefaultLanguageLabel());
+	const [languageUpdateTrigger, setLanguageUpdateTrigger] = useState(0);
 
 	const languageOptions = useMemo(
 		() => [
@@ -79,6 +87,25 @@ function Account() {
 		],
 		[]
 	);
+
+	const handleLanguageChange = async (value: string) => {
+		try {
+			// Update i18n locale
+			i18n.locale = value;
+
+			// Save to AsyncStorage
+			await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, value);
+
+			// Update the selected language display
+			setSelectedLanguage(getLanguageLabel(value));
+
+			// Trigger a re-render by updating state
+			// This ensures all components using i18n.t() will update
+			setLanguageUpdateTrigger((prev) => prev + 1);
+		} catch (error) {
+			console.error("Error saving language preference:", error);
+		}
+	};
 
 	const isPaywallOpen = useSelector((state: RootState) => state.data.popupStates.paywallIsOpen);
 
@@ -219,7 +246,7 @@ function Account() {
 							label="account.appLanguage"
 							value={selectedLanguage}
 							variant="outline"
-							onValueChange={(value) => setSelectedLanguage(value)}
+							onValueChange={(value) => handleLanguageChange(value)}
 							options={languageOptions}
 							title="account.appLanguage"
 							selectedValue={selectedLanguage}

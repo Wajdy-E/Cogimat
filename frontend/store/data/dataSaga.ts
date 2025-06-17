@@ -1,6 +1,7 @@
 import { createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
 	addCustomExercise,
+	addExercise,
 	CustomExercise,
 	CustomizableExerciseOptions,
 	Exercise,
@@ -71,6 +72,21 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 		throw error;
 	}
 });
+
+export const submitExercise = createAsyncThunk<any, { exercise: Exercise }>(
+	"exercises/submit",
+	async ({ exercise }, { getState, dispatch }) => {
+		try {
+			const state = getState() as RootState;
+			const userId = state.user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+
+			const { data } = await axios.post(`${BASE_URL}/api/submit-exercise`, exercise);
+
+			if (data.success) dispatch(addExercise(exercise));
+		} catch {}
+	}
+);
 
 export const setFavourite = createAsyncThunk<any, { exerciseId: number; isFavourited: boolean }, { state: RootState }>(
 	"exercises/set-favourite",
@@ -307,8 +323,6 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 		const res = await axios.get(`${BASE_URL}/api/custom-exercise`, {
 			params: { clerk_id },
 		});
-
-		console.log("res", res.data);
 
 		const transformed: CustomExercise[] = res.data.exercises.map((ex: any) => ({
 			id: ex.id,

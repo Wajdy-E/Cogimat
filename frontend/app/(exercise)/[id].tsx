@@ -42,8 +42,6 @@ function ExerciseProgram() {
 	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
 	const { isSubscribed } = useSubscriptionStatus();
-	const [isPaywallOpen, setIsPaywallOpen] = useState(false);
-	const [showPremiumAlert, setShowPremiumAlert] = useState(false);
 
 	useEffect(() => {
 		if (exercise) {
@@ -63,11 +61,6 @@ function ExerciseProgram() {
 	);
 
 	function handleColorConfirm(type: "onScreen" | "offScreen") {
-		if (exercise.isPremium && !isSubscribed) {
-			setShowPremiumAlert(true);
-			return;
-		}
-
 		if (durationSettings) {
 			const color = type === "onScreen" ? onScreenColor : offScreenColor;
 			dispatch(
@@ -121,11 +114,6 @@ function ExerciseProgram() {
 	`;
 
 	const handleStartExercise = () => {
-		if (exercise.isPremium && !isSubscribed) {
-			setShowPremiumAlert(true);
-			return;
-		}
-
 		router.navigate({
 			pathname: "/exercise",
 			params: {
@@ -134,18 +122,8 @@ function ExerciseProgram() {
 		});
 	};
 
-	const handlePremiumAlert = () => {
-		setShowPremiumAlert(false);
-		setIsPaywallOpen(true);
-	};
-
 	const onEditClick = () => {
-		if (exercise.isPremium && !isSubscribed) {
-			setShowPremiumAlert(true);
-			return;
-		} else {
-			setIsEditing(!isEditing);
-		}
+		setIsEditing(!isEditing);
 	};
 
 	return (
@@ -314,19 +292,6 @@ function ExerciseProgram() {
 					</Button>
 				</Animated.View>
 			</View>
-
-			<PaywallDrawer isOpen={isPaywallOpen} onClose={() => setIsPaywallOpen(false)} />
-
-			<AlertModal
-				isOpen={showPremiumAlert}
-				onClose={() => setShowPremiumAlert(false)}
-				headingKey="exercise.premium.upgradeTitle"
-				textKey="exercise.premium.upgradeMessage"
-				buttonKey="paywall.buttons.subscribe"
-				cancelKey="general.buttons.cancel"
-				onConfirm={handlePremiumAlert}
-				action="primary"
-			/>
 		</>
 	);
 }

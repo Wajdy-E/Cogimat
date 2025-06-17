@@ -20,8 +20,8 @@ interface AlertModalProps {
 	onClose: () => void;
 	headingKey?: string;
 	textKey?: string;
-	buttonKey: string;
-	cancelKey: string | undefined;
+	buttonKey?: string;
+	cancelKey?: string;
 	onConfirm: () => void;
 	action?: "default" | "primary" | "secondary" | "positive" | "negative" | undefined;
 }
@@ -61,14 +61,14 @@ export default function AlertModal(props: AlertModalProps) {
 							<ButtonText>{i18n.t(props.cancelKey ?? "general.buttons.cancel")}</ButtonText>
 						</Button>
 
-						{props.onConfirm && props.buttonKey && (
+						{props.onConfirm && (
 							<Button
 								size="sm"
 								onPress={props.onConfirm}
 								action={props.action}
-								accessibilityLabel={i18n.t(props.buttonKey)}
+								accessibilityLabel={i18n.t(props.buttonKey ?? "general.buttons.save")}
 							>
-								<ButtonText>{i18n.t(props.buttonKey)}</ButtonText>
+								<ButtonText>{i18n.t(props.buttonKey ?? "general.buttons.save")}</ButtonText>
 							</Button>
 						)}
 					</AlertDialogFooter>
