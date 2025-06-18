@@ -11,6 +11,7 @@ import {
 import { RootState } from "../store";
 
 const BASE_URL = process.env.BASE_URL;
+console.log("BASE_URL", BASE_URL);
 export const createUser = createAsyncThunk<UserBase, UserBase>(
 	"auth/createUser",
 	async (userData: UserBase, { dispatch, rejectWithValue }) => {
@@ -33,7 +34,7 @@ export const setCurrentUserThunk = createAsyncThunk<UserBase, UserBase>(
 	"auth/setCurrentUser",
 	async (userData: UserBase, { dispatch }) => {
 		try {
-			console.log("userData", userData);
+			// console.log("userData", userData);
 			dispatch(setCurrentUser(userData as UserBase));
 			return userData;
 		} catch (error) {
@@ -63,10 +64,53 @@ export const fetchUserMilestones = createAsyncThunk(
 			const state = getState() as RootState;
 			const userId = state.user.user.baseInfo?.id;
 			if (!userId) throw new Error("User is not authenticated");
-			const response = await axios.get<UserMilestones>(`${BASE_URL}/api/user-milestones`, { params: { userId } });
-			dispatch(setMilestonesProgress(response.data));
+			const response = await axios.get(`${BASE_URL}/api/user-milestones`, { params: { userId } });
+
+			console.log("response", response.data);
+
+			// The response is an array, get the first element
+			const milestoneData = response.data[0] || {};
+
+			const milestones: UserMilestones = {
+				exercisesCompleted: milestoneData.exercisescompleted || 0,
+				beginnerExercisesCompleted: milestoneData.beginnerexercisescompleted || 0,
+				intermediateExercisesCompleted: milestoneData.intermediateexercisescompleted || 0,
+				advancedExercisesCompleted: milestoneData.advancedexercisescompleted || 0,
+				communityExercisesCompleted: milestoneData.communityexercisescompleted || 0,
+				customExercisesCompleted: milestoneData.customexercisescompleted || 0,
+				customExercisesCreated: milestoneData.customexercisescreated || 0,
+				goalsCreated: milestoneData.goalscreated || 0,
+				educationalArticlesCompleted: milestoneData.educationalarticlescompleted || 0,
+			};
+			dispatch(setMilestonesProgress(milestones));
 		} catch (error) {
 			console.error("Error fetching milestones progress:", error);
+			throw error;
+		}
+	}
+);
+
+export const updateUserMilestone = createAsyncThunk(
+	"milestones/updateUserMilestone",
+	async (
+		{ milestoneType, exerciseDifficulty }: { milestoneType: string; exerciseDifficulty?: string },
+		{ getState, dispatch }
+	) => {
+		try {
+			const state = getState() as RootState;
+			const userId = state.user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+
+			await axios.patch(`${BASE_URL}/api/user-milestones`, {
+				userId,
+				milestoneType,
+				exerciseDifficulty,
+			});
+
+			// Refresh milestones after update
+			dispatch(fetchUserMilestones());
+		} catch (error) {
+			console.error("Error updating milestone:", error);
 			throw error;
 		}
 	}

@@ -8,6 +8,7 @@ import {
 	ExerciseDifficulty,
 	Goals,
 	removeCustomExercise,
+	removeExercise,
 	setCustomExercises,
 	setExercises,
 	setIsFavourite,
@@ -19,6 +20,7 @@ import {
 import axios from "axios";
 import { RootState } from "../store";
 import { Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
+import { updateUserMilestone } from "../auth/authSaga";
 const BASE_URL = process.env.BASE_URL;
 
 //#region Sagas
@@ -27,8 +29,10 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 	try {
 		const state = getState() as RootState;
 		const userId = state.user.user.baseInfo?.id;
+
 		if (!userId) throw new Error("User is not authenticated");
 		const response = await axios.get(`${BASE_URL}/api/data/exercises`, { params: { userId } });
+
 		const formattedExercises: Exercise[] = response.data.exercises.map((ex: any) => ({
 			id: ex.id,
 			name: ex.name,
@@ -88,6 +92,28 @@ export const submitExercise = createAsyncThunk<any, { exercise: Exercise }>(
 	}
 );
 
+export const unsubmitExercise = createAsyncThunk<any, { exerciseId: number; name: string }>(
+	"exercises/unsubmit",
+	async ({ exerciseId, name }, { getState, dispatch }) => {
+		try {
+			const state = getState() as RootState;
+			const userId = state.user.user.baseInfo?.id;
+			if (!userId) throw new Error("User is not authenticated");
+
+			const { data } = await axios.delete(
+				`${BASE_URL}/api/submit-exercise?exerciseId=${exerciseId}&name=${encodeURIComponent(name)}`
+			);
+
+			if (data.success) {
+				// Remove the exercise from the exercises array
+				dispatch(removeExercise(exerciseId));
+			}
+		} catch (error) {
+			console.error("Error unsubmitting exercise:", error);
+		}
+	}
+);
+
 export const setFavourite = createAsyncThunk<any, { exerciseId: number; isFavourited: boolean }, { state: RootState }>(
 	"exercises/set-favourite",
 	async ({ exerciseId, isFavourited }, { getState, dispatch }) => {
@@ -126,21 +152,26 @@ export const updateGoal = createAsyncThunk<any, { newGoal: Goals }, { state: Roo
 	}
 );
 
-export const addGoal = createAsyncThunk<any, { newGoal: Goals }, { state: RootState }>(
-	"user/set-goals",
+export const addGoal = createAsyncThunk<void, { newGoal: Goals }, { state: RootState }>(
+	"goals/addGoal",
 	async ({ newGoal }, { getState, dispatch }) => {
 		try {
 			const userId = getState().user.user.baseInfo?.id;
 			if (!userId) throw new Error("User is not authenticated");
 
-			const { data } = await axios.post(`${BASE_URL}/api/goals`, {
+			const response = await axios.post(`${BASE_URL}/api/goals`, {
 				user_id: userId,
 				newGoal,
 			});
 
-			if (data.success) dispatch(updateUserGoals(data.goal));
+			if (response.data.success) {
+				dispatch(updateUserGoals(response.data.goal));
+				// Update milestone for goal creation
+				dispatch(updateUserMilestone({ milestoneType: "goalsCreated" }));
+			}
 		} catch (error) {
-			console.error("Error setting user goals:", error);
+			console.error("Error adding goal:", error);
+			throw error;
 		}
 	}
 );
@@ -264,6 +295,9 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 			};
 
 			dispatch(addCustomExercise(customExercise));
+
+			// Update milestone for custom exercise creation
+			dispatch(updateUserMilestone({ milestoneType: "customExercisesCreated" }));
 		} catch (err) {
 			console.error("Failed to create exercise:", err);
 			throw err;
@@ -319,7 +353,6 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 	async (_, { getState, dispatch }) => {
 		const clerk_id = getState().user.user.baseInfo?.id;
 		if (!clerk_id) throw new Error("User not authenticated");
-		console.log("clerk_id", clerk_id);
 		const res = await axios.get(`${BASE_URL}/api/custom-exercise`, {
 			params: { clerk_id },
 		});

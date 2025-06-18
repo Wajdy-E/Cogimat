@@ -30,7 +30,10 @@ export default function Home() {
 							id: user.id,
 							username: user.username,
 							profileUri: user.imageUrl,
-							isAdmin: user.organizationMemberships[0].role === "org:admin",
+							isAdmin:
+								user.organizationMemberships &&
+								user.organizationMemberships.length > 0 &&
+								user.organizationMemberships[0].role === "org:admin",
 						})
 					).unwrap();
 

@@ -51,6 +51,7 @@ const translations = {
 				seeAll: "See All",
 			},
 			exerciseOfTheDay: "Exercise of the day",
+			exclusiveExercises: "CogiPro Exclusives",
 			articleDateFormat: "MMMM D, YYYY",
 		},
 		account: {
@@ -259,10 +260,17 @@ const translations = {
 			page: {
 				description: "Description",
 				instructions: "Instructions",
-				makePublic: "Make Exercise Public",
+				makePublic: "Make Public",
+				makePublicMessage: "This will make your exercise available to all users in the community.",
 				submitToCogipro: "Submit to Cogipro",
-				makePublicMessage:
-					"Are you sure you want to make this exercise public? This will allow other users to see and use it.",
+				submitToCogiproMessage: "This will make your exercise available in Cogipro Premium for all users.",
+				unsubmitFromCogipro: "Remove from Cogipro",
+				unsubmitFromCogiproMessage:
+					"This will remove your exercise from Cogipro Premium. It will no longer be available to premium users.",
+				settings: "Settings",
+				cogiproPremiumSettings: "Cogipro Premium Settings",
+				submitToCogiproDescription: "Make this exercise available in Cogipro Premium",
+				accessDenied: "Access denied. Admin privileges required.",
 			},
 			card: {
 				minutes: "min",
@@ -347,37 +355,37 @@ const translations = {
 			exercisesCompleted: {
 				heading: "Total Exercises Completed",
 				description: "Track the total number of exercises you've completed across all types.",
-				subtext: "{{count}}% of your goal",
+				subtext: "{{count}} of {{target}} completed",
 			},
 			beginner: {
 				heading: "Beginner Exercises",
 				description: "Build your foundation by completing beginner-level training.",
-				subtext: "{{count}}% of your goal",
+				subtext: "{{count}} of {{target}} completed",
 			},
 			intermediate: {
 				heading: "Intermediate Exercises",
 				description: "Challenge yourself with intermediate-level tasks.",
-				subtext: "{{count}}% of your goal",
+				subtext: "{{count}} of {{target}} completed",
 			},
 			advanced: {
 				heading: "Advanced Exercises",
 				description: "Prove your skills with advanced difficulty exercises.",
-				subtext: "{{count}}% of your goal",
+				subtext: "{{count}} of {{target}} completed",
 			},
 			customCreated: {
 				heading: "Custom Exercises Created",
 				description: "Create and personalize your own training routines.",
-				subtext: "{{count}}% of your goal",
+				subtext: "{{count}} of {{target}} completed",
 			},
 			goals: {
 				heading: "Goals Created",
 				description: "Set goals to stay motivated and on track with your progress.",
-				subtext: "{{count}}% of your goal",
+				subtext: "{{count}} of {{target}} completed",
 			},
 			articles: {
 				heading: "Educational Articles Read",
 				description: "Expand your knowledge by completing learning materials.",
-				subtext: "{{count}}% of your goal",
+				subtext: "{{count}} of {{target}} completed",
 			},
 		},
 		exerciseProgress: {
@@ -652,9 +660,18 @@ const translations = {
 			page: {
 				description: "Description",
 				instructions: "Instructions",
-				makePublic: "Rendre l'exercice public",
-				makePublicMessage:
-					"Êtes-vous sûr de vouloir rendre cet exercice public ? Cela permettra à d'autres utilisateurs de le voir et de l'utiliser.",
+				makePublic: "Rendre Public",
+				makePublicMessage: "Cela rendra votre exercice disponible à tous les utilisateurs de la communauté.",
+				submitToCogipro: "Soumettre à Cogipro",
+				submitToCogiproMessage:
+					"Cela rendra votre exercice disponible dans Cogipro Premium pour tous les utilisateurs.",
+				unsubmitFromCogipro: "Retirer de Cogipro",
+				unsubmitFromCogiproMessage:
+					"Cela retirera votre exercice de Cogipro Premium. Il ne sera plus disponible pour les utilisateurs premium.",
+				settings: "Paramètres",
+				cogiproPremiumSettings: "Paramètres de Cogipro Premium",
+				submitToCogiproDescription: "Rendre cet exercice disponible dans Cogipro Premium",
+				accessDenied: "Accès refusé. Privilèges administratifs requis.",
 			},
 			card: {
 				minutes: "min",
@@ -739,37 +756,37 @@ const translations = {
 			exercisesCompleted: {
 				heading: "Total des exercices terminés",
 				description: "Suivez le nombre total d'exercices que vous avez terminés dans tous les types.",
-				subtext: "{{count}}% de votre objectif",
+				subtext: "{{count}} sur {{target}} terminés",
 			},
 			beginner: {
 				heading: "Exercices débutants",
 				description: "Construisez votre base en terminant l'entraînement de niveau débutant.",
-				subtext: "{{count}}% de votre objectif",
+				subtext: "{{count}} sur {{target}} terminés",
 			},
 			intermediate: {
 				heading: "Exercices intermédiaires",
 				description: "Défiez-vous avec des tâches de niveau intermédiaire.",
-				subtext: "{{count}}% de votre objectif",
+				subtext: "{{count}} sur {{target}} terminés",
 			},
 			advanced: {
 				heading: "Exercices avancés",
 				description: "Prouvez vos compétences avec des exercices de difficulté avancée.",
-				subtext: "{{count}}% de votre objectif",
+				subtext: "{{count}} sur {{target}} terminés",
 			},
 			customCreated: {
 				heading: "Exercices personnalisés créés",
 				description: "Créez et personnalisez vos propres routines d'entraînement.",
-				subtext: "{{count}}% de votre objectif",
+				subtext: "{{count}} sur {{target}} créés",
 			},
 			goals: {
 				heading: "Objectifs créés",
 				description: "Définissez des objectifs pour rester motivé et sur la bonne voie avec vos progrès.",
-				subtext: "{{count}}% de votre objectif",
+				subtext: "{{count}} sur {{target}} créés",
 			},
 			articles: {
 				heading: "Articles éducatifs lus",
 				description: "Élargissez vos connaissances en terminant les supports d'apprentissage.",
-				subtext: "{{count}}% de votre objectif",
+				subtext: "{{count}} sur {{target}} lus",
 			},
 		},
 		exerciseProgress: {

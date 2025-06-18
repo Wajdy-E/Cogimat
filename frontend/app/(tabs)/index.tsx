@@ -14,6 +14,7 @@ import {
 	FilterType,
 	setCurrentFilter,
 	setCustomExerciseModalPopup,
+	setPaywallModalPopup,
 } from "../../store/data/dataSlice";
 import { VStack } from "@/components/ui/vstack";
 import BlogCard from "../../components/CardWithImage";
@@ -27,10 +28,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { shallowEqual } from "react-redux";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react-native";
+import { ChevronRight, Trophy } from "lucide-react-native";
 import CreateExerciseModal from "../../components/program-components/CreateExerciseModal";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 import UpgradeCard from "../../components/UpgradeCard";
+import { Icon } from "@/components/ui/icon";
+
 function Home() {
 	const { user } = useUser();
 	const exercises = useExercise(null) as Exercise[];
@@ -43,6 +46,7 @@ function Home() {
 		shallowEqual
 	);
 
+	const { isSubscribed } = useSubscriptionStatus();
 	const dispatch = useDispatch();
 	const dailyChallenge = exercises.find((ex) => ex.isChallenge);
 	const onPressAllExercises = (isCustom: boolean) => {
@@ -213,30 +217,33 @@ function Home() {
 			</VStack>
 			<Box className="w-[90%] self-center">
 				<VStack space="lg">
-					<UpgradeCard />
-					<View style={{ filter: "blur(10px)" }}>
-						<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
-							<HStack space="md">
-								{exercises
-									.filter((exercise) => exercise.isPremium)
-									.slice(0, 10)
-									.map((exercise) => (
-										<ExerciseCard
-											key={exercise.id}
-											name={exercise.name}
-											imageFileUrl={exercise.imageFileName}
-											time={exercise.timeToComplete}
-											difficulty={exercise.difficulty}
-											id={exercise.id}
-											exercise={exercise}
-											classes="w-[250px]"
-											isFavourited={exercise.isFavourited}
-											variant="elevated"
-										/>
-									))}
-							</HStack>
-						</ScrollView>
-					</View>
+					{!isSubscribed && <UpgradeCard />}
+					<Box className="flex flex-row gap-2">
+						<Icon as={Trophy} size="xl" />
+						<Heading size="xl">{i18n.t("home.exclusiveExercises")}</Heading>
+					</Box>
+					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+						<HStack space="md">
+							{exercises
+								.filter((exercise) => exercise.isPremium)
+								.slice(0, 10)
+								.map((exercise) => (
+									<ExerciseCard
+										key={exercise.id}
+										name={exercise.name}
+										imageFileUrl={exercise.imageFileName}
+										time={exercise.timeToComplete}
+										difficulty={exercise.difficulty}
+										id={exercise.id}
+										exercise={exercise}
+										classes="w-[250px]"
+										isFavourited={exercise.isFavourited}
+										variant="elevated"
+										onClick={isSubscribed ? undefined : () => dispatch(setPaywallModalPopup(true))}
+									/>
+								))}
+						</HStack>
+					</ScrollView>
 				</VStack>
 			</Box>
 

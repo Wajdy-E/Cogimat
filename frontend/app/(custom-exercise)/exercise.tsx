@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
 import Countdown from "../../components/Countdown";
 import { Letter, NumberEnum } from "../../data/program/Program";
 import { LucideIcon, Pause, Play, X, Square, Triangle, Circle, Diamond, Icon } from "lucide-react-native";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { Icon as GlueStackIcon } from "@/components/ui/icon";
 import { CustomExercise } from "../../store/data/dataSlice";
+import { updateUserMilestone } from "../../store/auth/authSaga";
 
 interface IconWithColor {
 	icon: LucideIcon;
@@ -15,6 +16,7 @@ interface IconWithColor {
 }
 
 function ExerciseScreen() {
+	const dispatch = useDispatch<AppDispatch>();
 	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise) as CustomExercise;
 
 	if (!currentExercise) return null;
@@ -22,31 +24,53 @@ function ExerciseScreen() {
 	const [showCountdown, setShowCountdown] = useState(true);
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
-	const [timeLeft, setTimeLeft] = useState(currentExercise?.customizableOptions.exerciseTime || 60);
+	const [timeLeft, setTimeLeft] = useState(currentExercise?.customizableOptions.exerciseTime * 60 || 60);
 	const [isPaused, setIsPaused] = useState(false);
-	const timeToComplete = currentExercise?.customizableOptions.exerciseTime || 60;
+	const [exerciseCompleted, setExerciseCompleted] = useState(false);
+	const timeToComplete = currentExercise?.customizableOptions.exerciseTime * 60 || 60;
 	const shapes = ["SQUARE", "CIRCLE", "TRIANGLE", "DIAMOND"];
+
+	// Get customized timing settings
+	const onScreenTime = currentExercise?.customizableOptions.onScreenTime || 1; // Already in seconds
+	const offScreenTime = (currentExercise?.customizableOptions.offScreenTime || 0.5) * 1000; // Convert seconds to milliseconds
+	const cycleTime = onScreenTime + offScreenTime / 1000; // Total cycle time in seconds
+
 	useEffect(() => {
 		if (showCountdown || !currentExercise || !currentExercise.parameters) return;
 
 		setStimulus(getRandomStimulus());
 
 		let elapsedTime = 0;
-		const interval = setInterval(() => {
-			if (elapsedTime >= timeToComplete * 1000 || isPaused) return;
+		const interval = setInterval(
+			() => {
+				if (elapsedTime >= timeToComplete * 1000 || isPaused) return;
 
-			setIsWhiteScreen(true);
-			setTimeout(() => {
-				setStimulus(getRandomStimulus());
-				setIsWhiteScreen(false);
-			}, 500);
+				setIsWhiteScreen(true);
+				setTimeout(() => {
+					setStimulus(getRandomStimulus());
+					setIsWhiteScreen(false);
+				}, offScreenTime);
 
-			elapsedTime += 1500; // Full cycle includes 1s stimulus + 0.5s white screen
-			setTimeLeft((prev) => Math.max(prev - 1.5, 0)); // ✅ Fixed to account for full cycle
-		}, 1500);
+				elapsedTime += (onScreenTime + offScreenTime / 1000) * 1000; // Full cycle in milliseconds
+				setTimeLeft((prev) => Math.max(prev - cycleTime, 0));
+
+				// Exercise completed
+				if (elapsedTime >= timeToComplete * 1000 && !exerciseCompleted) {
+					setExerciseCompleted(true);
+					// Update milestones for custom exercise completion
+					dispatch(
+						updateUserMilestone({
+							milestoneType: "customExercisesCompleted",
+							exerciseDifficulty: currentExercise.difficulty,
+						})
+					);
+				}
+			},
+			(onScreenTime + offScreenTime / 1000) * 1000
+		);
 
 		return () => clearInterval(interval);
-	}, [showCountdown, isPaused, currentExercise]);
+	}, [showCountdown, isPaused, currentExercise, exerciseCompleted, onScreenTime, offScreenTime, cycleTime]);
 
 	const getRandomStimulus = () => {
 		const params = currentExercise.parameters;
@@ -93,7 +117,9 @@ function ExerciseScreen() {
 
 	const renderStimulus = () => {
 		if (isWhiteScreen) {
-			return <View className="bg-white absolute inset-0" />;
+			// Use customized off screen color
+			const offScreenColor = currentExercise?.customizableOptions.offScreenColor || "#FFFFFF";
+			return <View className="absolute inset-0" style={{ backgroundColor: offScreenColor }} />;
 		}
 		if (!stimulus) return null;
 
@@ -101,22 +127,28 @@ function ExerciseScreen() {
 			return <View className="absolute inset-0" style={{ backgroundColor: stimulus.hexcode }} />;
 		} else if (shapes.includes(stimulus)) {
 			const { icon: Icon, color } = getIconForShape(stimulus);
+			// Use customized on screen color for background
+			const onScreenColor = currentExercise?.customizableOptions.onScreenColor || "#1F2937";
 			return (
-				<View className="flex bg-background-700 justify-center absolute inset-0 items-center">
+				<View className="flex justify-center absolute inset-0 items-center" style={{ backgroundColor: onScreenColor }}>
 					<Icon size={250} color={color} fill={color} />
 				</View>
 			);
 		} else if (Object.values(Letter).includes(stimulus)) {
+			// Use customized on screen color for background
+			const onScreenColor = currentExercise?.customizableOptions.onScreenColor || "#1F2937";
 			return (
-				<View className="flex bg-background-700 justify-center absolute inset-0 items-center">
+				<View className="flex justify-center absolute inset-0 items-center" style={{ backgroundColor: onScreenColor }}>
 					<Text className="text-typography-950 font-bold" style={{ fontSize: 250 }}>
 						{stimulus}
 					</Text>
 				</View>
 			);
 		} else if (Object.values(NumberEnum).includes(stimulus)) {
+			// Use customized on screen color for background
+			const onScreenColor = currentExercise?.customizableOptions.onScreenColor || "#1F2937";
 			return (
-				<View className="flex bg-background-700 justify-center absolute inset-0 items-center">
+				<View className="flex justify-center absolute inset-0 items-center" style={{ backgroundColor: onScreenColor }}>
 					<Text className="text-typography-950 font-bold" style={{ fontSize: 250 }}>
 						{stimulus}
 					</Text>

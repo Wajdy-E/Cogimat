@@ -5,7 +5,9 @@ import { VStack } from "@/components/ui/vstack";
 import { i18n } from "../i18n";
 
 interface ProgressCardProps {
-	value: number;
+	value: number; // percentage for progress bar
+	rawCount: number; // actual count for subtext
+	goalTarget: number; // goal target for subtext
 	headingKey: string;
 	subTextKey: string;
 	descriptionKey: string;
@@ -19,7 +21,7 @@ export default function ProgressCard(props: ProgressCardProps) {
 			<Progress value={props.value} className="w-full h-2">
 				<ProgressFilledTrack className="h-2 bg-lime-500" />
 			</Progress>
-			<Text size="sm">{i18n.t(props.subTextKey, { count: Math.round(props.value) })}</Text>
+			<Text size="sm">{i18n.t(props.subTextKey, { count: props.rawCount, target: props.goalTarget })}</Text>
 		</VStack>
 	);
 }

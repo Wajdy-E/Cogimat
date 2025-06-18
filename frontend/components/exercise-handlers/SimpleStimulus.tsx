@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { Square, Triangle, Circle, Diamond } from "lucide-react-native";
 import { Exercise } from "../../store/data/dataSlice";
 import { Letter, NumberEnum } from "../../data/program/Program";
 import ExerciseControl from "../exercises/ExerciseControl";
 import ExerciseProgress from "../exercises/ExerciseProgress";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store/store";
+import { updateUserMilestone } from "../../store/auth/authSaga";
 
 interface IconWithColor {
 	icon: any;
@@ -12,11 +15,13 @@ interface IconWithColor {
 }
 
 export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
+	const dispatch = useDispatch<AppDispatch>();
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
 	const [stimulusCount, setStimulusCount] = useState<Map<string, number>>(new Map());
 	const [timeCompleted, setTimeCompleted] = useState(0);
+	const [exerciseCompleted, setExerciseCompleted] = useState(false);
 
 	const custom = exercise.customizableOptions;
 	const offScreenTime = custom?.offScreenTime ?? 0.5;
@@ -43,6 +48,18 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 				setTimeLeft((prev) => Math.max(prev - (onScreenTime + offScreenTime), 0));
 				setTimeCompleted(elapsed);
 			}
+
+			// Exercise completed
+			if (elapsed >= totalDuration && !exerciseCompleted) {
+				setExerciseCompleted(true);
+				// Update milestones
+				dispatch(
+					updateUserMilestone({
+						milestoneType: "exercisesCompleted",
+						exerciseDifficulty: exercise.difficulty,
+					})
+				);
+			}
 		};
 
 		runCycle();
@@ -50,7 +67,7 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 		return () => {
 			active = false;
 		};
-	}, [isPaused]);
+	}, [isPaused, exerciseCompleted]);
 
 	const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

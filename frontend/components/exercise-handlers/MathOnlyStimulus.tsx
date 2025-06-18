@@ -1,16 +1,21 @@
 // components/exerciseHandlers/MathOnlyStimulus.tsx
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Play, Pause, X } from "lucide-react-native";
 import Countdown from "../Countdown";
 import { Exercise } from "../../store/data/dataSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store/store";
+import { updateUserMilestone } from "../../store/auth/authSaga";
 
 export default function MathOnlyStimulus({ exercise }: { exercise: Exercise }) {
+	const dispatch = useDispatch<AppDispatch>();
 	const [problem, setProblem] = useState<string | null>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
 	const [timeLeft, setTimeLeft] = useState(parseInt(exercise.timeToComplete) || 60);
+	const [exerciseCompleted, setExerciseCompleted] = useState(false);
 
 	const custom = exercise.customizableOptions;
 	const offScreenTime = custom?.offScreenTime ?? 0.5;
@@ -33,13 +38,25 @@ export default function MathOnlyStimulus({ exercise }: { exercise: Exercise }) {
 				elapsed += onScreenTime + offScreenTime;
 				setTimeLeft((prev) => Math.max(prev - (onScreenTime + offScreenTime), 0));
 			}
+
+			// Exercise completed
+			if (elapsed >= totalDuration && !exerciseCompleted) {
+				setExerciseCompleted(true);
+				// Update milestones
+				dispatch(
+					updateUserMilestone({
+						milestoneType: "exercisesCompleted",
+						exerciseDifficulty: exercise.difficulty,
+					})
+				);
+			}
 		};
 
 		runCycle();
 		return () => {
 			active = false;
 		};
-	}, [isPaused]);
+	}, [isPaused, exerciseCompleted]);
 
 	const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

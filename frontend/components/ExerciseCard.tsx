@@ -25,6 +25,7 @@ interface ExerciseCardProps {
 	exercise: Exercise;
 	classes?: string;
 	variant?: "elevated" | "outline" | "ghost" | "filled" | undefined;
+	onClick?: () => void;
 }
 
 const placeHolder = require("../assets/exercise-thumbnails/placeholder.png");
@@ -64,10 +65,12 @@ function ExerciseCard(props: ExerciseCardProps) {
 				<View className="relative">
 					<Image className="w-full h-36" source={exerciseImage} alt={props.name} resizeMode="cover" />
 					<FavouriteButton isFavourited={props.isFavourited ? true : false} onFavourite={onFavourite} />
-					<PlayButton id={props.id} exercise={props.exercise} />
+					<PlayButton id={props.id} exercise={props.exercise} onClick={props.onClick} />
 				</View>
 				<View className="p-2">
-					<Heading>{props.name}</Heading>
+					<Heading numberOfLines={1} style={{ maxWidth: "90%" }}>
+						{props.name}
+					</Heading>
 					<View className="flex-row gap-2">
 						<View className="flex-row items-center gap-1">
 							<Icon size="md" as={Clock} />
@@ -77,7 +80,8 @@ function ExerciseCard(props: ExerciseCardProps) {
 								const seconds = totalSeconds % 60;
 								return (
 									<Text>
-										{minutes} {i18n.t("exercise.card.minutes")} {seconds} {i18n.t("exercise.card.seconds")}
+										{minutes} {i18n.t("exercise.card.minutes")}
+										{seconds > 0 && ` ${seconds} ${i18n.t("exercise.card.seconds")}`}
 									</Text>
 								);
 							})()}

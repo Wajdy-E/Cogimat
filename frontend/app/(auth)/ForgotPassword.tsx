@@ -90,7 +90,6 @@ export default function ForgotPassword() {
 						setActive({ session: result.createdSessionId });
 						setErrors({ email: "", password: "", code: "", general: "" });
 					} else {
-						console.log(result);
 					}
 				})
 				.catch((err) => {
@@ -102,7 +101,6 @@ export default function ForgotPassword() {
 				const newErrors = { email: "", password: "", code: "", general: "" };
 				if (err.path) {
 					newErrors[err.path as keyof typeof newErrors] = err.message;
-					console.log("newErrors", newErrors);
 				} else {
 					err.inner.forEach((error) => {
 						if (error.path) {

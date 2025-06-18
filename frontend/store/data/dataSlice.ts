@@ -184,6 +184,9 @@ const dataSlice = createSlice({
 		removeCustomExercise(state, { payload }: PayloadAction<number>) {
 			state.customExercises = state.customExercises.filter((ex) => ex.id !== payload);
 		},
+		removeExercise(state, { payload }: PayloadAction<number>) {
+			state.exercises = state.exercises.filter((ex) => ex.id !== payload);
+		},
 		setCurrentFilter(state, { payload }: PayloadAction<FilterType[]>) {
 			state.currentFilter = payload;
 		},
@@ -221,6 +224,7 @@ export const {
 	updateCustomExercise,
 	setCurrentCustomExercise,
 	removeCustomExercise,
+	removeExercise,
 	setCurrentFilter,
 	setPublicExercises,
 	resetState,

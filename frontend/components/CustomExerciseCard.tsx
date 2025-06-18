@@ -70,17 +70,20 @@ function ExerciseCard(props: ExerciseCardProps) {
 					<PlayButton id={props.id} exercise={props.exercise} isCustomExercise />
 				</View>
 				<View className="p-2">
-					<Heading>{props?.name}</Heading>
+					<Heading numberOfLines={1} style={{ maxWidth: "90%" }}>
+						{props?.name}
+					</Heading>
 					<View className="flex-row gap-2">
 						<View className="flex-row items-center gap-1">
 							<Icon size="md" as={Clock} />
 							{(() => {
-								const totalSeconds = parseInt(props.time, 10);
+								const totalSeconds = parseFloat(props.time) * 60;
 								const minutes = Math.floor(totalSeconds / 60);
 								const seconds = totalSeconds % 60;
 								return (
 									<Text>
-										{minutes} {i18n.t("exercise.card.minutes")} {seconds} {i18n.t("exercise.card.seconds")}
+										{minutes} {i18n.t("exercise.card.minutes")}
+										{seconds > 0 && ` ${seconds} ${i18n.t("exercise.card.seconds")}`}
 									</Text>
 								);
 							})()}

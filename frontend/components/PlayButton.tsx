@@ -9,6 +9,7 @@ interface PlayButtonProps {
 	id?: number;
 	exercise?: Exercise | CustomExercise;
 	isCustomExercise?: boolean;
+	onClick?: () => void;
 }
 
 function PlayButton(props: PlayButtonProps) {
@@ -17,12 +18,16 @@ function PlayButton(props: PlayButtonProps) {
 		<Button
 			className="absolute bottom-0 right-0 bg-primary-400 p-3 rounded-full shadow-sm"
 			onPress={() => {
-				router.push({
-					pathname: `${props.isCustomExercise ? `/(custom-exercise)/${props.id}` : `/(exercise)/${props.id}`}`,
-					params: {
-						data: JSON.stringify(props.exercise),
-					},
-				});
+				if (props.onClick) {
+					props.onClick();
+				} else {
+					router.push({
+						pathname: `${props.isCustomExercise ? `/(custom-exercise)/${props.id}` : `/(exercise)/${props.id}`}`,
+						params: {
+							data: JSON.stringify(props.exercise),
+						},
+					});
+				}
 			}}
 			style={{ transform: [{ translateX: -15 }, { translateY: 18 }] }}
 			accessibilityLabel={i18n.t("general.buttons.play")}

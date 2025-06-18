@@ -45,7 +45,6 @@ function ExerciseProgram() {
 	const dispatch = useDispatch();
 	const appDispatch: AppDispatch = useDispatch();
 	const [showAlertModal, setShowAlertModal] = useState(false);
-	const [showSubmitToCogiproAlertModal, setShowSubmitToCogiproAlertModal] = useState(false);
 
 	useEffect(() => {
 		if (exercise) {
@@ -57,8 +56,8 @@ function ExerciseProgram() {
 
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
 	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
-	const [onScreenColor, setOnScreenColor] = useState("#000000");
-	const [offScreenColor, setOffScreenColor] = useState("#FFFFFF");
+	const [onScreenColor, setOnScreenColor] = useState(exercise.customizableOptions.onScreenColor);
+	const [offScreenColor, setOffScreenColor] = useState(exercise.customizableOptions.offScreenColor);
 	const [isEditing, setIsEditing] = useState(false);
 
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
@@ -67,9 +66,29 @@ function ExerciseProgram() {
 
 	const placeHolder = require("../../assets/exercise-thumbnails/placeholder.png");
 
-	function onScreenColorConfirm() {}
+	function onScreenColorConfirm() {
+		const updatedExercise = {
+			...exercise,
+			customizableOptions: {
+				...exercise.customizableOptions,
+				onScreenColor: onScreenColor,
+			},
+		};
+		appDispatch(updateCustomExerciseThunk(updatedExercise));
+		setShowOnScreenColorPicker(false);
+	}
 
-	function offScreenColorConfirm() {}
+	function offScreenColorConfirm() {
+		const updatedExercise = {
+			...exercise,
+			customizableOptions: {
+				...exercise.customizableOptions,
+				offScreenColor: offScreenColor,
+			},
+		};
+		appDispatch(updateCustomExerciseThunk(updatedExercise));
+		setShowOffScreenColorPicker(false);
+	}
 
 	function getIconForType(difficulty: ExerciseDifficulty) {
 		return difficulty === ExerciseDifficulty.Beginner
@@ -115,12 +134,6 @@ function ExerciseProgram() {
 			setShowAlertModal(false);
 		}
 	};
-
-	function submitToCogipro() {
-		const convertedExercise: Exercise = customExerciseToExercise(exercise);
-		appDispatch(submitExercise({ exercise: convertedExercise }));
-		setShowSubmitToCogiproAlertModal(false);
-	}
 
 	return (
 		<View className="relative bg-background-700">
@@ -172,19 +185,6 @@ function ExerciseProgram() {
 				</View>
 				<View className="flex items-center py-5">
 					<VStack className="w-[90%]" space="md">
-						{user.baseInfo?.isAdmin && (
-							<View className="flex-row justify-between items-center">
-								<Heading size="lg">{i18n.t("exercise.page.submitToCogipro")}</Heading>
-								<AnimatedSwitch
-									defaultValue={exercise.publicAccess}
-									onChange={() => setShowSubmitToCogiproAlertModal(true)}
-									onIcon={<Icon as={Eye} />}
-									offIcon={<Icon as={EyeOff} />}
-									height={25}
-									thumbSize={20}
-								/>
-							</View>
-						)}
 						<View className="flex-row justify-between items-center">
 							<Heading size="lg">{i18n.t("exercise.page.makePublic")}</Heading>
 							<AnimatedSwitch
@@ -277,10 +277,32 @@ function ExerciseProgram() {
 
 								{isEditing && (
 									<ButtonGroup className="flex-row self-end py-3">
-										<Button variant="outline" onPress={() => setIsEditing(false)} action="secondary" size="md">
+										<Button
+											variant="outline"
+											onPress={() => {
+												setIsEditing(false);
+												setDurationSettings(exercise.customizableOptions);
+											}}
+											action="secondary"
+											size="md"
+										>
 											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
 										</Button>
-										<Button onPress={() => setIsEditing(!isEditing)} action="primary" size="md">
+										<Button
+											onPress={() => {
+												const updatedExercise = {
+													...exercise,
+													customizableOptions: {
+														...exercise.customizableOptions,
+														...durationSettings,
+													},
+												};
+												appDispatch(updateCustomExerciseThunk(updatedExercise));
+												setIsEditing(false);
+											}}
+											action="primary"
+											size="md"
+										>
 											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
 										</Button>
 									</ButtonGroup>
@@ -357,16 +379,6 @@ function ExerciseProgram() {
 				textKey="exercise.page.makePublicMessage"
 				buttonKey="general.buttons.confirm"
 				onConfirm={() => handlePublicAccessChange(true)}
-				action="primary"
-			/>
-
-			<AlertModal
-				isOpen={showSubmitToCogiproAlertModal}
-				onClose={() => setShowSubmitToCogiproAlertModal(false)}
-				headingKey="exercise.page.makePublic"
-				textKey="exercise.page.makePublicMessage"
-				buttonKey="general.buttons.confirm"
-				onConfirm={() => submitToCogipro()}
 				action="primary"
 			/>
 		</View>

@@ -53,3 +53,23 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json({ success: false, error: "Database insert failed" }, { status: 500 });
 	}
 }
+
+export async function DELETE(req: NextRequest) {
+	try {
+		const { searchParams } = new URL(req.url);
+		const exerciseId = searchParams.get("exerciseId");
+		const name = searchParams.get("name");
+
+		if (!exerciseId || !name) {
+			return NextResponse.json({ success: false, error: "Missing exerciseId or name" }, { status: 400 });
+		}
+
+		// Delete the exercise from the exercises table
+		await query(`DELETE FROM exercises WHERE id = $1 AND name = $2`, [exerciseId, name]);
+
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error("Error deleting exercise from cogipro", error);
+		return NextResponse.json({ success: false, error: "Database delete failed" }, { status: 500 });
+	}
+}

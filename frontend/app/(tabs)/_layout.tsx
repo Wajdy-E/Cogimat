@@ -6,9 +6,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { useDispatch } from "react-redux";
-import { setCustomExerciseModalPopup } from "../../store/data/dataSlice";
+import { setCustomExerciseModalPopup, setPaywallModalPopup } from "../../store/data/dataSlice";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { PlusCircleIcon, PlusIcon } from "lucide-react-native";
+import PaywallDrawer from "../../components/PaywallDrawer";
 
 export default function TabsLayout() {
 	const activeColor = "#64dac4";
@@ -18,6 +19,7 @@ export default function TabsLayout() {
 	const { themeBackgroundColor, themeTextColor } = useTheme();
 
 	const isOpen = useSelector((state: RootState) => state.data.popupStates.customExerciseModalIsOpen ?? false);
+	const isPaywallOpen = useSelector((state: RootState) => state.data.popupStates.paywallIsOpen);
 
 	return (
 		<View className="h-screen">
@@ -114,6 +116,7 @@ export default function TabsLayout() {
 				/>
 			</Tabs>
 			<CreateExerciseModal isOpen={isOpen} onClose={() => dispatch(setCustomExerciseModalPopup(false))} />
+			<PaywallDrawer isOpen={isPaywallOpen} onClose={() => dispatch(setPaywallModalPopup(false))} />
 		</View>
 	);
 }

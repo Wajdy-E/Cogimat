@@ -124,25 +124,25 @@ function Progress() {
 				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
 					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.workouts")}</Heading>
-						<Text>0</Text>
+						<Text>{userMilestones?.exercisesCompleted ?? 0}</Text>
 					</Button>
 				</GridItem>
 				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
 					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.milestones")}</Heading>
-						<Text>0</Text>
+						<Text>{userMilestones ? Object.values(userMilestones).reduce((sum, val) => sum + (val || 0), 0) : 0}</Text>
 					</Button>
 				</GridItem>
 				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
 					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.weeklyGoal")}</Heading>
-						<Text>0</Text>
+						<Text>{goals?.length ?? 0}</Text>
 					</Button>
 				</GridItem>
 				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
 					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
 						<Heading size="sm">{i18n.t("progress.goals.tbd")}</Heading>
-						<Text>0</Text>
+						<Text>{userMilestones?.customExercisesCreated ?? 0}</Text>
 					</Button>
 				</GridItem>
 			</Grid>
@@ -176,6 +176,8 @@ function Progress() {
 					<ProgressCard
 						key={config.key}
 						value={progressPercent}
+						rawCount={rawValue}
+						goalTarget={config.goalTarget}
 						headingKey={config.headingKey}
 						descriptionKey={config.descriptionKey}
 						subTextKey={config.subTextKey}
