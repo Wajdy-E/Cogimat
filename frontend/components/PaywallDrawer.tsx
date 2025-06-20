@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Drawer,
 	DrawerBackdrop,
@@ -29,14 +29,15 @@ interface PlanOption {
 	title: string;
 	price: string;
 	saving?: string;
+	monthlyPrice?: string;
+	package?: any; // RevenueCat package
 }
 
 function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 	const dispatch: AppDispatch = useDispatch();
 	const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">("monthly");
 	const [isLoading, setIsLoading] = useState(false);
-
-	const plans: Record<string, PlanOption> = {
+	const [plans, setPlans] = useState<Record<string, PlanOption>>({
 		monthly: {
 			id: "$rc_monthly",
 			title: i18n.t("paywall.pricing.monthly"),
@@ -47,19 +48,67 @@ function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 			title: i18n.t("paywall.pricing.annual"),
 			price: i18n.t("paywall.pricing.annualPrice"),
 			saving: i18n.t("paywall.pricing.annualSaving"),
+			monthlyPrice: i18n.t("paywall.pricing.monthlyPrice"),
 		},
-	};
+	});
 
 	const features = i18n.t("paywall.features.list") as string[];
+
+	// Fetch pricing from RevenueCat
+	useEffect(() => {
+		const fetchPricing = async () => {
+			try {
+				const offerings = await Purchases.getOfferings();
+				const currentOffering = offerings.current;
+
+				if (currentOffering) {
+					const monthlyPackage = currentOffering.availablePackages.find((p) => p.identifier === "$rc_monthly");
+					const annualPackage = currentOffering.availablePackages.find((p) => p.identifier === "$rc_annual");
+
+					const updatedPlans = { ...plans };
+
+					if (monthlyPackage) {
+						updatedPlans.monthly = {
+							...updatedPlans.monthly,
+							price: monthlyPackage.product.priceString,
+							package: monthlyPackage,
+						};
+					}
+
+					if (annualPackage) {
+						// Calculate savings
+						const annualPrice = Number(annualPackage.product.price);
+						const monthlyPrice = monthlyPackage ? Number(monthlyPackage.product.price) : 0;
+						const savingsPercent =
+							monthlyPrice > 0 ? ((monthlyPrice * 12 - annualPrice) / (monthlyPrice * 12)) * 100 : 0;
+
+						updatedPlans.annual = {
+							...updatedPlans.annual,
+							price: annualPackage.product.priceString,
+							saving: savingsPercent > 0 ? `Save ${savingsPercent.toFixed(0)}%` : "",
+							package: annualPackage,
+						};
+					}
+
+					setPlans(updatedPlans);
+				}
+			} catch (error) {
+				console.error("Error fetching pricing:", error);
+			}
+		};
+
+		if (isOpen) {
+			fetchPricing();
+		}
+	}, [isOpen]);
 
 	const handleSubscribe = async () => {
 		try {
 			setIsLoading(true);
-			const offerings = await Purchases.getOfferings();
-			const selectedPackage = offerings.current?.availablePackages.find((p) => p.identifier === plans[selectedPlan].id);
+			const selectedPlanData = plans[selectedPlan];
 
-			if (selectedPackage) {
-				await Purchases.purchasePackage(selectedPackage);
+			if (selectedPlanData.package) {
+				await Purchases.purchasePackage(selectedPlanData.package);
 				// Update subscription status in Redux and database
 				await dispatch(
 					updateSubscriptionStatus({
@@ -102,64 +151,77 @@ function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 	};
 
 	return (
-		<Drawer isOpen={isOpen} onClose={onClose} size="lg" anchor="bottom">
+		<Drawer isOpen={isOpen} onClose={onClose} size="full" anchor="bottom">
 			<DrawerBackdrop />
-			<DrawerContent className="bg-background-0 rounded-t-3xl flex-1">
-				<DrawerHeader>
+			<DrawerContent className="bg-background-900 rounded-t-3xl flex-1 p-0">
+				<DrawerHeader className="mt-10 px-7 py-4">
 					<View className="relative w-full">
-						<Heading size="xl" className="text-center">
+						{/* <Heading size="xl" className="text-center">
 							{i18n.t("paywall.title")}
-						</Heading>
-						<View className="absolute right-0 top-0">
-							<DrawerCloseButton onPress={onClose}>
-								<Icon as={CloseIcon} size="md" />
-							</DrawerCloseButton>
-						</View>
+						</Heading> */}
+						{/* <View className="absolute right-0 top-0"> */}
+						<DrawerCloseButton onPress={onClose}>
+							<Icon as={CloseIcon} size="xl" />
+						</DrawerCloseButton>
+						{/* </View> */}
 					</View>
 				</DrawerHeader>
 
 				<ScrollView contentContainerStyle={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
-					<DrawerBody>
-						<View className="mb-6">
-							<Image
-								source={require("../assets/exercise-thumbnails/placeholder.png")}
-								className="w-full h-40 rounded-lg"
-								resizeMode="cover"
-							/>
+					<Image
+						source={require("../assets/exercise-thumbnails/placeholder.png")}
+						className="w-full h-[300px]"
+						resizeMode="cover"
+					/>
+					<DrawerBody className="px-7">
+						{/* <Text className="text-lg text-center mb-6">{i18n.t("paywall.subtitle")}</Text> */}
+
+						<View className="mb-6 flex items-center">
+							<Text className="text-3xl font-bold mb-6">{i18n.t("paywall.title")}</Text>
+							<View className="flex flex-col text-start">
+								{features.map((feature: string, index: number) => (
+									<View key={index} className="flex-row items-center mb-3">
+										<Icon as={CheckIcon} size="sm" className="mr-2" />
+										<Text>{feature}</Text>
+									</View>
+								))}
+							</View>
 						</View>
 
-						<Text className="text-lg text-center mb-6">{i18n.t("paywall.subtitle")}</Text>
-
-						<View className="mb-6">
-							<Text className="text-lg font-semibold mb-4">{i18n.t("paywall.features.title")}</Text>
-							{features.map((feature: string, index: number) => (
-								<View key={index} className="flex-row items-center mb-3">
-									<Icon as={CheckIcon} size="sm" className="text-primary mr-2" />
-									<Text>{feature}</Text>
+						<View className="flex justify-between gap-4 mb-6 w-full">
+							<Button
+								onPress={() => setSelectedPlan("monthly")}
+								className="fw-full lex-1 flex justify-between rounded-md h-[70px]"
+								variant="outline"
+								action={selectedPlan === "monthly" ? "primary" : "secondary"}
+							>
+								<Text className="font-semibold">{plans.monthly.title}</Text>
+								<Text className="text-lg">{plans.monthly.price}</Text>
+							</Button>
+							<Button
+								onPress={() => setSelectedPlan("annual")}
+								className="flex-1 flex-col rounded-md h-[70px]"
+								variant="outline"
+								action={selectedPlan === "annual" ? "primary" : "secondary"}
+							>
+								<View className="w-full flex flex-row justify-between">
+									<Text className="text-lg font-bold">{plans.annual.title}</Text>
+									<Text className="text-lg font-bold">{plans.annual.price}</Text>
 								</View>
-							))}
-						</View>
 
-						<View className="flex-row justify-between gap-4 mb-6 w-full">
-							{Object.entries(plans).map(([key, plan]) => (
-								<Button
-									key={key}
-									onPress={() => setSelectedPlan(key as "monthly" | "annual")}
-									className="flex-1 flex-col rounded-md h-30 min-w-[45%]"
-									variant={selectedPlan === key ? "solid" : "outline"}
-									action={selectedPlan === key ? "primary" : "secondary"}
-								>
-									<ButtonText className="font-semibold">{plan.title}</ButtonText>
-									<ButtonText className="text-lg">{plan.price}</ButtonText>
-									{plan.saving && <ButtonText className="text-sm text-primary">{plan.saving}</ButtonText>}
-								</Button>
-							))}
+								{plans.annual.saving && (
+									<View className="w-full flex flex-row justify-between">
+										<Text className="text-sm">{plans.annual.saving}</Text>
+										<Text className="text-sm">{plans.annual.monthlyPrice}</Text>
+									</View>
+								)}
+							</Button>
 						</View>
 					</DrawerBody>
 				</ScrollView>
 
-				<DrawerFooter className="gap-4 flex-col">
-					<Button onPress={handleSubscribe} isDisabled={isLoading} className="w-full">
+				<DrawerFooter className="gap-4 flex-col px-7 pb-5">
+					<Button onPress={handleSubscribe} isDisabled={isLoading} className="w-full h-[50px] rounded-xl">
 						<ButtonText>{i18n.t("paywall.buttons.subscribe")}</ButtonText>
 					</Button>
 					<Button variant="link" onPress={handleRestore} isDisabled={isLoading} className="w-full">

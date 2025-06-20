@@ -21,6 +21,7 @@ import axios from "axios";
 import { RootState } from "../store";
 import { Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
 import { updateUserMilestone } from "../auth/authSaga";
+import { uploadExerciseImage, uploadExerciseVideo } from "../../lib/exerciseMediaUpload";
 const BASE_URL = process.env.BASE_URL;
 
 //#region Sagas
@@ -219,23 +220,10 @@ export const uploadUserImage = createAsyncThunk<string | null, { uri: string }, 
 		try {
 			const userId = getState().user.user.baseInfo?.id;
 			if (!userId) throw new Error("User is not authenticated");
-			const fileName = uri.split("/").pop() || "image.jpg";
-			const fileType = fileName.endsWith(".png") ? "image/png" : "image/jpeg";
 
-			const form = new FormData();
-			form.append("file", {
-				uri,
-				name: fileName,
-				type: fileType,
-			} as any); // RN requires `as any` for FormData file
-
-			const res = await axios.post(`${BASE_URL}/api/exercise-image-upload`, form, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			});
-
-			return res.data.url; // You can store this in your state if needed
+			// Use the new Vercel Blob upload system
+			const imageUrl = await uploadExerciseImage(uri);
+			return imageUrl;
 		} catch (error) {
 			console.error("Image upload failed:", error);
 			throw error;
@@ -250,9 +238,22 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 			const userId = getState().user.user.baseInfo?.id;
 			if (!userId) throw new Error("User is not authenticated");
 
+			// Upload media to Vercel Blob if they are local files
+			let imageUri = formData.imageUri;
+			let videoUri = formData.videoUri;
+
+			if (formData.imageUri?.startsWith("file://")) {
+				imageUri = await uploadExerciseImage(formData.imageUri);
+			}
+			if (formData.videoUri?.startsWith("file://")) {
+				videoUri = await uploadExerciseVideo(formData.videoUri);
+			}
+
 			const payload = {
 				...formData,
 				clerk_id: userId,
+				imageUri,
+				videoUri,
 			};
 
 			const response = await axios.post(`${BASE_URL}/api/custom-exercise`, payload);
@@ -272,8 +273,8 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 					numbers: formData.numbers as NumberEnum[],
 					letters: formData.letters as Letter[],
 				},
-				videoUrl: formData.videoUri,
-				imageFileUrl: formData.imageUri,
+				videoUrl: videoUri,
+				imageFileUrl: imageUri,
 				youtubeUrl: formData.youtubeUrl,
 				focus: formData.focus,
 				isFavourited: false,
@@ -312,6 +313,17 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 			const clerk_id = getState().user.user.baseInfo?.id;
 			if (!clerk_id) throw new Error("User not authenticated");
 
+			// Upload new media to Vercel Blob if they are local files
+			let imageUri = exercise.imageFileUrl;
+			let videoUri = exercise.videoUrl;
+
+			if (exercise.imageFileUrl?.startsWith("file://")) {
+				imageUri = await uploadExerciseImage(exercise.imageFileUrl, exercise.id);
+			}
+			if (exercise.videoUrl?.startsWith("file://")) {
+				videoUri = await uploadExerciseVideo(exercise.videoUrl, exercise.id);
+			}
+
 			const payload = {
 				id: exercise.id,
 				clerk_id,
@@ -326,8 +338,8 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 					? exercise.parameters.colors.map((c) => (typeof c === "string" ? c : c.name))
 					: [],
 				focus: exercise.focus ?? [],
-				imageUri: exercise.imageFileUrl,
-				videoUri: exercise.videoUrl,
+				imageUri,
+				videoUri,
 				isFavourited: exercise.isFavourited,
 				offScreenTime: exercise.customizableOptions.offScreenTime,
 				onScreenTime: exercise.customizableOptions.onScreenTime,
@@ -340,7 +352,14 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 
 			await axios.patch(`${BASE_URL}/api/custom-exercise`, payload);
 
-			dispatch(updateCustomExercise(exercise));
+			// Update the exercise with the new URLs
+			const updatedExercise = {
+				...exercise,
+				imageFileUrl: imageUri,
+				videoUrl: videoUri,
+			};
+
+			dispatch(updateCustomExercise(updatedExercise));
 		} catch (err) {
 			console.error("Failed to update exercise:", err);
 			throw err;

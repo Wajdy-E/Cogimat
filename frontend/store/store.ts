@@ -1,6 +1,7 @@
 import { configureStore, combineReducers, createAction } from "@reduxjs/toolkit";
 import userReducer from "./auth/authSlice";
 import dataReducer from "./data/dataSlice";
+import uiReducer from "./ui/uiSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
@@ -13,6 +14,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
 	user: userReducer,
 	data: dataReducer,
+	ui: uiReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

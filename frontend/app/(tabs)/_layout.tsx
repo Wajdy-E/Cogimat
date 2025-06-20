@@ -65,6 +65,14 @@ export default function TabsLayout() {
 				/>
 
 				<Tabs.Screen
+					name="community-exercises"
+					options={{
+						title: "Community Exercises",
+						href: null,
+					}}
+				/>
+
+				<Tabs.Screen
 					name="progress"
 					options={{
 						title: "Progress",

@@ -149,8 +149,8 @@ function Home() {
 						heading={i18n.t("home.exercisePrograms.communityTitle")}
 						text={i18n.t("home.exercisePrograms.seeAll")}
 						classes="justify-between"
-						to="/(tabs)/all-exercises"
-						onPress={() => onPressAllExercises(true)}
+						to="/(tabs)/community-exercises"
+						onPress={() => {}}
 					/>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
@@ -171,6 +171,7 @@ function Home() {
 										classes="w-[250px]"
 										isFavourited={exercise.isFavourited}
 										variant="elevated"
+										isCommunityExercise={true}
 									/>
 								))
 							)}

@@ -29,6 +29,8 @@ import FormSelect from "../../components/FormSelect";
 import Purchases from "react-native-purchases";
 import { setPaywallModalPopup } from "../../store/data/dataSlice";
 import PaywallDrawer from "../../components/PaywallDrawer";
+import AdminVideoUpload from "../../components/AdminVideoUpload";
+import AdminVideoGallery from "../../components/AdminVideoGallery";
 
 export const resetState = createAction("RESET_STATE");
 
@@ -270,6 +272,22 @@ function Account() {
 							<Heading size="sm">1.0.0</Heading>
 						</View>
 					</VStack>
+
+					{/* Admin Video Management Section */}
+					{user?.isAdmin && (
+						<VStack space="md">
+							<Heading className="text-primary-500">{i18n.t("account.adminSection")}</Heading>
+							<Divider className="bg-secondary-100" />
+							<AdminVideoUpload
+								onUploadSuccess={() => {
+									// Refresh the gallery after upload
+									console.log("Video uploaded successfully");
+								}}
+							/>
+							<AdminVideoGallery showUploadButton={false} />
+						</VStack>
+					)}
+
 					<Center>
 						<Text>COGIPRO, INC.</Text>
 					</Center>

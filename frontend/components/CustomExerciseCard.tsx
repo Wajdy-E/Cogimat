@@ -24,6 +24,7 @@ interface ExerciseCardProps {
 	exercise: CustomExercise;
 	classes?: string;
 	variant?: "elevated" | "outline" | "ghost" | "filled" | undefined;
+	isCommunityExercise?: boolean;
 }
 
 const placeHolder = require("../assets/exercise-thumbnails/placeholder.png");
@@ -67,7 +68,12 @@ function ExerciseCard(props: ExerciseCardProps) {
 						resizeMode="cover"
 					/>
 					<FavouriteButton isFavourited={props.isFavourited ? true : false} onFavourite={onFavourite} />
-					<PlayButton id={props.id} exercise={props.exercise} isCustomExercise />
+					<PlayButton
+						id={props.id}
+						exercise={props.exercise}
+						isCustomExercise={!props.isCommunityExercise}
+						isCommunityExercise={props.isCommunityExercise}
+					/>
 				</View>
 				<View className="p-2">
 					<Heading numberOfLines={1} style={{ maxWidth: "90%" }}>

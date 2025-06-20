@@ -1,25 +1,32 @@
 import { query } from "../../../lib/db";
 import { NextRequest, NextResponse } from "next/server";
-// import axios from "axios";
+import { put } from "@vercel/blob";
 
-// async function uploadToBlob(uri: string, type: "image" | "video") {
-// 	if (!uri?.startsWith("file://")) return uri;
+async function uploadToBlob(uri: string, type: "image" | "video", exerciseId?: number) {
+	if (!uri?.startsWith("file://")) return uri;
 
-// 	const res = await fetch(uri);
-// 	const blob = await res.blob();
+	try {
+		const res = await fetch(uri);
+		const blob = await res.blob();
+		const arrayBuffer = await blob.arrayBuffer();
+		const buffer = Buffer.from(arrayBuffer);
 
-// 	const form = new FormData();
-// 	form.append("file", new File([blob], `${type}-${Date.now()}`, { type: blob.type }));
+		// Create organized filename
+		const timestamp = Date.now();
+		const fileExtension = type === "image" ? "jpg" : "mp4";
+		const filename = `exercise-media/${type}s/${exerciseId ? `exercise-${exerciseId}-` : ""}${timestamp}.${fileExtension}`;
 
-// 	console.log("baseurl", process.env.BASE_URL);
-// 	const uploadRes = await axios.post(`${process.env.BASE_URL}/api/blob-upload`, form, {
-// 		headers: { "Content-Type": "multipart/form-data" },
-// 	});
+		const vercelBlob = await put(filename, buffer, {
+			access: "public",
+			contentType: blob.type,
+		});
 
-// 	if (uploadRes.status < 200 || uploadRes.status >= 300) throw new Error("Blob upload failed");
-// 	const { url } = uploadRes.data;
-// 	return url;
-// }
+		return vercelBlob.url;
+	} catch (error) {
+		console.error(`Failed to upload ${type} to blob:`, error);
+		throw new Error(`Blob upload failed for ${type}`);
+	}
+}
 
 export async function POST(req: NextRequest) {
 	try {
@@ -49,15 +56,16 @@ export async function POST(req: NextRequest) {
 			youtubeUrl,
 		} = body;
 
-		// let imageUriBlob = imageUri;
-		// let videoUriBlob = videoUri;
+		let imageUriBlob = imageUri;
+		let videoUriBlob = videoUri;
 
-		// if (imageUri?.startsWith("file://")) {
-		// 	imageUriBlob = await uploadToBlob(imageUri, "image");
-		// }
-		// if (videoUri?.startsWith("file://")) {
-		// 	videoUriBlob = await uploadToBlob(videoUri, "video");
-		// }
+		// Upload images and videos to Vercel Blob if they are local files
+		if (imageUri?.startsWith("file://")) {
+			imageUriBlob = await uploadToBlob(imageUri, "image");
+		}
+		if (videoUri?.startsWith("file://")) {
+			videoUriBlob = await uploadToBlob(videoUri, "video");
+		}
 
 		const result = await query(
 			`INSERT INTO customexercises (
@@ -99,8 +107,8 @@ export async function POST(req: NextRequest) {
 				numbers,
 				colors,
 				focus,
-				imageUri,
-				videoUri,
+				imageUriBlob,
+				videoUriBlob,
 				offScreenTime,
 				onScreenTime,
 				exerciseTime,
@@ -152,6 +160,17 @@ export async function PATCH(req: NextRequest) {
 			return new NextResponse(JSON.stringify({ error: "Missing id or clerk_id" }), { status: 400 });
 		}
 
+		let imageUriBlob = imageUri;
+		let videoUriBlob = videoUri;
+
+		// Upload new images and videos to Vercel Blob if they are local files
+		if (imageUri?.startsWith("file://")) {
+			imageUriBlob = await uploadToBlob(imageUri, "image", id);
+		}
+		if (videoUri?.startsWith("file://")) {
+			videoUriBlob = await uploadToBlob(videoUri, "video", id);
+		}
+
 		await query(
 			`UPDATE customexercises SET
 				name = $1,
@@ -186,8 +205,8 @@ export async function PATCH(req: NextRequest) {
 				numbers,
 				colors,
 				focus,
-				imageUri,
-				videoUri,
+				imageUriBlob,
+				videoUriBlob,
 				offScreenTime,
 				onScreenTime,
 				exerciseTime,

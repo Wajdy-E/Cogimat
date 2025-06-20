@@ -63,6 +63,7 @@ export enum ExerciseDifficulty {
 export enum FilterType {
 	Standard = "standard",
 	Custom = "custom",
+	Community = "community",
 }
 
 export interface Goals {

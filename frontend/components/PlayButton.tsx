@@ -9,6 +9,7 @@ interface PlayButtonProps {
 	id?: number;
 	exercise?: Exercise | CustomExercise;
 	isCustomExercise?: boolean;
+	isCommunityExercise?: boolean;
 	onClick?: () => void;
 }
 
@@ -21,8 +22,17 @@ function PlayButton(props: PlayButtonProps) {
 				if (props.onClick) {
 					props.onClick();
 				} else {
+					let pathname;
+					if (props.isCommunityExercise) {
+						pathname = `/(community-exercise)/${props.id}`;
+					} else if (props.isCustomExercise) {
+						pathname = `/(custom-exercise)/${props.id}`;
+					} else {
+						pathname = `/(exercise)/${props.id}`;
+					}
+
 					router.push({
-						pathname: `${props.isCustomExercise ? `/(custom-exercise)/${props.id}` : `/(exercise)/${props.id}`}`,
+						pathname,
 						params: {
 							data: JSON.stringify(props.exercise),
 						},

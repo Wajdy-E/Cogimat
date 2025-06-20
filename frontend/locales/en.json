@@ -24,5 +24,69 @@
 		"orSignUpWith": "Or Sign Up With",
 		"alreadyHaveAccount": "Already have an account?",
 		"login": "Login"
+	},
+	"admin": {
+		"videoUpload": {
+			"title": "Upload Admin Video",
+			"titleLabel": "Video Title",
+			"titlePlaceholder": "Enter video title",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Enter video description (optional)",
+			"categoryLabel": "Category",
+			"videoLabel": "Video File",
+			"selectVideo": "Select Video",
+			"upload": "Upload Video",
+			"uploading": "Uploading..."
+		},
+		"videoGallery": {
+			"uploadNew": "Upload New Video",
+			"noVideos": "No videos available",
+			"watch": "Watch",
+			"views": "views"
+		},
+		"videoManagement": {
+			"title": "Video Management",
+			"gallery": "Gallery",
+			"upload": "Upload"
+		},
+		"allVideos": {
+			"title": "All Videos",
+			"searchPlaceholder": "Search videos...",
+			"noVideos": "No videos found",
+			"watch": "Watch"
+		}
+	},
+	"exercise": {
+		"videoUpload": {
+			"title": "Upload Exercise Video",
+			"subtitle": "Share creative ways to use {{exerciseName}}",
+			"titleLabel": "Video Title",
+			"titlePlaceholder": "Enter video title",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Describe your creative approach",
+			"videoLabel": "Video File",
+			"selectVideo": "Select Video",
+			"upload": "Upload Video",
+			"uploading": "Uploading..."
+		},
+		"videoGallery": {
+			"title": "Creative Examples",
+			"upload": "Upload",
+			"noVideos": "No videos available for this exercise",
+			"watch": "Watch"
+		},
+		"sections": {
+			"adminVideoUpload": "Admin Video Upload",
+			"uploadVideo": "Upload Creative Example"
+		}
+	},
+	"account": {
+		"adminSection": "Admin Tools"
+	},
+	"general": {
+		"loading": "Loading...",
+		"buttons": {
+			"close": "Close"
+		}
 	}
 }

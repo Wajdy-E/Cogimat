@@ -34,6 +34,8 @@ import { i18n } from "../../i18n";
 import { useSubscriptionStatus } from "../hooks/useSubscriptionStatus";
 import PaywallDrawer from "../../components/PaywallDrawer";
 import AlertModal from "../../components/AlertModal";
+import ExerciseVideoUpload from "../../components/ExerciseVideoUpload";
+import ExerciseVideoGallery from "../../components/ExerciseVideoGallery";
 
 function ExerciseProgram() {
 	const dispatch = useDispatch();
@@ -41,6 +43,7 @@ function ExerciseProgram() {
 	const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
 	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
 	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
+	const user = useSelector((state: RootState) => state.user.user.baseInfo);
 	const { isSubscribed } = useSubscriptionStatus();
 
 	useEffect(() => {
@@ -59,6 +62,7 @@ function ExerciseProgram() {
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
 		exercise.customizableOptions
 	);
+	const [showVideoUpload, setShowVideoUpload] = useState(false);
 
 	function handleColorConfirm(type: "onScreen" | "offScreen") {
 		if (durationSettings) {
@@ -124,6 +128,10 @@ function ExerciseProgram() {
 
 	const onEditClick = () => {
 		setIsEditing(!isEditing);
+	};
+
+	const handleVideoUploadSuccess = () => {
+		setShowVideoUpload(false);
 	};
 
 	return (
@@ -267,6 +275,44 @@ function ExerciseProgram() {
 								>
 									<WheelColorPicker onColorChangeComplete={(color: string) => setOnScreenColor(color)} />
 								</ModalComponent>
+							</Box>
+
+							{/* Admin Video Upload Section */}
+							{user?.isAdmin && (
+								<Box className="bg-secondary-500 p-5 rounded-2xl">
+									<VStack space="lg">
+										<View>
+											<Heading size="md" className="text-primary-500">
+												{i18n.t("exercise.sections.adminVideoUpload")}
+											</Heading>
+											<Divider className="bg-slate-400" />
+										</View>
+
+										{showVideoUpload ? (
+											<ExerciseVideoUpload
+												exerciseId={exercise.id}
+												exerciseName={exercise.name}
+												onUploadSuccess={handleVideoUploadSuccess}
+												onClose={() => setShowVideoUpload(false)}
+											/>
+										) : (
+											<Button onPress={() => setShowVideoUpload(true)} action="primary" className="w-full">
+												<ButtonIcon as={ArrowRight} />
+												<ButtonText>{i18n.t("exercise.sections.uploadVideo")}</ButtonText>
+											</Button>
+										)}
+									</VStack>
+								</Box>
+							)}
+
+							{/* Exercise Video Gallery Section */}
+							<Box className="bg-secondary-500 p-5 rounded-2xl">
+								<ExerciseVideoGallery
+									exerciseId={exercise.id}
+									onVideoSelect={(video) => {
+										console.log("Selected video:", video.title);
+									}}
+								/>
 							</Box>
 						</VStack>
 					</View>

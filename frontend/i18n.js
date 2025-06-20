@@ -84,6 +84,7 @@ const translations = {
 			terms: "Terms & Conditions",
 			privacy: "Privacy Policy",
 			version: "Version",
+			adminSection: "Admin Tools",
 		},
 		signup: {
 			title: "Sign Up",
@@ -176,6 +177,7 @@ const translations = {
 				play: "Play Exercise",
 				favorite: "Toggle Favorite",
 				confirm: "Confirm",
+				close: "Close",
 			},
 			time: {
 				seconds: "seconds",
@@ -204,6 +206,7 @@ const translations = {
 				success: "Success",
 				info: "Information",
 			},
+			loading: "Loading...",
 		},
 		createExercise: {
 			steps: {
@@ -256,6 +259,8 @@ const translations = {
 				customization: "Customization",
 				durationSettings: "Duration Settings",
 				colorSettings: "Color Settings",
+				adminVideoUpload: "Admin Video Upload",
+				uploadVideo: "Upload Creative Example",
 			},
 			page: {
 				description: "Description",
@@ -271,11 +276,32 @@ const translations = {
 				cogiproPremiumSettings: "Cogipro Premium Settings",
 				submitToCogiproDescription: "Make this exercise available in Cogipro Premium",
 				accessDenied: "Access denied. Admin privileges required.",
+				deleteExercise: "Delete Exercise",
+				deleteExerciseMessage: "Are you sure you want to delete this exercise? This action cannot be undone.",
+				deleteExerciseDescription: "Permanently remove this exercise from your account",
 			},
 			card: {
 				minutes: "min",
 				seconds: "sec",
 				imageAlt: "Exercise thumbnail",
+			},
+			videoUpload: {
+				title: "Upload Exercise Video",
+				subtitle: "Share creative ways to use {{exerciseName}}",
+				titleLabel: "Video Title",
+				titlePlaceholder: "Enter video title",
+				descriptionLabel: "Description",
+				descriptionPlaceholder: "Describe your creative approach",
+				videoLabel: "Video File",
+				selectVideo: "Select Video",
+				upload: "Upload Video",
+				uploading: "Uploading...",
+			},
+			videoGallery: {
+				title: "Creative Examples",
+				upload: "Upload",
+				noVideos: "No videos available for this exercise",
+				watch: "Watch",
 			},
 		},
 		progress: {
@@ -397,13 +423,7 @@ const translations = {
 			subtitle: "Unlock all premium features",
 			features: {
 				title: "What you'll get",
-				list: [
-					"Unlimited custom exercises",
-					"Advanced exercise tracking",
-					"Priority support",
-					"Ad-free experience",
-					"Exclusive content updates",
-				],
+				list: ["Exclusive exercise videos by our team", "Exclusive access to new features", "Priority support"],
 			},
 			pricing: {
 				monthly: "Monthly",
@@ -411,6 +431,7 @@ const translations = {
 				monthlyPrice: "$9.99/month",
 				annualPrice: "$79.99/year",
 				annualSaving: "Save 33%",
+				monthlySaving: "",
 			},
 			buttons: {
 				subscribe: "Continue",
@@ -422,6 +443,37 @@ const translations = {
 			description:
 				"Get exclusive access to unique and creative ways to use your Cogimat, featuring exercises designed by our expert team.",
 			button: "Upgrade",
+		},
+		admin: {
+			videoUpload: {
+				title: "Upload Admin Video",
+				titleLabel: "Video Title",
+				titlePlaceholder: "Enter video title",
+				descriptionLabel: "Description",
+				descriptionPlaceholder: "Enter video description (optional)",
+				categoryLabel: "Category",
+				videoLabel: "Video File",
+				selectVideo: "Select Video",
+				upload: "Upload Video",
+				uploading: "Uploading...",
+			},
+			videoGallery: {
+				uploadNew: "Upload New Video",
+				noVideos: "No videos available",
+				watch: "Watch",
+				views: "views",
+			},
+			videoManagement: {
+				title: "Video Management",
+				gallery: "Gallery",
+				upload: "Upload",
+			},
+			allVideos: {
+				title: "All Videos",
+				searchPlaceholder: "Search videos...",
+				noVideos: "No videos found",
+				watch: "Watch",
+			},
 		},
 	},
 	fr: {
@@ -483,6 +535,7 @@ const translations = {
 			terms: "Conditions générales",
 			privacy: "Politique de confidentialité",
 			version: "Version",
+			adminSection: "Outils d'administration",
 		},
 		signup: {
 			title: "S'inscrire",
@@ -575,6 +628,7 @@ const translations = {
 				play: "Jouer l'exercice",
 				favorite: "Basculer favori",
 				confirm: "Confirmer",
+				close: "Fermer",
 			},
 			time: {
 				seconds: "secondes",
@@ -603,6 +657,7 @@ const translations = {
 				success: "Succès",
 				info: "Information",
 			},
+			loading: "Chargement...",
 		},
 		createExercise: {
 			steps: {
@@ -656,6 +711,8 @@ const translations = {
 				customization: "Personnalisation",
 				durationSettings: "Paramètres de durée",
 				colorSettings: "Paramètres de couleur",
+				adminVideoUpload: "Téléchargement de vidéo admin",
+				uploadVideo: "Télécharger un exemple créatif",
 			},
 			page: {
 				description: "Description",
@@ -672,11 +729,32 @@ const translations = {
 				cogiproPremiumSettings: "Paramètres de Cogipro Premium",
 				submitToCogiproDescription: "Rendre cet exercice disponible dans Cogipro Premium",
 				accessDenied: "Accès refusé. Privilèges administratifs requis.",
+				deleteExercise: "Supprimer l'exercice",
+				deleteExerciseMessage: "Êtes-vous sûr de vouloir supprimer cet exercice ? Cette action ne peut être annulée.",
+				deleteExerciseDescription: "Supprimer définitivement cet exercice de votre compte",
 			},
 			card: {
 				minutes: "min",
 				seconds: "sec",
 				imageAlt: "Miniature de l'exercice",
+			},
+			videoUpload: {
+				title: "Télécharger une vidéo d'exercice",
+				subtitle: "Partagez des façons créatives d'utiliser {{exerciseName}}",
+				titleLabel: "Titre de la vidéo",
+				titlePlaceholder: "Entrez le titre de la vidéo",
+				descriptionLabel: "Description",
+				descriptionPlaceholder: "Décrivez votre approche créative",
+				videoLabel: "Fichier vidéo",
+				selectVideo: "Sélectionner une vidéo",
+				upload: "Télécharger la vidéo",
+				uploading: "Téléchargement...",
+			},
+			videoGallery: {
+				title: "Exemples créatifs",
+				upload: "Télécharger",
+				noVideos: "Aucune vidéo disponible pour cet exercice",
+				watch: "Regarder",
 			},
 		},
 		progress: {
@@ -823,6 +901,46 @@ const translations = {
 			description:
 				"Obtenez un accès exclusif à des moyens uniques et créatifs d'utiliser votre Cogimat, avec des exercices conçus par notre équipe d'experts.",
 			button: "Mettre à niveau",
+		},
+		admin: {
+			videoUpload: {
+				title: "Télécharger une vidéo admin",
+				titleLabel: "Titre de la vidéo",
+				titlePlaceholder: "Entrez le titre de la vidéo",
+				descriptionLabel: "Description",
+				descriptionPlaceholder: "Entrez la description de la vidéo (optionnel)",
+				categoryLabel: "Catégorie",
+				videoLabel: "Fichier vidéo",
+				selectVideo: "Sélectionner une vidéo",
+				upload: "Télécharger la vidéo",
+				uploading: "Téléchargement...",
+			},
+			videoGallery: {
+				uploadNew: "Télécharger une nouvelle vidéo",
+				noVideos: "Aucune vidéo disponible",
+				watch: "Regarder",
+				views: "vues",
+			},
+			videoManagement: {
+				title: "Gestion des vidéos",
+				gallery: "Galerie",
+				upload: "Télécharger",
+			},
+			allVideos: {
+				title: "Toutes les vidéos",
+				searchPlaceholder: "Rechercher des vidéos...",
+				noVideos: "Aucune vidéo trouvée",
+				watch: "Regarder",
+			},
+		},
+		account: {
+			adminSection: "Outils d'administration",
+		},
+		general: {
+			loading: "Chargement...",
+			buttons: {
+				close: "Fermer",
+			},
 		},
 	},
 };

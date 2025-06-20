@@ -3,25 +3,19 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heading } from "@/components/ui/heading";
 import { CustomExercise, updateCustomExercise } from "../store/data/dataSlice";
 import { Button, ButtonIcon } from "@/components/ui/button";
-import { ArrowLeft, Star, Settings } from "lucide-react-native";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { AppDispatch, RootState } from "../store/store";
+import { ArrowLeft, Star } from "lucide-react-native";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store/store";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { useCustomExercise } from "@/hooks/useCustomExercise";
 
-interface CustomExerciseHeaderProps {
-	showSettings?: boolean;
-}
-
-export default function Header({ showSettings = true }: CustomExerciseHeaderProps) {
+export default function CommunityExerciseHeader() {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
 	const exercises = useCustomExercise(parseInt(id as string)) as CustomExercise;
-	const user = useSelector((state: RootState) => state.user.user, shallowEqual);
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
 
-	console.log(user.baseInfo?.isAdmin);
 	function onFavourite() {
 		const exerciseCopy = { ...exercises };
 		exerciseCopy.isFavourited = !exercises.isFavourited;
@@ -50,11 +44,6 @@ export default function Header({ showSettings = true }: CustomExerciseHeaderProp
 								className={`${exercises?.isFavourited ? "fill-yellow-300" : ""}`}
 							/>
 						</Button>
-						{showSettings && (
-							<Button variant="link" onPress={() => router.push(`/(custom-exercise)/settings?id=${id}`)}>
-								<ButtonIcon as={Settings} size={"xxl" as any} stroke={themeTextColor} />
-							</Button>
-						)}
 					</View>
 				</View>
 			</View>

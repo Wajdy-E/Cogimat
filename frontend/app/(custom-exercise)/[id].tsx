@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Animated, ScrollView, View } from "react-native";
+import { Animated, ScrollView, View, Image as RNImage } from "react-native";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import WebView from "react-native-webview";
 import WheelColorPicker from "react-native-wheel-color-picker";
 import { ArrowRight, CirclePlay, Edit, Rocket, Sprout, Trophy, Clock, Brain, EyeOff, Eye } from "lucide-react-native";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { useVideoPlayer, VideoView } from "expo-video";
 
 import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { Box } from "@/components/ui/box";
@@ -16,11 +14,11 @@ import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/but
 import { Divider } from "@/components/ui/divider";
 import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
 import ModalComponent from "../../components/Modal";
+import MediaSlideshow from "../../components/MediaSlideshow";
 import {
 	CustomizableExerciseOptions,
 	Exercise,
@@ -31,9 +29,8 @@ import { AppDispatch, RootState } from "../../store/store";
 import { i18n } from "../../i18n";
 import CustomSlider from "../../components/CustomSlider";
 import AnimatedSwitch from "../../components/AnimatedSwitch";
-import { submitExercise, updateCustomExerciseThunk } from "../../store/data/dataSaga";
+import { updateCustomExerciseThunk } from "../../store/data/dataSaga";
 import AlertModal from "../../components/AlertModal";
-import { customExerciseToExercise } from "../../lib/helpers/helpers";
 
 function ExerciseProgram() {
 	const params = useLocalSearchParams();
@@ -65,6 +62,19 @@ function ExerciseProgram() {
 	);
 
 	const placeHolder = require("../../assets/exercise-thumbnails/placeholder.png");
+
+	// Prepare media items for slideshow
+	const mediaItems = [];
+
+	if (exercise.youtubeUrl) {
+		mediaItems.push({ type: "youtube" as const, url: exercise.youtubeUrl });
+	}
+	if (exercise.videoUrl) {
+		mediaItems.push({ type: "video" as const, url: exercise.videoUrl });
+	}
+	if (exercise.imageFileUrl) {
+		mediaItems.push({ type: "image" as const, url: exercise.imageFileUrl });
+	}
 
 	function onScreenColorConfirm() {
 		const updatedExercise = {
@@ -115,16 +125,6 @@ function ExerciseProgram() {
 		).start();
 	}, [floatAnim]);
 
-	const runFirst = `
-	window.isNativeApp = true;
-	true;
-	`;
-
-	const player = useVideoPlayer(exercise.videoUrl ?? null, (player) => {
-		player.loop = false;
-		player.play();
-	});
-
 	const handlePublicAccessChange = (value: boolean) => {
 		if (exercise.publicAccess === false) {
 			appDispatch(updateCustomExerciseThunk({ ...exercise, publicAccess: value, isFavourited: false }));
@@ -138,50 +138,17 @@ function ExerciseProgram() {
 	return (
 		<View className="relative bg-background-700">
 			<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-				<View style={{ flex: 1, height: 250, maxHeight: 250 }} className="bg-primary-700 py-5">
-					{exercise.youtubeUrl ? (
-						<WebView
-							source={{ uri: exercise.youtubeUrl }}
-							injectedJavaScriptBeforeContentLoaded={runFirst}
-							style={{
-								height: 200,
-								maxHeight: 200,
-								width: "90%",
-								alignSelf: "center",
-								borderRadius: 20,
-							}}
+				<View style={{ flex: 1 }} className="bg-primary-700 py-5">
+					<View className="w-[90%] self-center" style={{ height: 250 }}>
+						<MediaSlideshow
+							mediaItems={mediaItems}
+							height={250}
+							autoPlay={mediaItems.length > 1}
+							autoPlayInterval={4000}
+							showControls={mediaItems.length > 1}
+							placeholderImage={placeHolder}
 						/>
-					) : exercise.videoUrl ? (
-						<VideoView
-							player={player}
-							allowsFullscreen
-							allowsPictureInPicture
-							style={{
-								height: 200,
-								maxHeight: 200,
-								width: "90%",
-								alignSelf: "center",
-								borderRadius: 20,
-							}}
-							contentFit="cover"
-						/>
-					) : exercise.imageFileUrl ? (
-						<Image
-							source={{ uri: exercise.imageFileUrl }}
-							alt="Exercise thumbnail image"
-							className="w-[90%] self-center h-[200px] rounded-xl"
-							resizeMode="cover"
-						/>
-					) : placeHolder ? (
-						<Image
-							source={placeHolder}
-							alt="Exercise thumbnail image"
-							resizeMode="cover"
-							className="w-[90%] self-center h-[200px] rounded-xl"
-						/>
-					) : (
-						<Text>Image failed to load.</Text>
-					)}
+					</View>
 				</View>
 				<View className="flex items-center py-5">
 					<VStack className="w-[90%]" space="md">

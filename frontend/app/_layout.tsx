@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
 import { useLanguageInitialization } from "./hooks/useLanguageInitialization";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 const publishableKey = process.env.CLERK_PROD_KEY!;
 
@@ -32,6 +33,7 @@ function ThemedApp() {
 						headerShown: false,
 					}}
 				/>
+				<LoadingOverlay />
 			</SafeAreaProvider>
 		</GluestackUIProvider>
 	);

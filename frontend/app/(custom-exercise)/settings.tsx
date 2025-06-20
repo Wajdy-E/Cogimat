@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heading } from "@/components/ui/heading";
 import { CustomExercise, Exercise } from "../../store/data/dataSlice";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ArrowLeft, Settings as SettingsIcon } from "lucide-react-native";
+import { ArrowLeft, Settings as SettingsIcon, Trash2 } from "lucide-react-native";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
 import { useTheme } from "@/components/ui/ThemeProvider";
@@ -16,7 +16,12 @@ import AnimatedSwitch from "../../components/AnimatedSwitch";
 import { Icon } from "@/components/ui/icon";
 import { Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
-import { updateCustomExerciseThunk, submitExercise, unsubmitExercise } from "../../store/data/dataSaga";
+import {
+	updateCustomExerciseThunk,
+	submitExercise,
+	unsubmitExercise,
+	deleteCustomExercise,
+} from "../../store/data/dataSaga";
 import AlertModal from "../../components/AlertModal";
 import { i18n } from "../../i18n";
 import { customExerciseToExercise } from "../../lib/helpers/helpers";
@@ -32,6 +37,7 @@ export default function CustomExerciseSettings() {
 
 	const [showSubmitToCogiproAlertModal, setShowSubmitToCogiproAlertModal] = useState(false);
 	const [showUnsubmitFromCogiproAlertModal, setShowUnsubmitFromCogiproAlertModal] = useState(false);
+	const [showDeleteExerciseAlertModal, setShowDeleteExerciseAlertModal] = useState(false);
 
 	function submitToCogipro() {
 		const convertedExercise: Exercise = customExerciseToExercise(exercises);
@@ -56,26 +62,10 @@ export default function CustomExerciseSettings() {
 		}
 	}
 
-	if (!user.baseInfo?.isAdmin) {
-		return (
-			<>
-				<View className="flex-row items-center w-full justify-center py-3">
-					<View className="flex-row items-center justify-between gap-3 w-[90%]">
-						<View className="flex-row items-center gap-3">
-							<Button variant="link" onPress={() => router.back()}>
-								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
-							</Button>
-							<Heading className="text-typography-950" size="2xl">
-								{i18n.t("exercise.page.settings")}
-							</Heading>
-						</View>
-					</View>
-				</View>
-				<View className="flex-1 justify-center items-center">
-					<Text>{i18n.t("exercise.page.accessDenied")}</Text>
-				</View>
-			</>
-		);
+	function handleDeleteExercise() {
+		dispatch(deleteCustomExercise(exercises.id));
+		setShowDeleteExerciseAlertModal(false);
+		router.back();
 	}
 
 	return (
@@ -95,33 +85,54 @@ export default function CustomExerciseSettings() {
 
 			<View className="flex-1 px-5">
 				<VStack space="lg">
+					{/* Delete Exercise Section - Available for all users */}
 					<Box className="bg-secondary-500 p-5 rounded-2xl">
 						<VStack space="lg">
-							<View>
-								<Heading size="md" className="text-primary-500">
-									{i18n.t("exercise.page.cogiproPremiumSettings")}
-								</Heading>
-								<Divider className="bg-slate-400" />
-							</View>
-
 							<View className="flex-row justify-between items-center">
 								<View className="flex-1">
-									<Heading size="sm">{i18n.t("exercise.page.submitToCogipro")}</Heading>
+									<Heading size="sm">{i18n.t("exercise.page.deleteExercise")}</Heading>
 									<Text size="xs" className="text-typography-600">
-										{i18n.t("exercise.page.submitToCogiproDescription")}
+										{i18n.t("exercise.page.deleteExerciseDescription")}
 									</Text>
 								</View>
-								<AnimatedSwitch
-									defaultValue={exercises.publicAccess}
-									onChange={handleCogiproToggle}
-									onIcon={<Icon as={Eye} />}
-									offIcon={<Icon as={EyeOff} />}
-									height={25}
-									thumbSize={20}
-								/>
+								<Button variant="outline" action="negative" onPress={() => setShowDeleteExerciseAlertModal(true)}>
+									<ButtonIcon as={Trash2} size="md" />
+									<ButtonText action="negative">{i18n.t("general.buttons.delete")}</ButtonText>
+								</Button>
 							</View>
 						</VStack>
 					</Box>
+
+					{/* Cogipro Premium Settings - Only for admins */}
+					{user.baseInfo?.isAdmin && (
+						<Box className="bg-secondary-500 p-5 rounded-2xl">
+							<VStack space="lg">
+								<View>
+									<Heading size="md" className="text-primary-500">
+										{i18n.t("exercise.page.cogiproPremiumSettings")}
+									</Heading>
+									<Divider className="bg-slate-400" />
+								</View>
+
+								<View className="flex-row justify-between items-center">
+									<View className="flex-1">
+										<Heading size="sm">{i18n.t("exercise.page.submitToCogipro")}</Heading>
+										<Text size="xs" className="text-typography-600">
+											{i18n.t("exercise.page.submitToCogiproDescription")}
+										</Text>
+									</View>
+									<AnimatedSwitch
+										defaultValue={exercises.publicAccess}
+										onChange={handleCogiproToggle}
+										onIcon={<Icon as={Eye} />}
+										offIcon={<Icon as={EyeOff} />}
+										height={25}
+										thumbSize={20}
+									/>
+								</View>
+							</VStack>
+						</Box>
+					)}
 				</VStack>
 			</View>
 
@@ -142,6 +153,16 @@ export default function CustomExerciseSettings() {
 				textKey="exercise.page.unsubmitFromCogiproMessage"
 				buttonKey="general.buttons.confirm"
 				onConfirm={unsubmitFromCogipro}
+				action="negative"
+			/>
+
+			<AlertModal
+				isOpen={showDeleteExerciseAlertModal}
+				onClose={() => setShowDeleteExerciseAlertModal(false)}
+				headingKey="exercise.page.deleteExercise"
+				textKey="exercise.page.deleteExerciseMessage"
+				buttonKey="general.buttons.delete"
+				onConfirm={handleDeleteExercise}
 				action="negative"
 			/>
 		</View>
