@@ -1,8 +1,11 @@
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { useTheme } from "@/components/ui/ThemeProvider";
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, ScrollView } from "react-native";
 import { Brain, FileChartColumn, UsersRound, ClipboardPen, Trophy, Rocket, Sprout } from "lucide-react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { setActiveTabIndex } from "../store/ui/uiSlice";
 
 const icons = {
 	FileChartColumn,
@@ -27,14 +30,30 @@ export interface TabComponentProps {
 	iconTop: boolean;
 	roundedFull?: boolean;
 	buttonIconHeight?: number;
+	context?: string;
 }
 
 export default function TabComponent(props: TabComponentProps) {
-	const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
+	const context = props.context || "default";
+	const activeTabIndex = useSelector((state: RootState) => {
+		try {
+			if (!state || !state.ui || !state.ui.activeTabIndices) return 0;
+			const tabIndex = state.ui.activeTabIndices[context];
+			return typeof tabIndex === "number" ? tabIndex : 0;
+		} catch (error) {
+			console.warn("Error accessing tab state:", error);
+			return 0;
+		}
+	});
+	const dispatch = useDispatch();
 	const { themeTextColor } = useTheme();
 
 	const handleTabPress = (index: number) => {
-		setActiveTabIndex(index);
+		try {
+			dispatch(setActiveTabIndex({ context, index }));
+		} catch (error) {
+			console.warn("Error dispatching tab action:", error);
+		}
 	};
 
 	return (

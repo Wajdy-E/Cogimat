@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
 	try {
-		console.log("fetching exercises in api");
 		const { searchParams } = new URL(req.url);
 		const userId = searchParams.get("userId");
 		type FavoriteId = {

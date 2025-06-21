@@ -20,7 +20,7 @@ export interface Exercise {
 	parameters: ExerciseParameters;
 	trackingData: Record<string, any>;
 	videoUrl: string;
-	imageFileName: string;
+	imageFileUrl: string;
 	isFavourited: boolean;
 	focus: string;
 	isPremium: boolean;

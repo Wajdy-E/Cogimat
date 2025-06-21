@@ -82,14 +82,14 @@ export default function CreateExerciseStepTwo({
 				Timing Settings
 			</Heading>
 
-			{["offScreenTime", "onScreenTime", "exerciseTime", "restTime"].map((key) => (
+			{["offScreenTime", "onScreenTime", "exerciseTime"].map((key) => (
 				<CustomSlider
 					key={key}
 					title={`exercise.form.${key}`}
 					size="lg"
 					minValue={key === "exerciseTime" ? 1 : 0.5}
-					maxValue={key === "restTime" ? 90 : key === "exerciseTime" ? 5 : 15}
-					step={key === "exerciseTime" ? 0.5 : key === "restTime" ? 1 : 0.1}
+					maxValue={key === "exerciseTime" ? 5 : 15}
+					step={key === "exerciseTime" ? 0.5 : 0.1}
 					value={durationSettings[key]}
 					defaultValue={durationSettings[key]}
 					suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}

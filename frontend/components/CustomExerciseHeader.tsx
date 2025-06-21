@@ -32,11 +32,11 @@ export default function Header({ showSettings = true }: CustomExerciseHeaderProp
 		<SafeAreaView className="bg-background-800">
 			<View className="flex-row items-center w-full justify-center py-3">
 				<View className="flex-row items-center justify-between gap-3 w-[90%]">
-					<View className="flex-row items-center gap-3">
+					<View className="flex-row items-center gap-3 flex-1">
 						<Button variant="link" onPress={() => router.push("/(tabs)")}>
 							<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 						</Button>
-						<Heading className="text-typography-950" size="2xl" numberOfLines={1} style={{ maxWidth: "79%" }}>
+						<Heading className="text-typography-950" size="xl" numberOfLines={1} style={{ flex: 1 }}>
 							{exercises?.name}
 						</Heading>
 					</View>

@@ -14,7 +14,8 @@ export function customExerciseToExercise(customExercise: CustomExercise) {
 		type: "simple-stimulus",
 		timeToComplete: (customExercise.customizableOptions.exerciseTime * 60).toString(),
 		videoUrl: customExercise.videoUrl,
-		imageFileName: customExercise.imageFileUrl,
+		imageFileUrl: customExercise.imageFileUrl,
 		parameters: customExercise.parameters,
+		youtubeUrl: customExercise.youtubeUrl,
 	} as Exercise;
 }

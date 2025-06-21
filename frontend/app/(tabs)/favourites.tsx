@@ -26,7 +26,7 @@ function Favourites() {
 										<ExerciseCard
 											key={exercise.id}
 											name={exercise.name}
-											imageFileName={exercise.imageFileName}
+											imageFileUrl={exercise.imageFileUrl}
 											time={exercise.timeToComplete}
 											difficulty={exercise.difficulty}
 											id={exercise.id}
@@ -57,7 +57,7 @@ function Favourites() {
 										<ExerciseCard
 											key={exercise.id}
 											name={exercise.name}
-											imageFileName={exercise.imageFileName}
+											imageFileUrl={exercise.imageFileUrl}
 											time={exercise.timeToComplete}
 											difficulty={exercise.difficulty}
 											id={exercise.id}
@@ -87,7 +87,7 @@ function Favourites() {
 										<ExerciseCard
 											key={exercise.id}
 											name={exercise.name}
-											imageFileName={exercise.imageFileName}
+											imageFileUrl={exercise.imageFileUrl}
 											time={exercise.timeToComplete}
 											difficulty={exercise.difficulty}
 											id={exercise.id}
@@ -107,7 +107,7 @@ function Favourites() {
 	return (
 		<ScrollView className="flex bg-background-700">
 			<View>
-				<Tab tabVariant="outline" iconTop={false} tabs={tabs} roundedFull />
+				<Tab tabVariant="outline" iconTop={false} tabs={tabs} roundedFull context="favourites" />
 			</View>
 		</ScrollView>
 	);

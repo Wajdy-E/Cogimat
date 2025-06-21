@@ -4,10 +4,10 @@ import CustomExerciseHeader from "../../components/CustomExerciseHeader";
 function Layout() {
 	return (
 		<Tabs
-			screenOptions={{
-				header: () => <CustomExerciseHeader />,
+			screenOptions={({ route }) => ({
+				header: route.name === "settings" ? () => null : () => <CustomExerciseHeader showSettings={true} />,
 				tabBarStyle: { display: "none" },
-			}}
+			})}
 		></Tabs>
 	);
 }

@@ -20,8 +20,12 @@ function AnimatedSwitch(props: AnimatedSwitchProps) {
 	const SWITCH_HEIGHT = props.height || 35;
 	const THUMB_SIZE = props.thumbSize || 29;
 	const PADDING = 3;
-	const [isOn, setIsOn] = useState(props.defaultValue);
+	const [isOn, setIsOn] = useState<boolean>(props.defaultValue);
 	const anim = useRef(new Animated.Value(props.defaultValue ? 1 : 0)).current;
+
+	useEffect(() => {
+		setIsOn(props.defaultValue);
+	}, [props.defaultValue]);
 
 	useEffect(() => {
 		Animated.timing(anim, {

@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
 			exerciseTime,
 			offScreenColor,
 			onScreenColor,
-			restTime,
 			isFavourited,
 			publicAccess,
 			youtubeUrl,
@@ -86,7 +85,6 @@ export async function POST(req: NextRequest) {
 				exercise_time,
 				off_screen_color,
 				on_screen_color,
-				rest_time,
 				is_favourited,
 				public_access,
 				youtube_url
@@ -94,7 +92,7 @@ export async function POST(req: NextRequest) {
 				$1, $2, $3, $4, $5,
 				$6, $7, $8, $9, $10,
 				$11, $12, $13, $14, $15,
-				$16, $17, $18, $19, $20, $21
+				$16, $17, $18, $19, $20
 			) RETURNING id`,
 			[
 				clerk_id,
@@ -114,7 +112,6 @@ export async function POST(req: NextRequest) {
 				exerciseTime,
 				offScreenColor,
 				onScreenColor,
-				restTime,
 				isFavourited,
 				publicAccess,
 				youtubeUrl,
@@ -151,7 +148,6 @@ export async function PATCH(req: NextRequest) {
 			exerciseTime,
 			offScreenColor,
 			onScreenColor,
-			restTime,
 			publicAccess,
 			youtubeUrl,
 		} = body;
@@ -184,17 +180,16 @@ export async function PATCH(req: NextRequest) {
 				focus = $9,
 				image_uri = $10,
 				video_uri = $11,
-				off_screen_time = $12,
-				on_screen_time = $13,
-				exercise_time = $14,
-				off_screen_color = $15,
-				on_screen_color = $16,
-				rest_time = $17,
-				is_favourited = $20,
-				public_access = $21,
-				youtube_url = $22,
+				is_favourited = $12,
+				off_screen_time = $13,
+				on_screen_time = $14,
+				exercise_time = $15,
+				off_screen_color = $16,
+				on_screen_color = $17,
+				public_access = $18,
+				youtube_url = $19,
 				updated_at = CURRENT_TIMESTAMP
-			WHERE id = $18 AND clerk_id = $19`,
+			WHERE id = $20 AND clerk_id = $21`,
 			[
 				name,
 				description,
@@ -207,17 +202,16 @@ export async function PATCH(req: NextRequest) {
 				focus,
 				imageUriBlob,
 				videoUriBlob,
+				isFavourited,
 				offScreenTime,
 				onScreenTime,
 				exerciseTime,
 				offScreenColor,
 				onScreenColor,
-				restTime,
-				id,
-				clerk_id,
-				isFavourited,
 				publicAccess,
 				youtubeUrl,
+				id,
+				clerk_id,
 			]
 		);
 

@@ -18,6 +18,7 @@ import { AppDispatch } from "../store/store";
 import { useDispatch } from "react-redux";
 import Purchases from "react-native-purchases";
 import { updateSubscriptionStatus } from "../store/auth/authSaga";
+import { Star } from "lucide-react-native";
 
 interface PaywallDrawerProps {
 	isOpen: boolean;
@@ -169,7 +170,9 @@ function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 
 				<ScrollView contentContainerStyle={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
 					<Image
-						source={require("../assets/exercise-thumbnails/placeholder.png")}
+						source={{
+							uri: "https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/paywallimage-ICy6yLTw2lKXHrsmiSAsEgIQiLX1FA",
+						}}
 						className="w-full h-[300px]"
 						resizeMode="cover"
 					/>
@@ -177,7 +180,10 @@ function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 						{/* <Text className="text-lg text-center mb-6">{i18n.t("paywall.subtitle")}</Text> */}
 
 						<View className="mb-6 flex items-center">
-							<Text className="text-3xl font-bold mb-6">{i18n.t("paywall.title")}</Text>
+							<View className="flex flex-row items-center gap-2 mb-6">
+								<Icon as={Star} size="xl" className="text-primary-500 fill-primary-500" fill="currentColor" />
+								<Text className="text-3xl font-bold text-primary-500">{i18n.t("paywall.title")}</Text>
+							</View>
 							<View className="flex flex-col text-start">
 								{features.map((feature: string, index: number) => (
 									<View key={index} className="flex-row items-center mb-3">

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
 import Countdown from "../../components/Countdown";
 import { Letter, NumberEnum } from "../../data/program/Program";
-import { LucideIcon, Pause, Play, X, Square, Triangle, Circle, Diamond, Icon } from "lucide-react-native";
-import { Button, ButtonIcon } from "@/components/ui/button";
-import { Icon as GlueStackIcon } from "@/components/ui/icon";
+import { LucideIcon, Square, Triangle, Circle, Diamond } from "lucide-react-native";
 import { CustomExercise } from "../../store/data/dataSlice";
 import { updateUserMilestone } from "../../store/auth/authSaga";
+import ExerciseControl from "../../components/exercises/ExerciseControl";
+import ExerciseProgress from "../../components/exercises/ExerciseProgress";
 
 interface IconWithColor {
 	icon: LucideIcon;
@@ -26,6 +26,8 @@ function ExerciseScreen() {
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
 	const [timeLeft, setTimeLeft] = useState(currentExercise?.customizableOptions.exerciseTime * 60 || 60);
 	const [isPaused, setIsPaused] = useState(false);
+	const [stimulusCount, setStimulusCount] = useState<Map<string, number>>(new Map());
+	const [timeCompleted, setTimeCompleted] = useState(0);
 	const [exerciseCompleted, setExerciseCompleted] = useState(false);
 	const timeToComplete = currentExercise?.customizableOptions.exerciseTime * 60 || 60;
 	const shapes = ["SQUARE", "CIRCLE", "TRIANGLE", "DIAMOND"];
@@ -35,42 +37,68 @@ function ExerciseScreen() {
 	const offScreenTime = (currentExercise?.customizableOptions.offScreenTime || 0.5) * 1000; // Convert seconds to milliseconds
 	const cycleTime = onScreenTime + offScreenTime / 1000; // Total cycle time in seconds
 
+	// Independent timer effect
 	useEffect(() => {
-		if (showCountdown || !currentExercise || !currentExercise.parameters) return;
+		if (showCountdown || exerciseCompleted) return;
+
+		const timer = setInterval(() => {
+			if (!isPaused && timeLeft > 0) {
+				setTimeLeft((prev) => {
+					const newTime = prev - 1;
+					if (newTime <= 0) {
+						setExerciseCompleted(true);
+						// Update milestones for custom exercise completion
+						dispatch(
+							updateUserMilestone({
+								milestoneType: "customExercisesCompleted",
+								exerciseDifficulty: currentExercise.difficulty,
+							})
+						);
+					}
+					return Math.max(newTime, 0);
+				});
+				setTimeCompleted((prev) => prev + 1);
+			}
+		}, 1000);
+
+		return () => clearInterval(timer);
+	}, [showCountdown, isPaused, timeLeft, exerciseCompleted, dispatch, currentExercise.difficulty]);
+
+	// Stimulus cycle effect
+	useEffect(() => {
+		if (showCountdown || !currentExercise || !currentExercise.parameters || exerciseCompleted) return;
 
 		setStimulus(getRandomStimulus());
 
 		let elapsedTime = 0;
 		const interval = setInterval(
 			() => {
-				if (elapsedTime >= timeToComplete * 1000 || isPaused) return;
+				if (elapsedTime >= timeToComplete * 1000 || isPaused || exerciseCompleted) return;
 
 				setIsWhiteScreen(true);
 				setTimeout(() => {
-					setStimulus(getRandomStimulus());
+					const newStimulus = getRandomStimulus();
+					setStimulus(newStimulus);
+					incrementStimulusCount(newStimulus);
 					setIsWhiteScreen(false);
 				}, offScreenTime);
 
 				elapsedTime += (onScreenTime + offScreenTime / 1000) * 1000; // Full cycle in milliseconds
-				setTimeLeft((prev) => Math.max(prev - cycleTime, 0));
-
-				// Exercise completed
-				if (elapsedTime >= timeToComplete * 1000 && !exerciseCompleted) {
-					setExerciseCompleted(true);
-					// Update milestones for custom exercise completion
-					dispatch(
-						updateUserMilestone({
-							milestoneType: "customExercisesCompleted",
-							exerciseDifficulty: currentExercise.difficulty,
-						})
-					);
-				}
 			},
 			(onScreenTime + offScreenTime / 1000) * 1000
 		);
 
 		return () => clearInterval(interval);
 	}, [showCountdown, isPaused, currentExercise, exerciseCompleted, onScreenTime, offScreenTime, cycleTime]);
+
+	const incrementStimulusCount = (stimulus: any) => {
+		const key = typeof stimulus === "object" ? JSON.stringify(stimulus) : String(stimulus);
+		setStimulusCount((prev) => {
+			const newMap = new Map(prev);
+			newMap.set(key, (newMap.get(key) || 0) + 1);
+			return newMap;
+		});
+	};
 
 	const getRandomStimulus = () => {
 		const params = currentExercise.parameters;
@@ -113,6 +141,21 @@ function ExerciseScreen() {
 			default:
 				return { icon: Square, color: "#FFFFFF" };
 		}
+	};
+
+	const getProgressTableData = () => {
+		return Array.from(stimulusCount.entries()).map(([stimulus, count]) => {
+			let displayStimulus = stimulus;
+			try {
+				const parsed = JSON.parse(stimulus);
+				if (parsed.hexcode) {
+					displayStimulus = parsed.hexcode;
+				}
+			} catch {
+				displayStimulus = stimulus;
+			}
+			return { Stimulus: displayStimulus, Count: count };
+		});
 	};
 
 	const renderStimulus = () => {
@@ -159,6 +202,27 @@ function ExerciseScreen() {
 		return null;
 	};
 
+	if (exerciseCompleted) {
+		return (
+			<ExerciseProgress
+				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
+				totalTime={timeCompleted}
+				onEnd={() => {
+					// handle end logic here
+				}}
+				onRestart={() => {
+					setExerciseCompleted(false);
+					setTimeCompleted(0);
+					setStimulusCount(new Map());
+					setTimeLeft(timeToComplete);
+					setIsPaused(false);
+				}}
+				rowData={getProgressTableData()}
+				tableHeadKeys={["exerciseProgress.stimulus", "exerciseProgress.count"]}
+			/>
+		);
+	}
+
 	return (
 		<View className="absolute inset-0">
 			{showCountdown ? (
@@ -172,30 +236,16 @@ function ExerciseScreen() {
 			) : (
 				<>
 					{renderStimulus()}
-
-					<View className="bg-gray-800 rounded-full absolute px-10 py-3 right-5 top-5">
-						<Text className="text-white text-xl font-bold">{Math.ceil(timeLeft)}s</Text>
-					</View>
-
-					<Button
-						className="rounded-full absolute bottom-5 left-5"
-						onPress={() => setIsPaused((prev) => !prev)}
-						action="primary"
-					>
-						{isPaused ? <GlueStackIcon as={Play} size="xl" /> : <ButtonIcon as={Pause} size="xl" />}
-					</Button>
-
-					<TouchableOpacity
-						className="bg-red-600 p-4 rounded-full absolute bottom-5 right-5"
-						onPress={() => {
-							setStimulus(null);
-							setIsWhiteScreen(false);
-							setIsPaused(false);
-							setTimeLeft(timeToComplete);
-						}}
-					>
-						<X size={30} color="white" />
-					</TouchableOpacity>
+					<ExerciseControl
+						isPaused={isPaused}
+						setStimulus={setStimulus}
+						setIsWhiteScreen={setIsWhiteScreen}
+						setIsPaused={setIsPaused}
+						totalDuration={timeToComplete}
+						setTimeLeft={setTimeLeft}
+						timeLeft={timeLeft}
+						onStop={() => setExerciseCompleted(true)}
+					/>
 				</>
 			)}
 		</View>

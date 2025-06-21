@@ -265,15 +265,19 @@ const translations = {
 			page: {
 				description: "Description",
 				instructions: "Instructions",
+				customizeExercise: "Customize this exercise",
+				communityAccess: "Community Access",
 				makePublic: "Make Public",
 				makePublicMessage: "This will make your exercise available to all users in the community.",
+				makePublicDescription: "Make this exercise available to all users in the community",
 				submitToCogipro: "Submit to Cogipro",
 				submitToCogiproMessage: "This will make your exercise available in Cogipro Premium for all users.",
 				unsubmitFromCogipro: "Remove from Cogipro",
 				unsubmitFromCogiproMessage:
 					"This will remove your exercise from Cogipro Premium. It will no longer be available to premium users.",
 				settings: "Settings",
-				cogiproPremiumSettings: "Cogipro Premium Settings",
+				customizeExercise: "Customize this exercise",
+				cogiproPremiumSettings: "Cogipro Admin Settings",
 				submitToCogiproDescription: "Make this exercise available in Cogipro Premium",
 				accessDenied: "Access denied. Admin privileges required.",
 				deleteExercise: "Delete Exercise",
@@ -717,8 +721,10 @@ const translations = {
 			page: {
 				description: "Description",
 				instructions: "Instructions",
+				customizeExercise: "Personnaliser cet exercice",
 				makePublic: "Rendre Public",
 				makePublicMessage: "Cela rendra votre exercice disponible à tous les utilisateurs de la communauté.",
+				makePublicDescription: "Rendre cet exercice disponible à tous les utilisateurs de la communauté",
 				submitToCogipro: "Soumettre à Cogipro",
 				submitToCogiproMessage:
 					"Cela rendra votre exercice disponible dans Cogipro Premium pour tous les utilisateurs.",
@@ -726,6 +732,7 @@ const translations = {
 				unsubmitFromCogiproMessage:
 					"Cela retirera votre exercice de Cogipro Premium. Il ne sera plus disponible pour les utilisateurs premium.",
 				settings: "Paramètres",
+				customizeExercise: "Personnaliser cet exercice",
 				cogiproPremiumSettings: "Paramètres de Cogipro Premium",
 				submitToCogiproDescription: "Rendre cet exercice disponible dans Cogipro Premium",
 				accessDenied: "Accès refusé. Privilèges administratifs requis.",

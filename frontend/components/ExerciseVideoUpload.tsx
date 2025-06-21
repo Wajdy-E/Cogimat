@@ -203,7 +203,7 @@ export default function ExerciseVideoUpload({
 					)}
 				</FormControl>
 
-				<Button onPress={handleUpload} disabled={!isFormValid} action="primary" className="w-full">
+				<Button onPress={handleUpload} disabled={!isFormValid} action="primary" className="w-full" variant="outline">
 					<HStack space="sm">
 						<ButtonIcon as={Upload} />
 						<ButtonText>{i18n.t("exercise.videoUpload.upload")}</ButtonText>

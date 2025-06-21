@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 			videoUrl,
 			timeToComplete,
 			focus,
-			imageFileName,
+			imageFileUrl,
 			isPremium,
 			parameters,
 		} = body;
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 				stringifyParams,
 				exerciseTime,
 				isPremium,
-				imageFileName,
+				imageFileUrl,
 			]
 		);
 

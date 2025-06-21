@@ -12,12 +12,13 @@ export interface Exercise {
 	parameters: ExerciseParameters;
 	trackingData: Record<string, any>;
 	videoUrl: string;
-	imageFileName: string;
+	imageFileUrl: string;
 	isFavourited: boolean;
 	focus: string;
 	isChallenge: boolean;
 	customizableOptions?: CustomizableExerciseOptions;
 	isPremium?: boolean;
+	youtubeUrl?: string;
 }
 
 export interface CustomizableExerciseOptions {
@@ -27,7 +28,6 @@ export interface CustomizableExerciseOptions {
 	exerciseTime: number;
 	offScreenColor: string;
 	onScreenColor: string;
-	restTime: number;
 }
 
 export interface CustomExercise {
@@ -172,6 +172,10 @@ const dataSlice = createSlice({
 		},
 		addCustomExercise(state, { payload }: PayloadAction<CustomExercise>) {
 			state.customExercises.push(payload);
+			// If the exercise is public, also add it to public exercises
+			if (payload.publicAccess) {
+				state.publicExercises.push(payload);
+			}
 		},
 		setCurrentCustomExercise(state, { payload }: PayloadAction<CustomExercise>) {
 			state.selectedExercise = payload as CustomExercise;
@@ -181,9 +185,31 @@ const dataSlice = createSlice({
 			if (index !== -1) {
 				state.customExercises[index] = payload;
 			}
+
+			// If the exercise is now public, add it to publicExercises
+			if (payload.publicAccess) {
+				const publicIndex = state.publicExercises.findIndex((e) => e.id === payload.id);
+				if (publicIndex === -1) {
+					state.publicExercises.push(payload);
+				} else {
+					state.publicExercises[publicIndex] = payload;
+				}
+			} else {
+				// If the exercise is no longer public, remove it from publicExercises
+				state.publicExercises = state.publicExercises.filter((e) => e.id !== payload.id);
+			}
+		},
+		addPublicExercise(state, { payload }: PayloadAction<CustomExercise>) {
+			const index = state.publicExercises.findIndex((e) => e.id === payload.id);
+			if (index === -1) {
+				state.publicExercises.push(payload);
+			} else {
+				state.publicExercises[index] = payload;
+			}
 		},
 		removeCustomExercise(state, { payload }: PayloadAction<number>) {
 			state.customExercises = state.customExercises.filter((ex) => ex.id !== payload);
+			state.publicExercises = state.publicExercises.filter((ex) => ex.id !== payload);
 		},
 		removeExercise(state, { payload }: PayloadAction<number>) {
 			state.exercises = state.exercises.filter((ex) => ex.id !== payload);
@@ -228,6 +254,7 @@ export const {
 	removeExercise,
 	setCurrentFilter,
 	setPublicExercises,
+	addPublicExercise,
 	resetState,
 } = dataSlice.actions;
 

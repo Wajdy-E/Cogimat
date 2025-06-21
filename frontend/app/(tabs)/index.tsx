@@ -75,7 +75,7 @@ function Home() {
 									<ExerciseCard
 										key={exercise.id}
 										name={exercise.name}
-										imageFileUrl={exercise.imageFileName}
+										imageFileUrl={exercise.imageFileUrl}
 										time={exercise.timeToComplete}
 										difficulty={exercise.difficulty}
 										id={exercise.id}
@@ -183,7 +183,7 @@ function Home() {
 	];
 
 	return (
-		<ScrollView className="bg-background-700">
+		<ScrollView className="bg-background-700" contentContainerStyle={{ paddingBottom: 50 }}>
 			<SafeAreaView>
 				<View className="flex-row items-center gap-3 w-[90%] self-center">
 					<Avatar size="xl">
@@ -197,7 +197,7 @@ function Home() {
 					</View>
 				</View>
 			</SafeAreaView>
-			<Tab tabs={tabs} tabVariant="link" iconTop buttonIconHeight={25} />
+			<Tab tabs={tabs} tabVariant="link" iconTop buttonIconHeight={25} context="home" />
 
 			<VStack space="md" className="w-[90%] self-center py-7">
 				<Heading size="2xl" className="self-center">
@@ -206,7 +206,7 @@ function Home() {
 				{dailyChallenge ? (
 					<ExerciseCard
 						name={dailyChallenge.name}
-						imageFileUrl={dailyChallenge.imageFileName}
+						imageFileUrl={dailyChallenge.imageFileUrl}
 						time={dailyChallenge.timeToComplete}
 						difficulty={dailyChallenge.difficulty}
 						id={dailyChallenge.id}
@@ -219,10 +219,7 @@ function Home() {
 			<Box className="w-[90%] self-center">
 				<VStack space="lg">
 					{!isSubscribed && <UpgradeCard />}
-					<Box className="flex flex-row gap-2">
-						<Icon as={Trophy} size="xl" />
-						<Heading size="xl">{i18n.t("home.exclusiveExercises")}</Heading>
-					</Box>
+					<Heading size="xl">{i18n.t("home.exclusiveExercises")}</Heading>
 					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
 						<HStack space="md">
 							{exercises
@@ -232,7 +229,7 @@ function Home() {
 									<ExerciseCard
 										key={exercise.id}
 										name={exercise.name}
-										imageFileUrl={exercise.imageFileName}
+										imageFileUrl={exercise.imageFileUrl}
 										time={exercise.timeToComplete}
 										difficulty={exercise.difficulty}
 										id={exercise.id}

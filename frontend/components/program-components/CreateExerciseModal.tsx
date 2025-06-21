@@ -37,7 +37,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		offScreenTime: 0.5,
 		onScreenTime: 1,
 		exerciseTime: 2.5,
-		restTime: 30,
 	};
 	const [durationSettings, setDurationSettings] = useState(defaultDurationSettings);
 
@@ -72,7 +71,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		exerciseTime: number;
 		offScreenColor: string;
 		onScreenColor: string;
-		restTime: number;
 		youtubeUrl?: string;
 	} | null>({
 		name: "",
@@ -91,7 +89,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		exerciseTime: durationSettings.exerciseTime,
 		offScreenColor: offScreenColor,
 		onScreenColor: onScreenColor,
-		restTime: durationSettings.restTime,
 		youtubeUrl: undefined,
 	});
 

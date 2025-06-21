@@ -148,7 +148,7 @@ function AllExercises() {
 						<ExerciseCard
 							key={`standard-${ex.id}`}
 							name={ex.name}
-							imageFileUrl={ex.imageFileName}
+							imageFileUrl={ex.imageFileUrl}
 							time={ex.timeToComplete}
 							difficulty={ex.difficulty}
 							id={ex.id}

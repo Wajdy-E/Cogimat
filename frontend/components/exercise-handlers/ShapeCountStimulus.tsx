@@ -1,13 +1,14 @@
 // components/exerciseHandlers/ShapeCountStimulus.tsx
 
 import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
-import { Square, Circle, Triangle, Diamond, Play, Pause, X, LucideIcon } from "lucide-react-native";
+import { View, Text } from "react-native";
+import { Square, Circle, Triangle, Diamond, LucideIcon } from "lucide-react-native";
 import { Exercise } from "../../store/data/dataSlice";
-import Countdown from "../Countdown";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/store";
 import { updateUserMilestone } from "../../store/auth/authSaga";
+import ExerciseControl from "../exercises/ExerciseControl";
+import ExerciseProgress from "../exercises/ExerciseProgress";
 
 interface ShapeStimulus {
 	type: string;
@@ -20,41 +21,62 @@ export default function ShapeCountStimulus({ exercise }: { exercise: Exercise })
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
 	const [stimulus, setStimulus] = useState<ShapeStimulus[]>([]);
-	const [timeLeft, setTimeLeft] = useState(parseInt(exercise.timeToComplete) || 60);
+	const [stimulusCount, setStimulusCount] = useState<Map<string, number>>(new Map());
+	const [timeCompleted, setTimeCompleted] = useState(0);
 	const [exerciseCompleted, setExerciseCompleted] = useState(false);
 
 	const custom = exercise.customizableOptions;
 	const offScreenTime = custom?.offScreenTime ?? 0.5;
 	const onScreenTime = custom?.onScreenTime ?? 1;
 	const totalDuration = parseInt(exercise.timeToComplete) || 60;
+	const [timeLeft, setTimeLeft] = useState(totalDuration);
 
+	// Independent timer effect
 	useEffect(() => {
+		if (exerciseCompleted) return;
+
+		const timer = setInterval(() => {
+			if (!isPaused && timeLeft > 0) {
+				setTimeLeft((prev) => {
+					const newTime = prev - 1;
+					if (newTime <= 0) {
+						setExerciseCompleted(true);
+						// Update milestones
+						dispatch(
+							updateUserMilestone({
+								milestoneType: "exercisesCompleted",
+								exerciseDifficulty: exercise.difficulty,
+							})
+						);
+					}
+					return Math.max(newTime, 0);
+				});
+				setTimeCompleted((prev) => prev + 1);
+			}
+		}, 1000);
+
+		return () => clearInterval(timer);
+	}, [isPaused, timeLeft, exerciseCompleted, dispatch, exercise.difficulty]);
+
+	// Stimulus cycle effect
+	useEffect(() => {
+		if (exerciseCompleted) return;
+
 		let elapsed = 0;
 		let active = true;
 
 		const runCycle = async () => {
-			while (active && elapsed < totalDuration && !isPaused) {
+			while (active && elapsed < totalDuration && !isPaused && !exerciseCompleted) {
 				setIsWhiteScreen(false);
-				setStimulus(generateRandomStimulus());
-				await delay(onScreenTime * 1000);
+				const newStimulus = generateRandomStimulus();
+				setStimulus(newStimulus);
+				incrementStimulusCount(newStimulus);
 
+				await delay(onScreenTime * 1000);
 				setIsWhiteScreen(true);
 				await delay(offScreenTime * 1000);
 
 				elapsed += onScreenTime + offScreenTime;
-				setTimeLeft((prev) => Math.max(prev - (onScreenTime + offScreenTime), 0));
-			}
-
-			// Exercise completed
-			if (elapsed >= totalDuration && !exerciseCompleted) {
-				setExerciseCompleted(true);
-				// Update milestones
-				dispatch(
-					updateUserMilestone({
-						milestoneType: "exercisesCompleted",
-						exerciseDifficulty: exercise.difficulty,
-					})
-				);
 			}
 		};
 
@@ -66,6 +88,21 @@ export default function ShapeCountStimulus({ exercise }: { exercise: Exercise })
 	}, [isPaused, exerciseCompleted]);
 
 	const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+	const incrementStimulusCount = (stimulus: ShapeStimulus[]) => {
+		const shapeCounts = new Map<string, number>();
+		stimulus.forEach((shape) => {
+			shapeCounts.set(shape.type, (shapeCounts.get(shape.type) || 0) + 1);
+		});
+
+		setStimulusCount((prev) => {
+			const newMap = new Map(prev);
+			shapeCounts.forEach((count, type) => {
+				newMap.set(type, (newMap.get(type) || 0) + count);
+			});
+			return newMap;
+		});
+	};
 
 	const generateRandomStimulus = (): ShapeStimulus[] => {
 		const shapeTemplates: ShapeStimulus[] = [
@@ -95,6 +132,13 @@ export default function ShapeCountStimulus({ exercise }: { exercise: Exercise })
 		return expanded;
 	};
 
+	const getProgressTableData = () => {
+		return Array.from(stimulusCount.entries()).map(([shapeType, count]) => ({
+			Shape: shapeType,
+			Count: count,
+		}));
+	};
+
 	const renderStimulus = () => {
 		if (isWhiteScreen) {
 			return (
@@ -116,32 +160,40 @@ export default function ShapeCountStimulus({ exercise }: { exercise: Exercise })
 		);
 	};
 
+	if (exerciseCompleted) {
+		return (
+			<ExerciseProgress
+				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
+				totalTime={timeCompleted}
+				onEnd={() => {
+					// handle end logic here
+				}}
+				onRestart={() => {
+					setExerciseCompleted(false);
+					setTimeCompleted(0);
+					setStimulusCount(new Map());
+					setTimeLeft(totalDuration);
+					setIsPaused(false);
+				}}
+				rowData={getProgressTableData()}
+				tableHeadKeys={["exerciseProgress.shape", "exerciseProgress.count"]}
+			/>
+		);
+	}
+
 	return (
 		<>
 			{renderStimulus()}
-
-			<View className="bg-gray-800 rounded-full absolute px-10 py-3 right-5 top-5">
-				<Text className="text-white text-xl font-bold">{Math.ceil(timeLeft)}s</Text>
-			</View>
-
-			<TouchableOpacity
-				className="bg-primary-500 p-4 rounded-full absolute bottom-5 left-5"
-				onPress={() => setIsPaused((prev) => !prev)}
-			>
-				{isPaused ? <Play size={30} color="black" /> : <Pause size={30} color="black" />}
-			</TouchableOpacity>
-
-			<TouchableOpacity
-				className="bg-red-600 p-4 rounded-full absolute bottom-5 right-5"
-				onPress={() => {
-					setStimulus([]);
-					setIsWhiteScreen(false);
-					setIsPaused(false);
-					setTimeLeft(totalDuration);
-				}}
-			>
-				<X size={30} color="white" />
-			</TouchableOpacity>
+			<ExerciseControl
+				isPaused={isPaused}
+				setStimulus={setStimulus}
+				setIsWhiteScreen={setIsWhiteScreen}
+				setIsPaused={setIsPaused}
+				totalDuration={totalDuration}
+				setTimeLeft={setTimeLeft}
+				timeLeft={timeLeft}
+				onStop={() => setExerciseCompleted(true)}
+			/>
 		</>
 	);
 }

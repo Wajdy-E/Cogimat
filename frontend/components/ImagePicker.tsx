@@ -81,7 +81,7 @@ export default function CustomImagePicker(props: ImagePickerProps) {
 
 	return (
 		<VStack space="md" className="flex-row">
-			<Button onPress={requestPermission} size="xxl" className="rounded-xl flex-col" action="secondary">
+			<Button onPress={requestPermission} size="xxl" className="rounded-xl flex-col" action="primary" variant="outline">
 				<ButtonIcon as={Camera} height={40} width={40} action="secondary" className="stroke-secondary-0" />
 				<ButtonText className="text-center text-typography-950">{props.buttonText || "Pick an image"}</ButtonText>
 			</Button>

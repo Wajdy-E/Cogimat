@@ -5,6 +5,7 @@ import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { VideoIcon } from "lucide-react-native";
+import React from "react";
 
 type PickedVideoData = {
 	uri: string;
@@ -84,7 +85,7 @@ export default function CustomVideoPicker(props: VideoPickerProps) {
 
 	return (
 		<VStack space="md">
-			<Button onPress={requestPermission} size="xxl" className="rounded-xl flex-col" action="secondary">
+			<Button onPress={requestPermission} size="xxl" className="rounded-xl flex-col" action="primary" variant="outline">
 				<ButtonIcon as={VideoIcon} height={40} width={40} action="secondary" className="stroke-secondary-0" />
 				<ButtonText className="text-center text-typography-950">{props.buttonText || "Pick a video"}</ButtonText>
 			</Button>

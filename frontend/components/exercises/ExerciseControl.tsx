@@ -1,4 +1,5 @@
 import { Pause, Play, X } from "lucide-react-native";
+import React from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 
 interface ExerciseControlProps {
@@ -9,6 +10,7 @@ interface ExerciseControlProps {
 	isPaused: boolean;
 	setTimeLeft: (timeLeft: number) => void;
 	timeLeft: number;
+	onStop?: () => void;
 }
 
 function ExerciseControl({
@@ -19,6 +21,7 @@ function ExerciseControl({
 	isPaused,
 	setTimeLeft,
 	timeLeft,
+	onStop,
 }: ExerciseControlProps) {
 	return (
 		<>
@@ -34,10 +37,15 @@ function ExerciseControl({
 			<TouchableOpacity
 				className="bg-red-600 p-4 rounded-full absolute bottom-5 right-5"
 				onPress={() => {
-					setStimulus(null);
-					setIsWhiteScreen(false);
-					setIsPaused(false);
-					setTimeLeft(totalDuration);
+					if (onStop) {
+						onStop();
+					} else {
+						// Fallback behavior
+						setStimulus(null);
+						setIsWhiteScreen(false);
+						setIsPaused(false);
+						setTimeLeft(totalDuration);
+					}
 				}}
 			>
 				<X size={30} color="white" />

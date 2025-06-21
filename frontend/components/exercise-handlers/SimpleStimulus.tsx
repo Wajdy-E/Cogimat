@@ -29,12 +29,42 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 	const totalDuration = parseInt(exercise.timeToComplete) || 60;
 	const [timeLeft, setTimeLeft] = useState(totalDuration);
 
+	// Independent timer effect
 	useEffect(() => {
+		if (exerciseCompleted) return;
+
+		const timer = setInterval(() => {
+			if (!isPaused && timeLeft > 0) {
+				setTimeLeft((prev) => {
+					const newTime = prev - 1;
+					if (newTime <= 0) {
+						setExerciseCompleted(true);
+						// Update milestones
+						dispatch(
+							updateUserMilestone({
+								milestoneType: "exercisesCompleted",
+								exerciseDifficulty: exercise.difficulty,
+							})
+						);
+					}
+					return Math.max(newTime, 0);
+				});
+				setTimeCompleted((prev) => prev + 1);
+			}
+		}, 1000);
+
+		return () => clearInterval(timer);
+	}, [isPaused, timeLeft, exerciseCompleted, dispatch, exercise.difficulty]);
+
+	// Stimulus cycle effect
+	useEffect(() => {
+		if (exerciseCompleted) return;
+
 		let elapsed = 0;
 		let active = true;
 
 		const runCycle = async () => {
-			while (active && elapsed < totalDuration && !isPaused) {
+			while (active && elapsed < totalDuration && !isPaused && !exerciseCompleted) {
 				setIsWhiteScreen(false);
 				const newStimulus = getRandomStimulus();
 				setStimulus(newStimulus);
@@ -45,20 +75,6 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 				await delay(offScreenTime * 1000);
 
 				elapsed += onScreenTime + offScreenTime;
-				setTimeLeft((prev) => Math.max(prev - (onScreenTime + offScreenTime), 0));
-				setTimeCompleted(elapsed);
-			}
-
-			// Exercise completed
-			if (elapsed >= totalDuration && !exerciseCompleted) {
-				setExerciseCompleted(true);
-				// Update milestones
-				dispatch(
-					updateUserMilestone({
-						milestoneType: "exercisesCompleted",
-						exerciseDifficulty: exercise.difficulty,
-					})
-				);
 			}
 		};
 
@@ -156,7 +172,7 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 		return null;
 	};
 
-	if (isPaused) {
+	if (exerciseCompleted) {
 		return (
 			<ExerciseProgress
 				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
@@ -165,10 +181,11 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 					// handle end logic here
 				}}
 				onRestart={() => {
-					setIsPaused(false);
+					setExerciseCompleted(false);
 					setTimeCompleted(0);
 					setStimulusCount(new Map());
 					setTimeLeft(totalDuration);
+					setIsPaused(false);
 				}}
 				rowData={getProgressTableData()}
 				tableHeadKeys={["exerciseProgress.stimulus", "exerciseProgress.count"]}
@@ -187,6 +204,7 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 				totalDuration={totalDuration}
 				setTimeLeft={setTimeLeft}
 				timeLeft={timeLeft}
+				onStop={() => setExerciseCompleted(true)}
 			/>
 		</>
 	);

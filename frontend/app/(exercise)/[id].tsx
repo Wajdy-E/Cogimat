@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { Animated, ScrollView, View } from "react-native";
+import { Animated, ScrollView, View, Image as RNImage } from "react-native";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import WebView from "react-native-webview";
-import WheelColorPicker from "react-native-wheel-color-picker";
-import { ArrowRight, CirclePlay, Edit, Rocket, Sprout, Trophy } from "lucide-react-native";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { CirclePlay, Rocket, Sprout, Trophy } from "lucide-react-native";
 import { Flame, Clock, Brain } from "lucide-react-native";
 import { shallowEqual } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -14,15 +14,11 @@ import { useSelector } from "react-redux";
 
 import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Divider } from "@/components/ui/divider";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
-import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-import CustomSlider from "../../components/CustomSlider";
-import ModalComponent from "../../components/Modal";
 import {
 	CustomizableExerciseOptions,
 	ExerciseDifficulty,
@@ -54,35 +50,52 @@ function ExerciseProgram() {
 
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const router = useRouter();
-	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
-	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
-	const [onScreenColor, setOnScreenColor] = useState("#000000");
-	const [offScreenColor, setOffScreenColor] = useState("#ffffff");
-	const [isEditing, setIsEditing] = useState(false);
-	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
-		exercise.customizableOptions
-	);
 	const [showVideoUpload, setShowVideoUpload] = useState(false);
 
-	function handleColorConfirm(type: "onScreen" | "offScreen") {
-		if (durationSettings) {
-			const color = type === "onScreen" ? onScreenColor : offScreenColor;
-			dispatch(
-				updateExercise({ ...durationSettings, [type === "onScreen" ? "onScreenColor" : "offScreenColor"]: color })
-			);
-		}
+	// Prepare media items for horizontal scroll
+	const mediaItems = [];
+	const placeholderImageUrl =
+		"https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/placeholder-ND4gRGq1YR5dapuS2ObPKZZ9SfAXju.png";
 
-		setShowOnScreenColorPicker(type === "onScreen" ? false : showOnScreenColorPicker);
-		setShowOffScreenColorPicker(type === "offScreen" ? false : showOffScreenColorPicker);
+	// Helper function to extract YouTube video ID
+	const getYouTubeVideoId = (url: string) => {
+		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+		const match = url.match(regExp);
+		return match && match[2].length === 11 ? match[2] : null;
+	};
+
+	if (exercise.youtubeUrl) {
+		const videoId = getYouTubeVideoId(exercise.youtubeUrl);
+		if (videoId) {
+			mediaItems.push({
+				type: "youtube" as const,
+				url: `https://www.youtube.com/embed/${videoId}?si=SWqkZtlRD8J8sBL-`,
+			});
+		}
+	}
+	if (exercise.videoUrl) {
+		mediaItems.push({ type: "video" as const, url: exercise.videoUrl });
+	}
+	if (exercise.imageFileUrl) {
+		mediaItems.push({ type: "image" as const, url: exercise.imageFileUrl });
 	}
 
-	function onDurationSettingsUpdated() {
-		if (durationSettings) {
-			dispatch(updateExercise({ ...durationSettings }));
-		}
-
-		setIsEditing((prev) => !prev);
+	// If no media items, add placeholder
+	if (mediaItems.length === 0) {
+		mediaItems.push({ type: "image" as const, url: placeholderImageUrl });
 	}
+
+	// Create video players for all video items
+	const videoPlayers = new Map();
+	mediaItems.forEach((item, index) => {
+		if (item.type === "video") {
+			const player = useVideoPlayer(item.url, (player) => {
+				player.loop = true;
+			});
+			videoPlayers.set(index, player);
+		}
+	});
+
 	function getIconForType(difficulty: ExerciseDifficulty) {
 		return difficulty === ExerciseDifficulty.Beginner
 			? Sprout
@@ -90,10 +103,6 @@ function ExerciseProgram() {
 				? Rocket
 				: Trophy;
 	}
-
-	useEffect(() => {
-		setDurationSettings(exercise.customizableOptions);
-	}, [exercise.customizableOptions]);
 
 	useEffect(() => {
 		Animated.loop(
@@ -112,11 +121,6 @@ function ExerciseProgram() {
 		).start();
 	}, [floatAnim]);
 
-	const runFirst = `
-	window.isNativeApp = true;
-	true;
-	`;
-
 	const handleStartExercise = () => {
 		router.navigate({
 			pathname: "/exercise",
@@ -124,10 +128,6 @@ function ExerciseProgram() {
 				data: JSON.stringify(exercise),
 			},
 		});
-	};
-
-	const onEditClick = () => {
-		setIsEditing(!isEditing);
 	};
 
 	const handleVideoUploadSuccess = () => {
@@ -139,17 +139,100 @@ function ExerciseProgram() {
 			<View className="relative bg-background-700">
 				<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
 					<View style={{ flex: 1, height: 250, maxHeight: 250 }} className="bg-primary-700 py-5">
-						<WebView
-							source={{ uri: "https://www.youtube.com/embed/16LuvR2CARA?si=SWqkZtlRD8J8sBL-" }}
-							injectedJavaScriptBeforeContentLoaded={runFirst}
-							style={{
-								height: 250,
-								maxHeight: 250,
-								width: "90%",
-								alignSelf: "center",
-								borderRadius: 20,
-							}}
-						/>
+						<ScrollView
+							horizontal
+							showsHorizontalScrollIndicator={false}
+							contentContainerStyle={{ paddingHorizontal: 20 }}
+							style={{ height: 250 }}
+						>
+							{mediaItems.map((item, index) => (
+								<View
+									key={index}
+									style={{
+										width: 350,
+										height: 200,
+										marginRight: index < mediaItems.length - 1 ? 15 : 0,
+										borderRadius: 20,
+										overflow: "hidden",
+										position: "relative",
+									}}
+								>
+									{/* Media type indicator */}
+									<View
+										style={{
+											position: "absolute",
+											top: 10,
+											right: 10,
+											backgroundColor: "rgba(0,0,0,0.7)",
+											paddingHorizontal: 8,
+											paddingVertical: 4,
+											borderRadius: 12,
+											zIndex: 10,
+										}}
+									>
+										<Text
+											style={{
+												color: "white",
+												fontSize: 10,
+												fontWeight: "bold",
+												textTransform: "uppercase",
+											}}
+										>
+											{item.type}
+										</Text>
+									</View>
+
+									{item.type === "youtube" && (
+										<WebView
+											source={{ uri: item.url }}
+											injectedJavaScriptBeforeContentLoaded={`
+												window.isNativeApp = true;
+												true;
+											`}
+											style={{
+												width: "100%",
+												height: "100%",
+												borderRadius: 20,
+											}}
+											allowsInlineMediaPlayback={true}
+											mediaPlaybackRequiresUserAction={false}
+										/>
+									)}
+
+									{item.type === "video" && (
+										<VideoView
+											player={videoPlayers.get(index)}
+											allowsFullscreen
+											allowsPictureInPicture
+											style={{
+												width: "100%",
+												height: "100%",
+												borderRadius: 20,
+											}}
+											contentFit="cover"
+										/>
+									)}
+
+									{item.type === "image" && (
+										<RNImage
+											source={{ uri: item.url }}
+											style={{
+												width: "100%",
+												height: "100%",
+												borderRadius: 20,
+											}}
+											resizeMode="cover"
+											onError={() => {
+												// If image fails to load, replace with placeholder
+												if (item.url !== placeholderImageUrl) {
+													item.url = placeholderImageUrl;
+												}
+											}}
+										/>
+									)}
+								</View>
+							))}
+						</ScrollView>
 					</View>
 
 					<View className="flex items-center py-5">
@@ -177,105 +260,21 @@ function ExerciseProgram() {
 									})()}
 								</Badge>
 							</View>
-
 							<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>
 							<Text>{exercise.description}</Text>
 							<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
 							<Text>{exercise.instructions}</Text>
 
-							<Heading>{i18n.t("exercise.sections.customization")}</Heading>
-							<Box className="bg-secondary-500 p-5 rounded-2xl">
-								<VStack space="lg" className="pb-3">
-									<View>
-										<View className="flex-row justify-between items-center">
-											<Heading size="md" className="text-primary-500">
-												{i18n.t("exercise.sections.durationSettings")}
-											</Heading>
-											<Button variant="link" onPress={onEditClick}>
-												<ButtonIcon as={Edit} size="md" />
-											</Button>
-										</View>
-										<Divider className="bg-slate-400" />
-									</View>
-									<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
-										{Object.entries(durationSettings || {}).map(([key, value]) =>
-											key !== "onScreenColor" && key !== "offScreenColor" ? (
-												<CustomSlider
-													key={key}
-													title={`exercise.form.${key}`}
-													size="md"
-													minValue={key === "exerciseTime" ? 1 : 0.5}
-													maxValue={key === "exerciseTime" ? 5 : 15}
-													step={key === "exerciseTime" ? 0.5 : 0.1}
-													value={parseFloat(value.toString())}
-													defaultValue={parseFloat(value.toString())}
-													suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
-													isReadOnly={!isEditing}
-													onChange={(newValue) =>
-														setDurationSettings((prev) =>
-															prev
-																? {
-																		...prev,
-																		[key]: newValue.toString(),
-																	}
-																: undefined
-														)
-													}
-												/>
-											) : null
-										)}
-									</VStack>
-									{isEditing && (
-										<ButtonGroup className="flex-row self-end py-3">
-											<Button variant="outline" onPress={() => setIsEditing(false)} action="secondary" size="md">
-												<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
-											</Button>
-											<Button onPress={onDurationSettingsUpdated} action="primary" size="md">
-												<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
-											</Button>
-										</ButtonGroup>
-									)}
-								</VStack>
-							</Box>
-
-							<Box className="bg-secondary-500 p-5 rounded-2xl">
-								<VStack space="lg">
-									<View>
-										<Heading size="md" className="text-primary-500">
-											{i18n.t("exercise.sections.colorSettings")}
-										</Heading>
-										<Divider className="bg-slate-400" />
-									</View>
-									<View className="flex-row justify-between">
-										<Heading size="sm">{i18n.t("exercise.form.offScreenColor", { offScreenColor })}</Heading>
-										<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
-											<Icon as={ArrowRight} size="md" />
-										</Button>
-									</View>
-									<View className="flex-row justify-between">
-										<Heading size="sm">{i18n.t("exercise.form.onScreenColor", { onScreenColor })}</Heading>
-										<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
-											<Icon as={ArrowRight} size="md" />
-										</Button>
-									</View>
-								</VStack>
-
-								<ModalComponent
-									isOpen={showOffScreenColorPicker}
-									onClose={() => setShowOffScreenColorPicker(false)}
-									onConfirm={() => handleColorConfirm("offScreen")}
-								>
-									<WheelColorPicker onColorChangeComplete={(color: string) => setOffScreenColor(color)} />
-								</ModalComponent>
-
-								<ModalComponent
-									isOpen={showOnScreenColorPicker}
-									onClose={() => setShowOnScreenColorPicker(false)}
-									onConfirm={() => handleColorConfirm("onScreen")}
-								>
-									<WheelColorPicker onColorChangeComplete={(color: string) => setOnScreenColor(color)} />
-								</ModalComponent>
-							</Box>
+							{/* Settings Button */}
+							<Button
+								onPress={() => router.push(`/(exercise)/settings?id=${id}`)}
+								variant="outline"
+								action="primary"
+								size="lg"
+								className="w-full"
+							>
+								<ButtonText>{i18n.t("exercise.page.customizeExercise")}</ButtonText>
+							</Button>
 
 							{/* Admin Video Upload Section */}
 							{user?.isAdmin && (
@@ -285,7 +284,6 @@ function ExerciseProgram() {
 											<Heading size="md" className="text-primary-500">
 												{i18n.t("exercise.sections.adminVideoUpload")}
 											</Heading>
-											<Divider className="bg-slate-400" />
 										</View>
 
 										{showVideoUpload ? (
@@ -297,7 +295,6 @@ function ExerciseProgram() {
 											/>
 										) : (
 											<Button onPress={() => setShowVideoUpload(true)} action="primary" className="w-full">
-												<ButtonIcon as={ArrowRight} />
 												<ButtonText>{i18n.t("exercise.sections.uploadVideo")}</ButtonText>
 											</Button>
 										)}
@@ -305,14 +302,8 @@ function ExerciseProgram() {
 								</Box>
 							)}
 
-							{/* Exercise Video Gallery Section */}
 							<Box className="bg-secondary-500 p-5 rounded-2xl">
-								<ExerciseVideoGallery
-									exerciseId={exercise.id}
-									onVideoSelect={(video) => {
-										console.log("Selected video:", video.title);
-									}}
-								/>
+								<ExerciseVideoGallery exerciseId={exercise.id} />
 							</Box>
 						</VStack>
 					</View>

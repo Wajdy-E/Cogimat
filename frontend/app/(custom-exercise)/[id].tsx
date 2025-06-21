@@ -4,21 +4,19 @@ import { Animated, ScrollView, View, Image as RNImage } from "react-native";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import WheelColorPicker from "react-native-wheel-color-picker";
-import { ArrowRight, CirclePlay, Edit, Rocket, Sprout, Trophy, Clock, Brain, EyeOff, Eye } from "lucide-react-native";
+import WebView from "react-native-webview";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { CirclePlay, Rocket, Sprout, Trophy, Clock, Brain } from "lucide-react-native";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
 
 import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Divider } from "@/components/ui/divider";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-import ModalComponent from "../../components/Modal";
-import MediaSlideshow from "../../components/MediaSlideshow";
 import {
 	CustomizableExerciseOptions,
 	Exercise,
@@ -27,8 +25,6 @@ import {
 } from "../../store/data/dataSlice";
 import { AppDispatch, RootState } from "../../store/store";
 import { i18n } from "../../i18n";
-import CustomSlider from "../../components/CustomSlider";
-import AnimatedSwitch from "../../components/AnimatedSwitch";
 import { updateCustomExerciseThunk } from "../../store/data/dataSaga";
 import AlertModal from "../../components/AlertModal";
 
@@ -41,7 +37,6 @@ function ExerciseProgram() {
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const dispatch = useDispatch();
 	const appDispatch: AppDispatch = useDispatch();
-	const [showAlertModal, setShowAlertModal] = useState(false);
 
 	useEffect(() => {
 		if (exercise) {
@@ -51,23 +46,26 @@ function ExerciseProgram() {
 
 	const router = useRouter();
 
-	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
-	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
-	const [onScreenColor, setOnScreenColor] = useState(exercise.customizableOptions.onScreenColor);
-	const [offScreenColor, setOffScreenColor] = useState(exercise.customizableOptions.offScreenColor);
-	const [isEditing, setIsEditing] = useState(false);
-
-	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
-		exercise.customizableOptions
-	);
-
-	const placeHolder = require("../../assets/exercise-thumbnails/placeholder.png");
-
-	// Prepare media items for slideshow
+	// Prepare media items for horizontal scroll
 	const mediaItems = [];
+	const placeholderImageUrl =
+		"https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/placeholder-ND4gRGq1YR5dapuS2ObPKZZ9SfAXju.png";
+
+	// Helper function to extract YouTube video ID
+	const getYouTubeVideoId = (url: string) => {
+		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+		const match = url.match(regExp);
+		return match && match[2].length === 11 ? match[2] : null;
+	};
 
 	if (exercise.youtubeUrl) {
-		mediaItems.push({ type: "youtube" as const, url: exercise.youtubeUrl });
+		const videoId = getYouTubeVideoId(exercise.youtubeUrl);
+		if (videoId) {
+			mediaItems.push({
+				type: "youtube" as const,
+				url: `https://www.youtube.com/embed/${videoId}?si=SWqkZtlRD8J8sBL-`,
+			});
+		}
 	}
 	if (exercise.videoUrl) {
 		mediaItems.push({ type: "video" as const, url: exercise.videoUrl });
@@ -76,29 +74,21 @@ function ExerciseProgram() {
 		mediaItems.push({ type: "image" as const, url: exercise.imageFileUrl });
 	}
 
-	function onScreenColorConfirm() {
-		const updatedExercise = {
-			...exercise,
-			customizableOptions: {
-				...exercise.customizableOptions,
-				onScreenColor: onScreenColor,
-			},
-		};
-		appDispatch(updateCustomExerciseThunk(updatedExercise));
-		setShowOnScreenColorPicker(false);
+	// If no media items, add placeholder
+	if (mediaItems.length === 0) {
+		mediaItems.push({ type: "image" as const, url: placeholderImageUrl });
 	}
 
-	function offScreenColorConfirm() {
-		const updatedExercise = {
-			...exercise,
-			customizableOptions: {
-				...exercise.customizableOptions,
-				offScreenColor: offScreenColor,
-			},
-		};
-		appDispatch(updateCustomExerciseThunk(updatedExercise));
-		setShowOffScreenColorPicker(false);
-	}
+	// Create video players for all video items
+	const videoPlayers = new Map();
+	mediaItems.forEach((item, index) => {
+		if (item.type === "video") {
+			const player = useVideoPlayer(item.url, (player) => {
+				player.loop = true;
+			});
+			videoPlayers.set(index, player);
+		}
+	});
 
 	function getIconForType(difficulty: ExerciseDifficulty) {
 		return difficulty === ExerciseDifficulty.Beginner
@@ -125,44 +115,107 @@ function ExerciseProgram() {
 		).start();
 	}, [floatAnim]);
 
-	const handlePublicAccessChange = (value: boolean) => {
-		if (exercise.publicAccess === false) {
-			appDispatch(updateCustomExerciseThunk({ ...exercise, publicAccess: value, isFavourited: false }));
-			setShowAlertModal(true);
-		} else {
-			appDispatch(updateCustomExerciseThunk({ ...exercise, publicAccess: value }));
-			setShowAlertModal(false);
-		}
-	};
-
 	return (
-		<View className="relative bg-background-700">
+		<View className="relative bg-background-700 h-full">
 			<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-				<View style={{ flex: 1 }} className="bg-primary-700 py-5">
-					<View className="w-[90%] self-center" style={{ height: 250 }}>
-						<MediaSlideshow
-							mediaItems={mediaItems}
-							height={250}
-							autoPlay={mediaItems.length > 1}
-							autoPlayInterval={4000}
-							showControls={mediaItems.length > 1}
-							placeholderImage={placeHolder}
-						/>
-					</View>
+				<View style={{ flex: 1, height: 250, maxHeight: 250 }} className="bg-primary-700 py-5">
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						contentContainerStyle={{ paddingHorizontal: 20 }}
+						style={{ height: 250 }}
+					>
+						{mediaItems.map((item, index) => (
+							<View
+								key={index}
+								style={{
+									width: 350,
+									height: 200,
+									marginRight: index < mediaItems.length - 1 ? 15 : 0,
+									borderRadius: 20,
+									overflow: "hidden",
+									position: "relative",
+								}}
+							>
+								{/* Media type indicator */}
+								<View
+									style={{
+										position: "absolute",
+										top: 10,
+										right: 10,
+										backgroundColor: "rgba(0,0,0,0.7)",
+										paddingHorizontal: 8,
+										paddingVertical: 4,
+										borderRadius: 12,
+										zIndex: 10,
+									}}
+								>
+									<Text
+										style={{
+											color: "white",
+											fontSize: 10,
+											fontWeight: "bold",
+											textTransform: "uppercase",
+										}}
+									>
+										{item.type}
+									</Text>
+								</View>
+
+								{item.type === "youtube" && (
+									<WebView
+										source={{ uri: item.url }}
+										injectedJavaScriptBeforeContentLoaded={`
+											window.isNativeApp = true;
+											true;
+										`}
+										style={{
+											width: "100%",
+											height: "100%",
+											borderRadius: 20,
+										}}
+										allowsInlineMediaPlayback={true}
+										mediaPlaybackRequiresUserAction={false}
+									/>
+								)}
+
+								{item.type === "video" && (
+									<VideoView
+										player={videoPlayers.get(index)}
+										allowsFullscreen
+										allowsPictureInPicture
+										style={{
+											width: "100%",
+											height: "100%",
+											borderRadius: 20,
+										}}
+										contentFit="cover"
+									/>
+								)}
+
+								{item.type === "image" && (
+									<RNImage
+										source={{ uri: item.url }}
+										style={{
+											width: "100%",
+											height: "100%",
+											borderRadius: 20,
+										}}
+										resizeMode="cover"
+										onError={() => {
+											// If image fails to load, replace with placeholder
+											if (item.url !== placeholderImageUrl) {
+												item.url = placeholderImageUrl;
+											}
+										}}
+									/>
+								)}
+							</View>
+						))}
+					</ScrollView>
 				</View>
 				<View className="flex items-center py-5">
 					<VStack className="w-[90%]" space="md">
-						<View className="flex-row justify-between items-center">
-							<Heading size="lg">{i18n.t("exercise.page.makePublic")}</Heading>
-							<AnimatedSwitch
-								defaultValue={exercise.publicAccess}
-								onChange={handlePublicAccessChange}
-								onIcon={<Icon as={Eye} />}
-								offIcon={<Icon as={EyeOff} />}
-								height={25}
-								thumbSize={20}
-							/>
-						</View>
 						<View className="flex-row justify-start flex-wrap gap-4">
 							<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 								<BadgeIcon as={getIconForType(exercise.difficulty)} />
@@ -198,123 +251,16 @@ function ExerciseProgram() {
 						<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
 						<Text>{exercise.instructions}</Text>
 
-						<Heading>{i18n.t("exercise.sections.customization")}</Heading>
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
-							<VStack space="lg">
-								<View>
-									<View className="flex-row justify-between items-center">
-										<Heading size="md" className="text-primary-500">
-											{i18n.t("exercise.sections.durationSettings")}
-										</Heading>
-										<Button variant="link" onPress={() => setIsEditing(!isEditing)}>
-											<ButtonIcon as={Edit} size="md" />
-										</Button>
-									</View>
-									<Divider className="bg-slate-400" />
-								</View>
-
-								<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
-									{Object.entries(durationSettings || {}).map(([key, value]) =>
-										key !== "onScreenColor" && key !== "offScreenColor" && key !== "parameters" ? (
-											<CustomSlider
-												key={key}
-												title={`exercise.form.${key}`}
-												size="md"
-												minValue={key === "exerciseTime" ? 1 : 0.5}
-												maxValue={key === "exerciseTime" ? 5 : 15}
-												step={key === "exerciseTime" ? 0.5 : 0.1}
-												value={parseFloat(value.toString())}
-												defaultValue={parseFloat(value.toString())}
-												suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
-												isReadOnly={!isEditing}
-												onChange={(newValue) =>
-													setDurationSettings((prev) =>
-														prev
-															? {
-																	...prev,
-																	[key]: newValue.toString(),
-																}
-															: undefined
-													)
-												}
-											/>
-										) : null
-									)}
-								</VStack>
-
-								{isEditing && (
-									<ButtonGroup className="flex-row self-end py-3">
-										<Button
-											variant="outline"
-											onPress={() => {
-												setIsEditing(false);
-												setDurationSettings(exercise.customizableOptions);
-											}}
-											action="secondary"
-											size="md"
-										>
-											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
-										</Button>
-										<Button
-											onPress={() => {
-												const updatedExercise = {
-													...exercise,
-													customizableOptions: {
-														...exercise.customizableOptions,
-														...durationSettings,
-													},
-												};
-												appDispatch(updateCustomExerciseThunk(updatedExercise));
-												setIsEditing(false);
-											}}
-											action="primary"
-											size="md"
-										>
-											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
-										</Button>
-									</ButtonGroup>
-								)}
-							</VStack>
-						</Box>
-
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
-							<VStack space="lg">
-								<View>
-									<Heading size="md" className="text-primary-500">
-										{i18n.t("exercise.sections.colorSettings")}
-									</Heading>
-									<Divider className="bg-slate-400" />
-								</View>
-								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.offScreenColor", { offScreenColor })}</Heading>
-									<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
-										<Icon as={ArrowRight} size="md" />
-									</Button>
-								</View>
-								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.onScreenColor", { onScreenColor })}</Heading>
-									<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
-										<Icon as={ArrowRight} size="md" />
-									</Button>
-								</View>
-							</VStack>
-
-							<ModalComponent
-								isOpen={showOffScreenColorPicker}
-								onClose={() => setShowOffScreenColorPicker(false)}
-								onConfirm={offScreenColorConfirm}
-							>
-								<WheelColorPicker onColorChangeComplete={(color: string) => setOffScreenColor(color)} />
-							</ModalComponent>
-
-							<ModalComponent
-								isOpen={showOnScreenColorPicker}
-								onClose={() => setShowOnScreenColorPicker(false)}
-								onConfirm={onScreenColorConfirm}
-							>
-								<WheelColorPicker onColorChangeComplete={(color: string) => setOnScreenColor(color)} />
-							</ModalComponent>
-						</Box>
+						{/* Settings Button */}
+						<Button
+							onPress={() => router.push(`/(custom-exercise)/settings?id=${id}`)}
+							variant="outline"
+							action="primary"
+							size="lg"
+							className="w-full"
+						>
+							<ButtonText>{i18n.t("exercise.page.customizeExercise")}</ButtonText>
+						</Button>
 					</VStack>
 				</View>
 			</ScrollView>
@@ -338,16 +284,6 @@ function ExerciseProgram() {
 					<ButtonIcon as={CirclePlay} />
 				</Button>
 			</Animated.View>
-
-			<AlertModal
-				isOpen={showAlertModal}
-				onClose={() => setShowAlertModal(false)}
-				headingKey="exercise.page.makePublic"
-				textKey="exercise.page.makePublicMessage"
-				buttonKey="general.buttons.confirm"
-				onConfirm={() => handlePublicAccessChange(true)}
-				action="primary"
-			/>
 		</View>
 	);
 }

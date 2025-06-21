@@ -4,10 +4,10 @@ import Header from "../../components/Header";
 function Layout() {
 	return (
 		<Tabs
-			screenOptions={{
-				header: () => <Header />,
+			screenOptions={({ route }) => ({
+				header: route.name === "settings" ? () => null : () => <Header showSettings={true} />,
 				tabBarStyle: { display: "none" },
-			}}
+			})}
 		></Tabs>
 	);
 }

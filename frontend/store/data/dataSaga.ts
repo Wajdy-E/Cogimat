@@ -16,6 +16,7 @@ import {
 	setUserGoals,
 	updateCustomExercise,
 	updateUserGoals,
+	addPublicExercise,
 } from "./dataSlice";
 import axios from "axios";
 import { RootState } from "../store";
@@ -44,11 +45,12 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 			isChallenge: ex.is_challenge,
 			trackingData: ex.tracking_data,
 			videoUrl: ex.video_url,
-			imageFileName: ex.image_file_name,
+			imageFileUrl: ex.image_file_name,
 			timeToComplete: ex.time_to_complete,
 			isFavourited: ex.isFavourited,
 			focus: ex.focus,
 			isPremium: ex.is_premium,
+			youtubeUrl: ex.youtube_url,
 			parameters: {
 				shapes: ex.parameters.shapes?.map((shape: string) => Shape[shape as keyof typeof Shape]),
 				colors: ex.parameters.colors?.map((color: string) => {
@@ -66,7 +68,6 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 				exerciseTime: ex.exercise_time,
 				offScreenColor: ex.off_screen_color,
 				onScreenColor: ex.on_screen_color,
-				restTime: ex.rest_time,
 			} as CustomizableExerciseOptions,
 		}));
 
@@ -291,7 +292,6 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 					exerciseTime: formData.exerciseTime,
 					offScreenColor: formData.offScreenColor,
 					onScreenColor: formData.onScreenColor,
-					restTime: formData.restTime,
 				},
 			};
 
@@ -312,6 +312,11 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 		try {
 			const clerk_id = getState().user.user.baseInfo?.id;
 			if (!clerk_id) throw new Error("User not authenticated");
+
+			// Get the current state to check if the exercise was public before
+			const currentState = getState() as RootState;
+			const currentExercise = currentState.data.customExercises.find((e) => e.id === exercise.id);
+			const wasPublicBefore = currentExercise?.publicAccess || false;
 
 			// Upload new media to Vercel Blob if they are local files
 			let imageUri = exercise.imageFileUrl;
@@ -346,7 +351,6 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 				exerciseTime: exercise.customizableOptions.exerciseTime,
 				offScreenColor: exercise.customizableOptions.offScreenColor,
 				onScreenColor: exercise.customizableOptions.onScreenColor,
-				restTime: exercise.customizableOptions.restTime,
 				publicAccess: exercise.publicAccess,
 			};
 
@@ -360,6 +364,11 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 			};
 
 			dispatch(updateCustomExercise(updatedExercise));
+
+			// If the exercise is being made public (wasn't public before but is now), add it to public exercises
+			if (!wasPublicBefore && exercise.publicAccess) {
+				dispatch(addPublicExercise(updatedExercise));
+			}
 		} catch (err) {
 			console.error("Failed to update exercise:", err);
 			throw err;
@@ -407,9 +416,10 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 				exerciseTime: ex.exercise_time,
 				offScreenColor: ex.off_screen_color,
 				onScreenColor: ex.on_screen_color,
-				restTime: ex.rest_time,
 			},
 		}));
+
+		console.log("transformed", transformed);
 
 		dispatch(setCustomExercises(transformed));
 	}
@@ -469,7 +479,6 @@ export const getPublicExercises = createAsyncThunk<void, void, { state: RootStat
 				exerciseTime: ex.exercise_time,
 				offScreenColor: ex.off_screen_color,
 				onScreenColor: ex.on_screen_color,
-				restTime: ex.rest_time,
 			},
 		}));
 
