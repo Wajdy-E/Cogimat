@@ -1,6 +1,6 @@
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { useTheme } from "@/components/ui/ThemeProvider";
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { Brain, FileChartColumn, UsersRound, ClipboardPen, Trophy, Rocket, Sprout } from "lucide-react-native";
 import { useDispatch, useSelector } from "react-redux";

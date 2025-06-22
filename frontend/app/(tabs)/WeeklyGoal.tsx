@@ -30,7 +30,7 @@ function WeeklyWorkoutGoal() {
 
 	return (
 		<ScrollView className="bg-background-700 py-5">
-			<VStack className="w-[90%] self-center flex" space="3xl">
+			<VStack space="3xl">
 				<Heading>Set your schedule</Heading>
 				<FormCheckboxGroup
 					options={options}

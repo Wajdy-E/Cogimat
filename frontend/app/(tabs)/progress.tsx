@@ -3,7 +3,6 @@ import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
 import AnimatedTab from "../../components/AnimatedTabs";
 import { i18n } from "../../i18n";
-import { Grid, GridItem } from "@/components/ui/grid";
 import { Heading } from "@/components/ui/heading";
 import GoalCard from "../../components/GoalCard";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
@@ -20,6 +19,7 @@ import { useRouter } from "expo-router";
 import { MilestoneCardConfig, UserMilestones } from "../../store/auth/authSlice";
 import ProgressCard from "../../components/ProgressCard";
 import { shallowEqual } from "react-redux";
+import WeeklyWorkoutGoal from "./WeeklyGoal";
 
 export const milestoneCardConfigs: MilestoneCardConfig[] = [
 	{
@@ -115,38 +115,6 @@ function Progress() {
 
 	const tabs = [
 		<VStack space="xl">
-			<Grid
-				className="gap-5"
-				_extra={{
-					className: "grid-cols-12",
-				}}
-			>
-				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
-						<Heading size="sm">{i18n.t("progress.goals.workouts")}</Heading>
-						<Text>{userMilestones?.exercisesCompleted ?? 0}</Text>
-					</Button>
-				</GridItem>
-				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
-						<Heading size="sm">{i18n.t("progress.goals.milestones")}</Heading>
-						<Text>{userMilestones ? Object.values(userMilestones).reduce((sum, val) => sum + (val || 0), 0) : 0}</Text>
-					</Button>
-				</GridItem>
-				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
-						<Heading size="sm">{i18n.t("progress.goals.weeklyGoal")}</Heading>
-						<Text>{goals?.length ?? 0}</Text>
-					</Button>
-				</GridItem>
-				<GridItem className="flex items-center" _extra={{ className: "col-span-6" }}>
-					<Button onPress={() => router.navigate("/WeeklyGoal")} variant="outline" className="w-full">
-						<Heading size="sm">{i18n.t("progress.goals.tbd")}</Heading>
-						<Text>{userMilestones?.customExercisesCreated ?? 0}</Text>
-					</Button>
-				</GridItem>
-			</Grid>
-
 			<Heading size="lg">{i18n.t("progress.goals.customGoalsTitle")}</Heading>
 
 			<Button size="lg" variant="solid" action="primary" className="mb-3" onPress={() => setShowAddGoalModal(true)}>
@@ -165,6 +133,8 @@ function Progress() {
 					onCheck={() => handleToggleCheck(goal.id ?? null)}
 				/>
 			))}
+
+			<WeeklyWorkoutGoal />
 		</VStack>,
 
 		<VStack space="lg">

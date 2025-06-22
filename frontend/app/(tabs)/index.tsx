@@ -66,7 +66,17 @@ function Home() {
 						to="/(tabs)/all-exercises"
 						onPress={() => onPressAllExercises(false)}
 					/>
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						className="overflow-visible"
+						nestedScrollEnabled={true}
+						decelerationRate={0}
+						scrollEventThrottle={16}
+						onScrollBeginDrag={() => {}}
+						onScrollEndDrag={() => {}}
+						onMomentumScrollEnd={() => {}}
+					>
 						<HStack space="md">
 							{exercises
 								.filter((exercise) => !exercise.isPremium)
@@ -102,7 +112,17 @@ function Home() {
 						to="/(tabs)/all-exercises"
 						onPress={() => onPressAllExercises(true)}
 					/>
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						className="overflow-visible"
+						nestedScrollEnabled={true}
+						decelerationRate={0}
+						scrollEventThrottle={16}
+						onScrollBeginDrag={() => {}}
+						onScrollEndDrag={() => {}}
+						onMomentumScrollEnd={() => {}}
+					>
 						<HStack space="md">
 							{customExercises.length === 0 ? (
 								<VStack space="lg" className="bg-background-500 rounded-md p-3 w-full">
@@ -152,7 +172,17 @@ function Home() {
 						to="/(tabs)/community-exercises"
 						onPress={() => {}}
 					/>
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						className="overflow-visible"
+						nestedScrollEnabled={true}
+						decelerationRate={0}
+						scrollEventThrottle={16}
+						onScrollBeginDrag={() => {}}
+						onScrollEndDrag={() => {}}
+						onMomentumScrollEnd={() => {}}
+					>
 						<HStack space="md">
 							{publicExercises.length === 0 ? (
 								<VStack space="lg" className="bg-background-500 rounded-md p-3 w-full">
@@ -220,7 +250,17 @@ function Home() {
 				<VStack space="lg">
 					{!isSubscribed && <UpgradeCard />}
 					<Heading size="xl">{i18n.t("home.exclusiveExercises")}</Heading>
-					<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						className="overflow-visible"
+						nestedScrollEnabled={true}
+						decelerationRate={0}
+						scrollEventThrottle={16}
+						onScrollBeginDrag={() => {}}
+						onScrollEndDrag={() => {}}
+						onMomentumScrollEnd={() => {}}
+					>
 						<HStack space="md">
 							{exercises
 								.filter((exercise) => exercise.isPremium)
@@ -247,7 +287,17 @@ function Home() {
 
 			<Box className="w-[90%] self-center">
 				<NavigateTo heading="Articles & Tips" text={i18n.t("home.exercisePrograms.seeAll")} classes="justify-between" />
-				<ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible">
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					className="overflow-visible"
+					nestedScrollEnabled={true}
+					decelerationRate={0}
+					scrollEventThrottle={16}
+					onScrollBeginDrag={() => {}}
+					onScrollEndDrag={() => {}}
+					onMomentumScrollEnd={() => {}}
+				>
 					<HStack space="md">
 						<BlogCard
 							imageUri="https://via.placeholder.com/150"
