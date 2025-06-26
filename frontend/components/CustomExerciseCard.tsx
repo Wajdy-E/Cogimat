@@ -1,5 +1,5 @@
 import { Image } from "@/components/ui/image";
-import { View } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { CustomExercise, Exercise, ExerciseDifficulty } from "../store/data/dataSlice";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import PlayButton from "./PlayButton";
 import FavouriteButton from "./FavouriteButton";
-import { updateCustomExerciseThunk } from "../store/data/dataSaga";
+import { updateCustomExerciseThunk, setCommunityExerciseFavourite } from "../store/data/dataSaga";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
 import { i18n } from "../i18n";
@@ -25,6 +25,7 @@ interface ExerciseCardProps {
 	classes?: string;
 	variant?: "elevated" | "outline" | "ghost" | "filled" | undefined;
 	isCommunityExercise?: boolean;
+	onClick?: () => void;
 }
 
 const placeHolder = require("../assets/exercise-thumbnails/placeholder.png");
@@ -35,9 +36,20 @@ function ExerciseCard(props: ExerciseCardProps) {
 	const exerciseImage = props.imageFileUrl ? { uri: props.imageFileUrl } : placeHolder;
 
 	function onFavourite() {
-		const exerciseCopy = { ...props.exercise };
-		exerciseCopy.isFavourited = !props.exercise.isFavourited;
-		dispatch(updateCustomExerciseThunk(exerciseCopy));
+		if (props.isCommunityExercise) {
+			// For community exercises, use the new saga
+			dispatch(
+				setCommunityExerciseFavourite({
+					exerciseId: props.exercise.id,
+					isFavourited: !props.exercise.isFavourited,
+				})
+			);
+		} else {
+			// For custom exercises, use the existing saga
+			const exerciseCopy = { ...props.exercise };
+			exerciseCopy.isFavourited = !props.exercise.isFavourited;
+			dispatch(updateCustomExerciseThunk(exerciseCopy));
+		}
 	}
 
 	function getIconForType() {
@@ -54,7 +66,8 @@ function ExerciseCard(props: ExerciseCardProps) {
 			/>
 		);
 	}
-	return (
+
+	const CardContent = (
 		<Card
 			variant={props.variant ? props.variant : "outline"}
 			className={`p-0 rounded-md overflow-hidden ${props.classes}`}
@@ -104,6 +117,14 @@ function ExerciseCard(props: ExerciseCardProps) {
 				</View>
 			</VStack>
 		</Card>
+	);
+
+	return props.onClick ? (
+		<TouchableOpacity onPress={props.onClick} activeOpacity={0.7}>
+			{CardContent}
+		</TouchableOpacity>
+	) : (
+		CardContent
 	);
 }
 

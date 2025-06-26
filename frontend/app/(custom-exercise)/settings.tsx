@@ -27,16 +27,36 @@ import { i18n } from "../../i18n";
 import { customExerciseToExercise } from "../../lib/helpers/helpers";
 import React from "react";
 import CustomSlider from "../../components/CustomSlider";
-import WheelColorPicker from "react-native-wheel-color-picker";
-import ModalComponent from "../../components/Modal";
 
 export default function CustomExerciseSettings() {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
-	const exercises = useCustomExercise(parseInt(id as string)) as CustomExercise;
 	const user = useSelector((state: RootState) => state.user.user, shallowEqual);
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
+
+	// Safely handle the id parameter
+	let exerciseId: number | null = null;
+	try {
+		if (id && typeof id === "string") {
+			exerciseId = parseInt(id);
+		}
+	} catch (error) {
+		console.error("Error parsing exercise id:", error);
+	}
+
+	// Only call useCustomExercise if we have a valid id
+	const exerciseData = exerciseId ? useCustomExercise(exerciseId) : null;
+
+	// Handle the case where useCustomExercise returns an array, null, or undefined
+	let exercises: CustomExercise | null = null;
+	try {
+		if (exerciseData && !Array.isArray(exerciseData) && exerciseData !== null) {
+			exercises = exerciseData as CustomExercise;
+		}
+	} catch (error) {
+		console.error("Error processing exercise data:", error);
+	}
 
 	const [showSubmitToCogiproAlertModal, setShowSubmitToCogiproAlertModal] = useState(false);
 	const [showUnsubmitFromCogiproAlertModal, setShowUnsubmitFromCogiproAlertModal] = useState(false);
@@ -46,8 +66,6 @@ export default function CustomExerciseSettings() {
 	// Customization settings state
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
 	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
-	const [onScreenColor, setOnScreenColor] = useState(exercises?.customizableOptions?.onScreenColor || "#000000");
-	const [offScreenColor, setOffScreenColor] = useState(exercises?.customizableOptions?.offScreenColor || "#FFFFFF");
 	const [isEditing, setIsEditing] = useState(false);
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
 		exercises?.customizableOptions
@@ -56,13 +74,13 @@ export default function CustomExerciseSettings() {
 	// Update state when exercises data becomes available
 	useEffect(() => {
 		if (exercises?.customizableOptions) {
-			setOnScreenColor(exercises.customizableOptions.onScreenColor || "#000000");
-			setOffScreenColor(exercises.customizableOptions.offScreenColor || "#FFFFFF");
 			setDurationSettings(exercises.customizableOptions);
 		}
 	}, [exercises]);
 
 	function submitToCogipro() {
+		if (!exercises) return;
+
 		const convertedExercise: Exercise = customExerciseToExercise(exercises);
 		dispatch(submitExercise({ exercise: convertedExercise }));
 		dispatch(updateCustomExerciseThunk({ ...exercises, publicAccess: true }));
@@ -70,12 +88,16 @@ export default function CustomExerciseSettings() {
 	}
 
 	function unsubmitFromCogipro() {
+		if (!exercises) return;
+
 		dispatch(unsubmitExercise({ exerciseId: exercises.id, name: exercises.name }));
 		dispatch(updateCustomExerciseThunk({ ...exercises, publicAccess: false }));
 		setShowUnsubmitFromCogiproAlertModal(false);
 	}
 
 	function handleCogiproToggle(value: boolean) {
+		if (!exercises) return;
+
 		if (value && !exercises.publicAccess) {
 			// Turning on - show submit alert
 			setShowSubmitToCogiproAlertModal(true);
@@ -86,12 +108,16 @@ export default function CustomExerciseSettings() {
 	}
 
 	function handleDeleteExercise() {
+		if (!exercises) return;
+
 		dispatch(deleteCustomExercise(exercises.id));
 		setShowDeleteExerciseAlertModal(false);
 		router.back();
 	}
 
 	const handlePublicAccessChange = (value: boolean) => {
+		if (!exercises) return;
+
 		if (exercises.publicAccess === false) {
 			dispatch(updateCustomExerciseThunk({ ...exercises, publicAccess: value, isFavourited: false }));
 			setShowMakePublicAlertModal(true);
@@ -124,31 +150,6 @@ export default function CustomExerciseSettings() {
 				</View>
 			</View>
 		);
-	}
-
-	// Color picker functions
-	function onScreenColorConfirm() {
-		const updatedExercise = {
-			...exercises,
-			customizableOptions: {
-				...exercises.customizableOptions,
-				onScreenColor: onScreenColor,
-			},
-		};
-		dispatch(updateCustomExerciseThunk(updatedExercise));
-		setShowOnScreenColorPicker(false);
-	}
-
-	function offScreenColorConfirm() {
-		const updatedExercise = {
-			...exercises,
-			customizableOptions: {
-				...exercises.customizableOptions,
-				offScreenColor: offScreenColor,
-			},
-		};
-		dispatch(updateCustomExerciseThunk(updatedExercise));
-		setShowOffScreenColorPicker(false);
 	}
 
 	console.log("exercises", exercises.publicAccess);
@@ -252,30 +253,6 @@ export default function CustomExerciseSettings() {
 							</VStack>
 						</Box>
 
-						{/* Color Settings */}
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
-							<VStack space="lg">
-								<View>
-									<Heading size="md" className="text-primary-500">
-										{i18n.t("exercise.sections.colorSettings")}
-									</Heading>
-									<Divider className="bg-slate-400" />
-								</View>
-								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.offScreenColor", { offScreenColor })}</Heading>
-									<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
-										<Icon as={ArrowRight} size="md" />
-									</Button>
-								</View>
-								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.onScreenColor", { onScreenColor })}</Heading>
-									<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
-										<Icon as={ArrowRight} size="md" />
-									</Button>
-								</View>
-							</VStack>
-						</Box>
-
 						{/* Public Access Settings */}
 						<Box className="bg-secondary-500 p-5 rounded-2xl">
 							<VStack space="lg">
@@ -355,23 +332,6 @@ export default function CustomExerciseSettings() {
 					</VStack>
 				</View>
 			</ScrollView>
-
-			{/* Color Picker Modals */}
-			<ModalComponent
-				isOpen={showOffScreenColorPicker}
-				onClose={() => setShowOffScreenColorPicker(false)}
-				onConfirm={offScreenColorConfirm}
-			>
-				<WheelColorPicker onColorChangeComplete={(color: string) => setOffScreenColor(color)} />
-			</ModalComponent>
-
-			<ModalComponent
-				isOpen={showOnScreenColorPicker}
-				onClose={() => setShowOnScreenColorPicker(false)}
-				onConfirm={onScreenColorConfirm}
-			>
-				<WheelColorPicker onColorChangeComplete={(color: string) => setOnScreenColor(color)} />
-			</ModalComponent>
 
 			<AlertModal
 				isOpen={showSubmitToCogiproAlertModal}

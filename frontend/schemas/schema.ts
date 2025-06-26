@@ -53,8 +53,4 @@ export const createExerciseSchemaStep2 = Yup.object().shape({
 	onScreenTime: Yup.number().min(0.5, "yupErrors.form.onScreenTime").required(),
 
 	exerciseTime: Yup.number().min(1, "yupErrors.form.exerciseTime").required(),
-
-	offScreenColor: Yup.string().required("yupErrors.form.offScreenColor"),
-
-	onScreenColor: Yup.string().required("yupErrors.form.onScreenColor"),
 });

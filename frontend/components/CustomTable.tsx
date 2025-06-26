@@ -30,7 +30,7 @@ function CustomTable(props: TableProps) {
 						</TableRow>
 					))}
 				</TableBody>
-				{props.caption && <TableCaption>{props.caption}</TableCaption>}
+				{props.caption && <TableCaption className="bg-background-700">{props.caption}</TableCaption>}
 			</Table>
 		</Box>
 	);

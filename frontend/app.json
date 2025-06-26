@@ -23,12 +23,13 @@
 						"CFBundleURLSchemes": ["com.googleusercontent.apps.232077053528-eft8gushc1ogneutfbpullp979call59"]
 					}
 				],
-				"ITSAppUsesNonExemptEncryption": false
+				"ITSAppUsesNonExemptEncryption": false,
+				"NSCameraUsageDescription": "This app uses the camera to scan QR codes for product-based access."
 			}
 		},
 		"android": {
 			"package": "com.cogimat.cogipro",
-			"permissions": ["INTERNET"],
+			"permissions": ["INTERNET", "CAMERA"],
 			"adaptiveIcon": {
 				"foreground-image": "./assets/icon.png",
 				"backgroundColor": "#042932"
@@ -44,6 +45,12 @@
 				"expo-image-picker",
 				{
 					"photosPermission": "This application requires access to your photos to set profile pictures and exercise thumbnails."
+				}
+			],
+			[
+				"expo-camera",
+				{
+					"cameraPermission": "This application requires access to the camera to scan QR codes for product-based access."
 				}
 			],
 			["expo-localization"],

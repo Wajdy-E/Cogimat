@@ -73,6 +73,14 @@ export default function TabsLayout() {
 				/>
 
 				<Tabs.Screen
+					name="routine-execution"
+					options={{
+						title: "Routine Execution",
+						href: null,
+					}}
+				/>
+
+				<Tabs.Screen
 					name="progress"
 					options={{
 						title: "Progress",

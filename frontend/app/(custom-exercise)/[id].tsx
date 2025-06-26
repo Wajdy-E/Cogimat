@@ -21,7 +21,7 @@ import {
 	CustomizableExerciseOptions,
 	Exercise,
 	ExerciseDifficulty,
-	setCurrentCustomExercise,
+	setCurrentExercise,
 } from "../../store/data/dataSlice";
 import { AppDispatch, RootState } from "../../store/store";
 import { i18n } from "../../i18n";
@@ -40,9 +40,16 @@ function ExerciseProgram() {
 
 	useEffect(() => {
 		if (exercise) {
-			dispatch(setCurrentCustomExercise(exercise));
+			dispatch(setCurrentExercise(exercise));
 		}
-	}, [exercise]);
+	}, [exercise, dispatch]);
+
+	// Cleanup: clear selected exercise when component unmounts
+	useEffect(() => {
+		return () => {
+			dispatch(setCurrentExercise(null));
+		};
+	}, [dispatch]);
 
 	const router = useRouter();
 

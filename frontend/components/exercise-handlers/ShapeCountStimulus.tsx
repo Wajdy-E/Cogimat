@@ -140,11 +140,7 @@ export default function ShapeCountStimulus({ exercise }: { exercise: Exercise })
 	};
 
 	const renderStimulus = () => {
-		if (isWhiteScreen) {
-			return (
-				<View className="absolute inset-0" style={{ backgroundColor: exercise.customizableOptions?.offScreenColor }} />
-			);
-		}
+		if (isWhiteScreen) return <View className="absolute inset-0 bg-white" />;
 
 		if (!stimulus.length) return null;
 

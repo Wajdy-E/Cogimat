@@ -1,5 +1,5 @@
 import { Image } from "@/components/ui/image";
-import { View } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { Exercise, ExerciseDifficulty } from "../store/data/dataSlice";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
@@ -56,7 +56,7 @@ function ExerciseCard(props: ExerciseCardProps) {
 		);
 	}
 
-	return (
+	const CardContent = (
 		<Card
 			variant={props.variant ? props.variant : "outline"}
 			className={`p-0 rounded-md overflow-hidden ${props.classes}`}
@@ -96,6 +96,14 @@ function ExerciseCard(props: ExerciseCardProps) {
 				</View>
 			</VStack>
 		</Card>
+	);
+
+	return props.onClick ? (
+		<TouchableOpacity onPress={props.onClick} activeOpacity={0.7}>
+			{CardContent}
+		</TouchableOpacity>
+	) : (
+		CardContent
 	);
 }
 

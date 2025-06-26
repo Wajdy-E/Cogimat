@@ -12,9 +12,15 @@ import { RootState } from "../store";
 
 const BASE_URL = process.env.BASE_URL;
 console.log("BASE_URL", BASE_URL);
-export const createUser = createAsyncThunk<UserBase, UserBase>(
+
+// Extended interface for user creation with optional QR code
+interface CreateUserData extends UserBase {
+	qrCode?: string;
+}
+
+export const createUser = createAsyncThunk<UserBase, CreateUserData>(
 	"auth/createUser",
-	async (userData: UserBase, { dispatch, rejectWithValue }) => {
+	async (userData: CreateUserData, { dispatch, rejectWithValue }) => {
 		try {
 			const response = await axios.post(`${BASE_URL}/api/auth/signup`, userData);
 			dispatch(setCurrentUser(userData as UserBase));
@@ -34,7 +40,6 @@ export const setCurrentUserThunk = createAsyncThunk<UserBase, UserBase>(
 	"auth/setCurrentUser",
 	async (userData: UserBase, { dispatch }) => {
 		try {
-			// console.log("userData", userData);
 			dispatch(setCurrentUser(userData as UserBase));
 			return userData;
 		} catch (error) {
@@ -65,8 +70,6 @@ export const fetchUserMilestones = createAsyncThunk(
 			const userId = state.user.user.baseInfo?.id;
 			if (!userId) throw new Error("User is not authenticated");
 			const response = await axios.get(`${BASE_URL}/api/user-milestones`, { params: { userId } });
-
-			console.log("response", response.data);
 
 			// The response is an array, get the first element
 			const milestoneData = response.data[0] || {};
@@ -134,6 +137,31 @@ export const updateSubscriptionStatus = createAsyncThunk<void, UserSubscriptionS
 		} catch (error) {
 			console.error("Error updating subscription status:", error);
 			throw error;
+		}
+	}
+);
+
+export const fetchUserData = createAsyncThunk<UserBase | null, string>(
+	"auth/fetchUserData",
+	async (email: string, { dispatch, rejectWithValue }) => {
+		try {
+			const response = await axios.post(`${BASE_URL}/api/auth/login`, { email });
+			const userData = response.data.user;
+			dispatch(setCurrentUser(userData as UserBase));
+			return userData;
+		} catch (error: any) {
+			// If user not found in database, they might be a new user who needs QR validation
+			if (error.response && error.response.status === 400 && error.response.data?.message === "User not found") {
+				console.log("User not found in database, likely needs QR validation");
+				return null; // Return null to indicate user needs QR validation
+			}
+
+			console.error("Error fetching user data:", error);
+			const errorMsg =
+				error.response && error.response.data && error.response.data.message
+					? error.response.data.message
+					: "Failed to fetch user data. Please try again later.";
+			return rejectWithValue(errorMsg);
 		}
 	}
 );

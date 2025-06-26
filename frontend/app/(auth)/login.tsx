@@ -2,7 +2,7 @@ import { GestureResponderEvent, View, Alert, SafeAreaView, Platform } from "reac
 import { Button, ButtonIcon, ButtonText } from "../../app/components/ui/button";
 import { VStack } from "../components/ui/vstack";
 import { Heading } from "../components/ui/heading";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import FormInput from "../../components/FormInput";
@@ -13,8 +13,8 @@ import { OAuthStrategy } from "@clerk/types";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import { useSignIn, useSSO, useUser } from "@clerk/clerk-expo";
-import { setCurrentUserThunk } from "../../store/auth/authSaga";
-import { AppDispatch } from "../../store/store";
+import { setCurrentUserThunk, fetchUserData } from "../../store/auth/authSaga";
+import { AppDispatch, RootState } from "../../store/store";
 import { Text } from "@/components/ui/text";
 import { i18n } from "../../i18n";
 import Apple from "../../assets/apple.svg";
@@ -47,6 +47,7 @@ function Login() {
 	const { signIn, setActive, isLoaded } = useSignIn();
 	const { themeTextColor } = useTheme();
 	const router = useRouter();
+	const userState = useSelector((state: RootState) => state.user);
 
 	useWarmUpBrowser();
 
@@ -112,6 +113,8 @@ function Login() {
 		if (user) {
 			const { firstName, lastName, emailAddresses, id, username } = user;
 			const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0].emailAddress;
+
+			// First, set the current user in Redux from Clerk data
 			dispatch(
 				setCurrentUserThunk({
 					firstName,
@@ -119,9 +122,49 @@ function Login() {
 					email: emailAddress,
 					id,
 					username,
+					profileUri: user.imageUrl,
+					isAdmin: false, // Will be updated from backend data
 				})
 			);
-			router.replace("/(tabs)/");
+
+			// Then fetch user data from backend to check QR access status and get isAdmin
+			dispatch(fetchUserData(emailAddress)).then((result) => {
+				if (result.meta.requestStatus === "fulfilled") {
+					const userData = result.payload as any;
+
+					if (userData === null) {
+						// User not found in database, needs QR validation
+						router.replace("/(auth)/signup");
+					} else if (userData && typeof userData === "object" && "hasQrAccess" in userData) {
+						const hasQrAccess = userData.hasQrAccess;
+						const isAdmin = userData.isAdmin || false;
+
+						// Update user with backend data including isAdmin
+						dispatch(
+							setCurrentUserThunk({
+								firstName,
+								lastName,
+								email: emailAddress,
+								id,
+								username,
+								profileUri: user.imageUrl,
+								isAdmin: isAdmin,
+								hasQrAccess: hasQrAccess,
+							})
+						);
+
+						if (hasQrAccess) {
+							router.replace("/(tabs)/");
+						} else {
+							// User doesn't have QR access, route to signup for QR validation
+							router.replace("/(auth)/signup");
+						}
+					} else {
+						// Invalid user data, route to signup for QR validation
+						router.replace("/(auth)/signup");
+					}
+				}
+			});
 		}
 	}, [user]);
 
@@ -193,7 +236,7 @@ function Login() {
 							<Text>
 								{i18n.t("login.noAccount")}{" "}
 								<Link href={"/signup"} className="underline text-primary-500">
-									{i18n.t("login.signUp")}
+									{i18n.t("signup.form.signUp")}
 								</Link>
 							</Text>
 							<Link href="/ForgotPassword" className="underline text-primary-500">

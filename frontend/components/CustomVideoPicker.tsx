@@ -6,6 +6,7 @@ import { VStack } from "@/components/ui/vstack";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { VideoIcon } from "lucide-react-native";
 import React from "react";
+import { i18n } from "../i18n";
 
 type PickedVideoData = {
 	uri: string;
@@ -31,16 +32,16 @@ export default function CustomVideoPicker(props: VideoPickerProps) {
 			if (newStatus === "granted") {
 				pickVideo();
 			} else {
-				alert("Permission to access media library is required!");
+				alert(i18n.t("mediaPicker.permissionDenied"));
 			}
 		} else {
 			Alert.alert(
-				"Permission Required",
-				"To select a video, please enable media library access in your device settings.",
+				i18n.t("mediaPicker.permissionRequired"),
+				i18n.t("mediaPicker.permissionMessage", { mediaType: "video" }),
 				[
-					{ text: "Cancel", style: "cancel" },
+					{ text: i18n.t("mediaPicker.cancel"), style: "cancel" },
 					{
-						text: "Open Settings",
+						text: i18n.t("mediaPicker.openSettings"),
 						onPress: () => {
 							if (Platform.OS === "ios") {
 								Linking.openURL("app-settings:");
@@ -87,7 +88,9 @@ export default function CustomVideoPicker(props: VideoPickerProps) {
 		<VStack space="md">
 			<Button onPress={requestPermission} size="xxl" className="rounded-xl flex-col" action="primary" variant="outline">
 				<ButtonIcon as={VideoIcon} height={40} width={40} action="secondary" className="stroke-secondary-0" />
-				<ButtonText className="text-center text-typography-950">{props.buttonText || "Pick a video"}</ButtonText>
+				<ButtonText className="text-center text-typography-950">
+					{props.buttonText || i18n.t("mediaPicker.pickVideo")}
+				</ButtonText>
 			</Button>
 			{videoUri && (
 				<>

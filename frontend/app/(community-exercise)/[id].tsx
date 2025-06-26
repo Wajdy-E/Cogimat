@@ -5,26 +5,125 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
 import { Divider } from "@/components/ui/divider";
-import { useCustomExercise } from "@/hooks/useCustomExercise";
+import { useCommunityExercise } from "@/hooks/useCustomExercise";
 import { CustomExercise } from "../../store/data/dataSlice";
 import { i18n } from "../../i18n";
 import { Icon } from "@/components/ui/icon";
 import { Clock, Sprout, Rocket, Trophy, CirclePlay, Brain } from "lucide-react-native";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import WebView from "react-native-webview";
 import { useVideoPlayer, VideoView } from "expo-video";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
+import { setCurrentExercise } from "../../store/data/dataSlice";
+import { getPublicExercises } from "../../store/data/dataSaga";
+
+// Separate component for video items to avoid hooks violation
+const VideoMediaItem = ({ url, index }: { url: string; index: number }) => {
+	const player = useVideoPlayer(url, (player) => {
+		player.loop = true;
+	});
+
+	return (
+		<VideoView
+			player={player}
+			allowsFullscreen
+			allowsPictureInPicture
+			style={{
+				width: "100%",
+				height: "100%",
+				borderRadius: 20,
+			}}
+			contentFit="cover"
+		/>
+	);
+};
 
 function CommunityExerciseProgram() {
 	const { id } = useLocalSearchParams();
-	const exercise = useCustomExercise(parseInt(id as string)) as CustomExercise;
 	const router = useRouter();
+	const dispatch: AppDispatch = useDispatch();
 	const floatAnim = useRef(new Animated.Value(0)).current;
+	const [isLoading, setIsLoading] = useState(true);
+
+	// Get public exercises from Redux state
+	const publicExercises = useSelector((state: RootState) => state.data.publicExercises);
+
+	// Safely handle the id parameter
+	let exerciseId: number | null = null;
+	try {
+		if (id && typeof id === "string") {
+			exerciseId = parseInt(id);
+		}
+	} catch (error) {
+		console.error("Error parsing exercise id:", error);
+	}
+
+	// Use the new useCommunityExercise hook that searches both custom and public exercises
+	const exercise = useCommunityExercise(exerciseId);
+
+	// Fetch public exercises if they're not loaded yet
+	useEffect(() => {
+		const fetchPublicExercisesIfNeeded = async () => {
+			if (publicExercises.length === 0) {
+				try {
+					await dispatch(getPublicExercises()).unwrap();
+				} catch (error) {
+					console.error("Error fetching public exercises:", error);
+				}
+			}
+			setIsLoading(false);
+		};
+
+		fetchPublicExercisesIfNeeded();
+	}, [dispatch, publicExercises.length]);
+
+	// Set the current exercise in Redux state
+	useEffect(() => {
+		if (exercise) {
+			dispatch(setCurrentExercise(exercise));
+		}
+	}, [exercise, dispatch]);
+
+	// Cleanup: clear selected exercise when component unmounts
+	useEffect(() => {
+		return () => {
+			dispatch(setCurrentExercise(null));
+		};
+	}, [dispatch]);
+
+	// Animation effect
+	useEffect(() => {
+		Animated.loop(
+			Animated.sequence([
+				Animated.timing(floatAnim, {
+					toValue: -10,
+					duration: 1000,
+					useNativeDriver: true,
+				}),
+				Animated.timing(floatAnim, {
+					toValue: 0,
+					duration: 1000,
+					useNativeDriver: true,
+				}),
+			])
+		).start();
+	}, [floatAnim]);
+
+	// Show loading state while fetching data
+	if (isLoading) {
+		return (
+			<View className="flex-1 justify-center items-center bg-background-700">
+				<Text>Loading exercise...</Text>
+			</View>
+		);
+	}
 
 	if (!exercise) {
 		return (
-			<View className="flex-1 justify-center items-center">
+			<View className="flex-1 justify-center items-center bg-background-700">
 				<Text>Exercise not found</Text>
 			</View>
 		);
@@ -44,7 +143,10 @@ function CommunityExerciseProgram() {
 	};
 
 	// Prepare media items for horizontal scroll
-	const mediaItems = [];
+	const mediaItems: Array<{
+		type: "youtube" | "video" | "image";
+		url: string;
+	}> = [];
 	const placeholderImageUrl =
 		"https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/placeholder-ND4gRGq1YR5dapuS2ObPKZZ9SfAXju.png";
 
@@ -59,54 +161,26 @@ function CommunityExerciseProgram() {
 		const videoId = getYouTubeVideoId(exercise.youtubeUrl);
 		if (videoId) {
 			mediaItems.push({
-				type: "youtube" as const,
+				type: "youtube",
 				url: `https://www.youtube.com/embed/${videoId}?si=SWqkZtlRD8J8sBL-`,
 			});
 		}
 	}
 	if (exercise.videoUrl) {
-		mediaItems.push({ type: "video" as const, url: exercise.videoUrl });
+		mediaItems.push({ type: "video", url: exercise.videoUrl });
 	}
 	if (exercise.imageFileUrl) {
-		mediaItems.push({ type: "image" as const, url: exercise.imageFileUrl });
+		mediaItems.push({ type: "image", url: exercise.imageFileUrl });
 	}
 
 	// If no media items, add placeholder
 	if (mediaItems.length === 0) {
-		mediaItems.push({ type: "image" as const, url: placeholderImageUrl });
+		mediaItems.push({ type: "image", url: placeholderImageUrl });
 	}
-
-	// Create video players for all video items
-	const videoPlayers = new Map();
-	mediaItems.forEach((item, index) => {
-		if (item.type === "video") {
-			const player = useVideoPlayer(item.url, (player) => {
-				player.loop = true;
-			});
-			videoPlayers.set(index, player);
-		}
-	});
 
 	const onStartExercise = () => {
 		router.push(`/(custom-exercise)/exercise?id=${id}`);
 	};
-
-	useEffect(() => {
-		Animated.loop(
-			Animated.sequence([
-				Animated.timing(floatAnim, {
-					toValue: -10,
-					duration: 1000,
-					useNativeDriver: true,
-				}),
-				Animated.timing(floatAnim, {
-					toValue: 0,
-					duration: 1000,
-					useNativeDriver: true,
-				}),
-			])
-		).start();
-	}, [floatAnim]);
 
 	return (
 		<View className="relative bg-background-700 h-full">
@@ -172,19 +246,7 @@ function CommunityExerciseProgram() {
 									/>
 								)}
 
-								{item.type === "video" && (
-									<VideoView
-										player={videoPlayers.get(index)}
-										allowsFullscreen
-										allowsPictureInPicture
-										style={{
-											width: "100%",
-											height: "100%",
-											borderRadius: 20,
-										}}
-										contentFit="cover"
-									/>
-								)}
+								{item.type === "video" && <VideoMediaItem url={item.url} index={index} />}
 
 								{item.type === "image" && (
 									<RNImage

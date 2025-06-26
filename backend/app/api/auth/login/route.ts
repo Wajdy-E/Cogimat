@@ -12,13 +12,14 @@ export async function POST(req: Request) {
 
 		const res = await query(
 			`SELECT 
-			   user_id AS "userId", 
+			   clerk_id AS "id", 
 			   email AS "email", 
 			   first_name AS "firstName", 
 			   last_name AS "lastName", 
 			   username AS "username", 
 			   creation_date AS "createdAt",
-			   is_admin AS "isAdmin"
+			   is_admin AS "isAdmin",
+			   has_qr_access AS "hasQrAccess"
 			 FROM users 
 			 WHERE email = $1`,
 			[email]

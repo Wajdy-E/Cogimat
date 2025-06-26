@@ -1,4 +1,5 @@
 import { ScrollView, View } from "react-native";
+import { useEffect } from "react";
 import Tab, { TabItem } from "../../components/Tab";
 import { useUser } from "@clerk/clerk-expo";
 import ExerciseCard from "../../components/ExerciseCard";
@@ -23,9 +24,8 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Box } from "@/components/ui/box";
 import { useCustomExercise } from "@/hooks/useCustomExercise";
 import CustomExerciseCard from "../../components/CustomExerciseCard";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../store/store";
 import { shallowEqual } from "react-redux";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { ChevronRight, Trophy } from "lucide-react-native";
@@ -33,11 +33,13 @@ import CreateExerciseModal from "../../components/program-components/CreateExerc
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 import UpgradeCard from "../../components/UpgradeCard";
 import { Icon } from "@/components/ui/icon";
+import React from "react";
+import { getPublicExercises } from "../../store/data/dataSaga";
 
 function Home() {
 	const { user } = useUser();
-	const exercises = useExercise(null) as Exercise[];
-	const customExercises = useCustomExercise(null) as CustomExercise[];
+	const exerciseData = useExercise(null);
+	const customExerciseData = useCustomExercise(null);
 	const { publicExercises, isOpen } = useSelector(
 		(state: RootState) => ({
 			publicExercises: state.data.publicExercises,
@@ -46,13 +48,24 @@ function Home() {
 		shallowEqual
 	);
 
+	// Safely handle exercises data
+	const exercises: Exercise[] = Array.isArray(exerciseData) ? exerciseData : [];
+	const customExercises: CustomExercise[] = Array.isArray(customExerciseData) ? customExerciseData : [];
+
 	const { isSubscribed } = useSubscriptionStatus();
-	const dispatch = useDispatch();
+	const dispatch: AppDispatch = useDispatch();
+
+	// Fetch public exercises when component mounts
+	useEffect(() => {
+		dispatch(getPublicExercises());
+	}, [dispatch]);
+
 	const dailyChallenge = exercises.find((ex) => ex.isChallenge);
 	const onPressAllExercises = (isCustom: boolean) => {
 		dispatch(setCurrentFilter(isCustom ? [FilterType.Custom] : [FilterType.Standard]));
 	};
 
+	const premiumExercises = exercises.filter((exercise) => exercise.isPremium);
 	const tabs: TabItem[] = [
 		{
 			title: i18n.t("home.tabs.allExercises"),
@@ -249,39 +262,43 @@ function Home() {
 			<Box className="w-[90%] self-center">
 				<VStack space="lg">
 					{!isSubscribed && <UpgradeCard />}
-					<Heading size="xl">{i18n.t("home.exclusiveExercises")}</Heading>
-					<ScrollView
-						horizontal
-						showsHorizontalScrollIndicator={false}
-						className="overflow-visible"
-						nestedScrollEnabled={true}
-						decelerationRate={0}
-						scrollEventThrottle={16}
-						onScrollBeginDrag={() => {}}
-						onScrollEndDrag={() => {}}
-						onMomentumScrollEnd={() => {}}
-					>
-						<HStack space="md">
-							{exercises
-								.filter((exercise) => exercise.isPremium)
-								.slice(0, 10)
-								.map((exercise) => (
-									<ExerciseCard
-										key={exercise.id}
-										name={exercise.name}
-										imageFileUrl={exercise.imageFileUrl}
-										time={exercise.timeToComplete}
-										difficulty={exercise.difficulty}
-										id={exercise.id}
-										exercise={exercise}
-										classes="w-[250px]"
-										isFavourited={exercise.isFavourited}
-										variant="elevated"
-										onClick={isSubscribed ? undefined : () => dispatch(setPaywallModalPopup(true))}
-									/>
-								))}
-						</HStack>
-					</ScrollView>
+					{premiumExercises.length > 0 && (
+						<>
+							<Heading size="xl">{i18n.t("home.exclusiveExercises")}</Heading>
+							<ScrollView
+								horizontal
+								showsHorizontalScrollIndicator={false}
+								className="overflow-visible"
+								nestedScrollEnabled={true}
+								decelerationRate={0}
+								scrollEventThrottle={16}
+								onScrollBeginDrag={() => {}}
+								onScrollEndDrag={() => {}}
+								onMomentumScrollEnd={() => {}}
+							>
+								<HStack space="md">
+									{exercises
+										.filter((exercise) => exercise.isPremium)
+										.slice(0, 10)
+										.map((exercise) => (
+											<ExerciseCard
+												key={exercise.id}
+												name={exercise.name}
+												imageFileUrl={exercise.imageFileUrl}
+												time={exercise.timeToComplete}
+												difficulty={exercise.difficulty}
+												id={exercise.id}
+												exercise={exercise}
+												classes="w-[250px]"
+												isFavourited={exercise.isFavourited}
+												variant="elevated"
+												onClick={isSubscribed ? undefined : () => dispatch(setPaywallModalPopup(true))}
+											/>
+										))}
+								</HStack>
+							</ScrollView>
+						</>
+					)}
 				</VStack>
 			</Box>
 

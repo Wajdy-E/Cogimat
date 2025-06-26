@@ -9,6 +9,8 @@ import { CustomExercise } from "../../store/data/dataSlice";
 import { updateUserMilestone } from "../../store/auth/authSaga";
 import ExerciseControl from "../../components/exercises/ExerciseControl";
 import ExerciseProgress from "../../components/exercises/ExerciseProgress";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { setCurrentExercise } from "../../store/data/dataSlice";
 
 interface IconWithColor {
 	icon: LucideIcon;
@@ -17,7 +19,35 @@ interface IconWithColor {
 
 function ExerciseScreen() {
 	const dispatch = useDispatch<AppDispatch>();
+	const router = useRouter();
+	const params = useLocalSearchParams();
+	console.log("inside exercise screen");
+	// Check if this is routine mode
+	const isRoutineMode = params?.routineMode === "true";
+	const routineId = params?.routineId;
+	const exerciseIndex = params?.exerciseIndex;
+
 	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise) as CustomExercise;
+
+	// Set the current exercise in Redux state if not already set
+	useEffect(() => {
+		if (!currentExercise && params?.data) {
+			try {
+				const exerciseData = JSON.parse(params.data as string);
+				dispatch(setCurrentExercise(exerciseData));
+			} catch (error) {
+				console.error("Error parsing exercise data:", error);
+			}
+		}
+	}, [currentExercise, params?.data, dispatch]);
+
+	// Cleanup: clear selected exercise when component unmounts
+	useEffect(() => {
+		return () => {
+			// Clear the selected exercise when leaving the screen
+			dispatch(setCurrentExercise(null as any));
+		};
+	}, [dispatch]);
 
 	if (!currentExercise) return null;
 
@@ -158,11 +188,20 @@ function ExerciseScreen() {
 		});
 	};
 
+	const handleExerciseEnd = () => {
+		if (isRoutineMode && routineId) {
+			// Navigate back to routine execution screen
+			router.push(`/(tabs)/routine-execution?routineId=${routineId}`);
+		} else {
+			// Normal exercise completion - go back to previous screen
+			router.back();
+		}
+	};
+
 	const renderStimulus = () => {
 		if (isWhiteScreen) {
-			// Use customized off screen color
-			const offScreenColor = currentExercise?.customizableOptions.offScreenColor || "#FFFFFF";
-			return <View className="absolute inset-0" style={{ backgroundColor: offScreenColor }} />;
+			// Use default white background
+			return <View className="absolute inset-0 bg-white" />;
 		}
 		if (!stimulus) return null;
 
@@ -170,28 +209,25 @@ function ExerciseScreen() {
 			return <View className="absolute inset-0" style={{ backgroundColor: stimulus.hexcode }} />;
 		} else if (shapes.includes(stimulus)) {
 			const { icon: Icon, color } = getIconForShape(stimulus);
-			// Use customized on screen color for background
-			const onScreenColor = currentExercise?.customizableOptions.onScreenColor || "#1F2937";
+			// Use default dark background
 			return (
-				<View className="flex justify-center absolute inset-0 items-center" style={{ backgroundColor: onScreenColor }}>
+				<View className="flex justify-center absolute inset-0 items-center bg-background-700">
 					<Icon size={250} color={color} fill={color} />
 				</View>
 			);
 		} else if (Object.values(Letter).includes(stimulus)) {
-			// Use customized on screen color for background
-			const onScreenColor = currentExercise?.customizableOptions.onScreenColor || "#1F2937";
+			// Use default dark background
 			return (
-				<View className="flex justify-center absolute inset-0 items-center" style={{ backgroundColor: onScreenColor }}>
+				<View className="flex justify-center absolute inset-0 items-center bg-background-700">
 					<Text className="text-typography-950 font-bold" style={{ fontSize: 250 }}>
 						{stimulus}
 					</Text>
 				</View>
 			);
 		} else if (Object.values(NumberEnum).includes(stimulus)) {
-			// Use customized on screen color for background
-			const onScreenColor = currentExercise?.customizableOptions.onScreenColor || "#1F2937";
+			// Use default dark background
 			return (
-				<View className="flex justify-center absolute inset-0 items-center" style={{ backgroundColor: onScreenColor }}>
+				<View className="flex justify-center absolute inset-0 items-center bg-background-700">
 					<Text className="text-typography-950 font-bold" style={{ fontSize: 250 }}>
 						{stimulus}
 					</Text>
@@ -207,9 +243,7 @@ function ExerciseScreen() {
 			<ExerciseProgress
 				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
 				totalTime={timeCompleted}
-				onEnd={() => {
-					// handle end logic here
-				}}
+				onEnd={handleExerciseEnd}
 				onRestart={() => {
 					setExerciseCompleted(false);
 					setTimeCompleted(0);

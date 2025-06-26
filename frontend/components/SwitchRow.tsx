@@ -1,6 +1,6 @@
 import { Heading } from "@/components/ui/heading";
-import { Switch } from "@/components/ui/switch";
 import { View } from "react-native";
+import AnimatedSwitch from "./AnimatedSwitch";
 
 interface Props {
 	title: string;
@@ -12,7 +12,7 @@ export default function SwitchRow({ title, value, onToggle }: Props) {
 	return (
 		<View className="flex-row justify-between items-center">
 			<Heading size="sm">{title}</Heading>
-			<Switch value={value} onToggle={onToggle} size="sm" />
+			<AnimatedSwitch defaultValue={value} onChange={onToggle} width={50} height={20} thumbSize={15} />
 		</View>
 	);
 }

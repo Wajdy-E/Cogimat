@@ -8,7 +8,7 @@ import {
 	DrawerFooter,
 	DrawerCloseButton,
 } from "../../app/components/ui/drawer";
-import { Button, ButtonText } from "../../app/components/ui/button";
+import { Button, ButtonGroup, ButtonText } from "../../app/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Icon, CloseIcon } from "@/components/ui/icon";
 import { ExerciseDifficulty } from "../../store/data/dataSlice";
@@ -47,10 +47,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	const focusRef = useRef("");
 	const youtubeUrlRef = useRef("");
 
-	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
-	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
-	const [onScreenColor, setOnScreenColor] = useState("#000000");
-	const [offScreenColor, setOffScreenColor] = useState("#ffffff");
 	const [focus, setFocus] = useState("");
 	const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -69,8 +65,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		offScreenTime: number;
 		onScreenTime: number;
 		exerciseTime: number;
-		offScreenColor: string;
-		onScreenColor: string;
 		youtubeUrl?: string;
 	} | null>({
 		name: "",
@@ -87,15 +81,8 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		offScreenTime: durationSettings.offScreenTime,
 		onScreenTime: durationSettings.onScreenTime,
 		exerciseTime: durationSettings.exerciseTime,
-		offScreenColor: offScreenColor,
-		onScreenColor: onScreenColor,
 		youtubeUrl: undefined,
 	});
-
-	// const updateDuration = (key: keyof typeof durationSettings, value: number) => {
-	// 	setDurationSettings((prev) => ({ ...prev, [key]: value }));
-	// 	setFormData((prev) => ({ ...prev, [key]: value }));
-	// };
 
 	const validateForm = async () => {
 		try {
@@ -112,16 +99,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 			return false;
 		}
 	};
-
-	function onScreenColorConfirm() {
-		setFormData((prev) => (prev ? { ...prev, onScreenColor } : prev));
-		setShowOnScreenColorPicker(false);
-	}
-
-	function offScreenColorConfirm() {
-		setFormData((prev) => (prev ? { ...prev, offScreenColor } : prev));
-		setShowOffScreenColorPicker(false);
-	}
 
 	const handleBack = () => setStep((prev) => (prev === Step.DESCRIPTION ? prev : ((prev - 1) as Step)));
 	function handleChange(name: keyof typeof formData, value: string) {
@@ -209,14 +186,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 								formErrors={formErrors}
 								setFormData={setFormData}
 								setDurationSettings={setDurationSettings}
-								setShowOffScreenColorPicker={setShowOffScreenColorPicker}
-								setShowOnScreenColorPicker={setShowOnScreenColorPicker}
-								showOffScreenColorPicker={showOffScreenColorPicker}
-								showOnScreenColorPicker={showOnScreenColorPicker}
-								onScreenColor={onScreenColor}
-								offScreenColor={offScreenColor}
-								onColorChange={{ on: setOnScreenColor, off: setOffScreenColor }}
-								onConfirm={{ on: onScreenColorConfirm, off: offScreenColorConfirm }}
+								onConfirm={{}}
 							/>
 						)}
 					</DrawerBody>

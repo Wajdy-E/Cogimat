@@ -17,22 +17,40 @@ import { useState, useEffect } from "react";
 import { updateExercise } from "../../store/data/dataSlice";
 import { i18n } from "../../i18n";
 import CustomSlider from "../../components/CustomSlider";
-import WheelColorPicker from "react-native-wheel-color-picker";
-import ModalComponent from "../../components/Modal";
 
 export default function ExerciseSettings() {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
-	const exercises = useExercise(parseInt(id as string)) as Exercise;
 	const user = useSelector((state: RootState) => state.user.user.baseInfo, shallowEqual);
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
 
+	// Safely handle the id parameter
+	let exerciseId: number | null = null;
+	try {
+		if (id && typeof id === "string") {
+			exerciseId = parseInt(id);
+		}
+	} catch (error) {
+		console.error("Error parsing exercise id:", error);
+	}
+
+	// Only call useExercise if we have a valid id
+	const exerciseData = exerciseId ? useExercise(exerciseId) : null;
+
+	// Handle the case where useExercise returns an array, null, or undefined
+	let exercises: Exercise | null = null;
+	try {
+		if (exerciseData && !Array.isArray(exerciseData) && exerciseData !== null) {
+			exercises = exerciseData as Exercise;
+		}
+	} catch (error) {
+		console.error("Error processing exercise data:", error);
+	}
+
 	// Customization settings state
 	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
 	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
-	const [onScreenColor, setOnScreenColor] = useState(exercises?.customizableOptions?.onScreenColor || "#000000");
-	const [offScreenColor, setOffScreenColor] = useState(exercises?.customizableOptions?.offScreenColor || "#FFFFFF");
 	const [isEditing, setIsEditing] = useState(false);
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
 		exercises?.customizableOptions
@@ -41,26 +59,9 @@ export default function ExerciseSettings() {
 	// Update state when exercises data becomes available
 	useEffect(() => {
 		if (exercises?.customizableOptions) {
-			setOnScreenColor(exercises.customizableOptions.onScreenColor || "#000000");
-			setOffScreenColor(exercises.customizableOptions.offScreenColor || "#FFFFFF");
 			setDurationSettings(exercises.customizableOptions);
 		}
 	}, [exercises]);
-
-	// Color picker functions
-	function onScreenColorConfirm() {
-		if (durationSettings) {
-			dispatch(updateExercise({ ...durationSettings, onScreenColor: onScreenColor }));
-		}
-		setShowOnScreenColorPicker(false);
-	}
-
-	function offScreenColorConfirm() {
-		if (durationSettings) {
-			dispatch(updateExercise({ ...durationSettings, offScreenColor: offScreenColor }));
-		}
-		setShowOffScreenColorPicker(false);
-	}
 
 	// Early return if exercise data is not yet available
 	if (!exercises) {
@@ -180,50 +181,9 @@ export default function ExerciseSettings() {
 								)}
 							</VStack>
 						</Box>
-
-						{/* Color Settings */}
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
-							<VStack space="lg">
-								<View>
-									<Heading size="md" className="text-primary-500">
-										{i18n.t("exercise.sections.colorSettings")}
-									</Heading>
-									<Divider className="bg-slate-400" />
-								</View>
-								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.offScreenColor", { offScreenColor })}</Heading>
-									<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
-										<Icon as={ArrowRight} size="md" />
-									</Button>
-								</View>
-								<View className="flex-row justify-between">
-									<Heading size="sm">{i18n.t("exercise.form.onScreenColor", { onScreenColor })}</Heading>
-									<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
-										<Icon as={ArrowRight} size="md" />
-									</Button>
-								</View>
-							</VStack>
-						</Box>
 					</VStack>
 				</View>
 			</ScrollView>
-
-			{/* Color Picker Modals */}
-			<ModalComponent
-				isOpen={showOffScreenColorPicker}
-				onClose={() => setShowOffScreenColorPicker(false)}
-				onConfirm={offScreenColorConfirm}
-			>
-				<WheelColorPicker onColorChangeComplete={(color: string) => setOffScreenColor(color)} />
-			</ModalComponent>
-
-			<ModalComponent
-				isOpen={showOnScreenColorPicker}
-				onClose={() => setShowOnScreenColorPicker(false)}
-				onConfirm={onScreenColorConfirm}
-			>
-				<WheelColorPicker onColorChangeComplete={(color: string) => setOnScreenColor(color)} />
-			</ModalComponent>
 		</View>
 	);
 }

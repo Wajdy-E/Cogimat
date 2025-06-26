@@ -1,9 +1,34 @@
 {
+	"login": {
+		"title": "Login",
+		"welcomeBack": "Welcome Back",
+		"email": "Email",
+		"emailPlaceholder": "Enter your email",
+		"password": "Password",
+		"passwordPlaceholder": "Enter your password",
+		"loginButton": "Login",
+		"appleSignIn": "Sign in with Apple",
+		"googleSignIn": "Sign in with Google",
+		"noAccount": "Don't have an account?",
+		"scanQRCode": "Scan QR Code",
+		"signUp": "Sign Up",
+		"forgotPassword": "Forgot Password?",
+		"errors": {
+			"invalidEmail": "Invalid email format",
+			"emailRequired": "Email is required",
+			"passwordShort": "Password must be at least 6 characters",
+			"passwordRequired": "Password is required"
+		}
+	},
 	"signup": {
 		"title": "Sign Up",
 		"form": {
 			"fullName": "Full Name",
 			"fullNamePlaceholder": "Enter your full name",
+			"firstName": "First Name",
+			"firstNamePlaceholder": "Enter your first name",
+			"lastName": "Last Name",
+			"lastNamePlaceholder": "Enter your last name",
 			"email": "Email",
 			"emailPlaceholder": "Enter your email",
 			"password": "Password",
@@ -13,17 +38,26 @@
 		"errors": {
 			"fullNameShort": "Full name must be at least 3 characters",
 			"fullNameRequired": "Full name is required",
+			"firstNameShort": "First name must be at least 2 characters",
+			"firstNameRequired": "First name is required",
+			"lastNameShort": "Last name must be at least 2 characters",
+			"lastNameRequired": "Last name is required",
 			"invalidEmail": "Invalid email format",
 			"emailRequired": "Email is required",
 			"passwordShort": "Password must be at least 6 characters",
 			"passwordRequired": "Password is required"
 		},
 		"alert": {
-			"invalidData": "Invalid Data"
+			"invalidData": "Invalid Data",
+			"verificationFailed": "Verification Failed"
 		},
 		"orSignUpWith": "Or Sign Up With",
 		"alreadyHaveAccount": "Already have an account?",
-		"login": "Login"
+		"login": "Login",
+		"verifyEmailTitle": "Verify Email",
+		"verifyCode": "Verification Code",
+		"verifyCodePlaceholder": "Enter the code sent to your email",
+		"verify": "Verify"
 	},
 	"admin": {
 		"videoUpload": {
@@ -86,7 +120,9 @@
 	"general": {
 		"loading": "Loading...",
 		"buttons": {
-			"close": "Close"
+			"close": "Close",
+			"ok": "OK",
+			"goBack": "Go Back"
 		}
 	}
 }

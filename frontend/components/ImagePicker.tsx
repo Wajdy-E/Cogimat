@@ -5,6 +5,7 @@ import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { VStack } from "@/components/ui/vstack";
 import { Camera } from "lucide-react-native";
+import { i18n } from "../i18n";
 
 type PickedImageData = {
 	uri: string;
@@ -32,16 +33,16 @@ export default function CustomImagePicker(props: ImagePickerProps) {
 			if (newStatus === "granted") {
 				pickImage();
 			} else {
-				alert("Permission to access media library is required!");
+				alert(i18n.t("mediaPicker.permissionDenied"));
 			}
 		} else {
 			Alert.alert(
-				"Permission Required",
-				"To select an image, please enable media library access in your device settings.",
+				i18n.t("mediaPicker.permissionRequired"),
+				i18n.t("mediaPicker.permissionMessage", { mediaType: "image" }),
 				[
-					{ text: "Cancel", style: "cancel" },
+					{ text: i18n.t("mediaPicker.cancel"), style: "cancel" },
 					{
-						text: "Open Settings",
+						text: i18n.t("mediaPicker.openSettings"),
 						onPress: () => {
 							if (Platform.OS === "ios") {
 								Linking.openURL("app-settings:");
@@ -83,7 +84,9 @@ export default function CustomImagePicker(props: ImagePickerProps) {
 		<VStack space="md" className="flex-row">
 			<Button onPress={requestPermission} size="xxl" className="rounded-xl flex-col" action="primary" variant="outline">
 				<ButtonIcon as={Camera} height={40} width={40} action="secondary" className="stroke-secondary-0" />
-				<ButtonText className="text-center text-typography-950">{props.buttonText || "Pick an image"}</ButtonText>
+				<ButtonText className="text-center text-typography-950">
+					{props.buttonText || i18n.t("mediaPicker.pickImage")}
+				</ButtonText>
 			</Button>
 			{imageUri && (
 				<Image source={{ uri: imageUri }} alt="Picked image" className="w-48 h-48 rounded-xl" resizeMode="contain" />

@@ -2,12 +2,12 @@ import "../global.css";
 import { ImageBackground, View } from "react-native";
 import { Image } from "react-native";
 import { useRouter } from "expo-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchExercises, fetchGoals, getCustomExercises, getPublicExercises } from "../store/data/dataSaga";
 import { AppDispatch, RootState } from "../store/store";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { fetchUserMilestones, setCurrentUserThunk } from "../store/auth/authSaga";
+import { fetchUserMilestones, setCurrentUserThunk, fetchUserData } from "../store/auth/authSaga";
 
 export default function Home() {
 	const backgroundImage = require("../assets/index.png");
@@ -16,11 +16,14 @@ export default function Home() {
 	const { isSignedIn, signOut } = useAuth();
 	const { user } = useUser();
 	const dispatch: AppDispatch = useDispatch();
-
+	const userState = useSelector((state: RootState) => state.user);
+	// console.log("isSignedIn", isSignedIn);
 	useEffect(() => {
 		async function handleAuthState() {
 			if (isSignedIn && user) {
 				try {
+					const { firstName, lastName, emailAddresses, id, username } = user;
+					const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0].emailAddress;
 					await dispatch(
 						setCurrentUserThunk({
 							firstName: user.firstName,
@@ -30,22 +33,52 @@ export default function Home() {
 							id: user.id,
 							username: user.username,
 							profileUri: user.imageUrl,
-							isAdmin:
-								user.organizationMemberships &&
-								user.organizationMemberships.length > 0 &&
-								user.organizationMemberships[0].role === "org:admin",
+							isAdmin: false,
 						})
 					).unwrap();
 
-					await Promise.all([
-						dispatch(fetchExercises()).unwrap(),
-						dispatch(getCustomExercises()).unwrap(),
-						dispatch(getPublicExercises()).unwrap(),
-						dispatch(fetchUserMilestones()).unwrap(),
-						dispatch(fetchGoals()).unwrap(),
-					]);
+					// Fetch user data from backend to check QR access status and get isAdmin
+					const userDataResult = await dispatch(fetchUserData(emailAddress)).unwrap();
+					if (userDataResult === null) {
+						// User not found in database, needs QR validation
+						router.push("/(auth)/signup");
+					} else if (userDataResult && typeof userDataResult === "object" && "hasQrAccess" in userDataResult) {
+						const hasQrAccess = userDataResult.hasQrAccess;
+						const isAdmin = userDataResult.isAdmin || false;
 
-					router.push("/(tabs)/");
+						// Update user with backend data including isAdmin
+						await dispatch(
+							setCurrentUserThunk({
+								firstName: user.firstName,
+								lastName: user.lastName,
+								email:
+									typeof user.emailAddresses === "string" ? user.emailAddresses : user.emailAddresses[0].emailAddress,
+								id: user.id,
+								username: user.username,
+								profileUri: user.imageUrl,
+								isAdmin: isAdmin,
+								hasQrAccess: hasQrAccess,
+							})
+						).unwrap();
+
+						if (hasQrAccess) {
+							await Promise.all([
+								dispatch(fetchExercises()).unwrap(),
+								dispatch(getCustomExercises()).unwrap(),
+								dispatch(getPublicExercises()).unwrap(),
+								dispatch(fetchUserMilestones()).unwrap(),
+								dispatch(fetchGoals()).unwrap(),
+							]);
+
+							router.push("/(tabs)/");
+						} else {
+							// User doesn't have QR access, route to signup for QR validation
+							router.push("/(auth)/signup");
+						}
+					} else {
+						// Invalid user data, route to signup for QR validation
+						router.push("/(auth)/signup");
+					}
 				} catch (error) {
 					console.error("Error fetching initial data:", error);
 					// If there's an error, we should probably sign out the user

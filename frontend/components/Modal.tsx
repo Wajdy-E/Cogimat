@@ -22,11 +22,12 @@ interface ModalProps {
 	buttonKey?: string;
 	cancelKey?: string;
 	onConfirm?: () => void;
+	size?: "xs" | "sm" | "md" | "lg" | "full";
 }
 
 export default function ModalComponent(props: PropsWithChildren<ModalProps>) {
 	return (
-		<Modal isOpen={props.isOpen} onClose={props.onClose} size="md" useRNModal={false}>
+		<Modal isOpen={props.isOpen} onClose={props.onClose} size={props.size ?? "md"} useRNModal={false}>
 			<ModalBackdrop />
 			<ModalContent>
 				<ModalHeader>

@@ -20,6 +20,7 @@ import { MilestoneCardConfig, UserMilestones } from "../../store/auth/authSlice"
 import ProgressCard from "../../components/ProgressCard";
 import { shallowEqual } from "react-redux";
 import WeeklyWorkoutGoal from "./WeeklyGoal";
+import Routines from "../../components/Routines";
 
 export const milestoneCardConfigs: MilestoneCardConfig[] = [
 	{
@@ -115,6 +116,7 @@ function Progress() {
 
 	const tabs = [
 		<VStack space="xl">
+			<Routines />
 			<Heading size="lg">{i18n.t("progress.goals.customGoalsTitle")}</Heading>
 
 			<Button size="lg" variant="solid" action="primary" className="mb-3" onPress={() => setShowAddGoalModal(true)}>

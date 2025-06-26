@@ -10,7 +10,6 @@ export interface Exercise {
 	timeToComplete: string;
 	instructions: string;
 	parameters: ExerciseParameters;
-	trackingData: Record<string, any>;
 	videoUrl: string;
 	imageFileUrl: string;
 	isFavourited: boolean;
@@ -26,8 +25,6 @@ export interface CustomizableExerciseOptions {
 	offScreenTime: number;
 	onScreenTime: number;
 	exerciseTime: number;
-	offScreenColor: string;
-	onScreenColor: string;
 }
 
 export interface CustomExercise {
@@ -72,9 +69,39 @@ export interface Goals {
 	completed: boolean;
 }
 
+export interface WeeklyWorkoutGoal {
+	id?: number;
+	clerk_id: string;
+	selected_days: string[];
+	reminder_time: string; // HH:MM:SS format
+	is_active: boolean;
+	created_at?: string;
+	updated_at?: string;
+}
+
+export interface RoutineExercise {
+	exercise_id: number;
+	exercise_type: "standard" | "custom";
+	order: number;
+}
+
+export interface Routine {
+	id: number;
+	clerk_id: string;
+	name: string;
+	description?: string;
+	exercises: RoutineExercise[];
+	is_active: boolean;
+	created_at: string;
+	updated_at: string;
+	last_completed_at?: string;
+	completion_count: number;
+}
+
 export interface PopupStates {
 	customExerciseModalIsOpen: boolean;
 	paywallIsOpen: boolean;
+	routineModalIsOpen: boolean;
 }
 
 export interface DataState {
@@ -86,7 +113,9 @@ export interface DataState {
 	currentFilter: FilterType[];
 	publicExercises: CustomExercise[];
 	customizedExercises: Record<number, CustomizableExerciseOptions>;
+	routines: Routine[];
 	popupStates: PopupStates;
+	weeklyWorkoutGoal: WeeklyWorkoutGoal | null;
 }
 
 const initialState: DataState = {
@@ -98,10 +127,13 @@ const initialState: DataState = {
 	currentFilter: [FilterType.Standard],
 	publicExercises: [],
 	customizedExercises: {} as Record<number, CustomizableExerciseOptions>,
+	routines: [],
 	popupStates: {
 		customExerciseModalIsOpen: false,
 		paywallIsOpen: false,
+		routineModalIsOpen: false,
 	},
+	weeklyWorkoutGoal: null,
 };
 
 const dataSlice = createSlice({
@@ -111,7 +143,7 @@ const dataSlice = createSlice({
 		setExercises(state, action: PayloadAction<Exercise[]>) {
 			state.exercises = action.payload;
 		},
-		setCurrentExercise(state, { payload }: PayloadAction<Exercise>) {
+		setCurrentExercise(state, { payload }: PayloadAction<Exercise | CustomExercise | null>) {
 			state.selectedExercise = payload;
 		},
 		addExercise(state, { payload }: PayloadAction<Exercise>) {
@@ -148,6 +180,12 @@ const dataSlice = createSlice({
 			const exerciseIndex = state.customExercises.findIndex((exercise) => exercise.id === payload.exerciseId);
 			if (exerciseIndex !== -1) {
 				state.customExercises[exerciseIndex].isFavourited = !state.customExercises[exerciseIndex].isFavourited;
+			}
+		},
+		setPublicExerciseFavourite(state, { payload }: PayloadAction<{ exerciseId: number; isFavourite: boolean }>) {
+			const exerciseIndex = state.publicExercises.findIndex((exercise) => exercise.id === payload.exerciseId);
+			if (exerciseIndex !== -1) {
+				state.publicExercises[exerciseIndex].isFavourited = payload.isFavourite;
 			}
 		},
 		clearSelectedExercise(state) {
@@ -226,6 +264,30 @@ const dataSlice = createSlice({
 		setPaywallModalPopup(state, { payload }: PayloadAction<boolean>) {
 			state.popupStates.paywallIsOpen = payload;
 		},
+		setRoutineModalPopup(state, { payload }: PayloadAction<boolean>) {
+			state.popupStates.routineModalIsOpen = payload;
+		},
+		setRoutines(state, { payload }: PayloadAction<Routine[]>) {
+			state.routines = payload;
+		},
+		addRoutine(state, { payload }: PayloadAction<Routine>) {
+			state.routines.push(payload);
+		},
+		updateRoutine(state, { payload }: PayloadAction<Routine>) {
+			const index = state.routines.findIndex((r) => r.id === payload.id);
+			if (index !== -1) {
+				state.routines[index] = payload;
+			}
+		},
+		removeRoutine(state, { payload }: PayloadAction<number>) {
+			state.routines = state.routines.filter((r) => r.id !== payload);
+		},
+		setWeeklyWorkoutGoal(state, { payload }: PayloadAction<WeeklyWorkoutGoal | null>) {
+			state.weeklyWorkoutGoal = payload;
+		},
+		updateWeeklyWorkoutGoal(state, { payload }: PayloadAction<WeeklyWorkoutGoal>) {
+			state.weeklyWorkoutGoal = payload;
+		},
 		resetState: () => initialState,
 	},
 });
@@ -237,8 +299,10 @@ export const {
 	addExercise,
 	setCustomExerciseModalPopup,
 	setPaywallModalPopup,
+	setRoutineModalPopup,
 	setIsFavourite,
 	setCustomExerciseIsFavourite,
+	setPublicExerciseFavourite,
 	updateProgress,
 	updateCustomOptions,
 	updateExercise,
@@ -255,6 +319,12 @@ export const {
 	setCurrentFilter,
 	setPublicExercises,
 	addPublicExercise,
+	setRoutines,
+	addRoutine,
+	updateRoutine,
+	removeRoutine,
+	setWeeklyWorkoutGoal,
+	updateWeeklyWorkoutGoal,
 	resetState,
 } = dataSlice.actions;
 

@@ -17,6 +17,16 @@ import {
 	updateCustomExercise,
 	updateUserGoals,
 	addPublicExercise,
+	Routine,
+	RoutineExercise,
+	setRoutines,
+	addRoutine,
+	updateRoutine,
+	removeRoutine,
+	setPublicExerciseFavourite,
+	WeeklyWorkoutGoal,
+	setWeeklyWorkoutGoal,
+	updateWeeklyWorkoutGoal,
 } from "./dataSlice";
 import axios from "axios";
 import { RootState } from "../store";
@@ -43,7 +53,6 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 			description: ex.description,
 			instructions: ex.instructions,
 			isChallenge: ex.is_challenge,
-			trackingData: ex.tracking_data,
 			videoUrl: ex.video_url,
 			imageFileUrl: ex.image_file_name,
 			timeToComplete: ex.time_to_complete,
@@ -66,8 +75,6 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 				offScreenTime: ex.off_screen_time,
 				onScreenTime: ex.on_screen_time,
 				exerciseTime: ex.exercise_time,
-				offScreenColor: ex.off_screen_color,
-				onScreenColor: ex.on_screen_color,
 			} as CustomizableExerciseOptions,
 		}));
 
@@ -134,6 +141,26 @@ export const setFavourite = createAsyncThunk<any, { exerciseId: number; isFavour
 		}
 	}
 );
+
+export const setCommunityExerciseFavourite = createAsyncThunk<
+	any,
+	{ exerciseId: number; isFavourited: boolean },
+	{ state: RootState }
+>("communityExercises/set-favourite", async ({ exerciseId, isFavourited }, { getState, dispatch }) => {
+	try {
+		const clerkId = getState().user.user.baseInfo?.id;
+		if (!clerkId) throw new Error("User is not authenticated");
+
+		const { data } = await axios.post(`${BASE_URL}/api/favourites/community-exercise`, {
+			clerk_id: clerkId,
+			exercise_id: exerciseId,
+			is_favourited: isFavourited,
+		});
+		if (data.success) dispatch(setPublicExerciseFavourite({ exerciseId, isFavourite: isFavourited }));
+	} catch (error) {
+		console.error("Error setting community exercise as favourite:", error);
+	}
+});
 
 export const updateGoal = createAsyncThunk<any, { newGoal: Goals }, { state: RootState }>(
 	"user/set-goals",
@@ -290,8 +317,6 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 					offScreenTime: formData.offScreenTime,
 					onScreenTime: formData.onScreenTime,
 					exerciseTime: formData.exerciseTime,
-					offScreenColor: formData.offScreenColor,
-					onScreenColor: formData.onScreenColor,
 				},
 			};
 
@@ -349,8 +374,6 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 				offScreenTime: exercise.customizableOptions.offScreenTime,
 				onScreenTime: exercise.customizableOptions.onScreenTime,
 				exerciseTime: exercise.customizableOptions.exerciseTime,
-				offScreenColor: exercise.customizableOptions.offScreenColor,
-				onScreenColor: exercise.customizableOptions.onScreenColor,
 				publicAccess: exercise.publicAccess,
 			};
 
@@ -393,7 +416,7 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 			description: ex.description,
 			instructions: ex.instructions,
 			focus: ex.focus ?? [],
-			isFavourited: false,
+			isFavourited: ex.is_favourited,
 			imageFileUrl: ex.image_uri ?? undefined,
 			videoUrl: ex.video_uri ?? undefined,
 			publicAccess: ex.public_access,
@@ -414,12 +437,8 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 				offScreenTime: ex.off_screen_time,
 				onScreenTime: ex.on_screen_time,
 				exerciseTime: ex.exercise_time,
-				offScreenColor: ex.off_screen_color,
-				onScreenColor: ex.on_screen_color,
 			},
 		}));
-
-		console.log("transformed", transformed);
 
 		dispatch(setCustomExercises(transformed));
 	}
@@ -446,7 +465,9 @@ export const getPublicExercises = createAsyncThunk<void, void, { state: RootStat
 		const clerk_id = getState().user.user.baseInfo?.id;
 		if (!clerk_id) throw new Error("User not authenticated");
 
-		const res = await axios.get(`${BASE_URL}/api/public-exercises`);
+		const res = await axios.get(`${BASE_URL}/api/public-exercises`, {
+			params: { clerkId: clerk_id },
+		});
 
 		const transformed: CustomExercise[] = res.data.exercises.map((ex: any) => ({
 			id: ex.id,
@@ -456,7 +477,7 @@ export const getPublicExercises = createAsyncThunk<void, void, { state: RootStat
 			description: ex.description,
 			instructions: ex.instructions,
 			focus: ex.focus ?? [],
-			isFavourited: false,
+			isFavourited: ex.isFavourited ?? false,
 			imageFileUrl: ex.image_uri ?? undefined,
 			videoUrl: ex.video_uri ?? undefined,
 			publicAccess: ex.public_access,
@@ -477,11 +498,212 @@ export const getPublicExercises = createAsyncThunk<void, void, { state: RootStat
 				offScreenTime: ex.off_screen_time,
 				onScreenTime: ex.on_screen_time,
 				exerciseTime: ex.exercise_time,
-				offScreenColor: ex.off_screen_color,
-				onScreenColor: ex.on_screen_color,
 			},
 		}));
 
 		dispatch(setPublicExercises(transformed));
+	}
+);
+
+// Routine Sagas
+export const fetchRoutines = createAsyncThunk<void, void, { state: RootState }>(
+	"routines/fetch",
+	async (_, { getState, dispatch }) => {
+		try {
+			const clerk_id = getState().user.user.baseInfo?.id;
+			if (!clerk_id) throw new Error("User not authenticated");
+
+			const response = await axios.get(`${BASE_URL}/api/routines`, {
+				params: { clerk_id },
+			});
+
+			if (response.data.success) {
+				dispatch(setRoutines(response.data.routines));
+			}
+		} catch (error) {
+			console.error("Error fetching routines:", error);
+			throw error;
+		}
+	}
+);
+
+export const createRoutine = createAsyncThunk<
+	void,
+	{ name: string; description?: string; exercises: RoutineExercise[] },
+	{ state: RootState }
+>("routines/create", async ({ name, description, exercises }, { getState, dispatch }) => {
+	try {
+		const clerk_id = getState().user.user.baseInfo?.id;
+		if (!clerk_id) throw new Error("User not authenticated");
+
+		const response = await axios.post(`${BASE_URL}/api/routines`, {
+			clerk_id,
+			name,
+			description,
+			exercises,
+		});
+
+		if (response.data.success) {
+			dispatch(addRoutine(response.data.routine));
+		}
+	} catch (error) {
+		console.error("Error creating routine:", error);
+		throw error;
+	}
+});
+
+export const updateRoutineThunk = createAsyncThunk<
+	void,
+	{ id: number; name: string; description?: string; exercises: RoutineExercise[] },
+	{ state: RootState }
+>("routines/update", async ({ id, name, description, exercises }, { getState, dispatch }) => {
+	try {
+		const clerk_id = getState().user.user.baseInfo?.id;
+		if (!clerk_id) throw new Error("User not authenticated");
+
+		const response = await axios.patch(`${BASE_URL}/api/routines/${id}`, {
+			clerk_id,
+			name,
+			description,
+			exercises,
+			is_active: true,
+		});
+
+		if (response.data.success) {
+			dispatch(updateRoutine(response.data.routine));
+		}
+	} catch (error) {
+		console.error("Error updating routine:", error);
+		throw error;
+	}
+});
+
+export const deleteRoutine = createAsyncThunk<void, number, { state: RootState }>(
+	"routines/delete",
+	async (routineId, { getState, dispatch }) => {
+		try {
+			const clerk_id = getState().user.user.baseInfo?.id;
+			if (!clerk_id) throw new Error("User not authenticated");
+
+			const response = await axios.delete(`${BASE_URL}/api/routines/${routineId}?clerk_id=${clerk_id}`);
+
+			if (response.data.success) {
+				dispatch(removeRoutine(routineId));
+			}
+		} catch (error) {
+			console.error("Error deleting routine:", error);
+			throw error;
+		}
+	}
+);
+
+export const completeRoutine = createAsyncThunk<void, number, { state: RootState }>(
+	"routines/complete",
+	async (routineId, { getState, dispatch }) => {
+		try {
+			const clerk_id = getState().user.user.baseInfo?.id;
+			if (!clerk_id) throw new Error("User not authenticated");
+
+			const response = await axios.post(`${BASE_URL}/api/routines/${routineId}/complete`, {
+				clerk_id,
+			});
+
+			if (response.data.success) {
+				dispatch(updateRoutine(response.data.routine));
+			}
+		} catch (error) {
+			console.error("Error completing routine:", error);
+			throw error;
+		}
+	}
+);
+
+// Weekly Workout Goal Sagas
+export const fetchWeeklyWorkoutGoal = createAsyncThunk<void, void, { state: RootState }>(
+	"weeklyWorkoutGoal/fetch",
+	async (_, { getState, dispatch }) => {
+		try {
+			const clerk_id = getState().user.user.baseInfo?.id;
+			if (!clerk_id) throw new Error("User not authenticated");
+
+			const response = await axios.get(`${BASE_URL}/api/weekly-goals`, {
+				params: { clerk_id },
+			});
+
+			if (response.data.success) {
+				dispatch(setWeeklyWorkoutGoal(response.data.weeklyGoal));
+			}
+		} catch (error) {
+			console.error("Error fetching weekly workout goal:", error);
+			throw error;
+		}
+	}
+);
+
+export const saveWeeklyWorkoutGoal = createAsyncThunk<
+	void,
+	{ selected_days: string[]; reminder_time: string },
+	{ state: RootState }
+>("weeklyWorkoutGoal/save", async ({ selected_days, reminder_time }, { getState, dispatch }) => {
+	try {
+		const clerk_id = getState().user.user.baseInfo?.id;
+		if (!clerk_id) throw new Error("User not authenticated");
+
+		const response = await axios.post(`${BASE_URL}/api/weekly-goals`, {
+			clerk_id,
+			selected_days,
+			reminder_time,
+		});
+
+		if (response.data.success) {
+			dispatch(updateWeeklyWorkoutGoal(response.data.weeklyGoal));
+		}
+	} catch (error) {
+		console.error("Error saving weekly workout goal:", error);
+		throw error;
+	}
+});
+
+export const updateWeeklyWorkoutGoalThunk = createAsyncThunk<
+	void,
+	{ selected_days?: string[]; reminder_time?: string; is_active?: boolean },
+	{ state: RootState }
+>("weeklyWorkoutGoal/update", async (updates, { getState, dispatch }) => {
+	try {
+		const clerk_id = getState().user.user.baseInfo?.id;
+		if (!clerk_id) throw new Error("User not authenticated");
+
+		const response = await axios.put(`${BASE_URL}/api/weekly-goals`, {
+			clerk_id,
+			...updates,
+		});
+
+		if (response.data.success) {
+			dispatch(updateWeeklyWorkoutGoal(response.data.weeklyGoal));
+		}
+	} catch (error) {
+		console.error("Error updating weekly workout goal:", error);
+		throw error;
+	}
+});
+
+export const deleteWeeklyWorkoutGoal = createAsyncThunk<void, void, { state: RootState }>(
+	"weeklyWorkoutGoal/delete",
+	async (_, { getState, dispatch }) => {
+		try {
+			const clerk_id = getState().user.user.baseInfo?.id;
+			if (!clerk_id) throw new Error("User not authenticated");
+
+			const response = await axios.delete(`${BASE_URL}/api/weekly-goals`, {
+				params: { clerk_id },
+			});
+
+			if (response.data.success) {
+				dispatch(setWeeklyWorkoutGoal(null));
+			}
+		} catch (error) {
+			console.error("Error deleting weekly workout goal:", error);
+			throw error;
+		}
 	}
 );

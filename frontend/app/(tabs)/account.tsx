@@ -29,8 +29,7 @@ import FormSelect from "../../components/FormSelect";
 import Purchases from "react-native-purchases";
 import { setPaywallModalPopup } from "../../store/data/dataSlice";
 import PaywallDrawer from "../../components/PaywallDrawer";
-import AdminVideoUpload from "../../components/AdminVideoUpload";
-import AdminVideoGallery from "../../components/AdminVideoGallery";
+import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 
 export const resetState = createAction("RESET_STATE");
 
@@ -42,7 +41,7 @@ function Account() {
 	const appDispatch: AppDispatch = useDispatch();
 	const { signOut } = useClerk();
 	const { user } = useUser();
-
+	const { isSubscribed } = useSubscriptionStatus();
 	let emailAddress = "";
 	if (user) {
 		emailAddress = typeof user.emailAddresses === "string" ? user.emailAddresses : user.emailAddresses[0].emailAddress;
@@ -213,9 +212,9 @@ function Account() {
 							<Heading size="sm">{i18n.t("account.email")}</Heading>
 							{emailAddress.length > 0 && <Heading size="sm">{emailAddress}</Heading>}
 						</View>
-						<AccountLink title="account.subscribe" onPress={() => dispatch(setPaywallModalPopup(true))} />
-						<AccountLink title="account.subscriptionCode" link="unknown" />
-						<AccountLink title="account.viewReport" link="unknown" />
+						{!isSubscribed && (
+							<AccountLink title="account.subscribe" onPress={() => dispatch(setPaywallModalPopup(true))} />
+						)}
 						<AccountLink title="account.signout" onPress={() => setShowSignoutModal(true)} />
 						<AccountLink title="account.askTeam" link="unknown" isExternal />
 					</VStack>
@@ -272,21 +271,6 @@ function Account() {
 							<Heading size="sm">1.0.0</Heading>
 						</View>
 					</VStack>
-
-					{/* Admin Video Management Section */}
-					{user?.isAdmin && (
-						<VStack space="md">
-							<Heading className="text-primary-500">{i18n.t("account.adminSection")}</Heading>
-							<Divider className="bg-secondary-100" />
-							<AdminVideoUpload
-								onUploadSuccess={() => {
-									// Refresh the gallery after upload
-									console.log("Video uploaded successfully");
-								}}
-							/>
-							<AdminVideoGallery showUploadButton={false} />
-						</VStack>
-					)}
 
 					<Center>
 						<Text>COGIPRO, INC.</Text>

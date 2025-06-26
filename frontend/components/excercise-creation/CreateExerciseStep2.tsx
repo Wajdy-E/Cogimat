@@ -7,7 +7,6 @@ import { Icon } from "@/components/ui/icon";
 import { Volume2, Eye, ArrowRight, AlertCircleIcon } from "lucide-react-native";
 import AnimatedSwitch from "../AnimatedSwitch";
 import CustomSlider from "../CustomSlider";
-import ColorPickerModal from "../exercises/ColorPickerModal";
 import {
 	FormControl,
 	FormControlError,
@@ -26,24 +25,23 @@ export default function CreateExerciseStepTwo({
 	formErrors,
 	setFormData,
 	setDurationSettings,
-	setShowOffScreenColorPicker,
-	setShowOnScreenColorPicker,
-	showOffScreenColorPicker,
-	showOnScreenColorPicker,
-	onScreenColor,
-	offScreenColor,
-	onColorChange,
 	onConfirm,
 }: any) {
-	const updateDuration = (key: keyof typeof durationSettings, value: number) => {
-		setDurationSettings((prev: any) => ({ ...prev, [key]: value }));
-		setFormData((prev: any) => ({ ...prev, [key]: value }));
+	const updateDuration = (key: string, value: number) => {
+		setDurationSettings((prev: any) => ({
+			...prev,
+			[key]: value,
+		}));
+		setFormData((prev: any) => ({
+			...prev,
+			[key]: value,
+		}));
 	};
 
 	return (
-		<VStack space="4xl">
+		<VStack space="xl" style={{ paddingBottom: 80 }}>
 			<Heading size="lg" className="text-primary-500">
-				Exercise Parameters
+				{i18n.t("exerciseCreation.exerciseParameters")}
 			</Heading>
 
 			{["colors", "shapes", "numbers", "letters"].map((type, idx) => (
@@ -60,12 +58,6 @@ export default function CreateExerciseStepTwo({
 					{type === "letters" && (
 						<Letters onChange={(selected) => setFormData((prev: any) => ({ ...prev, letters: selected }))} />
 					)}
-					{/* <AnimatedSwitch
-						defaultValue={false}
-						onChange={() => {}}
-						onIcon={<ButtonIcon as={Volume2} size={"xxl" as any} stroke="black" />}
-						offIcon={<ButtonIcon as={Eye} size={"xxl" as any} stroke="black" />}
-					/> */}
 				</View>
 			))}
 
@@ -79,7 +71,7 @@ export default function CreateExerciseStepTwo({
 			)}
 
 			<Heading size="lg" className="text-primary-500">
-				Timing Settings
+				{i18n.t("exerciseCreation.timingSettings")}
 			</Heading>
 
 			{["offScreenTime", "onScreenTime", "exerciseTime"].map((key) => (
@@ -96,38 +88,6 @@ export default function CreateExerciseStepTwo({
 					onChange={(value) => updateDuration(key, value)}
 				/>
 			))}
-
-			<Heading size="md" className="text-primary-500">
-				{i18n.t("exercise.sections.colorSettings")}
-			</Heading>
-
-			<View className="flex-row justify-between">
-				<Heading size="sm">{i18n.t("exercise.form.offScreenColor", { offScreenColor })}</Heading>
-				<Button variant="link" onPress={() => setShowOffScreenColorPicker(true)}>
-					<Icon as={ArrowRight} size="md" />
-				</Button>
-			</View>
-
-			<View className="flex-row justify-between">
-				<Heading size="sm">{i18n.t("exercise.form.onScreenColor", { onScreenColor })}</Heading>
-				<Button variant="link" onPress={() => setShowOnScreenColorPicker(true)}>
-					<Icon as={ArrowRight} size="md" />
-				</Button>
-			</View>
-
-			<ColorPickerModal
-				isOpen={showOffScreenColorPicker}
-				onClose={() => setShowOffScreenColorPicker(false)}
-				onConfirm={onConfirm.off}
-				onColorChange={onColorChange.off}
-			/>
-
-			<ColorPickerModal
-				isOpen={showOnScreenColorPicker}
-				onClose={() => setShowOnScreenColorPicker(false)}
-				onConfirm={onConfirm.on}
-				onColorChange={onColorChange.on}
-			/>
 		</VStack>
 	);
 }

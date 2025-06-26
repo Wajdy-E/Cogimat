@@ -5,7 +5,7 @@ import { UserBase } from "@/type";
 export async function POST(req: Request) {
 	try {
 		const result = await req.json();
-		const { email, id, firstName, lastName } = result;
+		const { email, id, firstName, lastName, qrCode } = result;
 
 		if (!email || !firstName || !lastName) {
 			return NextResponse.json({ message: "Please fill in all fields" }, { status: 400 });
@@ -17,20 +17,38 @@ export async function POST(req: Request) {
 			return NextResponse.json({ message: "User already exists. Please log in." }, { status: 400 });
 		}
 
+		let hasQrAccess = false;
+		if (qrCode) {
+			const qrValidation = await query("SELECT use_qr_code($1, $2) as is_valid", [qrCode, id]);
+			const isValid = qrValidation[0]?.is_valid;
+
+			if (!isValid) {
+				return NextResponse.json(
+					{
+						message: "Invalid or already used QR code. Please check your product packaging.",
+					},
+					{ status: 400 }
+				);
+			}
+			hasQrAccess = true;
+		}
+
 		const newUser = await query(
-			`INSERT INTO users (email, first_name, last_name, clerk_id)
-			 VALUES ($1, $2, $3, $4)
+			`INSERT INTO users (email, first_name, last_name, clerk_id, has_qr_access)
+			 VALUES ($1, $2, $3, $4, $5)
 			 RETURNING user_id AS "id", 
 					   email AS "email", 
 					   first_name AS "firstName", 
 					   last_name AS "lastName", 
-					   creation_date AS "createdAt"`,
-			[email, firstName, lastName, id]
+					   creation_date AS "createdAt",
+					   has_qr_access AS "hasQrAccess",
+					   is_admin AS "isAdmin"`,
+			[email, firstName, lastName, id, hasQrAccess]
 		);
 
 		return NextResponse.json(
 			{
-				message: "User registered successfully",
+				message: hasQrAccess ? "User registered successfully with QR code access" : "User registered successfully",
 				user: newUser[0] as UserBase,
 			},
 			{ status: 201 }

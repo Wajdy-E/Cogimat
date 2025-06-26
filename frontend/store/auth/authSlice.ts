@@ -14,6 +14,7 @@ export interface UserBase {
 	id: string;
 	profileUri?: string | null;
 	isAdmin?: boolean;
+	hasQrAccess?: boolean;
 }
 
 export enum Theme {

@@ -48,8 +48,6 @@ export async function POST(req: NextRequest) {
 			offScreenTime,
 			onScreenTime,
 			exerciseTime,
-			offScreenColor,
-			onScreenColor,
 			isFavourited,
 			publicAccess,
 			youtubeUrl,
@@ -83,8 +81,6 @@ export async function POST(req: NextRequest) {
 				off_screen_time,
 				on_screen_time,
 				exercise_time,
-				off_screen_color,
-				on_screen_color,
 				is_favourited,
 				public_access,
 				youtube_url
@@ -92,7 +88,7 @@ export async function POST(req: NextRequest) {
 				$1, $2, $3, $4, $5,
 				$6, $7, $8, $9, $10,
 				$11, $12, $13, $14, $15,
-				$16, $17, $18, $19, $20
+				$16, $17, $18
 			) RETURNING id`,
 			[
 				clerk_id,
@@ -110,8 +106,6 @@ export async function POST(req: NextRequest) {
 				offScreenTime,
 				onScreenTime,
 				exerciseTime,
-				offScreenColor,
-				onScreenColor,
 				isFavourited,
 				publicAccess,
 				youtubeUrl,
@@ -146,8 +140,6 @@ export async function PATCH(req: NextRequest) {
 			offScreenTime,
 			onScreenTime,
 			exerciseTime,
-			offScreenColor,
-			onScreenColor,
 			publicAccess,
 			youtubeUrl,
 		} = body;
@@ -156,6 +148,7 @@ export async function PATCH(req: NextRequest) {
 			return new NextResponse(JSON.stringify({ error: "Missing id or clerk_id" }), { status: 400 });
 		}
 
+		console.log(isFavourited);
 		let imageUriBlob = imageUri;
 		let videoUriBlob = videoUri;
 
@@ -184,12 +177,10 @@ export async function PATCH(req: NextRequest) {
 				off_screen_time = $13,
 				on_screen_time = $14,
 				exercise_time = $15,
-				off_screen_color = $16,
-				on_screen_color = $17,
-				public_access = $18,
-				youtube_url = $19,
+				public_access = $16,
+				youtube_url = $17,
 				updated_at = CURRENT_TIMESTAMP
-			WHERE id = $20 AND clerk_id = $21`,
+			WHERE id = $18 AND clerk_id = $19`,
 			[
 				name,
 				description,
@@ -206,8 +197,6 @@ export async function PATCH(req: NextRequest) {
 				offScreenTime,
 				onScreenTime,
 				exerciseTime,
-				offScreenColor,
-				onScreenColor,
 				publicAccess,
 				youtubeUrl,
 				id,

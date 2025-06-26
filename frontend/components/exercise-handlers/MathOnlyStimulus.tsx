@@ -9,7 +9,7 @@ import { updateUserMilestone } from "../../store/auth/authSaga";
 import ExerciseControl from "../exercises/ExerciseControl";
 import ExerciseProgress from "../exercises/ExerciseProgress";
 
-export default function MathOnlyStimulus({ exercise }: { exercise: Exercise }) {
+export default function MathOnlyStimulus({ exercise, onComplete }: { exercise: Exercise; onComplete?: () => void }) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [problem, setProblem] = useState<string | null>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
@@ -132,10 +132,7 @@ export default function MathOnlyStimulus({ exercise }: { exercise: Exercise }) {
 	};
 
 	const renderStimulus = () => {
-		if (isWhiteScreen)
-			return (
-				<View className="absolute inset-0" style={{ backgroundColor: exercise.customizableOptions?.offScreenColor }} />
-			);
+		if (isWhiteScreen) return <View className="absolute inset-0 bg-white" />;
 
 		if (!problem) return null;
 
@@ -153,9 +150,7 @@ export default function MathOnlyStimulus({ exercise }: { exercise: Exercise }) {
 			<ExerciseProgress
 				repsCompleted={Array.from(problemCount.values()).reduce((a, b) => a + b, 0)}
 				totalTime={timeCompleted}
-				onEnd={() => {
-					// handle end logic here
-				}}
+				onEnd={onComplete || (() => {})}
 				onRestart={() => {
 					setExerciseCompleted(false);
 					setTimeCompleted(0);

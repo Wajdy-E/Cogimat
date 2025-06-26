@@ -105,13 +105,16 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 			/>
 
 			<CustomImagePicker
-				buttonText="Upload Thumbnail"
+				buttonText={i18n.t("createExercise.form.uploadThumbnail")}
 				onImagePicked={(file) => onChange("imageUri", file.uri)}
 				aspectX={3}
 				aspectY={2}
 			/>
 
-			<CustomVideoPicker onVideoPicked={(file) => onChange("videoUri", file.uri)} buttonText="Upload video tutorial" />
+			<CustomVideoPicker
+				onVideoPicked={(file) => onChange("videoUri", file.uri)}
+				buttonText={i18n.t("createExercise.form.uploadVideoTutorial")}
+			/>
 		</VStack>
 	);
 }

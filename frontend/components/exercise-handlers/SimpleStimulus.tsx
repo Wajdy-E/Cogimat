@@ -14,7 +14,7 @@ interface IconWithColor {
 	color: string;
 }
 
-export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
+export default function SimpleStimulus({ exercise, onComplete }: { exercise: Exercise; onComplete?: () => void }) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
@@ -143,10 +143,7 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 	};
 
 	const renderStimulus = () => {
-		if (isWhiteScreen)
-			return (
-				<View className="absolute inset-0" style={{ backgroundColor: exercise.customizableOptions?.offScreenColor }} />
-			);
+		if (isWhiteScreen) return <View className="absolute inset-0 bg-white" />;
 
 		if (!stimulus) return null;
 
@@ -173,13 +170,12 @@ export default function SimpleStimulus({ exercise }: { exercise: Exercise }) {
 	};
 
 	if (exerciseCompleted) {
+		console.log("onComplete", onComplete);
 		return (
 			<ExerciseProgress
 				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
 				totalTime={timeCompleted}
-				onEnd={() => {
-					// handle end logic here
-				}}
+				onEnd={onComplete || (() => {})}
 				onRestart={() => {
 					setExerciseCompleted(false);
 					setTimeCompleted(0);

@@ -7,6 +7,7 @@ export interface UserBase {
 	id: string;
 	isSubscribed: boolean;
 	isAdmin: boolean;
+	hasQrAccess?: boolean;
 }
 
 export interface Exercise {
@@ -18,7 +19,6 @@ export interface Exercise {
 	timeToComplete: string;
 	instructions: string;
 	parameters: ExerciseParameters;
-	trackingData: Record<string, any>;
 	videoUrl: string;
 	imageFileUrl: string;
 	isFavourited: boolean;
@@ -109,4 +109,14 @@ export interface Goals {
 	goal: string;
 	id: string;
 	completed: boolean;
+}
+
+export interface WeeklyWorkoutGoal {
+	id?: number;
+	clerk_id: string;
+	selected_days: string[];
+	reminder_time: string; // HH:MM:SS format
+	is_active: boolean;
+	created_at?: string;
+	updated_at?: string;
 }

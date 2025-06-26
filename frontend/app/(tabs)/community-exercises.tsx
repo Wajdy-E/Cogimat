@@ -1,5 +1,5 @@
 import { ScrollView } from "react-native";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -9,16 +9,23 @@ import CustomExerciseCard from "../../components/CustomExerciseCard";
 import { CustomExercise, ExerciseDifficulty, FilterType } from "../../store/data/dataSlice";
 import FormSelect from "../../components/FormSelect";
 import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from "@/components/ui/checkbox";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../store/store";
 import { CheckIcon } from "@/components/ui/icon";
+import { getPublicExercises } from "../../store/data/dataSaga";
 
 function CommunityExercises() {
+	const dispatch: AppDispatch = useDispatch();
 	const publicExercises = useSelector((state: RootState) => state.data.publicExercises);
 
 	const [showOnlyFavourited, setShowOnlyFavourited] = useState(false);
 	const [difficultyFilter, setDifficultyFilter] = useState<ExerciseDifficulty | "All">("All");
 	const [sortAlpha, setSortAlpha] = useState<"asc" | "desc">("asc");
+
+	// Fetch public exercises when component mounts
+	useEffect(() => {
+		dispatch(getPublicExercises());
+	}, [dispatch]);
 
 	const filteredExercises = useMemo(() => {
 		let all: CustomExercise[] = [...publicExercises];
@@ -78,7 +85,7 @@ function CommunityExercises() {
 					/>
 				</HStack>
 
-				<HStack space="md" className="flex-row flex-wrap self-center">
+				<HStack space="md" className="flex-row flex-wrap self-end">
 					<Checkbox isChecked={showOnlyFavourited} onChange={setShowOnlyFavourited} value="favourite">
 						<CheckboxIndicator>
 							<CheckboxIcon as={CheckIcon} />

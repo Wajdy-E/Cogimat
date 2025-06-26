@@ -19,9 +19,13 @@ import { CheckIcon } from "@/components/ui/icon";
 type UnifiedExercise = (Exercise & { isCustom: false }) | (CustomExercise & { isCustom: true });
 
 function AllExercises() {
-	const exercises = useExercise(null) as Exercise[];
-	const customExercises = useCustomExercise(null) as CustomExercise[];
+	const exerciseData = useExercise(null);
+	const customExerciseData = useCustomExercise(null);
 	const dispatch = useDispatch();
+
+	// Safely handle exercises data
+	const exercises: Exercise[] = Array.isArray(exerciseData) ? exerciseData : [];
+	const customExercises: CustomExercise[] = Array.isArray(customExerciseData) ? customExerciseData : [];
 
 	const activeFilter = useSelector((state: RootState) => state.data.currentFilter);
 	const [showSources, setShowSources] = useState(activeFilter);
