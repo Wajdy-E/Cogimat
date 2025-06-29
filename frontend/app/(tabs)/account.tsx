@@ -170,8 +170,15 @@ function Account() {
 	}
 
 	async function updateUsername() {
-		if (user) await user.update({ username: usernameRef.current });
-		setShowUsernameModal(false);
+		if (user)
+			await user
+				.update({ username: usernameRef.current })
+				.then(() => {
+					setShowUsernameModal(false);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
 	}
 
 	return (
@@ -198,7 +205,7 @@ function Account() {
 							</ButtonText>
 						) : (
 							<ButtonText size="xl" className="underline text-typography-950">
-								Enter username...
+								{i18n.t("account.enterUsername")}
 							</ButtonText>
 						)}
 						<ButtonIcon as={Pencil} stroke={themeTextColor} />
@@ -246,7 +253,7 @@ function Account() {
 							size="lg"
 							label="account.appLanguage"
 							value={selectedLanguage}
-							variant="outline"
+							variant="underlined"
 							onValueChange={(value) => handleLanguageChange(value)}
 							options={languageOptions}
 							title="account.appLanguage"
@@ -273,7 +280,7 @@ function Account() {
 					</VStack>
 
 					<Center>
-						<Text>COGIPRO, INC.</Text>
+						<Text>{i18n.t("account.cogiproInc")}</Text>
 					</Center>
 				</VStack>
 			</View>
@@ -304,6 +311,7 @@ function Account() {
 					inputSize="md"
 					onChange={(text) => (usernameRef.current = text)}
 					defaultValue={usernameRef.current}
+					formHelperKey="account.usernameHelper"
 				/>
 			</ModalComponent>
 

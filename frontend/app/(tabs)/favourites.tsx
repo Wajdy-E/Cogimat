@@ -37,7 +37,28 @@ function Favourites() {
 		const favoritedCustom = customExercises.filter((ex) => ex.isFavourited);
 		const favoritedCommunity = publicExercises.filter((ex) => ex.isFavourited);
 
-		return [...favoritedStandard, ...favoritedCustom, ...favoritedCommunity];
+		// Create a map to track exercises by ID to avoid duplicates
+		const exerciseMap = new Map();
+
+		// Add standard exercises first
+		favoritedStandard.forEach((exercise) => {
+			exerciseMap.set(exercise.id, { exercise, type: "standard" });
+		});
+
+		// Add custom exercises, but don't override if already exists
+		favoritedCustom.forEach((exercise) => {
+			if (!exerciseMap.has(exercise.id)) {
+				exerciseMap.set(exercise.id, { exercise, type: "custom" });
+			}
+		});
+
+		// Add community exercises, prioritizing them over custom exercises
+		favoritedCommunity.forEach((exercise) => {
+			exerciseMap.set(exercise.id, { exercise, type: "community" });
+		});
+
+		// Convert map values back to array with type information
+		return Array.from(exerciseMap.values());
 	}, [exercises, customExercises, publicExercises]);
 
 	const tabs: TabItem[] = useMemo(() => {
@@ -47,19 +68,23 @@ function Favourites() {
 				iconName: "Sprout",
 				content: (
 					<View>
-						<ScrollView showsHorizontalScrollIndicator={false} className="overflow-visible">
+						<ScrollView
+							showsHorizontalScrollIndicator={false}
+							className="overflow-visible"
+							contentContainerStyle={{ paddingBottom: 50 }}
+						>
 							<VStack space="md">
 								{allFavoritedExercises
-									.filter((exercise) => exercise.difficulty === ExerciseDifficulty.Beginner)
-									.map((exercise) => {
-										// Determine if it's a community exercise
-										const isCommunityExercise = publicExercises.some((ex) => ex.id === exercise.id);
+									.filter(({ exercise }) => exercise.difficulty === ExerciseDifficulty.Beginner)
+									.map(({ exercise, type }) => {
+										// Determine if it's a community exercise based on type
+										const isCommunityExercise = type === "community" || "publicAccess" in exercise;
 
 										// Use appropriate card component
-										if (isCommunityExercise || "publicAccess" in exercise) {
+										if (isCommunityExercise || type === "custom") {
 											return (
 												<CustomExerciseCard
-													key={`community-${exercise.id}`}
+													key={`${type}-${exercise.id}`}
 													name={exercise.name}
 													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.customizableOptions?.exerciseTime.toString() || "0"}
@@ -75,7 +100,7 @@ function Favourites() {
 										} else {
 											return (
 												<ExerciseCard
-													key={exercise.id}
+													key={`${type}-${exercise.id}`}
 													name={exercise.name}
 													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.timeToComplete}
@@ -99,19 +124,23 @@ function Favourites() {
 				iconName: "Rocket",
 				content: (
 					<View>
-						<ScrollView showsHorizontalScrollIndicator={false} className="overflow-visible">
+						<ScrollView
+							showsHorizontalScrollIndicator={false}
+							className="overflow-visible"
+							contentContainerStyle={{ paddingBottom: 50 }}
+						>
 							<VStack space="md">
 								{allFavoritedExercises
-									.filter((exercise) => exercise.difficulty === ExerciseDifficulty.Intermediate)
-									.map((exercise) => {
-										// Determine if it's a community exercise
-										const isCommunityExercise = publicExercises.some((ex) => ex.id === exercise.id);
+									.filter(({ exercise }) => exercise.difficulty === ExerciseDifficulty.Intermediate)
+									.map(({ exercise, type }) => {
+										// Determine if it's a community exercise based on type
+										const isCommunityExercise = type === "community" || "publicAccess" in exercise;
 
 										// Use appropriate card component
-										if (isCommunityExercise || "publicAccess" in exercise) {
+										if (isCommunityExercise || type === "custom") {
 											return (
 												<CustomExerciseCard
-													key={`community-${exercise.id}`}
+													key={`${type}-${exercise.id}`}
 													name={exercise.name}
 													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.customizableOptions?.exerciseTime.toString() || "0"}
@@ -127,7 +156,7 @@ function Favourites() {
 										} else {
 											return (
 												<ExerciseCard
-													key={exercise.id}
+													key={`${type}-${exercise.id}`}
 													name={exercise.name}
 													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.timeToComplete}
@@ -151,19 +180,23 @@ function Favourites() {
 				iconName: "Trophy",
 				content: (
 					<View>
-						<ScrollView showsHorizontalScrollIndicator={false} className="overflow-visible">
+						<ScrollView
+							showsHorizontalScrollIndicator={false}
+							className="overflow-visible"
+							contentContainerStyle={{ paddingBottom: 50 }}
+						>
 							<VStack space="md">
 								{allFavoritedExercises
-									.filter((exercise) => exercise.difficulty === ExerciseDifficulty.Advanced)
-									.map((exercise) => {
-										// Determine if it's a community exercise
-										const isCommunityExercise = publicExercises.some((ex) => ex.id === exercise.id);
+									.filter(({ exercise }) => exercise.difficulty === ExerciseDifficulty.Advanced)
+									.map(({ exercise, type }) => {
+										// Determine if it's a community exercise based on type
+										const isCommunityExercise = type === "community" || "publicAccess" in exercise;
 
 										// Use appropriate card component
-										if (isCommunityExercise || "publicAccess" in exercise) {
+										if (isCommunityExercise || type === "custom") {
 											return (
 												<CustomExerciseCard
-													key={`community-${exercise.id}`}
+													key={`${type}-${exercise.id}`}
 													name={exercise.name}
 													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.customizableOptions?.exerciseTime.toString() || "0"}
@@ -179,7 +212,7 @@ function Favourites() {
 										} else {
 											return (
 												<ExerciseCard
-													key={exercise.id}
+													key={`${type}-${exercise.id}`}
 													name={exercise.name}
 													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.timeToComplete}

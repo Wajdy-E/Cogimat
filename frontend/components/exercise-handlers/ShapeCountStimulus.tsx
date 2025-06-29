@@ -16,7 +16,15 @@ interface ShapeStimulus {
 	icon: LucideIcon;
 }
 
-export default function ShapeCountStimulus({ exercise }: { exercise: Exercise }) {
+export default function ShapeCountStimulus({
+	exercise,
+	onComplete,
+	onStop,
+}: {
+	exercise: Exercise;
+	onComplete?: () => void;
+	onStop?: () => void;
+}) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
@@ -156,14 +164,21 @@ export default function ShapeCountStimulus({ exercise }: { exercise: Exercise })
 		);
 	};
 
+	// Function to stop the exercise
+	const handleStopExercise = () => {
+		setExerciseCompleted(true);
+		setIsPaused(true);
+		if (onStop) {
+			onStop();
+		}
+	};
+
 	if (exerciseCompleted) {
 		return (
 			<ExerciseProgress
 				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
 				totalTime={timeCompleted}
-				onEnd={() => {
-					// handle end logic here
-				}}
+				onEnd={onComplete || (() => {})}
 				onRestart={() => {
 					setExerciseCompleted(false);
 					setTimeCompleted(0);
@@ -188,7 +203,7 @@ export default function ShapeCountStimulus({ exercise }: { exercise: Exercise })
 				totalDuration={totalDuration}
 				setTimeLeft={setTimeLeft}
 				timeLeft={timeLeft}
-				onStop={() => setExerciseCompleted(true)}
+				onStop={handleStopExercise}
 			/>
 		</>
 	);

@@ -11,6 +11,7 @@ import ExerciseControl from "../../components/exercises/ExerciseControl";
 import ExerciseProgress from "../../components/exercises/ExerciseProgress";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { setCurrentExercise } from "../../store/data/dataSlice";
+import CustomExerciseHeader from "../../components/CustomExerciseHeader";
 
 interface IconWithColor {
 	icon: LucideIcon;
@@ -21,11 +22,8 @@ function ExerciseScreen() {
 	const dispatch = useDispatch<AppDispatch>();
 	const router = useRouter();
 	const params = useLocalSearchParams();
-	console.log("inside exercise screen");
-	// Check if this is routine mode
 	const isRoutineMode = params?.routineMode === "true";
 	const routineId = params?.routineId;
-	const exerciseIndex = params?.exerciseIndex;
 
 	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise) as CustomExercise;
 
@@ -59,6 +57,7 @@ function ExerciseScreen() {
 	const [stimulusCount, setStimulusCount] = useState<Map<string, number>>(new Map());
 	const [timeCompleted, setTimeCompleted] = useState(0);
 	const [exerciseCompleted, setExerciseCompleted] = useState(false);
+	const [exerciseStopped, setExerciseStopped] = useState(false);
 	const timeToComplete = currentExercise?.customizableOptions.exerciseTime * 60 || 60;
 	const shapes = ["SQUARE", "CIRCLE", "TRIANGLE", "DIAMOND"];
 
@@ -66,6 +65,23 @@ function ExerciseScreen() {
 	const onScreenTime = currentExercise?.customizableOptions.onScreenTime || 1; // Already in seconds
 	const offScreenTime = (currentExercise?.customizableOptions.offScreenTime || 0.5) * 1000; // Convert seconds to milliseconds
 	const cycleTime = onScreenTime + offScreenTime / 1000; // Total cycle time in seconds
+
+	// Function to stop the exercise
+	const handleStopExercise = () => {
+		setExerciseStopped(true);
+		setExerciseCompleted(true);
+		setIsPaused(true);
+		setShowCountdown(false);
+		dispatch(setCurrentExercise(null));
+	};
+
+	// Function to handle manual stop from control
+	const handleManualStop = () => {
+		setExerciseStopped(true);
+		setExerciseCompleted(true);
+		setIsPaused(true);
+		setShowCountdown(false);
+	};
 
 	// Independent timer effect
 	useEffect(() => {
@@ -193,8 +209,15 @@ function ExerciseScreen() {
 			// Navigate back to routine execution screen
 			router.push(`/(tabs)/routine-execution?routineId=${routineId}`);
 		} else {
-			// Normal exercise completion - go back to previous screen
-			router.back();
+			// Check if this is a community exercise by looking for the id parameter
+			// Community exercises are routed with ?id= parameter, custom exercises use data parameter
+			if (params?.id) {
+				// This is a community exercise, route back to community exercise page
+				router.push(`/(community-exercise)/${params.id}`);
+			} else {
+				// This is a custom exercise, route back to custom exercise page
+				router.push(`/(custom-exercise)/${currentExercise.id}`);
+			}
 		}
 	};
 
@@ -240,48 +263,56 @@ function ExerciseScreen() {
 
 	if (exerciseCompleted) {
 		return (
-			<ExerciseProgress
-				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
-				totalTime={timeCompleted}
-				onEnd={handleExerciseEnd}
-				onRestart={() => {
-					setExerciseCompleted(false);
-					setTimeCompleted(0);
-					setStimulusCount(new Map());
-					setTimeLeft(timeToComplete);
-					setIsPaused(false);
-				}}
-				rowData={getProgressTableData()}
-				tableHeadKeys={["exerciseProgress.stimulus", "exerciseProgress.count"]}
-			/>
+			<View className="flex-1">
+				<CustomExerciseHeader showSettings={true} onBack={handleStopExercise} isExerciseActive={false} />
+				<ExerciseProgress
+					repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
+					totalTime={timeCompleted}
+					onEnd={handleExerciseEnd}
+					onRestart={() => {
+						setExerciseCompleted(false);
+						setExerciseStopped(false);
+						setTimeCompleted(0);
+						setStimulusCount(new Map());
+						setTimeLeft(timeToComplete);
+						setIsPaused(false);
+					}}
+					rowData={getProgressTableData()}
+					tableHeadKeys={["exerciseProgress.stimulus", "exerciseProgress.count"]}
+					useAbsolutePositioning={true}
+				/>
+			</View>
 		);
 	}
 
 	return (
-		<View className="absolute inset-0">
-			{showCountdown ? (
-				<Countdown
-					isVisible={showCountdown}
-					seconds={5}
-					onComplete={() => {
-						setShowCountdown(false);
-					}}
-				/>
-			) : (
-				<>
-					{renderStimulus()}
-					<ExerciseControl
-						isPaused={isPaused}
-						setStimulus={setStimulus}
-						setIsWhiteScreen={setIsWhiteScreen}
-						setIsPaused={setIsPaused}
-						totalDuration={timeToComplete}
-						setTimeLeft={setTimeLeft}
-						timeLeft={timeLeft}
-						onStop={() => setExerciseCompleted(true)}
+		<View className="flex-1">
+			<CustomExerciseHeader showSettings={true} onBack={handleStopExercise} isExerciseActive={!showCountdown} />
+			<View className="flex-1">
+				{showCountdown ? (
+					<Countdown
+						isVisible={showCountdown}
+						seconds={5}
+						onComplete={() => {
+							setShowCountdown(false);
+						}}
 					/>
-				</>
-			)}
+				) : (
+					<>
+						{renderStimulus()}
+						<ExerciseControl
+							isPaused={isPaused}
+							setStimulus={setStimulus}
+							setIsWhiteScreen={setIsWhiteScreen}
+							setIsPaused={setIsPaused}
+							totalDuration={timeToComplete}
+							setTimeLeft={setTimeLeft}
+							timeLeft={timeLeft}
+							onStop={handleManualStop}
+						/>
+					</>
+				)}
+			</View>
 		</View>
 	);
 }

@@ -34,22 +34,24 @@ function ExerciseControl({
 			>
 				{isPaused ? <Play size={30} color="white" /> : <Pause size={30} color="white" />}
 			</TouchableOpacity>
-			<TouchableOpacity
-				className="bg-red-600 p-4 rounded-full absolute bottom-5 right-5"
-				onPress={() => {
-					if (onStop) {
-						onStop();
-					} else {
-						// Fallback behavior
-						setStimulus(null);
-						setIsWhiteScreen(false);
-						setIsPaused(false);
-						setTimeLeft(totalDuration);
-					}
-				}}
-			>
-				<X size={30} color="white" />
-			</TouchableOpacity>
+			{isPaused && (
+				<TouchableOpacity
+					className="bg-red-600 p-4 rounded-full absolute bottom-5 right-5"
+					onPress={() => {
+						if (onStop) {
+							onStop();
+						} else {
+							// Fallback behavior
+							setStimulus(null);
+							setIsWhiteScreen(false);
+							setIsPaused(false);
+							setTimeLeft(totalDuration);
+						}
+					}}
+				>
+					<X size={30} color="white" />
+				</TouchableOpacity>
+			)}
 		</>
 	);
 }

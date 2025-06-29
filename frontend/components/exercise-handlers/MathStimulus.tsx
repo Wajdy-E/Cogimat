@@ -16,7 +16,15 @@ interface IconWithColor {
 	color: string;
 }
 
-export default function MathStimulus({ exercise, onComplete }: { exercise: Exercise; onComplete?: () => void }) {
+export default function MathStimulus({
+	exercise,
+	onComplete,
+	onStop,
+}: {
+	exercise: Exercise;
+	onComplete?: () => void;
+	onStop?: () => void;
+}) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
@@ -216,6 +224,15 @@ export default function MathStimulus({ exercise, onComplete }: { exercise: Exerc
 		return null;
 	};
 
+	// Function to stop the exercise
+	const handleStopExercise = () => {
+		setExerciseCompleted(true);
+		setIsPaused(true);
+		if (onStop) {
+			onStop();
+		}
+	};
+
 	if (exerciseCompleted) {
 		return (
 			<ExerciseProgress
@@ -246,7 +263,7 @@ export default function MathStimulus({ exercise, onComplete }: { exercise: Exerc
 				totalDuration={totalDuration}
 				setTimeLeft={setTimeLeft}
 				timeLeft={timeLeft}
-				onStop={() => setExerciseCompleted(true)}
+				onStop={handleStopExercise}
 			/>
 		</>
 	);

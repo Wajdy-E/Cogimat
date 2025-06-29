@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { CustomExercise, ExerciseDifficulty } from "../../store/data/dataSlice";
 import { RootState } from "../../store/store";
@@ -8,7 +8,7 @@ export const useCustomExercise = (get: ExerciseDifficulty | number | null) => {
 	const [customExercises, setExercises] = useState<CustomExercise[] | CustomExercise | null>(null);
 	const allExercises = useSelector((state: RootState) => state.data.customExercises, shallowEqual);
 
-	useEffect(() => {
+	const updateExercises = useCallback(() => {
 		if (get === null) {
 			setExercises(allExercises);
 		} else if (get in ExerciseDifficulty) {
@@ -19,6 +19,10 @@ export const useCustomExercise = (get: ExerciseDifficulty | number | null) => {
 		}
 	}, [get, allExercises]);
 
+	useEffect(() => {
+		updateExercises();
+	}, [updateExercises]);
+
 	return customExercises;
 };
 
@@ -27,7 +31,7 @@ export const useCommunityExercise = (exerciseId: number | null) => {
 	const customExercises = useSelector((state: RootState) => state.data.customExercises, shallowEqual);
 	const publicExercises = useSelector((state: RootState) => state.data.publicExercises, shallowEqual);
 
-	useEffect(() => {
+	const updateExercise = useCallback(() => {
 		if (exerciseId === null) {
 			setExercise(null);
 			return;
@@ -43,6 +47,10 @@ export const useCommunityExercise = (exerciseId: number | null) => {
 
 		setExercise(foundExercise || null);
 	}, [exerciseId, customExercises, publicExercises]);
+
+	useEffect(() => {
+		updateExercise();
+	}, [updateExercise]);
 
 	return exercise;
 };

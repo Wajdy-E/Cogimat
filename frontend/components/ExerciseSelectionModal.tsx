@@ -28,10 +28,8 @@ function ExerciseSelectionModal(props: ExerciseSelectionModalProps) {
 	const [searchTrigger, setSearchTrigger] = useState(0); // Used to trigger re-renders
 	const searchQueryRef = useRef("");
 
-	const { exercises, customExercises } = useSelector((state: RootState) => ({
-		exercises: state.data.exercises || [],
-		customExercises: state.data.customExercises || [],
-	}));
+	const exercises = useSelector((state: RootState) => state.data.exercises || []);
+	const customExercises = useSelector((state: RootState) => state.data.customExercises || []);
 
 	// Filter exercises based on search query and difficulty using useMemo for performance
 	const filteredStandardExercises = useMemo(() => {

@@ -19,19 +19,14 @@ import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-import {
-	CustomizableExerciseOptions,
-	ExerciseDifficulty,
-	setCurrentExercise,
-	updateExercise,
-} from "../../store/data/dataSlice";
+import { ExerciseDifficulty, setCurrentExercise } from "../../store/data/dataSlice";
 import { RootState } from "../../store/store";
 import { i18n } from "../../i18n";
 import { useSubscriptionStatus } from "../hooks/useSubscriptionStatus";
 import PaywallDrawer from "../../components/PaywallDrawer";
 import AlertModal from "../../components/AlertModal";
-import ExerciseVideoUpload from "../../components/ExerciseVideoUpload";
 import ExerciseVideoGallery from "../../components/ExerciseVideoGallery";
+import Header from "../../components/Header";
 
 function ExerciseProgram() {
 	const dispatch = useDispatch();
@@ -57,7 +52,6 @@ function ExerciseProgram() {
 
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const router = useRouter();
-	const [showVideoUpload, setShowVideoUpload] = useState(false);
 
 	// Prepare media items for horizontal scroll
 	const mediaItems = [];
@@ -137,14 +131,11 @@ function ExerciseProgram() {
 		});
 	};
 
-	const handleVideoUploadSuccess = () => {
-		setShowVideoUpload(false);
-	};
-
 	return (
 		<>
+			<Header showSettings={true} />
 			<View className="relative bg-background-700">
-				<ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+				<ScrollView contentContainerStyle={{ paddingBottom: 200 }}>
 					<View style={{ flex: 1, height: 250, maxHeight: 250 }} className="bg-primary-700 py-5">
 						<ScrollView
 							horizontal
@@ -283,35 +274,7 @@ function ExerciseProgram() {
 								<ButtonText>{i18n.t("exercise.page.customizeExercise")}</ButtonText>
 							</Button>
 
-							{/* Admin Video Upload Section */}
-							{user?.isAdmin && (
-								<Box className="bg-secondary-500 p-5 rounded-2xl">
-									<VStack space="lg">
-										<View>
-											<Heading size="md" className="text-primary-500">
-												{i18n.t("exercise.sections.adminVideoUpload")}
-											</Heading>
-										</View>
-
-										{showVideoUpload ? (
-											<ExerciseVideoUpload
-												exerciseId={exercise.id}
-												exerciseName={exercise.name}
-												onUploadSuccess={handleVideoUploadSuccess}
-												onClose={() => setShowVideoUpload(false)}
-											/>
-										) : (
-											<Button onPress={() => setShowVideoUpload(true)} action="primary" className="w-full">
-												<ButtonText>{i18n.t("exercise.sections.uploadVideo")}</ButtonText>
-											</Button>
-										)}
-									</VStack>
-								</Box>
-							)}
-
-							<Box className="bg-secondary-500 p-5 rounded-2xl">
-								<ExerciseVideoGallery exerciseId={exercise.id} />
-							</Box>
+							<ExerciseVideoGallery exerciseId={exercise.id} />
 						</VStack>
 					</View>
 				</ScrollView>
@@ -319,7 +282,7 @@ function ExerciseProgram() {
 				<Animated.View
 					style={{
 						position: "absolute",
-						bottom: "5%",
+						bottom: "20%",
 						alignSelf: "center",
 						transform: [{ translateY: floatAnim }],
 					}}

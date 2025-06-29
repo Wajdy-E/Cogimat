@@ -146,13 +146,11 @@ export default function CustomExerciseSettings() {
 					</View>
 				</SafeAreaView>
 				<View className="flex-1 justify-center items-center">
-					<Text>Loading...</Text>
+					<Text>{i18n.t("general.loading")}</Text>
 				</View>
 			</View>
 		);
 	}
-
-	console.log("exercises", exercises.publicAccess);
 
 	return (
 		<View className="bg-background-800 h-screen">

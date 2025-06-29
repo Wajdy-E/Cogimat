@@ -10,6 +10,7 @@ import { AppDispatch, RootState } from "../../store/store";
 import { fetchWeeklyWorkoutGoal, saveWeeklyWorkoutGoal } from "../../store/data/dataSaga";
 import { i18n } from "../../i18n";
 import { useAppAlert } from "../../hooks/useAppAlert";
+import { useTheme } from "@/components/ui/ThemeProvider";
 
 enum days {
 	sunday = "Sunday",
@@ -26,7 +27,7 @@ function WeeklyWorkoutGoal() {
 	const { showAlert } = useAppAlert();
 	const { weeklyWorkoutGoal } = useSelector((state: RootState) => state.data);
 	const { user } = useSelector((state: RootState) => state.user);
-
+	const { theme } = useTheme();
 	const [selectedDays, setSelectedDays] = useState<string[]>([]);
 	const [date, setDate] = useState(new Date());
 	const [isLoading, setIsLoading] = useState(false);
@@ -111,7 +112,7 @@ function WeeklyWorkoutGoal() {
 				/>
 				<View className="flex justify-center items-center">
 					<Heading className="self-start text-start">{i18n.t("progress.weeklyGoal.reminderTime")}</Heading>
-					<DatePicker date={date} onDateChange={setDate} mode="time" theme="dark" />
+					<DatePicker date={date} onDateChange={setDate} mode="time" theme={theme} />
 				</View>
 				<Button size="lg" variant="solid" action="primary" onPress={handleSave} disabled={isLoading}>
 					<ButtonText>{isLoading ? i18n.t("general.loading") : i18n.t("progress.weeklyGoal.save")}</ButtonText>

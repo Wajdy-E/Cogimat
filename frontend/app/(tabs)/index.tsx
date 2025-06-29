@@ -303,7 +303,11 @@ function Home() {
 			</Box>
 
 			<Box className="w-[90%] self-center">
-				<NavigateTo heading="Articles & Tips" text={i18n.t("home.exercisePrograms.seeAll")} classes="justify-between" />
+				<NavigateTo
+					heading={i18n.t("home.articlesAndTips")}
+					text={i18n.t("home.exercisePrograms.seeAll")}
+					classes="justify-between"
+				/>
 				<ScrollView
 					horizontal
 					showsHorizontalScrollIndicator={false}
@@ -318,25 +322,25 @@ function Home() {
 					<HStack space="md">
 						<BlogCard
 							imageUri="https://via.placeholder.com/150"
-							imageAlt="Article 1"
+							imageAlt={i18n.t("home.article1")}
 							date="March 15, 2025"
-							title="Article 1"
+							title={i18n.t("home.article1")}
 							linkUrl="#"
 							cardClassName="w-[250px]"
 						/>
 						<BlogCard
 							imageUri="https://via.placeholder.com/150"
-							imageAlt="Article 2"
+							imageAlt={i18n.t("home.article2")}
 							date="March 14, 2025"
-							title="Article 2"
+							title={i18n.t("home.article2")}
 							linkUrl="#"
 							cardClassName="w-[250px]"
 						/>
 						<BlogCard
 							imageUri="https://via.placeholder.com/150"
-							imageAlt="Article 3"
+							imageAlt={i18n.t("home.article3")}
 							date="March 13, 2025"
-							title="Article 3"
+							title={i18n.t("home.article3")}
 							linkUrl="#"
 							cardClassName="w-[250px]"
 						/>

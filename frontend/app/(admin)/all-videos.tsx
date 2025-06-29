@@ -58,13 +58,13 @@ export default function AllVideos() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
 	const categories = [
-		{ label: "All Categories", value: "all" },
-		{ label: "Exercise Tutorials", value: "exercise-tutorial" },
-		{ label: "General", value: "general" },
-		{ label: "Tutorials", value: "tutorials" },
-		{ label: "Announcements", value: "announcements" },
-		{ label: "Exercise Guides", value: "exercise-guides" },
-		{ label: "Tips & Tricks", value: "tips" },
+		{ label: i18n.t("admin.categories.allCategories"), value: "all" },
+		{ label: i18n.t("admin.categories.exerciseTutorials"), value: "exercise-tutorial" },
+		{ label: i18n.t("admin.categories.general"), value: "general" },
+		{ label: i18n.t("admin.categories.tutorials"), value: "tutorials" },
+		{ label: i18n.t("admin.categories.announcements"), value: "announcements" },
+		{ label: i18n.t("admin.categories.exerciseGuides"), value: "exercise-guides" },
+		{ label: i18n.t("admin.categories.tipsAndTricks"), value: "tips" },
 	];
 
 	const fetchVideos = async () => {
@@ -226,7 +226,7 @@ export default function AllVideos() {
 										<View className="flex-row items-center gap-2">
 											<Eye size={16} className="text-typography-600" />
 											<Text size="xs" className="text-typography-600">
-												{video.view_count} views
+												{video.view_count} {i18n.t("admin.allVideos.views")}
 											</Text>
 										</View>
 									</View>

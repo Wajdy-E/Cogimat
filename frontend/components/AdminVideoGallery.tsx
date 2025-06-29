@@ -147,7 +147,7 @@ export default function AdminVideoGallery({
 										<View className="flex-row items-center gap-2">
 											<Eye size={16} className="text-typography-600" />
 											<Text size="xs" className="text-typography-600">
-												{video.view_count} views
+												{video.view_count} {i18n.t("admin.allVideos.views")}
 											</Text>
 										</View>
 									</View>

@@ -14,7 +14,15 @@ interface IconWithColor {
 	color: string;
 }
 
-export default function SimpleStimulus({ exercise, onComplete }: { exercise: Exercise; onComplete?: () => void }) {
+export default function SimpleStimulus({
+	exercise,
+	onComplete,
+	onStop,
+}: {
+	exercise: Exercise;
+	onComplete?: () => void;
+	onStop?: () => void;
+}) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
@@ -28,6 +36,15 @@ export default function SimpleStimulus({ exercise, onComplete }: { exercise: Exe
 	const onScreenTime = custom?.onScreenTime ?? 1;
 	const totalDuration = parseInt(exercise.timeToComplete) || 60;
 	const [timeLeft, setTimeLeft] = useState(totalDuration);
+
+	// Function to stop the exercise
+	const handleStopExercise = () => {
+		setExerciseCompleted(true);
+		setIsPaused(true);
+		if (onStop) {
+			onStop();
+		}
+	};
 
 	// Independent timer effect
 	useEffect(() => {
@@ -170,7 +187,6 @@ export default function SimpleStimulus({ exercise, onComplete }: { exercise: Exe
 	};
 
 	if (exerciseCompleted) {
-		console.log("onComplete", onComplete);
 		return (
 			<ExerciseProgress
 				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
@@ -200,7 +216,7 @@ export default function SimpleStimulus({ exercise, onComplete }: { exercise: Exe
 				totalDuration={totalDuration}
 				setTimeLeft={setTimeLeft}
 				timeLeft={timeLeft}
-				onStop={() => setExerciseCompleted(true)}
+				onStop={handleStopExercise}
 			/>
 		</>
 	);

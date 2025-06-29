@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import { updateExercise } from "../../store/data/dataSlice";
 import { i18n } from "../../i18n";
 import CustomSlider from "../../components/CustomSlider";
+import ExerciseVideoUpload from "../../components/ExerciseVideoUpload";
 
 export default function ExerciseSettings() {
 	const { id } = useLocalSearchParams();
@@ -56,12 +57,19 @@ export default function ExerciseSettings() {
 		exercises?.customizableOptions
 	);
 
+	// Admin video upload state
+	const [showVideoUpload, setShowVideoUpload] = useState(false);
+
 	// Update state when exercises data becomes available
 	useEffect(() => {
 		if (exercises?.customizableOptions) {
 			setDurationSettings(exercises.customizableOptions);
 		}
 	}, [exercises]);
+
+	const handleVideoUploadSuccess = () => {
+		setShowVideoUpload(false);
+	};
 
 	// Early return if exercise data is not yet available
 	if (!exercises) {
@@ -82,7 +90,7 @@ export default function ExerciseSettings() {
 					</View>
 				</SafeAreaView>
 				<View className="flex-1 justify-center items-center">
-					<Text>Loading...</Text>
+					<Text>{i18n.t("general.loading")}</Text>
 				</View>
 			</View>
 		);
@@ -181,6 +189,33 @@ export default function ExerciseSettings() {
 								)}
 							</VStack>
 						</Box>
+
+						{/* Admin Video Upload Section */}
+						{user?.isAdmin && (
+							<Box className="bg-secondary-500 p-5 rounded-2xl">
+								<VStack space="lg">
+									<View>
+										<Heading size="md" className="text-primary-500">
+											{i18n.t("exercise.sections.adminVideoUpload")}
+										</Heading>
+										<Divider className="bg-slate-400" />
+									</View>
+
+									{showVideoUpload ? (
+										<ExerciseVideoUpload
+											exerciseId={exercises.id}
+											exerciseName={exercises.name}
+											onUploadSuccess={handleVideoUploadSuccess}
+											onClose={() => setShowVideoUpload(false)}
+										/>
+									) : (
+										<Button onPress={() => setShowVideoUpload(true)} action="primary" className="w-full">
+											<ButtonText>{i18n.t("exercise.sections.uploadVideo")}</ButtonText>
+										</Button>
+									)}
+								</VStack>
+							</Box>
+						)}
 					</VStack>
 				</View>
 			</ScrollView>

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { View, SafeAreaView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heading } from "@/components/ui/heading";
@@ -8,19 +9,48 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import { setFavourite } from "../store/data/dataSaga";
 import { useTheme } from "@/components/ui/ThemeProvider";
+import AlertModal from "./AlertModal";
+import { i18n } from "../i18n";
 
 interface HeaderProps {
 	showSettings?: boolean;
+	onBack?: () => void;
+	isExerciseActive?: boolean;
 }
 
-export default function Header({ showSettings = true }: HeaderProps) {
+export default function Header({ showSettings = true, onBack, isExerciseActive = false }: HeaderProps) {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
+	const [showExitAlert, setShowExitAlert] = useState(false);
 
 	// Get the current exercise from Redux state
 	const exercises = useSelector((state: RootState) => state.data.selectedExercise) as Exercise | null;
+
+	const handleBackPress = () => {
+		if (isExerciseActive && onBack) {
+			// Show confirmation alert if exercise is active
+			setShowExitAlert(true);
+		} else {
+			// Navigate back immediately if exercise is not active
+			router.push("/(tabs)");
+		}
+	};
+
+	const handleConfirmExit = () => {
+		setShowExitAlert(false);
+		// Call the onBack function if provided (to stop exercise)
+		if (onBack) {
+			onBack();
+		}
+		// Navigate back
+		router.push("/(tabs)");
+	};
+
+	const handleCancelExit = () => {
+		setShowExitAlert(false);
+	};
 
 	// Show loading state if exercise is not found
 	if (!exercises) {
@@ -29,11 +59,11 @@ export default function Header({ showSettings = true }: HeaderProps) {
 				<View className="flex-row items-center w-full justify-center py-3">
 					<View className="flex-row items-center justify-between gap-3 w-[90%]">
 						<View className="flex-row items-center gap-3 flex-1">
-							<Button variant="link" onPress={() => router.push("/(tabs)")}>
+							<Button variant="link" onPress={handleBackPress}>
 								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="xl" numberOfLines={1} style={{ flex: 1 }}>
-								Loading...
+								{i18n.t("general.loading")}
 							</Heading>
 						</View>
 					</View>
@@ -55,35 +85,48 @@ export default function Header({ showSettings = true }: HeaderProps) {
 	}
 
 	return (
-		<SafeAreaView className="bg-background-800">
-			<View className="flex-row items-center w-full justify-center py-3">
-				<View className="flex-row items-center justify-between gap-3 w-[90%]">
-					<View className="flex-row items-center gap-3 flex-1">
-						<Button variant="link" onPress={() => router.push("/(tabs)")}>
-							<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
-						</Button>
-						<Heading className="text-typography-950" size="xl" numberOfLines={1} style={{ flex: 1 }}>
-							{exercises.name}
-						</Heading>
-					</View>
-					<View className="flex-row items-center gap-2">
-						<Button variant="link" onPress={onFavourite}>
-							<ButtonIcon
-								as={Star}
-								stroke={`${exercises.isFavourited ? "yellow" : "white"}`}
-								fill={`${exercises.isFavourited ? "yellow" : "white"}`}
-								size={"xxl" as any}
-								className={`${exercises.isFavourited ? "fill-yellow-300" : ""}`}
-							/>
-						</Button>
-						{showSettings && (
-							<Button variant="link" onPress={() => router.push(`/(exercise)/settings?id=${id}`)}>
-								<ButtonIcon as={Settings} size={"xxl" as any} stroke={themeTextColor} />
+		<>
+			<SafeAreaView className="bg-background-800">
+				<View className="flex-row items-center w-full justify-center py-3">
+					<View className="flex-row items-center justify-between gap-3 w-[90%]">
+						<View className="flex-row items-center gap-3 flex-1">
+							<Button variant="link" onPress={handleBackPress}>
+								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 							</Button>
-						)}
+							<Heading className="text-typography-950" size="xl" numberOfLines={1} style={{ flex: 1 }}>
+								{exercises.name}
+							</Heading>
+						</View>
+						<View className="flex-row items-center gap-2">
+							<Button variant="link" onPress={onFavourite}>
+								<ButtonIcon
+									as={Star}
+									stroke={`${exercises.isFavourited ? "yellow" : "white"}`}
+									fill={`${exercises.isFavourited ? "yellow" : "white"}`}
+									size={"xxl" as any}
+									className={`${exercises.isFavourited ? "fill-yellow-300" : ""}`}
+								/>
+							</Button>
+							{showSettings && (
+								<Button variant="link" onPress={() => router.push(`/(exercise)/settings?id=${id}`)}>
+									<ButtonIcon as={Settings} size={"xxl" as any} stroke={themeTextColor} />
+								</Button>
+							)}
+						</View>
 					</View>
 				</View>
-			</View>
-		</SafeAreaView>
+			</SafeAreaView>
+
+			<AlertModal
+				isOpen={showExitAlert}
+				onClose={handleCancelExit}
+				headingKey="exercise.exit.title"
+				textKey="exercise.exit.message"
+				buttonKey="exercise.exit.confirm"
+				cancelKey="exercise.exit.cancel"
+				onConfirm={handleConfirmExit}
+				action="negative"
+			/>
+		</>
 	);
 }

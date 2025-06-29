@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { View } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
 import { Input, InputField } from "@/components/ui/input";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import {
@@ -33,9 +31,6 @@ import { RootState } from "../store/store";
 import { showLoadingOverlay, hideLoadingOverlay } from "../store/ui/uiSlice";
 import { useAppAlert } from "../hooks/useAppAlert";
 import { i18n } from "../i18n";
-import { HStack } from "@/components/ui/hstack";
-import { Spinner } from "@/components/ui/spinner";
-import { X } from "lucide-react-native";
 import { uploadExerciseVideo } from "../lib/exerciseMediaUpload";
 
 interface AdminVideo {
@@ -66,22 +61,22 @@ export default function AdminVideoUpload({ onUploadSuccess, onClose }: AdminVide
 	const isFormValid = formData.title.trim() && formData.videoUri;
 
 	const categories = [
-		{ label: "General", value: "general" },
-		{ label: "Tutorials", value: "tutorials" },
-		{ label: "Announcements", value: "announcements" },
-		{ label: "Exercise Guides", value: "exercise-guides" },
-		{ label: "Tips & Tricks", value: "tips" },
+		{ label: i18n.t("admin.categories.general"), value: "general" },
+		{ label: i18n.t("admin.categories.tutorials"), value: "tutorials" },
+		{ label: i18n.t("admin.categories.announcements"), value: "announcements" },
+		{ label: i18n.t("admin.categories.exerciseGuides"), value: "exercise-guides" },
+		{ label: i18n.t("admin.categories.tipsAndTricks"), value: "tips" },
 	];
 
 	const validateForm = (): boolean => {
 		const newErrors: Partial<AdminVideo> = {};
 
 		if (!formData.title.trim()) {
-			newErrors.title = "Title is required";
+			newErrors.title = i18n.t("admin.videoUpload.titleRequired");
 		}
 
 		if (!formData.videoUri) {
-			newErrors.videoUri = "Video is required";
+			newErrors.videoUri = i18n.t("admin.videoUpload.videoRequired");
 		}
 
 		setErrors(newErrors);
@@ -91,13 +86,13 @@ export default function AdminVideoUpload({ onUploadSuccess, onClose }: AdminVide
 	const handleUpload = async () => {
 		if (!validateForm()) return;
 		if (!user?.id) {
-			showError("Error", "User not authenticated");
+			showError(i18n.t("admin.videoUpload.error"), i18n.t("admin.videoUpload.userNotAuthenticated"));
 			return;
 		}
 
 		try {
 			// Show uploading message
-			dispatch(showLoadingOverlay("Uploading video..."));
+			dispatch(showLoadingOverlay(i18n.t("admin.videoUpload.uploading")));
 
 			// Upload video to Vercel Blob
 			const videoUrl = await uploadExerciseVideo(formData.videoUri);
@@ -126,7 +121,7 @@ export default function AdminVideoUpload({ onUploadSuccess, onClose }: AdminVide
 			const result = await response.json();
 
 			if (result.success) {
-				showSuccess("Success", "Video uploaded successfully!");
+				showSuccess(i18n.t("admin.videoUpload.success"), i18n.t("admin.videoUpload.uploaded"));
 				setFormData({
 					title: "",
 					description: "",
@@ -136,11 +131,11 @@ export default function AdminVideoUpload({ onUploadSuccess, onClose }: AdminVide
 				onUploadSuccess?.();
 				onClose?.();
 			} else {
-				throw new Error(result.error || "Upload failed");
+				throw new Error(result.error || i18n.t("admin.videoUpload.uploadFailed"));
 			}
 		} catch (error: any) {
 			console.error("Upload failed:", error);
-			showError("Upload Failed", error.message || "Failed to upload video");
+			showError(i18n.t("admin.videoUpload.uploadFailed"), error.message || i18n.t("admin.videoUpload.failedToUpload"));
 		} finally {
 			dispatch(hideLoadingOverlay());
 		}

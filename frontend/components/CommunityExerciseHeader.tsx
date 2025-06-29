@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { setCommunityExerciseFavourite } from "../store/data/dataSaga";
+import { i18n } from "../i18n";
 
 export default function CommunityExerciseHeader() {
 	const { id } = useLocalSearchParams();
@@ -29,7 +30,7 @@ export default function CommunityExerciseHeader() {
 								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="2xl" numberOfLines={1} style={{ maxWidth: "79%" }}>
-								Loading...
+								{i18n.t("general.loading")}
 							</Heading>
 						</View>
 					</View>

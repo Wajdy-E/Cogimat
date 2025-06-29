@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import {
 	Drawer,
 	DrawerBackdrop,
@@ -33,6 +33,7 @@ enum Step {
 
 function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	const [step, setStep] = useState<Step>(Step.DESCRIPTION);
+	const scrollViewRef = useRef<ScrollView>(null);
 	const defaultDurationSettings = {
 		offScreenTime: 0.5,
 		onScreenTime: 1,
@@ -132,6 +133,13 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		setStep((prev) => (prev === Step.SETTINGS ? prev : ((prev + 1) as Step)));
 	};
 
+	// Auto-scroll to top when step changes
+	useEffect(() => {
+		if (scrollViewRef.current) {
+			scrollViewRef.current.scrollTo({ y: 0, animated: true });
+		}
+	}, [step]);
+
 	const handleSubmit = async () => {
 		const valid = await validateForm();
 		if (!valid) return;
@@ -173,7 +181,11 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 						</View>
 					</View>
 				</DrawerHeader>
-				<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
+				<ScrollView
+					ref={scrollViewRef}
+					contentContainerStyle={{ paddingBottom: 80 }}
+					showsVerticalScrollIndicator={false}
+				>
 					<DrawerBody>
 						{step === Step.DESCRIPTION && (
 							<CreateExerciseStepOne formData={formData} formErrors={formErrors} onChange={handleChange} />

@@ -4,10 +4,10 @@ import CommunityExerciseHeader from "../../components/CommunityExerciseHeader";
 function Layout() {
 	return (
 		<Tabs
-			screenOptions={{
-				header: () => <CommunityExerciseHeader />,
+			screenOptions={({ route }) => ({
+				header: () => null,
 				tabBarStyle: { display: "none" },
-			}}
+			})}
 		></Tabs>
 	);
 }

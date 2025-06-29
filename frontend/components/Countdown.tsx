@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text } from "react-native";
+import { i18n } from "../i18n";
 
 interface CountdownProps {
 	seconds: number;
@@ -39,9 +40,9 @@ export default function Countdown({ seconds, onComplete, isVisible }: CountdownP
 	if (!isVisible) return null;
 
 	return (
-		<View className="flex bg-black justify-center absolute inset-0 items-center">
-			<Text className="text-3xl text-white font-bold mb-12">STARTING IN</Text>
-			<Text className="text-6xl text-white font-bold">{timeLeft}</Text>
+		<View className="flex bg-background-800 justify-center absolute inset-0 items-center">
+			<Text className="text-3xl text-typography-950 font-bold mb-12">{i18n.t("exercise.startingIn")}</Text>
+			<Text className="text-6xl text-typography-950 font-bold">{timeLeft}</Text>
 		</View>
 	);
 }

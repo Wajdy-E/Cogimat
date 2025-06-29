@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { VStack } from "@/components/ui/vstack";
 import * as Notifications from "expo-notifications";
 import { useTheme } from "@/components/ui/ThemeProvider";
+import { i18n } from "../../i18n";
 
 function Settings() {
 	const dispatch = useDispatch();
@@ -52,20 +53,20 @@ function Settings() {
 				<View className="w-[80%]">
 					<VStack space="lg">
 						<View className="flex-row justify-between">
-							<Heading size="lg">Theme</Heading>
+							<Heading size="lg">{i18n.t("settings.theme")}</Heading>
 							<CustomSelect
 								options={[
-									{ label: "Light", value: "light" },
-									{ label: "Dark", value: "dark" },
+									{ label: i18n.t("settings.light"), value: "light" },
+									{ label: i18n.t("settings.dark"), value: "dark" },
 								]}
-								placeholder="Select Theme"
+								placeholder={i18n.t("settings.selectTheme")}
 								value={theme}
 								onChange={handleThemeChange}
 							/>
 						</View>
 
 						<View className="flex-row justify-between">
-							<Heading size="lg">Notifications</Heading>
+							<Heading size="lg">{i18n.t("settings.notifications")}</Heading>
 							<Switch onToggle={updateNotificationSettings} value={notificationsEnabled} />
 						</View>
 					</VStack>

@@ -1,11 +1,10 @@
 import { Tabs } from "expo-router";
-import CustomExerciseHeader from "../../components/CustomExerciseHeader";
 
 function Layout() {
 	return (
 		<Tabs
 			screenOptions={({ route }) => ({
-				header: route.name === "settings" ? () => null : () => <CustomExerciseHeader showSettings={true} />,
+				header: () => null,
 				tabBarStyle: { display: "none" },
 			})}
 		></Tabs>

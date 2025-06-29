@@ -122,21 +122,24 @@ export async function GET(req: NextRequest) {
 		const category = searchParams.get("category");
 		const exerciseId = searchParams.get("exerciseId");
 
-		let queryString = "SELECT * FROM admin_videos WHERE is_active = true ORDER BY created_at DESC";
+		let queryString =
+			"SELECT id, title, description, category, video_url, file_name, file_size, content_type, uploaded_by, exercise_id FROM admin_videos WHERE is_active = true ORDER BY created_at DESC";
 		let params: any[] = [];
 
 		if (exerciseId) {
 			// Get videos for specific exercise
-			queryString = "SELECT * FROM admin_videos WHERE exercise_id = $1 AND is_active = true ORDER BY created_at DESC";
+			queryString =
+				"SELECT id, title, description, category, video_url, file_name, file_size, content_type, uploaded_by, exercise_id FROM admin_videos WHERE exercise_id = $1 AND is_active = true ORDER BY created_at DESC";
 			params = [parseInt(exerciseId)];
 		} else if (category) {
 			// Get videos by category (general videos)
 			queryString =
-				"SELECT * FROM admin_videos WHERE category = $1 AND exercise_id IS NULL AND is_active = true ORDER BY created_at DESC";
+				"SELECT id, title, description, category, video_url, file_name, file_size, content_type, uploaded_by, exercise_id FROM admin_videos WHERE category = $1 AND exercise_id IS NULL AND is_active = true ORDER BY created_at DESC";
 			params = [category];
 		} else {
 			// Get all videos
-			queryString = "SELECT * FROM admin_videos WHERE is_active = true ORDER BY created_at DESC";
+			queryString =
+				"SELECT id, title, description, category, video_url, file_name, file_size, content_type, uploaded_by, exercise_id FROM admin_videos WHERE is_active = true ORDER BY created_at DESC";
 		}
 
 		const videos = await query(queryString, params);

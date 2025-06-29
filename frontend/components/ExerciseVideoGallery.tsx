@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
+import { View, ScrollView, RefreshControl, Image } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
@@ -27,8 +27,6 @@ interface ExerciseVideo {
 	file_size: number;
 	content_type: string;
 	uploaded_by: string;
-	created_at: string;
-	view_count: number;
 	tags: string[];
 }
 
@@ -46,10 +44,7 @@ export default function ExerciseVideoGallery({
 	onUploadClick,
 }: ExerciseVideoGalleryProps) {
 	const [videos, setVideos] = useState<ExerciseVideo[]>([]);
-	const [refreshing, setRefreshing] = useState(false);
 	const [selectedVideo, setSelectedVideo] = useState<ExerciseVideo | null>(null);
-	const dispatch = useDispatch();
-
 	const fetchVideos = async () => {
 		try {
 			const response = await axios.get(`${process.env.BASE_URL}/api/admin/video-upload`, {
@@ -58,23 +53,12 @@ export default function ExerciseVideoGallery({
 			setVideos(response.data.videos || []);
 		} catch (error) {
 			console.error("Failed to fetch exercise videos:", error);
-		} finally {
-			setRefreshing(false);
 		}
 	};
 
 	useEffect(() => {
 		fetchVideos();
 	}, [exerciseId]);
-
-	const onRefresh = () => {
-		setRefreshing(true);
-		fetchVideos();
-	};
-
-	const formatDate = (dateString: string): string => {
-		return new Date(dateString).toLocaleDateString();
-	};
 
 	const handleVideoPress = (video: ExerciseVideo) => {
 		setSelectedVideo(video);
@@ -108,15 +92,20 @@ export default function ExerciseVideoGallery({
 				)}
 			</View>
 
-			<ScrollView
-				horizontal
-				showsHorizontalScrollIndicator={false}
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-			>
-				<View className="flex-row space-x-4">
+			<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+				<HStack space="md">
 					{videos.map((video) => (
-						<Card key={video.id} className="bg-secondary-500 p-4 rounded-xl" style={{ width: 280 }}>
+						<Card key={video.id} style={{ width: 280 }} variant="ghost">
 							<VStack space="md">
+								{/* Thumbnail Image */}
+								<View className="w-full h-32 bg-gray-300 rounded-lg overflow-hidden">
+									<Image
+										source={{ uri: "https://your-vercel-blob-url.com/video-thumbnail-placeholder.jpg" }}
+										style={{ width: "100%", height: "100%" }}
+										resizeMode="cover"
+									/>
+								</View>
+
 								<View className="flex-row justify-between items-start">
 									<View className="flex-1">
 										<Heading size="sm" className="text-typography-950">
@@ -130,21 +119,6 @@ export default function ExerciseVideoGallery({
 									</View>
 								</View>
 
-								<View className="flex-row justify-between items-center">
-									<View className="flex-row items-center gap-2">
-										<Calendar size={14} className="text-typography-600" />
-										<Text size="xs" className="text-typography-600">
-											{formatDate(video.created_at)}
-										</Text>
-									</View>
-									<View className="flex-row items-center gap-2">
-										<Eye size={14} className="text-typography-600" />
-										<Text size="xs" className="text-typography-600">
-											{video.view_count}
-										</Text>
-									</View>
-								</View>
-
 								<Button onPress={() => handleVideoPress(video)} size="sm" action="primary" className="w-full">
 									<ButtonIcon as={Play} />
 									<ButtonText>{i18n.t("exercise.videoGallery.watch")}</ButtonText>
@@ -152,7 +126,7 @@ export default function ExerciseVideoGallery({
 							</VStack>
 						</Card>
 					))}
-				</View>
+				</HStack>
 			</ScrollView>
 
 			{/* Video Player Modal */}

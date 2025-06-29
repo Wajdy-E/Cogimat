@@ -12,14 +12,16 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/store";
 import { setCurrentExercise } from "../../store/data/dataSlice";
+import Header from "../../components/Header";
+import { i18n } from "../../i18n";
 
-const handlerMap: Record<string, React.FC<{ exercise: Exercise; onComplete?: () => void }>> = {
+const handlerMap: Record<string, React.FC<{ exercise: Exercise; onComplete?: () => void; onStop?: () => void }>> = {
 	default: SimpleStimulus,
 	"letter-sequence": SimpleStimulus,
 	"shape-color-combo": SimpleStimulus,
 	"math-combo": MathStimulus,
 	"math-only": MathOnlyStimulus,
-	//"memory-game": MemoryGame,
+	"shape-count": ShapeCountStimulus,
 };
 
 export default function ExerciseRouter() {
@@ -27,6 +29,7 @@ export default function ExerciseRouter() {
 	const router = useRouter();
 	const dispatch: AppDispatch = useDispatch();
 	const [showCountdown, setShowCountdown] = useState(true);
+	const [exerciseStopped, setExerciseStopped] = useState(false);
 
 	// Check if this is routine mode
 	const isRoutineMode = params?.routineMode === "true";
@@ -55,7 +58,7 @@ export default function ExerciseRouter() {
 		};
 	}, [dispatch]);
 
-	if (!exercise) return <Text>Invalid or missing exercise</Text>;
+	if (!exercise) return <Text>{i18n.t("exercise.invalidOrMissing")}</Text>;
 
 	const Component = handlerMap[exercise.type] || handlerMap.default;
 
@@ -68,15 +71,34 @@ export default function ExerciseRouter() {
 				`/(tabs)/routine-execution?routineId=${routineId}&returnFromExercise=true&completedExerciseId=${exercise.id}`
 			);
 		} else {
-			// Normal exercise completion - go back to previous screen
-			router.back();
+			// Navigate back to the specific exercise page
+			router.push(`/(exercise)/${exercise.id}`);
 		}
 	};
 
+	const handleStopExercise = () => {
+		setExerciseStopped(true);
+		setShowCountdown(false);
+		dispatch(setCurrentExercise(null));
+	};
+
+	const handleManualStop = () => {
+		// Don't set exerciseStopped to true here - let the exercise handler show its progress
+		// Only update the header state
+		setShowCountdown(false);
+	};
+
 	return (
-		<View className="absolute inset-0">
-			{showCountdown && <Countdown seconds={5} isVisible={showCountdown} onComplete={() => setShowCountdown(false)} />}
-			{!showCountdown && <Component exercise={exercise} onComplete={handleExerciseComplete} />}
+		<View className="flex-1">
+			<Header showSettings={true} onBack={handleStopExercise} isExerciseActive={!showCountdown && !exerciseStopped} />
+			<View className="flex-1">
+				{showCountdown && (
+					<Countdown seconds={5} isVisible={showCountdown} onComplete={() => setShowCountdown(false)} />
+				)}
+				{!showCountdown && (
+					<Component exercise={exercise} onComplete={handleExerciseComplete} onStop={handleManualStop} />
+				)}
+			</View>
 		</View>
 	);
 }

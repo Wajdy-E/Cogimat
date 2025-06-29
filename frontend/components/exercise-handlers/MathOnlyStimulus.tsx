@@ -9,7 +9,15 @@ import { updateUserMilestone } from "../../store/auth/authSaga";
 import ExerciseControl from "../exercises/ExerciseControl";
 import ExerciseProgress from "../exercises/ExerciseProgress";
 
-export default function MathOnlyStimulus({ exercise, onComplete }: { exercise: Exercise; onComplete?: () => void }) {
+export default function MathOnlyStimulus({
+	exercise,
+	onComplete,
+	onStop,
+}: {
+	exercise: Exercise;
+	onComplete?: () => void;
+	onStop?: () => void;
+}) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [problem, setProblem] = useState<string | null>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
@@ -145,6 +153,15 @@ export default function MathOnlyStimulus({ exercise, onComplete }: { exercise: E
 		);
 	};
 
+	// Function to stop the exercise
+	const handleStopExercise = () => {
+		setExerciseCompleted(true);
+		setIsPaused(true);
+		if (onStop) {
+			onStop();
+		}
+	};
+
 	if (exerciseCompleted) {
 		return (
 			<ExerciseProgress
@@ -175,7 +192,7 @@ export default function MathOnlyStimulus({ exercise, onComplete }: { exercise: E
 				totalDuration={totalDuration}
 				setTimeLeft={setTimeLeft}
 				timeLeft={timeLeft}
-				onStop={() => setExerciseCompleted(true)}
+				onStop={handleStopExercise}
 			/>
 		</>
 	);

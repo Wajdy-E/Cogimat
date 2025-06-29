@@ -3,11 +3,12 @@ import { ImageBackground, View } from "react-native";
 import { Image } from "react-native";
 import { Button, ButtonText } from "../app/components/ui/button";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
 import { fetchUserData, setCurrentUserThunk } from "../store/auth/authSaga";
+import { i18n } from "../i18n";
 
 export default function Home() {
 	const backgroundImage = require("../assets/index.png");
@@ -16,28 +17,21 @@ export default function Home() {
 	const { isSignedIn } = useAuth();
 	const { user } = useUser();
 	const dispatch: AppDispatch = useDispatch();
+	const isProcessingRef = useRef(false);
+
 	console.log("isSignedIn", isSignedIn);
 	useEffect(() => {
 		async function handleAuthState() {
-			if (isSignedIn && user) {
-				try {
+			// Prevent multiple simultaneous executions
+			if (isProcessingRef.current) return;
+			isProcessingRef.current = true;
+
+			try {
+				if (isSignedIn && user) {
 					const { emailAddresses } = user;
 					const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0].emailAddress;
 
-					// First, set the current user in Redux from Clerk data
-					await dispatch(
-						setCurrentUserThunk({
-							firstName: user.firstName,
-							lastName: user.lastName,
-							email: emailAddress,
-							id: user.id,
-							username: user.username,
-							profileUri: user.imageUrl,
-							isAdmin: false, // Will be updated from backend data
-						})
-					).unwrap();
-
-					// Then fetch user data from backend to check QR access status and get isAdmin
+					// Fetch user data from backend to check QR access status and get isAdmin
 					const userDataResult = await dispatch(fetchUserData(emailAddress)).unwrap();
 
 					if (userDataResult === null) {
@@ -49,7 +43,7 @@ export default function Home() {
 						const hasQrAccess = userDataResult.hasQrAccess;
 						const isAdmin = userDataResult.isAdmin || false;
 
-						// Update user with backend data including isAdmin
+						// Update user with backend data including isAdmin (only once)
 						await dispatch(
 							setCurrentUserThunk({
 								firstName: user.firstName,
@@ -80,18 +74,20 @@ export default function Home() {
 							router.push("/(auth)/signup");
 						}, 500);
 					}
-				} catch (error) {
-					console.error("Error fetching user data:", error);
-					// If there's an error, route to signup for QR validation
-					setTimeout(() => {
-						router.push("/(auth)/signup");
-					}, 500);
 				}
+			} catch (error) {
+				console.error("Error fetching user data:", error);
+				// If there's an error, route to signup for QR validation
+				setTimeout(() => {
+					router.push("/(auth)/signup");
+				}, 500);
+			} finally {
+				isProcessingRef.current = false;
 			}
 		}
 
 		handleAuthState();
-	}, [isSignedIn, user]);
+	}, [isSignedIn, user?.id]); // Only depend on isSignedIn and user.id to prevent unnecessary re-runs
 
 	return (
 		<View className="flex-1 bg-black">
@@ -100,7 +96,7 @@ export default function Home() {
 					<Image source={logo} resizeMode="contain" className="aspect-square max-w-[250px]" />
 					<View className="flex gap-3 w-[250px]">
 						<Button className="rounded-lg" size="xl" action="primary" onPress={() => router.navigate("/(auth)/login")}>
-							<ButtonText className="text-white">LOG IN</ButtonText>
+							<ButtonText className="text-white">{i18n.t("login.loginButton")}</ButtonText>
 						</Button>
 						<Button
 							className="rounded-lg"

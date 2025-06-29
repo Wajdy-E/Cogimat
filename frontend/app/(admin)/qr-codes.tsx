@@ -92,7 +92,7 @@ export default function QRCodesManagement() {
 		<ScrollView className="flex-1 bg-background-700">
 			<View className="p-4">
 				<Heading size="2xl" className="text-typography-950 mb-6">
-					QR Code Management
+					{i18n.t("admin.qrCodes.title")}
 				</Heading>
 
 				{/* Statistics Cards */}
@@ -102,18 +102,28 @@ export default function QRCodesManagement() {
 							<Center className="flex-row items-center">
 								<BarChart3 size={24} color={themeTextColor} />
 								<Heading size="lg" className="text-typography-950 ml-2">
-									Usage Statistics
+									{i18n.t("admin.qrCodes.usageStatistics")}
 								</Heading>
 							</Center>
 							{stats ? (
 								<VStack space="xs">
-									<Text className="text-typography-950">Total Codes: {stats.total_codes.toLocaleString()}</Text>
-									<Text className="text-typography-950">Used Codes: {stats.used_codes.toLocaleString()}</Text>
-									<Text className="text-typography-950">Unused Codes: {stats.unused_codes.toLocaleString()}</Text>
-									<Text className="text-typography-950">Usage Rate: {getUsagePercentage()}%</Text>
+									<Text className="text-typography-950">
+										{i18n.t("admin.qrCodes.totalCodes")}: {stats.total_codes.toLocaleString()}
+									</Text>
+									<Text className="text-typography-950">
+										{i18n.t("admin.qrCodes.usedCodes")}: {stats.used_codes.toLocaleString()}
+									</Text>
+									<Text className="text-typography-950">
+										{i18n.t("admin.qrCodes.unusedCodes")}: {stats.unused_codes.toLocaleString()}
+									</Text>
+									<Text className="text-typography-950">
+										{i18n.t("admin.qrCodes.usageRate")}: {getUsagePercentage()}%
+									</Text>
 								</VStack>
 							) : (
-								<Text className="text-typography-950">{loading ? "Loading..." : "No data available"}</Text>
+								<Text className="text-typography-950">
+									{loading ? i18n.t("general.loading") : i18n.t("general.noDataAvailable")}
+								</Text>
 							)}
 						</VStack>
 					</Box>
@@ -123,12 +133,14 @@ export default function QRCodesManagement() {
 				<VStack space="md" className="mb-6">
 					<Button onPress={generateQRCodes} disabled={generating} size="lg" className="rounded-full">
 						<QrCode size={20} />
-						<ButtonText>{generating ? "Generating..." : "Generate 10,000 QR Codes"}</ButtonText>
+						<ButtonText>{generating ? i18n.t("general.generating") : i18n.t("admin.qrCodes.generate10000")}</ButtonText>
 					</Button>
 
 					<Button onPress={fetchStats} disabled={loading} variant="outline" size="lg" className="rounded-full">
 						<RefreshCw size={20} />
-						<ButtonText>{loading ? "Refreshing..." : "Refresh Statistics"}</ButtonText>
+						<ButtonText>
+							{loading ? i18n.t("general.refreshing") : i18n.t("admin.qrCodes.refreshStatistics")}
+						</ButtonText>
 					</Button>
 				</VStack>
 
@@ -136,11 +148,9 @@ export default function QRCodesManagement() {
 				{stats && stats.total_codes > 0 && (
 					<VStack space="md">
 						<Heading size="lg" className="text-typography-950">
-							Print QR Code Pages
+							{i18n.t("admin.qrCodes.printQrCodePages")}
 						</Heading>
-						<Text className="text-typography-950 mb-4">
-							Each page contains 50 QR codes arranged in a 5x10 grid for easy printing.
-						</Text>
+						<Text className="text-typography-950 mb-4">{i18n.t("admin.qrCodes.eachPageContains50")}</Text>
 
 						<VStack space="sm">
 							{Array.from({ length: Math.ceil(stats.total_codes / 50) }, (_, i) => i + 1).map((page) => (
@@ -152,7 +162,7 @@ export default function QRCodesManagement() {
 									className="rounded-lg"
 								>
 									<Download size={16} />
-									<ButtonText>Download Page {page}</ButtonText>
+									<ButtonText>{i18n.t("admin.qrCodes.downloadPage", { page })}</ButtonText>
 								</Button>
 							))}
 						</VStack>
@@ -163,15 +173,13 @@ export default function QRCodesManagement() {
 				<Box className="bg-secondary-100 p-4 rounded-lg mt-6">
 					<VStack space="sm">
 						<Heading size="md" className="text-typography-950">
-							Instructions
+							{i18n.t("admin.qrCodes.instructions")}
 						</Heading>
-						<Text className="text-typography-950 text-sm">1. Generate 10,000 QR codes using the button above</Text>
-						<Text className="text-typography-950 text-sm">2. Download the QR code pages for printing</Text>
-						<Text className="text-typography-950 text-sm">3. Each page contains 50 QR codes in a 5x10 grid</Text>
-						<Text className="text-typography-950 text-sm">
-							4. Print and include these QR codes with your physical products
-						</Text>
-						<Text className="text-typography-950 text-sm">5. Customers scan the QR codes to gain app access</Text>
+						<Text className="text-typography-950 text-sm">{i18n.t("admin.qrCodes.instruction1")}</Text>
+						<Text className="text-typography-950 text-sm">{i18n.t("admin.qrCodes.instruction2")}</Text>
+						<Text className="text-typography-950 text-sm">{i18n.t("admin.qrCodes.instruction3")}</Text>
+						<Text className="text-typography-950 text-sm">{i18n.t("admin.qrCodes.instruction4")}</Text>
+						<Text className="text-typography-950 text-sm">{i18n.t("admin.qrCodes.instruction5")}</Text>
 					</VStack>
 				</Box>
 			</View>

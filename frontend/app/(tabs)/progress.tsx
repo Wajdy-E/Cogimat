@@ -77,13 +77,8 @@ export const milestoneCardConfigs: MilestoneCardConfig[] = [
 function Progress() {
 	const appDispatch: AppDispatch = useDispatch();
 	const router = useRouter();
-	const { goals, userMilestones } = useSelector(
-		(state: RootState) => ({
-			goals: state.data.goals,
-			userMilestones: state.user.milestones ?? ([] as unknown as UserMilestones),
-		}),
-		shallowEqual
-	);
+	const goals = useSelector((state: RootState) => state.data.goals);
+	const userMilestones = useSelector((state: RootState) => state.user.milestones ?? ([] as unknown as UserMilestones));
 	const [showAddGoalModal, setShowAddGoalModal] = useState(false);
 	const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -160,7 +155,11 @@ function Progress() {
 	];
 
 	return (
-		<ScrollView showsHorizontalScrollIndicator={false} className="bg-background-700 min-h-full">
+		<ScrollView
+			showsHorizontalScrollIndicator={false}
+			className="bg-background-700 min-h-full"
+			contentContainerStyle={{ paddingBottom: 50 }}
+		>
 			<View className="w-[90%] self-center">
 				<View className="mt-5 flex self-center">
 					<AnimatedTab options={[i18n.t("progress.overview"), i18n.t("progress.milestones")]} content={tabs} />

@@ -18,8 +18,8 @@ export default function ProgressCard(props: ProgressCardProps) {
 		<VStack space="lg" className="w-full bg-background-500 rounded-md p-3">
 			<Heading>{i18n.t(props.headingKey)}</Heading>
 			<Text>{i18n.t(props.descriptionKey)}</Text>
-			<Progress value={props.value} className="w-full h-2">
-				<ProgressFilledTrack className="h-2 bg-lime-500" />
+			<Progress value={props.value} className="w-full h-2 bg-secondary-800">
+				<ProgressFilledTrack className="h-2 bg-primary-500" />
 			</Progress>
 			<Text size="sm">{i18n.t(props.subTextKey, { count: props.rawCount, target: props.goalTarget })}</Text>
 		</VStack>

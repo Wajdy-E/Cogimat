@@ -168,7 +168,7 @@ const buttonTextStyle = tva({
 		{
 			variant: "outline",
 			action: "negative",
-			class: "text-primary-500 data-[hover=true]:text-primary-500 data-[active=true]:text-primary-500",
+			class: "text-error-600 data-[hover=true]:text-error-600 data-[active=true]:text-error-700",
 		},
 	],
 });

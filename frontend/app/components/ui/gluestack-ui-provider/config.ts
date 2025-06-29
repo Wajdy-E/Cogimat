@@ -23,7 +23,7 @@ export const config = {
 		"--color-secondary-300": "237 237 237",
 		"--color-secondary-400": "230 230 231",
 		// "--color-secondary-500": "217 217 219",
-		"--color-secondary-500": "235 235 235",
+		"--color-secondary-500": "251 251 251",
 		"--color-secondary-600": "198 199 199",
 		"--color-secondary-700": "189 189 189",
 		"--color-secondary-800": "177 177 177",
@@ -139,7 +139,7 @@ export const config = {
 		"--color-background-500": "248, 248, 248",
 		"--color-background-600": "236, 238, 238",
 		"--color-background-700": "255, 255, 255",
-		"--color-background-800": "209, 222, 222",
+		"--color-background-800": "255, 255, 255",
 		"--color-background-900": "194, 216, 216",
 		"--color-background-950": "177, 211, 211",
 
