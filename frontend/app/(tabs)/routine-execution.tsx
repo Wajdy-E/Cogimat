@@ -8,100 +8,111 @@ import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
 import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Play, Pause, SkipForward, CheckCircle } from "lucide-react-native";
+import { Progress, ProgressFilledTrack } from "@/components/ui/progress";
+import { ArrowLeft, Play, SkipForward, CheckCircle } from "lucide-react-native";
 import { Icon } from "@/components/ui/icon";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store";
 import { Routine, Exercise, CustomExercise } from "../../store/data/dataSlice";
+import {
+	startRoutineExecution,
+	completeExercise,
+	nextExercise,
+	skipExercise,
+	setRoutineComplete,
+	setShowCountdown,
+	resetRoutineExecution,
+} from "../../store/data/dataSlice";
 import { i18n } from "../../i18n";
 
 export default function RoutineExecution() {
 	const params = useLocalSearchParams();
 	const router = useRouter();
+	const dispatch = useDispatch();
 	const routineId = parseInt((params.routineId as string) || "0");
+	const processedCompletions = useRef<Set<string>>(new Set());
 
-	const { routines, exercises, customExercises } = useSelector(
+	const { routines, exercises, customExercises, routineExecution } = useSelector(
 		(state: RootState) => ({
 			routines: state.data.routines || [],
 			exercises: state.data.exercises || [],
 			customExercises: state.data.customExercises || [],
+			routineExecution: state.data.routineExecution,
 		}),
 		shallowEqual
 	);
 
 	const routine = routines.find((r) => r.id === routineId);
-	const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-	const [isPaused, setIsPaused] = useState(false);
-	const [showCountdown, setShowCountdown] = useState(false);
-	const [isRoutineComplete, setIsRoutineComplete] = useState(false);
-	const [completedExercises, setCompletedExercises] = useState<Set<number>>(new Set());
-	const [hasProcessedCompletion, setHasProcessedCompletion] = useState(false);
+
+	// Initialize routine execution if not already started
+	useEffect(() => {
+		if (routine && !routineExecution) {
+			dispatch(startRoutineExecution({ routineId }));
+		}
+	}, [routine, routineExecution, dispatch, routineId]);
 
 	// Get current exercise details
-	const currentRoutineExercise = routine?.exercises[currentExerciseIndex];
+	const currentRoutineExercise = routine?.exercises[routineExecution?.currentExerciseIndex || 0];
 	const currentExercise = currentRoutineExercise
 		? currentRoutineExercise.exercise_type === "standard"
 			? exercises.find((e) => e.id === currentRoutineExercise.exercise_id)
 			: customExercises.find((e) => e.id === currentRoutineExercise.exercise_id)
 		: null;
+
 	// Check if we're returning from an exercise completion
 	useEffect(() => {
 		const returningFromExercise = params?.returnFromExercise === "true";
 		const completedExerciseId = params?.completedExerciseId;
 
-		if (returningFromExercise && completedExerciseId && !hasProcessedCompletion) {
-			console.log("Exercise completed:", completedExerciseId);
-			console.log("Current exercise index:", currentExerciseIndex);
-			console.log("Routine exercises length:", routine?.exercises.length);
+		if (returningFromExercise && completedExerciseId && routineExecution) {
+			const completionKey = `${completedExerciseId}-${routineExecution.currentExerciseIndex}`;
 
-			// Mark that we've processed this completion
-			setHasProcessedCompletion(true);
+			// Check if we've already processed this completion
+			if (processedCompletions.current.has(completionKey)) {
+				return;
+			}
+
+			// Mark this completion as processed
+			processedCompletions.current.add(completionKey);
 
 			// Mark the exercise as completed
-			setCompletedExercises((prev) => new Set([...prev, parseInt(completedExerciseId as string)]));
+			dispatch(completeExercise({ exerciseId: parseInt(completedExerciseId as string) }));
 
 			// Move to next exercise or complete routine
 			const totalExercises = routine?.exercises.length || 0;
-			const nextIndex = currentExerciseIndex + 1;
-
-			console.log("Total exercises:", totalExercises);
-			console.log("Next index:", nextIndex);
+			const nextIndex = routineExecution.currentExerciseIndex + 1;
 
 			if (nextIndex < totalExercises) {
-				console.log("Moving to next exercise");
-				setCurrentExerciseIndex(nextIndex);
+				dispatch(nextExercise());
 			} else {
-				console.log("Routine complete!");
-				setIsRoutineComplete(true);
+				dispatch(setRoutineComplete());
 			}
+
+			// Clear URL parameters to prevent issues with subsequent completions
+			router.setParams({ returnFromExercise: undefined, completedExerciseId: undefined });
 		}
-	}, [params?.returnFromExercise, params?.completedExerciseId, hasProcessedCompletion]);
+	}, [params?.returnFromExercise, params?.completedExerciseId, routine?.exercises.length, dispatch, router]);
 
 	// Cleanup: reset state when component unmounts or user navigates away
 	useEffect(() => {
 		return () => {
 			// Reset all routine execution state when leaving the screen
-			setCurrentExerciseIndex(0);
-			setCompletedExercises(new Set());
-			setIsRoutineComplete(false);
-			setShowCountdown(false);
-			setIsPaused(false);
-			setHasProcessedCompletion(false);
+			dispatch(resetRoutineExecution());
+			processedCompletions.current.clear();
 		};
-	}, []);
+	}, [dispatch]);
 
 	// Reset state when user navigates away and comes back
 	useFocusEffect(
 		React.useCallback(() => {
 			// Reset countdown state when screen comes into focus
-			if (showCountdown) {
-				setShowCountdown(false);
+			if (routineExecution?.showCountdown) {
+				dispatch(setShowCountdown(false));
 			}
-		}, [showCountdown])
+		}, [routineExecution?.showCountdown, dispatch])
 	);
 
-	const progress = routine ? (completedExercises.size / routine.exercises.length) * 100 : 0;
+	const progress = routine ? ((routineExecution?.completedExercises.length || 0) / routine.exercises.length) * 100 : 0;
 
 	useEffect(() => {
 		if (!routine) {
@@ -111,7 +122,7 @@ export default function RoutineExecution() {
 
 		// Check if exercises are loaded
 		if (exercises.length === 0 && customExercises.length === 0) {
-			console.log("Exercises not loaded yet, waiting...");
+			// Exercises not loaded yet, waiting...
 		}
 	}, [routine, router, exercises.length, customExercises.length]);
 
@@ -126,30 +137,29 @@ export default function RoutineExecution() {
 			return;
 		}
 
-		// Reset the completion flag when starting a new exercise
-		setHasProcessedCompletion(false);
-		setShowCountdown(true);
+		// Clear any existing URL parameters
+		router.setParams({ returnFromExercise: undefined, completedExerciseId: undefined });
+
+		// Clear processed completions for the new exercise
+		processedCompletions.current.clear();
+
+		dispatch(setShowCountdown(true));
 	};
 
 	const handleSkipExercise = () => {
 		const totalExercises = routine?.exercises.length || 0;
-		const nextIndex = currentExerciseIndex + 1;
+		const nextIndex = (routineExecution?.currentExerciseIndex || 0) + 1;
 
-		console.log("Skip exercise - Current index:", currentExerciseIndex);
-		console.log("Skip exercise - Total exercises:", totalExercises);
-		console.log("Skip exercise - Next index:", nextIndex);
+		// Mark the current exercise as completed when skipping
+		if (currentRoutineExercise) {
+			dispatch(completeExercise({ exerciseId: currentRoutineExercise.exercise_id }));
+		}
 
 		if (nextIndex < totalExercises) {
-			console.log("Skip exercise - Moving to next exercise");
-			setCurrentExerciseIndex(nextIndex);
+			dispatch(skipExercise());
 		} else {
-			console.log("Skip exercise - Routine complete!");
-			setIsRoutineComplete(true);
+			dispatch(setRoutineComplete());
 		}
-	};
-
-	const handlePauseResume = () => {
-		setIsPaused((prev) => !prev);
 	};
 
 	const handleEndRoutine = () => {
@@ -157,63 +167,80 @@ export default function RoutineExecution() {
 		router.replace("/(tabs)/progress");
 
 		// Reset all routine execution state
-		setCurrentExerciseIndex(0);
-		setCompletedExercises(new Set());
-		setIsRoutineComplete(false);
-		setShowCountdown(false);
-		setIsPaused(false);
-		setHasProcessedCompletion(false);
+		dispatch(resetRoutineExecution());
+		processedCompletions.current.clear();
+	};
+
+	const handleRestartRoutine = () => {
+		// Clear URL parameters
+		router.setParams({ returnFromExercise: undefined, completedExerciseId: undefined });
+
+		// Reset all routine execution state and start fresh
+		dispatch(resetRoutineExecution());
+		processedCompletions.current.clear();
+
+		// Initialize the routine execution again
+		dispatch(startRoutineExecution({ routineId }));
 	};
 
 	// Handle navigation to exercise when countdown is shown
 	useEffect(() => {
-		if (showCountdown && currentExercise && currentRoutineExercise) {
+		if (routineExecution?.showCountdown && currentExercise && currentRoutineExercise) {
 			try {
 				const exerciseData = JSON.stringify(currentExercise);
 				const exerciseType = currentRoutineExercise.exercise_type === "custom" ? "custom-exercise" : "exercise";
 				router.push(
-					`/(${exerciseType})/exercise?data=${encodeURIComponent(exerciseData)}&routineMode=true&routineId=${routineId}&exerciseIndex=${currentExerciseIndex}`
+					`/(${exerciseType})/exercise?data=${encodeURIComponent(exerciseData)}&routineMode=true&routineId=${routineId}&exerciseIndex=${routineExecution?.currentExerciseIndex}`
 				);
 			} catch (error) {
 				console.error("Error navigating to exercise:", error);
 				// Fallback: go back to routine execution
-				setShowCountdown(false);
+				dispatch(setShowCountdown(false));
 			}
-		} else if (showCountdown) {
+		} else if (routineExecution?.showCountdown) {
 			console.error("Current exercise or routine exercise is undefined");
-			setShowCountdown(false);
+			dispatch(setShowCountdown(false));
 		}
-	}, [showCountdown, currentExercise, currentRoutineExercise, router, routineId, currentExerciseIndex]);
+	}, [routineExecution?.showCountdown, currentExercise, currentRoutineExercise, router, routineId]);
 
 	// Reset countdown if user navigates back without completing exercise
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			if (showCountdown) {
+			if (routineExecution?.showCountdown) {
 				// If countdown is still showing after 1 second, user probably navigated back
-				setShowCountdown(false);
+				dispatch(setShowCountdown(false));
 			}
 		}, 1000);
 
 		return () => clearTimeout(timer);
-	}, [showCountdown]);
+	}, [routineExecution?.showCountdown, dispatch]);
 
-	if (isRoutineComplete) {
+	if (routineExecution?.isRoutineComplete) {
 		return (
 			<View className="flex-1 bg-background-700 justify-center items-center">
-				<VStack space="xl" className="items-center">
+				<VStack space="xl" className="items-center max-w-[90%]">
 					<Icon as={CheckCircle} size="xl" className="text-success-500" />
 					<Heading size="2xl">{i18n.t("routines.execution.complete")}</Heading>
 					<Text className="text-center text-typography-500">{i18n.t("routines.execution.completeMessage")}</Text>
-					<Button size="lg" onPress={handleEndRoutine}>
-						<ButtonText>{i18n.t("general.buttons.done")}</ButtonText>
-					</Button>
+					<HStack space="md">
+						<Button size="lg" variant="outline" onPress={handleRestartRoutine} className="flex-1">
+							<ButtonText>{i18n.t("general.buttons.restart")}</ButtonText>
+						</Button>
+						<Button size="lg" onPress={handleEndRoutine} className="flex-1">
+							<ButtonText>{i18n.t("general.buttons.done")}</ButtonText>
+						</Button>
+					</HStack>
 				</VStack>
 			</View>
 		);
 	}
 
-	if (showCountdown) {
-		return <View className="flex-1 justify-center items-center">{/* <Text>{i18n.t("general.loading")}</Text> */}</View>;
+	if (routineExecution?.showCountdown) {
+		return (
+			<View className="flex-1 justify-center items-center">
+				<Text>{i18n.t("general.loading")}</Text>
+			</View>
+		);
 	}
 
 	return (
@@ -238,9 +265,12 @@ export default function RoutineExecution() {
 								<Text>{i18n.t("routines.execution.progress")}</Text>
 								<Text>{Math.round(progress)}%</Text>
 							</HStack>
-							<Progress value={progress} size="lg" />
+							<Progress value={progress} size="lg">
+								<ProgressFilledTrack className="bg-primary-500" />
+							</Progress>
 							<Text className="text-center">
-								{completedExercises.size} / {routine.exercises.length} {i18n.t("routines.saved.exercises")}
+								{routineExecution?.completedExercises.length} / {routine.exercises.length}{" "}
+								{i18n.t("routines.saved.exercises")}
 							</Text>
 						</VStack>
 					</Card>
@@ -258,7 +288,7 @@ export default function RoutineExecution() {
 										</Text>
 									</VStack>
 									<Text className="text-typography-500">
-										{currentExerciseIndex + 1} / {routine.exercises.length}
+										{(routineExecution?.currentExerciseIndex || 0) + 1} / {routine.exercises.length}
 									</Text>
 								</HStack>
 							</VStack>
@@ -277,8 +307,8 @@ export default function RoutineExecution() {
 										? exercises.find((e) => e.id === routineExercise.exercise_id)
 										: customExercises.find((e) => e.id === routineExercise.exercise_id);
 
-								const isCompleted = completedExercises.has(routineExercise.exercise_id);
-								const isCurrent = index === currentExerciseIndex;
+								const isCompleted = routineExecution?.completedExercises.includes(routineExercise.exercise_id);
+								const isCurrent = index === (routineExecution?.currentExerciseIndex || 0);
 
 								return (
 									<HStack
@@ -313,10 +343,6 @@ export default function RoutineExecution() {
 				<Button size="lg" variant="outline" onPress={handleSkipExercise} className="flex-1">
 					<ButtonIcon as={SkipForward} />
 					<ButtonText>{i18n.t("routines.execution.skip")}</ButtonText>
-				</Button>
-				<Button size="lg" variant="outline" onPress={handlePauseResume} className="flex-1">
-					<ButtonIcon as={isPaused ? Play : Pause} />
-					<ButtonText>{isPaused ? i18n.t("routines.execution.resume") : i18n.t("routines.execution.pause")}</ButtonText>
 				</Button>
 				<Button size="lg" onPress={handleStartExercise} className="flex-1" disabled={!currentExercise}>
 					<ButtonIcon as={Play} />

@@ -20,6 +20,7 @@ interface ExerciseSelectionModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	onSelectExercise: (exercise: Exercise | CustomExercise, exerciseType: "standard" | "custom") => void;
+	currentSlots?: Array<{ id: string; exercise?: Exercise | CustomExercise; exerciseType?: "standard" | "custom" }>;
 }
 
 function ExerciseSelectionModal(props: ExerciseSelectionModalProps) {
@@ -33,20 +34,30 @@ function ExerciseSelectionModal(props: ExerciseSelectionModalProps) {
 
 	// Filter exercises based on search query and difficulty using useMemo for performance
 	const filteredStandardExercises = useMemo(() => {
+		// Get IDs of already selected exercises
+		const selectedExerciseIds =
+			props.currentSlots?.filter((slot) => slot.exercise).map((slot) => slot.exercise!.id) || [];
+
 		return exercises.filter((exercise) => {
 			const matchesSearch = (exercise.name?.toLowerCase() || "").includes(searchQueryRef.current.toLowerCase());
 			const matchesDifficulty = difficultyFilter === "all" || exercise.difficulty === difficultyFilter;
-			return matchesSearch && matchesDifficulty;
+			const notAlreadySelected = !selectedExerciseIds.includes(exercise.id);
+			return matchesSearch && matchesDifficulty && notAlreadySelected;
 		});
-	}, [exercises, searchTrigger, difficultyFilter]); // searchTrigger triggers re-render
+	}, [exercises, searchTrigger, difficultyFilter, props.currentSlots]); // searchTrigger triggers re-render
 
 	const filteredCustomExercises = useMemo(() => {
+		// Get IDs of already selected exercises
+		const selectedExerciseIds =
+			props.currentSlots?.filter((slot) => slot.exercise).map((slot) => slot.exercise!.id) || [];
+
 		return customExercises.filter((exercise) => {
 			const matchesSearch = (exercise.name?.toLowerCase() || "").includes(searchQueryRef.current.toLowerCase());
 			const matchesDifficulty = difficultyFilter === "all" || exercise.difficulty === difficultyFilter;
-			return matchesSearch && matchesDifficulty;
+			const notAlreadySelected = !selectedExerciseIds.includes(exercise.id);
+			return matchesSearch && matchesDifficulty && notAlreadySelected;
 		});
-	}, [customExercises, searchTrigger, difficultyFilter]); // searchTrigger triggers re-render
+	}, [customExercises, searchTrigger, difficultyFilter, props.currentSlots]); // searchTrigger triggers re-render
 
 	const handleSelectExercise = (exercise: Exercise | CustomExercise) => {
 		props.onSelectExercise(exercise, activeTab);

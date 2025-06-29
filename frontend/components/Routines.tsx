@@ -123,6 +123,11 @@ function Routines(props: RoutinesProps) {
 		setShowNameModal(false);
 	};
 
+	const handleSaveButtonClick = () => {
+		// Show the name modal for both creating new and editing
+		setShowNameModal(true);
+	};
+
 	const handleEditRoutine = (routine: any) => {
 		setRoutineName(routine.name);
 		setEditingRoutineId(routine.id);
@@ -149,7 +154,7 @@ function Routines(props: RoutinesProps) {
 		}
 
 		setSlots(routineSlots);
-		setShowNameModal(true);
+		// Don't show name modal here - let user click "Save Routine" first
 	};
 
 	const handleDeleteRoutine = (routineId: number) => {
@@ -170,11 +175,22 @@ function Routines(props: RoutinesProps) {
 		router.push(`/(tabs)/routine-execution?routineId=${routine.id}`);
 	};
 
+	const handleCreateNew = () => {
+		// Reset editing state when creating new
+		setIsEditing(false);
+		setEditingRoutineId(null);
+		setRoutineName("");
+		setSlots([{ id: "1" }, { id: "2" }, { id: "3" }]);
+		// Open exercise selection modal for the first slot
+		setSelectedSlotId("1");
+		setShowExerciseModal(true);
+	};
+
 	return (
 		<VStack space="lg" className={props.classes}>
 			<HStack className="justify-between items-center">
 				<Heading size="lg">{i18n.t("routines.title")}</Heading>
-				<Button size="sm" variant="solid" action="primary" onPress={() => setShowNameModal(true)}>
+				<Button size="sm" variant="solid" action="primary" onPress={handleCreateNew}>
 					<ButtonText>{i18n.t("routines.createNew")}</ButtonText>
 					<ButtonIcon as={Plus} size="sm" />
 				</Button>
@@ -231,7 +247,7 @@ function Routines(props: RoutinesProps) {
 					</ScrollView>
 
 					{slots.some((slot) => slot.exercise) && (
-						<Button size="lg" variant="solid" action="primary" onPress={() => setShowNameModal(true)}>
+						<Button size="lg" variant="solid" action="primary" onPress={handleSaveButtonClick}>
 							<ButtonText>
 								{isEditing ? i18n.t("routines.builder.updateRoutine") : i18n.t("routines.builder.saveRoutine")}
 							</ButtonText>
@@ -288,6 +304,7 @@ function Routines(props: RoutinesProps) {
 				isOpen={showExerciseModal}
 				onClose={() => setShowExerciseModal(false)}
 				onSelectExercise={handleSelectExercise}
+				currentSlots={slots}
 			/>
 
 			{/* Routine Name Modal */}
@@ -296,8 +313,7 @@ function Routines(props: RoutinesProps) {
 				onClose={() => {
 					setShowNameModal(false);
 					setRoutineName("");
-					setIsEditing(false);
-					setEditingRoutineId(null);
+					// Don't reset editing state or slots when canceling - let user continue editing
 				}}
 				onConfirm={handleSaveRoutine}
 			>

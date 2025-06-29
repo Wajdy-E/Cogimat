@@ -75,7 +75,7 @@ export default function TabsLayout() {
 				<Tabs.Screen
 					name="routine-execution"
 					options={{
-						title: "Routine Execution",
+						title: "Routine",
 						href: null,
 					}}
 				/>

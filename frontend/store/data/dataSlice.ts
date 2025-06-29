@@ -104,6 +104,14 @@ export interface PopupStates {
 	routineModalIsOpen: boolean;
 }
 
+export interface RoutineExecutionState {
+	currentExerciseIndex: number;
+	completedExercises: number[];
+	isRoutineComplete: boolean;
+	showCountdown: boolean;
+	hasProcessedCompletion: boolean;
+}
+
 export interface DataState {
 	exercises: Exercise[];
 	selectedExercise: Exercise | CustomExercise | null;
@@ -116,6 +124,7 @@ export interface DataState {
 	routines: Routine[];
 	popupStates: PopupStates;
 	weeklyWorkoutGoal: WeeklyWorkoutGoal | null;
+	routineExecution: RoutineExecutionState | null;
 }
 
 const initialState: DataState = {
@@ -134,6 +143,7 @@ const initialState: DataState = {
 		routineModalIsOpen: false,
 	},
 	weeklyWorkoutGoal: null,
+	routineExecution: null,
 };
 
 const dataSlice = createSlice({
@@ -288,6 +298,51 @@ const dataSlice = createSlice({
 		updateWeeklyWorkoutGoal(state, { payload }: PayloadAction<WeeklyWorkoutGoal>) {
 			state.weeklyWorkoutGoal = payload;
 		},
+		// Routine Execution Reducers
+		startRoutineExecution(state, { payload }: PayloadAction<{ routineId: number }>) {
+			state.routineExecution = {
+				currentExerciseIndex: 0,
+				completedExercises: [],
+				isRoutineComplete: false,
+				showCountdown: false,
+				hasProcessedCompletion: false,
+			};
+		},
+		setRoutineExecutionState(state, { payload }: PayloadAction<RoutineExecutionState>) {
+			state.routineExecution = payload;
+		},
+		completeExercise(state, { payload }: PayloadAction<{ exerciseId: number }>) {
+			if (state.routineExecution) {
+				if (!state.routineExecution.completedExercises.includes(payload.exerciseId)) {
+					state.routineExecution.completedExercises.push(payload.exerciseId);
+				}
+				state.routineExecution.hasProcessedCompletion = true;
+			}
+		},
+		nextExercise(state) {
+			if (state.routineExecution) {
+				state.routineExecution.currentExerciseIndex += 1;
+				state.routineExecution.hasProcessedCompletion = false;
+			}
+		},
+		skipExercise(state) {
+			if (state.routineExecution) {
+				state.routineExecution.currentExerciseIndex += 1;
+			}
+		},
+		setRoutineComplete(state) {
+			if (state.routineExecution) {
+				state.routineExecution.isRoutineComplete = true;
+			}
+		},
+		setShowCountdown(state, { payload }: PayloadAction<boolean>) {
+			if (state.routineExecution) {
+				state.routineExecution.showCountdown = payload;
+			}
+		},
+		resetRoutineExecution(state) {
+			state.routineExecution = null;
+		},
 		resetState: () => initialState,
 	},
 });
@@ -325,6 +380,14 @@ export const {
 	removeRoutine,
 	setWeeklyWorkoutGoal,
 	updateWeeklyWorkoutGoal,
+	startRoutineExecution,
+	setRoutineExecutionState,
+	completeExercise,
+	nextExercise,
+	skipExercise,
+	setRoutineComplete,
+	setShowCountdown,
+	resetRoutineExecution,
 	resetState,
 } = dataSlice.actions;
 
