@@ -1,27 +1,24 @@
 import { ScrollView, View } from "react-native";
 import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
 import AnimatedTab from "../../components/AnimatedTabs";
 import { i18n } from "../../i18n";
 import { Heading } from "@/components/ui/heading";
 import GoalCard from "../../components/GoalCard";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Edit } from "lucide-react-native";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ModalComponent from "../../components/Modal";
 import FormInput from "../../components/FormInput";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
 import { addGoal, deleteGoal, updateGoal } from "../../store/data/dataSaga";
-import { clearGoals } from "../../store/data/dataSlice";
 import AlertModal from "../../components/AlertModal";
 import { useRouter } from "expo-router";
 import { MilestoneCardConfig, UserMilestones } from "../../store/auth/authSlice";
 import ProgressCard from "../../components/ProgressCard";
-import { shallowEqual } from "react-redux";
 import WeeklyWorkoutGoal from "./WeeklyGoal";
 import Routines from "../../components/Routines";
-import NotificationTest from "../../components/NotificationTest";
+// import NotificationTest from "../../components/NotificationTest";
 
 export const milestoneCardConfigs: MilestoneCardConfig[] = [
 	{
@@ -135,7 +132,7 @@ function Progress() {
 			<WeeklyWorkoutGoal />
 
 			{/* Temporary notification test - remove after testing */}
-			<NotificationTest />
+			{/* <NotificationTest /> */}
 		</VStack>,
 
 		<VStack space="lg">
