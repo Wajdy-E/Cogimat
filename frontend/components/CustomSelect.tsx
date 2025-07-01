@@ -9,8 +9,8 @@ import {
 	SelectDragIndicatorWrapper,
 	SelectDragIndicator,
 	SelectItem,
-} from "@/components/ui/select";
-import { ChevronDownIcon } from "@/components/ui/icon";
+} from '@/components/ui/select';
+import { ChevronDownIcon } from '@/components/ui/icon';
 
 interface CustomSelectProps {
 	options: { label: string; value: string }[];
@@ -21,7 +21,7 @@ interface CustomSelectProps {
 
 const CustomSelect = ({
 	options,
-	placeholder = "Select an option",
+	placeholder = 'Select an option',
 	value,
 	onChange,
 }: CustomSelectProps) => {

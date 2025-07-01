@@ -1,6 +1,6 @@
-import { View } from "react-native";
+import { View } from 'react-native';
 
-function educationalContent() {
+function educationalContent () {
 	return <View></View>;
 }
 

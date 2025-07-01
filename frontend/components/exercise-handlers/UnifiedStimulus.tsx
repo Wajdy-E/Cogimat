@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { Exercise } from "../../store/data/dataSlice";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store/store";
-import { updateUserMilestone } from "../../store/auth/authSaga";
-import ExerciseControl from "../exercises/ExerciseControl";
-import ExerciseProgress from "../exercises/ExerciseProgress";
+import React, { useEffect, useState } from 'react';
+import { Exercise } from '../../store/data/dataSlice';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store/store';
+import { updateUserMilestone } from '../../store/auth/authSaga';
+import ExerciseControl from '../exercises/ExerciseControl';
+import ExerciseProgress from '../exercises/ExerciseProgress';
 
 export interface StimulusStrategy {
 	generateStimulus: (exercise: Exercise) => any;
@@ -25,7 +24,7 @@ interface UnifiedStimulusProps {
 	strategy: StimulusStrategy;
 }
 
-export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy }: UnifiedStimulusProps) {
+export default function UnifiedStimulus ({ exercise, onComplete, onStop, strategy }: UnifiedStimulusProps) {
 	const dispatch = useDispatch<AppDispatch>();
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
@@ -42,7 +41,9 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 
 	// Independent timer effect
 	useEffect(() => {
-		if (exerciseCompleted) return;
+		if (exerciseCompleted) {
+			return;
+		}
 
 		const timer = setInterval(() => {
 			if (!isPaused && timeLeft > 0) {
@@ -53,9 +54,9 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 						// Update milestones
 						dispatch(
 							updateUserMilestone({
-								milestoneType: "exercisesCompleted",
+								milestoneType: 'exercisesCompleted',
 								exerciseDifficulty: exercise.difficulty,
-							})
+							}),
 						);
 					}
 					return Math.max(newTime, 0);
@@ -69,7 +70,9 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 
 	// Stimulus cycle effect
 	useEffect(() => {
-		if (exerciseCompleted) return;
+		if (exerciseCompleted) {
+			return;
+		}
 
 		let elapsed = 0;
 		let active = true;

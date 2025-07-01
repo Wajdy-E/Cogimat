@@ -1,36 +1,36 @@
-import { useAuth, useSignIn } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Button, ButtonText } from "@/components/ui/button";
-import FormInput from "../../components/FormInput";
-import { GestureResponderEvent, View } from "react-native";
-import { i18n } from "../../i18n";
-import { Heading } from "@/components/ui/heading";
-import BackButton from "../../components/BackButton";
-import { SafeAreaView } from "react-native-safe-area-context";
-import * as Yup from "yup";
+import { useAuth, useSignIn } from '@clerk/clerk-expo';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { VStack } from '@/components/ui/vstack';
+import { Text } from '@/components/ui/text';
+import { Button, ButtonText } from '@/components/ui/button';
+import FormInput from '../../components/FormInput';
+import { GestureResponderEvent, View } from 'react-native';
+import { i18n } from '../../i18n';
+import { Heading } from '@/components/ui/heading';
+import BackButton from '../../components/BackButton';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Yup from 'yup';
 
 const forgotPasswordSchema = Yup.object().shape({
-	email: Yup.string().email(i18n.t("signup.errors.invalidEmail")).required(i18n.t("signup.errors.emailRequired")),
+	email: Yup.string().email(i18n.t('signup.errors.invalidEmail')).required(i18n.t('signup.errors.emailRequired')),
 	password: Yup.string()
-		.min(6, i18n.t("signup.errors.passwordShort"))
-		.required(i18n.t("signup.errors.passwordRequired")),
-	code: Yup.string().required(i18n.t("forgotPassword.resetCodeRequired")),
+		.min(6, i18n.t('signup.errors.passwordShort'))
+		.required(i18n.t('signup.errors.passwordRequired')),
+	code: Yup.string().required(i18n.t('forgotPassword.resetCodeRequired')),
 });
 
-export default function ForgotPassword() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [code, setCode] = useState("");
+export default function ForgotPassword () {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [code, setCode] = useState('');
 	const [successfulCreation, setSuccessfulCreation] = useState(false);
 	const [secondFactor, setSecondFactor] = useState(false);
 	const [errors, setErrors] = useState({
-		email: "",
-		password: "",
-		code: "",
-		general: "",
+		email: '',
+		password: '',
+		code: '',
+		general: '',
 	});
 
 	const router = useRouter();
@@ -39,7 +39,7 @@ export default function ForgotPassword() {
 
 	useEffect(() => {
 		if (isSignedIn) {
-			router.push("/");
+			router.push('/');
 		}
 	}, [isSignedIn, router]);
 
@@ -47,58 +47,58 @@ export default function ForgotPassword() {
 		return null;
 	}
 
-	async function create(e: GestureResponderEvent) {
+	async function create (e: GestureResponderEvent) {
 		try {
-			await forgotPasswordSchema.validateAt("email", { email });
+			await forgotPasswordSchema.validateAt('email', { email });
 			await signIn
 				?.create({
-					strategy: "reset_password_email_code",
+					strategy: 'reset_password_email_code',
 					identifier: email,
 				})
 				.then(() => {
 					setSuccessfulCreation(true);
-					setErrors({ email: "", password: "", code: "", general: "" });
+					setErrors({ email: '', password: '', code: '', general: '' });
 				})
 				.catch((err) => {
-					console.error("error", err.errors[0].longMessage);
+					console.error('error', err.errors[0].longMessage);
 					setErrors((prev) => ({ ...prev, general: err.errors[0].longMessage }));
 				});
 		} catch (err: unknown) {
 			if (err instanceof Yup.ValidationError) {
 				setErrors((prev) => ({ ...prev, email: err.message }));
 			} else {
-				setErrors((prev) => ({ ...prev, general: "An unexpected error occurred" }));
+				setErrors((prev) => ({ ...prev, general: 'An unexpected error occurred' }));
 			}
 		}
 	}
 
-	async function reset(e: GestureResponderEvent) {
+	async function reset (e: GestureResponderEvent) {
 		e.preventDefault();
 		try {
 			await forgotPasswordSchema.validate({ password, code });
 			await signIn
 				?.attemptFirstFactor({
-					strategy: "reset_password_email_code",
+					strategy: 'reset_password_email_code',
 					code,
 					password,
 				})
 				.then((result) => {
-					if (result.status === "needs_second_factor") {
+					if (result.status === 'needs_second_factor') {
 						setSecondFactor(true);
-						setErrors({ email: "", password: "", code: "", general: "" });
-					} else if (result.status === "complete") {
+						setErrors({ email: '', password: '', code: '', general: '' });
+					} else if (result.status === 'complete') {
 						setActive({ session: result.createdSessionId });
-						setErrors({ email: "", password: "", code: "", general: "" });
+						setErrors({ email: '', password: '', code: '', general: '' });
 					} else {
 					}
 				})
 				.catch((err) => {
-					console.error("error", err.errors[0].longMessage);
+					console.error('error', err.errors[0].longMessage);
 					setErrors((prev) => ({ ...prev, general: err.errors[0].longMessage }));
 				});
 		} catch (err: unknown) {
 			if (err instanceof Yup.ValidationError) {
-				const newErrors = { email: "", password: "", code: "", general: "" };
+				const newErrors = { email: '', password: '', code: '', general: '' };
 				if (err.path) {
 					newErrors[err.path as keyof typeof newErrors] = err.message;
 				} else {
@@ -110,7 +110,7 @@ export default function ForgotPassword() {
 				}
 				setErrors(newErrors);
 			} else {
-				setErrors((prev) => ({ ...prev, general: "An unexpected error occurred" }));
+				setErrors((prev) => ({ ...prev, general: 'An unexpected error occurred' }));
 			}
 		}
 	}
@@ -119,7 +119,7 @@ export default function ForgotPassword() {
 		<SafeAreaView className="p-4 h-screen bg-background-700">
 			<View className="w-full flex-row items-center">
 				<BackButton classes="none" />
-				<Heading className="text-2xl font-bold w-[90%]">{i18n.t("forgotPassword.title")}</Heading>
+				<Heading className="text-2xl font-bold w-[90%]">{i18n.t('forgotPassword.title')}</Heading>
 			</View>
 			<View className="flex-1 justify-center">
 				<VStack space="lg">
@@ -127,7 +127,7 @@ export default function ForgotPassword() {
 						<>
 							<FormInput
 								label="forgotPassword.email"
-								placeholder={"forgotPassword.emailPlaceholder"}
+								placeholder={'forgotPassword.emailPlaceholder'}
 								value={email}
 								onChange={setEmail}
 								formSize="lg"
@@ -138,14 +138,14 @@ export default function ForgotPassword() {
 								isRequired
 							/>
 							<Button onPress={create} className="mt-4">
-								<ButtonText>{i18n.t("forgotPassword.sendPasswordResetCode")}</ButtonText>
+								<ButtonText>{i18n.t('forgotPassword.sendPasswordResetCode')}</ButtonText>
 							</Button>
 						</>
 					) : (
 						<>
 							<FormInput
 								label="forgotPassword.newPassword"
-								placeholder={"forgotPassword.newPasswordPlaceholder"}
+								placeholder={'forgotPassword.newPasswordPlaceholder'}
 								value={password}
 								onChange={setPassword}
 								formSize="lg"
@@ -157,7 +157,7 @@ export default function ForgotPassword() {
 							/>
 							<FormInput
 								label="forgotPassword.resetCode"
-								placeholder={"forgotPassword.resetCodePlaceholder"}
+								placeholder={'forgotPassword.resetCodePlaceholder'}
 								value={code}
 								onChange={setCode}
 								formSize="lg"
@@ -168,7 +168,7 @@ export default function ForgotPassword() {
 								formErrorKey={errors.code}
 							/>
 							<Button onPress={reset} className="mt-4">
-								<ButtonText>{i18n.t("forgotPassword.reset")}</ButtonText>
+								<ButtonText>{i18n.t('forgotPassword.reset')}</ButtonText>
 							</Button>
 						</>
 					)}

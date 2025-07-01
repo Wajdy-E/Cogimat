@@ -1,13 +1,13 @@
-import { configureStore, combineReducers, createAction } from "@reduxjs/toolkit";
-import userReducer from "./auth/authSlice";
-import dataReducer from "./data/dataSlice";
-import uiReducer from "./ui/uiSlice";
-import { persistStore, persistReducer } from "redux-persist";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import userReducer from './auth/authSlice';
+import dataReducer from './data/dataSlice';
+import uiReducer from './ui/uiSlice';
+import { persistStore, persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
 const persistConfig = {
-	key: "root",
+	key: 'root',
 	storage: AsyncStorage,
 };
 

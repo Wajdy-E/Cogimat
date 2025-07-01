@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Button, ButtonText } from "../../app/components/ui/button";
+import { useState } from 'react';
+import { Button, ButtonText } from '../../app/components/ui/button';
 
 interface NumberProps {
 	value: Number;
 }
 
-function Number({ value }: NumberProps) {
+function Number ({ value }: NumberProps) {
 	const [selected, setSelected] = useState(false);
 
 	return (

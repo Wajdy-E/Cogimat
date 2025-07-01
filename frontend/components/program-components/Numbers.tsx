@@ -1,13 +1,13 @@
-import { HStack } from "@/components/ui/hstack";
-import { numOptions } from "../../data/program/Program";
-import { Button, ButtonText } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { HStack } from '@/components/ui/hstack';
+import { numOptions } from '../../data/program/Program';
+import { Button, ButtonText } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 
 type NumbersProps = {
 	onChange?: (selected: number[]) => void;
 };
 
-function Numbers({ onChange }: NumbersProps) {
+function Numbers ({ onChange }: NumbersProps) {
 	const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
 
 	const toggleNumber = (num: number) => {
@@ -29,7 +29,7 @@ function Numbers({ onChange }: NumbersProps) {
 				>
 					<ButtonText
 						className={`h-10 w-10 text-center text-4xl ${
-							selectedNumbers.includes(Number(num.num)) ? "text-primary-500" : "text-typography-950"
+							selectedNumbers.includes(Number(num.num)) ? 'text-primary-500' : 'text-typography-950'
 						}`}
 					>
 						{num.numAsString}

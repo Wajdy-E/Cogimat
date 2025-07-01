@@ -1,6 +1,6 @@
-import { Box } from "@/components/ui/box";
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableData, TableCaption } from "@/components/ui/table";
-import { i18n } from "../i18n";
+import { Box } from '@/components/ui/box';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableData, TableCaption } from '@/components/ui/table';
+import { i18n } from '../i18n';
 
 export interface TableProps {
 	tableHeadKeys: string[];
@@ -8,7 +8,7 @@ export interface TableProps {
 	caption?: string;
 }
 
-function CustomTable(props: TableProps) {
+function CustomTable (props: TableProps) {
 	return (
 		<Box className="rounded-md overflow-hidden w-full border border-solid border-outline-200">
 			<Table className="w-full">

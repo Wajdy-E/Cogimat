@@ -1,9 +1,9 @@
-import { useUser } from "@clerk/clerk-expo";
-import { Link } from "expo-router";
-import { Button, Text } from "react-native";
-import { View } from "react-native";
+import { useUser } from '@clerk/clerk-expo';
+import { Link } from 'expo-router';
+import { Text } from 'react-native';
+import { View } from 'react-native';
 
-function Auth() {
+function Auth () {
 	const { user } = useUser();
 	return (
 		<View className="bg-red-800">

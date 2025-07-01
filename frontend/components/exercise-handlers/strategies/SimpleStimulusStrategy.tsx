@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text } from "react-native";
-import { Square, Triangle, Circle, Diamond } from "lucide-react-native";
-import { Exercise } from "../../../store/data/dataSlice";
-import { Letter, NumberEnum } from "../../../data/program/Program";
-import { StimulusStrategy } from "../UnifiedStimulus";
+import React from 'react';
+import { View, Text } from 'react-native';
+import { Square, Triangle, Circle, Diamond } from 'lucide-react-native';
+import { Exercise } from '../../../store/data/dataSlice';
+import { Letter, NumberEnum } from '../../../data/program/Program';
+import { StimulusStrategy } from '../UnifiedStimulus';
 
 interface IconWithColor {
 	icon: any;
@@ -12,16 +12,16 @@ interface IconWithColor {
 
 const getIconForShape = (shape: string): IconWithColor => {
 	switch (shape.toUpperCase()) {
-		case "SQUARE":
-			return { icon: Square, color: "#FF0000" };
-		case "TRIANGLE":
-			return { icon: Triangle, color: "#00FF00" };
-		case "CIRCLE":
-			return { icon: Circle, color: "#FFFF00" };
-		case "DIAMOND":
-			return { icon: Diamond, color: "#0000FF" };
+		case 'SQUARE':
+			return { icon: Square, color: '#FF0000' };
+		case 'TRIANGLE':
+			return { icon: Triangle, color: '#00FF00' };
+		case 'CIRCLE':
+			return { icon: Circle, color: '#FFFF00' };
+		case 'DIAMOND':
+			return { icon: Diamond, color: '#0000FF' };
 		default:
-			return { icon: Square, color: "#CCCCCC" };
+			return { icon: Square, color: '#CCCCCC' };
 	}
 };
 
@@ -31,12 +31,22 @@ export const SimpleStimulusStrategy: StimulusStrategy = {
 		const params = custom?.parameters ?? exercise.parameters;
 		const options = [];
 
-		if (params.shapes?.length) options.push("shapes");
-		if (params.colors?.length) options.push("colors");
-		if (params.letters?.length) options.push("letters");
-		if (params.numbers?.length) options.push("numbers");
+		if (params.shapes?.length) {
+			options.push('shapes');
+		}
+		if (params.colors?.length) {
+			options.push('colors');
+		}
+		if (params.letters?.length) {
+			options.push('letters');
+		}
+		if (params.numbers?.length) {
+			options.push('numbers');
+		}
 
-		if (!options.length) return null;
+		if (!options.length) {
+			return null;
+		}
 
 		const type = options[Math.floor(Math.random() * options.length)];
 		const pool = params[type as keyof typeof params] || [];
@@ -44,13 +54,17 @@ export const SimpleStimulusStrategy: StimulusStrategy = {
 	},
 
 	renderStimulus: (stimulus: any, isWhiteScreen: boolean) => {
-		if (isWhiteScreen) return <View className="absolute inset-0 bg-white" />;
+		if (isWhiteScreen) {
+			return <View className="absolute inset-0 bg-white" />;
+		}
 
-		if (!stimulus) return null;
+		if (!stimulus) {
+			return null;
+		}
 
-		if (typeof stimulus === "object" && "hexcode" in stimulus) {
+		if (typeof stimulus === 'object' && 'hexcode' in stimulus) {
 			return <View className="absolute inset-0" style={{ backgroundColor: stimulus.hexcode }} />;
-		} else if (typeof stimulus === "string" && ["SQUARE", "TRIANGLE", "CIRCLE", "DIAMOND"].includes(stimulus)) {
+		} else if (typeof stimulus === 'string' && ['SQUARE', 'TRIANGLE', 'CIRCLE', 'DIAMOND'].includes(stimulus)) {
 			const { icon: Icon, color } = getIconForShape(stimulus);
 			return (
 				<View className="absolute inset-0 justify-center items-center bg-background-700">
@@ -85,13 +99,13 @@ export const SimpleStimulusStrategy: StimulusStrategy = {
 		});
 	},
 
-	getTableHeaders: () => ["exerciseProgress.stimulus", "exerciseProgress.count"],
+	getTableHeaders: () => ['exerciseProgress.stimulus', 'exerciseProgress.count'],
 
 	incrementStimulusCount: (
 		stimulus: any,
-		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>
+		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>,
 	) => {
-		const key = typeof stimulus === "object" ? JSON.stringify(stimulus) : String(stimulus);
+		const key = typeof stimulus === 'object' ? JSON.stringify(stimulus) : String(stimulus);
 		setStimulusCount((prev) => {
 			const newMap = new Map(prev);
 			newMap.set(key, (newMap.get(key) || 0) + 1);

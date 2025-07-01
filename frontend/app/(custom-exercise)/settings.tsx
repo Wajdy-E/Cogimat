@@ -1,34 +1,34 @@
-import { View, SafeAreaView, ScrollView } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Heading } from "@/components/ui/heading";
-import { CustomExercise, Exercise, CustomizableExerciseOptions } from "../../store/data/dataSlice";
-import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ArrowLeft, Settings as SettingsIcon, Trash2, Edit, ArrowRight } from "lucide-react-native";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { AppDispatch, RootState } from "../../store/store";
-import { useTheme } from "@/components/ui/ThemeProvider";
-import { useCustomExercise } from "@/hooks/useCustomExercise";
-import { VStack } from "@/components/ui/vstack";
-import { Box } from "@/components/ui/box";
-import { Divider } from "@/components/ui/divider";
-import { Text } from "@/components/ui/text";
-import AnimatedSwitch from "../../components/AnimatedSwitch";
-import { Icon } from "@/components/ui/icon";
-import { Eye, EyeOff } from "lucide-react-native";
-import { useState, useEffect } from "react";
+import { View, SafeAreaView, ScrollView } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Heading } from '@/components/ui/heading';
+import { CustomExercise, Exercise, CustomizableExerciseOptions } from '../../store/data/dataSlice';
+import { Button, ButtonGroup, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { ArrowLeft, Trash2, Edit } from 'lucide-react-native';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { useTheme } from '@/components/ui/ThemeProvider';
+import { useCustomExercise } from '@/hooks/useCustomExercise';
+import { VStack } from '@/components/ui/vstack';
+import { Box } from '@/components/ui/box';
+import { Divider } from '@/components/ui/divider';
+import { Text } from '@/components/ui/text';
+import AnimatedSwitch from '../../components/AnimatedSwitch';
+import { Icon } from '@/components/ui/icon';
+import { Eye, EyeOff } from 'lucide-react-native';
+import { useState, useEffect } from 'react';
 import {
 	updateCustomExerciseThunk,
 	submitExercise,
 	unsubmitExercise,
 	deleteCustomExercise,
-} from "../../store/data/dataSaga";
-import AlertModal from "../../components/AlertModal";
-import { i18n } from "../../i18n";
-import { customExerciseToExercise } from "../../lib/helpers/helpers";
-import React from "react";
-import CustomSlider from "../../components/CustomSlider";
+} from '../../store/data/dataSaga';
+import AlertModal from '../../components/AlertModal';
+import { i18n } from '../../i18n';
+import { customExerciseToExercise } from '../../lib/helpers/helpers';
+import React from 'react';
+import CustomSlider from '../../components/CustomSlider';
 
-export default function CustomExerciseSettings() {
+export default function CustomExerciseSettings () {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user.user, shallowEqual);
@@ -38,15 +38,14 @@ export default function CustomExerciseSettings() {
 	// Safely handle the id parameter
 	let exerciseId: number | null = null;
 	try {
-		if (id && typeof id === "string") {
+		if (id && typeof id === 'string') {
 			exerciseId = parseInt(id);
 		}
 	} catch (error) {
-		console.error("Error parsing exercise id:", error);
+		console.error('Error parsing exercise id:', error);
 	}
 
-	// Only call useCustomExercise if we have a valid id
-	const exerciseData = exerciseId ? useCustomExercise(exerciseId) : null;
+	const exerciseData = useCustomExercise(exerciseId);
 
 	// Handle the case where useCustomExercise returns an array, null, or undefined
 	let exercises: CustomExercise | null = null;
@@ -55,7 +54,7 @@ export default function CustomExerciseSettings() {
 			exercises = exerciseData as CustomExercise;
 		}
 	} catch (error) {
-		console.error("Error processing exercise data:", error);
+		console.error('Error processing exercise data:', error);
 	}
 
 	const [showSubmitToCogiproAlertModal, setShowSubmitToCogiproAlertModal] = useState(false);
@@ -64,11 +63,10 @@ export default function CustomExerciseSettings() {
 	const [showMakePublicAlertModal, setShowMakePublicAlertModal] = useState(false);
 
 	// Customization settings state
-	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
-	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
+
 	const [isEditing, setIsEditing] = useState(false);
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
-		exercises?.customizableOptions
+		exercises?.customizableOptions,
 	);
 
 	// Update state when exercises data becomes available
@@ -78,8 +76,10 @@ export default function CustomExerciseSettings() {
 		}
 	}, [exercises]);
 
-	function submitToCogipro() {
-		if (!exercises) return;
+	function submitToCogipro () {
+		if (!exercises) {
+			return;
+		}
 
 		const convertedExercise: Exercise = customExerciseToExercise(exercises);
 		dispatch(submitExercise({ exercise: convertedExercise }));
@@ -87,16 +87,20 @@ export default function CustomExerciseSettings() {
 		setShowSubmitToCogiproAlertModal(false);
 	}
 
-	function unsubmitFromCogipro() {
-		if (!exercises) return;
+	function unsubmitFromCogipro () {
+		if (!exercises) {
+			return;
+		}
 
 		dispatch(unsubmitExercise({ exerciseId: exercises.id, name: exercises.name }));
 		dispatch(updateCustomExerciseThunk({ ...exercises, publicAccess: false }));
 		setShowUnsubmitFromCogiproAlertModal(false);
 	}
 
-	function handleCogiproToggle(value: boolean) {
-		if (!exercises) return;
+	function handleCogiproToggle (value: boolean) {
+		if (!exercises) {
+			return;
+		}
 
 		if (value && !exercises.publicAccess) {
 			// Turning on - show submit alert
@@ -107,8 +111,10 @@ export default function CustomExerciseSettings() {
 		}
 	}
 
-	function handleDeleteExercise() {
-		if (!exercises) return;
+	function handleDeleteExercise () {
+		if (!exercises) {
+			return;
+		}
 
 		dispatch(deleteCustomExercise(exercises.id));
 		setShowDeleteExerciseAlertModal(false);
@@ -116,7 +122,9 @@ export default function CustomExerciseSettings() {
 	}
 
 	const handlePublicAccessChange = (value: boolean) => {
-		if (!exercises) return;
+		if (!exercises) {
+			return;
+		}
 
 		if (exercises.publicAccess === false) {
 			dispatch(updateCustomExerciseThunk({ ...exercises, publicAccess: value, isFavourited: false }));
@@ -136,17 +144,17 @@ export default function CustomExerciseSettings() {
 						<View className="flex-row items-center justify-between gap-3 w-[90%]">
 							<View className="flex-row items-center gap-3">
 								<Button variant="link" onPress={() => router.push(`/(custom-exercise)/${id}`)}>
-									<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
+									<ButtonIcon as={ArrowLeft} size={'xxl' as any} stroke={themeTextColor} />
 								</Button>
 								<Heading className="text-typography-950" size="2xl">
-									{i18n.t("exercise.page.settings")}
+									{i18n.t('exercise.page.settings')}
 								</Heading>
 							</View>
 						</View>
 					</View>
 				</SafeAreaView>
 				<View className="flex-1 justify-center items-center">
-					<Text>{i18n.t("general.loading")}</Text>
+					<Text>{i18n.t('general.loading')}</Text>
 				</View>
 			</View>
 		);
@@ -159,10 +167,10 @@ export default function CustomExerciseSettings() {
 					<View className="flex-row items-center justify-between gap-3 w-[90%]">
 						<View className="flex-row items-center gap-3">
 							<Button variant="link" onPress={() => router.push(`/(custom-exercise)/${id}`)}>
-								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
+								<ButtonIcon as={ArrowLeft} size={'xxl' as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="2xl">
-								{i18n.t("exercise.page.settings")}
+								{i18n.t('exercise.page.settings')}
 							</Heading>
 						</View>
 					</View>
@@ -178,7 +186,7 @@ export default function CustomExerciseSettings() {
 								<View>
 									<View className="flex-row justify-between items-center">
 										<Heading size="md" className="text-primary-500">
-											{i18n.t("exercise.sections.durationSettings")}
+											{i18n.t('exercise.sections.durationSettings')}
 										</Heading>
 										<Button variant="link" onPress={() => setIsEditing(!isEditing)}>
 											<ButtonIcon as={Edit} size="md" />
@@ -187,32 +195,32 @@ export default function CustomExerciseSettings() {
 									<Divider className="bg-slate-400" />
 								</View>
 
-								<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
+								<VStack space="3xl" className={`${!isEditing ? 'opacity-70' : ''}`}>
 									{Object.entries(durationSettings || {}).map(([key, value]) =>
-										key !== "onScreenColor" && key !== "offScreenColor" && key !== "parameters" ? (
+										key !== 'onScreenColor' && key !== 'offScreenColor' && key !== 'parameters' ? (
 											<CustomSlider
 												key={key}
 												title={`exercise.form.${key}`}
 												size="md"
-												minValue={key === "exerciseTime" ? 1 : 0.5}
-												maxValue={key === "exerciseTime" ? 5 : 15}
-												step={key === "exerciseTime" ? 0.5 : 0.1}
+												minValue={0.5}
+												maxValue={key === 'exerciseTime' ? 5 : 15}
+												step={key === 'exerciseTime' ? 0.5 : 0.1}
 												value={parseFloat(value.toString())}
 												defaultValue={parseFloat(value.toString())}
-												suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+												suffix={key === 'exerciseTime' ? 'general.time.minutes' : 'general.time.seconds'}
 												isReadOnly={!isEditing}
 												onChange={(newValue) =>
 													setDurationSettings((prev) =>
 														prev
 															? {
-																	...prev,
-																	[key]: newValue.toString(),
-																}
-															: undefined
+																...prev,
+																[key]: newValue.toString(),
+															}
+															: undefined,
 													)
 												}
 											/>
-										) : null
+										) : null,
 									)}
 								</VStack>
 
@@ -227,7 +235,7 @@ export default function CustomExerciseSettings() {
 											action="secondary"
 											size="md"
 										>
-											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
+											<ButtonText>{i18n.t('general.buttons.cancel')}</ButtonText>
 										</Button>
 										<Button
 											onPress={() => {
@@ -244,7 +252,7 @@ export default function CustomExerciseSettings() {
 											action="primary"
 											size="md"
 										>
-											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
+											<ButtonText>{i18n.t('general.buttons.save')}</ButtonText>
 										</Button>
 									</ButtonGroup>
 								)}
@@ -256,15 +264,15 @@ export default function CustomExerciseSettings() {
 							<VStack space="lg">
 								<View>
 									<Heading size="md" className="text-primary-500">
-										{i18n.t("exercise.page.communityAccess")}
+										{i18n.t('exercise.page.communityAccess')}
 									</Heading>
 									<Divider className="bg-slate-400" />
 								</View>
 								<View className="flex-row justify-between items-center">
 									<View className="flex-1">
-										<Heading size="sm">{i18n.t("exercise.page.makePublic")}</Heading>
+										<Heading size="sm">{i18n.t('exercise.page.makePublic')}</Heading>
 										<Text size="xs" className="text-typography-600">
-											{i18n.t("exercise.page.makePublicDescription")}
+											{i18n.t('exercise.page.makePublicDescription')}
 										</Text>
 									</View>
 									<AnimatedSwitch
@@ -284,14 +292,14 @@ export default function CustomExerciseSettings() {
 							<VStack space="lg">
 								<View className="flex-row justify-between items-center">
 									<View className="flex-1">
-										<Heading size="sm">{i18n.t("exercise.page.deleteExercise")}</Heading>
+										<Heading size="sm">{i18n.t('exercise.page.deleteExercise')}</Heading>
 										<Text size="xs" className="text-typography-600">
-											{i18n.t("exercise.page.deleteExerciseDescription")}
+											{i18n.t('exercise.page.deleteExerciseDescription')}
 										</Text>
 									</View>
 									<Button variant="outline" action="negative" onPress={() => setShowDeleteExerciseAlertModal(true)}>
 										<ButtonIcon as={Trash2} size="md" />
-										<ButtonText action="negative">{i18n.t("general.buttons.delete")}</ButtonText>
+										<ButtonText action="negative">{i18n.t('general.buttons.delete')}</ButtonText>
 									</Button>
 								</View>
 							</VStack>
@@ -303,16 +311,16 @@ export default function CustomExerciseSettings() {
 								<VStack space="lg">
 									<View>
 										<Heading size="md" className="text-primary-500">
-											{i18n.t("exercise.page.cogiproPremiumSettings")}
+											{i18n.t('exercise.page.cogiproPremiumSettings')}
 										</Heading>
 										<Divider className="bg-slate-400" />
 									</View>
 
 									<View className="flex-row justify-between items-center">
 										<View className="flex-1">
-											<Heading size="sm">{i18n.t("exercise.page.submitToCogipro")}</Heading>
+											<Heading size="sm">{i18n.t('exercise.page.submitToCogipro')}</Heading>
 											<Text size="xs" className="text-typography-600">
-												{i18n.t("exercise.page.submitToCogiproDescription")}
+												{i18n.t('exercise.page.submitToCogiproDescription')}
 											</Text>
 										</View>
 										<AnimatedSwitch

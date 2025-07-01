@@ -19,14 +19,13 @@ import { Center } from "@/components/ui/center";
 import SwitchRow from "../../components/SwitchRow";
 import AlertModal from "../../components/AlertModal";
 import { i18n } from "../../i18n";
-import { setNotifications, Theme } from "../../store/auth/authSlice";
+import { setNotifications, Theme, setEmails } from "../../store/auth/authSlice";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { deleteUserThunk } from "../../store/auth/authSaga";
 import { Pencil } from "lucide-react-native";
 import ModalComponent from "../../components/Modal";
 import FormInput from "../../components/FormInput";
 import FormSelect from "../../components/FormSelect";
-import Purchases from "react-native-purchases";
 import { setPaywallModalPopup } from "../../store/data/dataSlice";
 import PaywallDrawer from "../../components/PaywallDrawer";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
@@ -53,9 +52,10 @@ function Account() {
 	const usernameRef = useRef(user?.username ?? "");
 
 	const { theme, toggleTheme, themeTextColor } = useTheme();
-	const { notifications } = useSelector(
+	const { notifications, emails } = useSelector(
 		(state: RootState) => ({
 			notifications: state.user.user.settings?.allowNotifications ?? false,
+			emails: state.user.user.settings?.allowEmails ?? false,
 		}),
 		shallowEqual
 	);
@@ -118,7 +118,9 @@ function Account() {
 	async function updateNotificationSettings() {
 		if (!notifications) {
 			const permissionGranted = await askNotificationPermission();
-			if (!permissionGranted) return;
+			if (!permissionGranted) {
+				return;
+			}
 		}
 		dispatch(setNotifications(!notifications));
 	}
@@ -132,7 +134,9 @@ function Account() {
 				quality: 0.1,
 				base64: true,
 			});
-			if (result.canceled || !result.assets || result.assets.length === 0 || !result.assets[0].base64) return;
+			if (result.canceled || !result.assets || result.assets.length === 0 || !result.assets[0].base64) {
+				return;
+			}
 			const base64 = result.assets[0].base64;
 			const mimeType = result.assets[0].mimeType;
 
@@ -170,7 +174,7 @@ function Account() {
 	}
 
 	async function updateUsername() {
-		if (user)
+		if (user) {
 			await user
 				.update({ username: usernameRef.current })
 				.then(() => {
@@ -179,6 +183,7 @@ function Account() {
 				.catch((error) => {
 					console.log(error);
 				});
+		}
 	}
 
 	return (
@@ -243,9 +248,9 @@ function Account() {
 						/>
 						<SwitchRow
 							title={i18n.t("account.emailMarketing")}
-							value={notifications}
+							value={emails}
 							onToggle={() => {
-								setTimeout(() => updateNotificationSettings(), 2);
+								dispatch(setEmails(!emails));
 							}}
 						/>
 

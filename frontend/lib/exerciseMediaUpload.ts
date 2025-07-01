@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const BASE_URL = process.env.BASE_URL;
 
@@ -9,10 +9,10 @@ export interface MediaUploadResult {
 	size: number;
 }
 
-export async function uploadExerciseMedia(
+export async function uploadExerciseMedia (
 	uri: string,
-	mediaType: "image" | "video",
-	exerciseId?: number
+	mediaType: 'image' | 'video',
+	exerciseId?: number,
 ): Promise<MediaUploadResult> {
 	try {
 		// Convert file to base64
@@ -33,7 +33,7 @@ export async function uploadExerciseMedia(
 
 					const response = await axios.post(`${BASE_URL}/api/exercise-media-upload`, payload, {
 						headers: {
-							"Content-Type": "application/json",
+							'Content-Type': 'application/json',
 						},
 					});
 
@@ -42,7 +42,7 @@ export async function uploadExerciseMedia(
 					reject(error);
 				}
 			};
-			reader.onerror = () => reject(new Error("Failed to read file"));
+			reader.onerror = () => reject(new Error('Failed to read file'));
 			reader.readAsDataURL(blob);
 		});
 	} catch (error) {
@@ -51,12 +51,12 @@ export async function uploadExerciseMedia(
 	}
 }
 
-export async function uploadExerciseImage(uri: string, exerciseId?: number): Promise<string> {
-	const result = await uploadExerciseMedia(uri, "image", exerciseId);
+export async function uploadExerciseImage (uri: string, exerciseId?: number): Promise<string> {
+	const result = await uploadExerciseMedia(uri, 'image', exerciseId);
 	return result.url;
 }
 
-export async function uploadExerciseVideo(uri: string, exerciseId?: number): Promise<string> {
-	const result = await uploadExerciseMedia(uri, "video", exerciseId);
+export async function uploadExerciseVideo (uri: string, exerciseId?: number): Promise<string> {
+	const result = await uploadExerciseMedia(uri, 'video', exerciseId);
 	return result.url;
 }

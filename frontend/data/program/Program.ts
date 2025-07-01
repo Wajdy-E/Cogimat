@@ -1,10 +1,10 @@
-import { Triangle, Square, Diamond, Circle, LucideIcon } from "lucide-react-native";
+import { Triangle, Square, Diamond, Circle, LucideIcon } from 'lucide-react-native';
 
 export enum Color {
-	GREEN = "GREEN",
-	YELLOW = "YELLOW",
-	RED = "RED",
-	BLUE = "BLUE",
+	GREEN = 'GREEN',
+	YELLOW = 'YELLOW',
+	RED = 'RED',
+	BLUE = 'BLUE',
 }
 
 export enum NumberEnum {
@@ -15,17 +15,17 @@ export enum NumberEnum {
 }
 
 export enum Letter {
-	A = "A",
-	B = "B",
-	C = "C",
-	D = "D",
+	A = 'A',
+	B = 'B',
+	C = 'C',
+	D = 'D',
 }
 
 export enum Shape {
-	SQUARE = "SQUARE",
-	CIRCLE = "CIRCLE",
-	DIAMOND = "DIAMOND",
-	TRIANGLE = "TRIANGLE",
+	SQUARE = 'SQUARE',
+	CIRCLE = 'CIRCLE',
+	DIAMOND = 'DIAMOND',
+	TRIANGLE = 'TRIANGLE',
 }
 
 export interface ShapeOption {
@@ -45,19 +45,19 @@ export interface NumberOption {
 
 export const colorOptions: ColorOption[] = [
 	{
-		hexcode: "#00FF00",
+		hexcode: '#00FF00',
 		name: Color.GREEN,
 	},
 	{
-		hexcode: "#FFFF00",
+		hexcode: '#FFFF00',
 		name: Color.YELLOW,
 	},
 	{
-		hexcode: "#FF0000",
+		hexcode: '#FF0000',
 		name: Color.RED,
 	},
 	{
-		hexcode: "#0000FF",
+		hexcode: '#0000FF',
 		name: Color.BLUE,
 	},
 ];

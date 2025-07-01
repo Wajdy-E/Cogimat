@@ -1,6 +1,6 @@
-import * as Notifications from "expo-notifications";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { i18n } from "../i18n";
+import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { i18n } from '../i18n';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -11,7 +11,7 @@ Notifications.setNotificationHandler({
 	}),
 });
 
-const WEEKLY_GOALS_STORAGE_KEY = "weekly_workout_goals";
+const WEEKLY_GOALS_STORAGE_KEY = 'weekly_workout_goals';
 
 export interface WeeklyGoalData {
 	clerk_id: string;
@@ -23,16 +23,16 @@ export interface WeeklyGoalData {
 export class BackgroundNotificationService {
 	private static instance: BackgroundNotificationService;
 
-	private constructor() {}
+	private constructor () {}
 
-	static getInstance(): BackgroundNotificationService {
+	static getInstance (): BackgroundNotificationService {
 		if (!BackgroundNotificationService.instance) {
 			BackgroundNotificationService.instance = new BackgroundNotificationService();
 		}
 		return BackgroundNotificationService.instance;
 	}
 
-	async saveWeeklyGoal(goal: WeeklyGoalData): Promise<void> {
+	async saveWeeklyGoal (goal: WeeklyGoalData): Promise<void> {
 		try {
 			const existingGoals = await this.getWeeklyGoals();
 			const updatedGoals = existingGoals.filter((g) => g.clerk_id !== goal.clerk_id);
@@ -44,54 +44,54 @@ export class BackgroundNotificationService {
 			// Update the goal with the last scheduled timestamp
 			await this.updateGoalLastScheduled(goal.clerk_id, new Date().toISOString());
 		} catch (error) {
-			console.error("Error saving weekly goal:", error);
+			console.error('Error saving weekly goal:', error);
 		}
 	}
 
-	private async updateGoalLastScheduled(clerkId: string, timestamp: string): Promise<void> {
+	private async updateGoalLastScheduled (clerkId: string, timestamp: string): Promise<void> {
 		try {
 			const existingGoals = await this.getWeeklyGoals();
 			const updatedGoals = existingGoals.map((goal) =>
-				goal.clerk_id === clerkId ? { ...goal, last_scheduled: timestamp } : goal
+				goal.clerk_id === clerkId ? { ...goal, last_scheduled: timestamp } : goal,
 			);
 			await AsyncStorage.setItem(WEEKLY_GOALS_STORAGE_KEY, JSON.stringify(updatedGoals));
 		} catch (error) {
-			console.error("Error updating goal last scheduled:", error);
+			console.error('Error updating goal last scheduled:', error);
 		}
 	}
 
-	async getWeeklyGoals(): Promise<WeeklyGoalData[]> {
+	async getWeeklyGoals (): Promise<WeeklyGoalData[]> {
 		try {
 			const goalsJson = await AsyncStorage.getItem(WEEKLY_GOALS_STORAGE_KEY);
 			return goalsJson ? JSON.parse(goalsJson) : [];
 		} catch (error) {
-			console.error("Error getting weekly goals:", error);
+			console.error('Error getting weekly goals:', error);
 			return [];
 		}
 	}
 
-	async removeWeeklyGoal(clerkId: string): Promise<void> {
+	async removeWeeklyGoal (clerkId: string): Promise<void> {
 		try {
 			const existingGoals = await this.getWeeklyGoals();
 			const updatedGoals = existingGoals.filter((g) => g.clerk_id !== clerkId);
 			await AsyncStorage.setItem(WEEKLY_GOALS_STORAGE_KEY, JSON.stringify(updatedGoals));
 			await this.cancelUserNotifications(clerkId);
 		} catch (error) {
-			console.error("Error removing weekly goal:", error);
+			console.error('Error removing weekly goal:', error);
 		}
 	}
 
-	private async scheduleNotificationsForGoal(goal: WeeklyGoalData): Promise<void> {
+	private async scheduleNotificationsForGoal (goal: WeeklyGoalData): Promise<void> {
 		const hasPermission = await this.checkPermissions();
 		if (!hasPermission) {
-			console.log("Notification permissions not granted");
+			console.log('Notification permissions not granted');
 			return;
 		}
 
 		// Cancel existing notifications for this user
 		await this.cancelUserNotifications(goal.clerk_id);
 
-		const [hours, minutes] = goal.reminder_time.split(":").map(Number);
+		const [hours, minutes] = goal.reminder_time.split(':').map(Number);
 
 		// Schedule notifications for each selected day
 		for (const day of goal.selected_days) {
@@ -102,11 +102,11 @@ export class BackgroundNotificationService {
 		goal.last_scheduled = new Date().toISOString();
 	}
 
-	private async scheduleNotificationForDay(
+	private async scheduleNotificationForDay (
 		day: string,
 		hours: number,
 		minutes: number,
-		clerkId: string
+		clerkId: string,
 	): Promise<void> {
 		try {
 			const dayIndex = this.getDayIndex(day);
@@ -140,15 +140,15 @@ export class BackgroundNotificationService {
 				}
 
 				console.log(
-					`Scheduling notification for ${day} week ${weekOffset + 1} at ${hours}:${minutes} (${secondsUntilScheduled} seconds from now)`
+					`Scheduling notification for ${day} week ${weekOffset + 1} at ${hours}:${minutes} (${secondsUntilScheduled} seconds from now)`,
 				);
 
 				await Notifications.scheduleNotificationAsync({
 					content: {
-						title: i18n.t("notifications.workoutReminder.title"),
-						body: i18n.t("notifications.workoutReminder.body"),
+						title: i18n.t('notifications.workoutReminder.title'),
+						body: i18n.t('notifications.workoutReminder.body'),
 						data: {
-							type: "weekly_workout",
+							type: 'weekly_workout',
 							clerk_id: clerkId,
 							day: day,
 							week: weekOffset + 1,
@@ -161,15 +161,15 @@ export class BackgroundNotificationService {
 				});
 
 				console.log(
-					`✅ Successfully scheduled notification for ${day} week ${weekOffset + 1} at ${hours}:${minutes} (${secondsUntilScheduled}s from now)`
+					`✅ Successfully scheduled notification for ${day} week ${weekOffset + 1} at ${hours}:${minutes} (${secondsUntilScheduled}s from now)`,
 				);
 			}
 		} catch (error) {
-			console.error("Error scheduling notification:", error);
+			console.error('Error scheduling notification:', error);
 		}
 	}
 
-	private getDayIndex(day: string): number {
+	private getDayIndex (day: string): number {
 		const dayMap: { [key: string]: number } = {
 			sunday: 0,
 			monday: 1,
@@ -182,12 +182,12 @@ export class BackgroundNotificationService {
 		return dayMap[day.toLowerCase()] ?? -1;
 	}
 
-	private async checkPermissions(): Promise<boolean> {
+	private async checkPermissions (): Promise<boolean> {
 		const { status } = await Notifications.getPermissionsAsync();
-		return status === "granted";
+		return status === 'granted';
 	}
 
-	private async cancelUserNotifications(clerkId: string): Promise<void> {
+	private async cancelUserNotifications (clerkId: string): Promise<void> {
 		try {
 			const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
 
@@ -197,19 +197,19 @@ export class BackgroundNotificationService {
 				}
 			}
 		} catch (error) {
-			console.error("Error canceling user notifications:", error);
+			console.error('Error canceling user notifications:', error);
 		}
 	}
 
 	// Method to reschedule all notifications (call this when app starts)
-	async rescheduleAllNotifications(): Promise<void> {
+	async rescheduleAllNotifications (): Promise<void> {
 		try {
 			const goals = await this.getWeeklyGoals();
 			for (const goal of goals) {
 				await this.scheduleNotificationsForGoal(goal);
 			}
 		} catch (error) {
-			console.error("Error rescheduling notifications:", error);
+			console.error('Error rescheduling notifications:', error);
 		}
 	}
 }

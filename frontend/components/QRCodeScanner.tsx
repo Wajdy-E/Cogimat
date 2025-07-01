@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Alert, StyleSheet, Dimensions } from "react-native";
-import { CameraView, useCameraPermissions, BarcodeScanningResult } from "expo-camera";
-import { Button, ButtonText } from "@/components/ui/button";
-import { VStack } from "@/components/ui/vstack";
-import { Center } from "@/components/ui/center";
-import { Box } from "@/components/ui/box";
-import { Heading } from "@/components/ui/heading";
-import { i18n } from "../i18n";
-import { useTheme } from "@/components/ui/ThemeProvider";
-import { ArrowLeft, Camera as CameraIcon, QrCode } from "lucide-react-native";
+import React, { useState, useEffect } from 'react';
+import { View, Text, Alert, StyleSheet, Dimensions } from 'react-native';
+import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
+import { Button, ButtonText } from '@/components/ui/button';
+import { VStack } from '@/components/ui/vstack';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
+import { i18n } from '../i18n';
+import { useTheme } from '@/components/ui/ThemeProvider';
+import { ArrowLeft, Camera as CameraIcon, QrCode } from 'lucide-react-native';
 
 interface QRCodeScannerProps {
 	onQRCodeScanned: (qrCode: string) => void;
 	onClose: () => void;
 }
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 const SCAN_AREA_SIZE = Math.min(width, height) * 0.7;
 
-export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScannerProps) {
+export default function QRCodeScanner ({ onQRCodeScanned, onClose }: QRCodeScannerProps) {
 	const [scanned, setScanned] = useState(false);
 	const [scannerError, setScannerError] = useState<string | null>(null);
 	const { themeTextColor } = useTheme();
@@ -32,24 +31,26 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 
 	const handleBarCodeScanned = (result: BarcodeScanningResult) => {
 		try {
-			if (scanned) return; // Prevent multiple scans
+			if (scanned) {
+				return;
+			} // Prevent multiple scans
 
 			setScanned(true);
 			const data = result.data;
 
 			// Validate that it's a Cogimat QR code
-			if (data && data.startsWith("COGIMAT-")) {
+			if (data && data.startsWith('COGIMAT-')) {
 				onQRCodeScanned(data);
 			} else {
-				Alert.alert(i18n.t("qrScanner.invalidCode"), i18n.t("qrScanner.invalidCodeMessage"), [
+				Alert.alert(i18n.t('qrScanner.invalidCode'), i18n.t('qrScanner.invalidCodeMessage'), [
 					{
-						text: i18n.t("general.buttons.ok"),
+						text: i18n.t('general.buttons.ok'),
 						onPress: () => setScanned(false),
 					},
 				]);
 			}
 		} catch (error) {
-			console.error("Error handling barcode scan:", error);
+			console.error('Error handling barcode scan:', error);
 			setScanned(false);
 		}
 	};
@@ -70,7 +71,7 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 						<Button onPress={onClose} variant="outline" size="sm">
 							<ArrowLeft size={20} color={themeTextColor} />
 						</Button>
-						<Text style={[styles.headerText, { color: themeTextColor }]}>{i18n.t("qrScanner.scanQRCode")}</Text>
+						<Text style={[styles.headerText, { color: themeTextColor }]}>{i18n.t('qrScanner.scanQRCode')}</Text>
 						<View style={{ width: 40 }} />
 					</View>
 
@@ -87,13 +88,13 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 
 					{/* Instructions */}
 					<View style={styles.instructions}>
-						<Text style={[styles.instructionText, { color: themeTextColor }]}>{i18n.t("qrScanner.instructions")}</Text>
+						<Text style={[styles.instructionText, { color: themeTextColor }]}>{i18n.t('qrScanner.instructions')}</Text>
 					</View>
 
 					{/* Test Button */}
 					<View style={styles.resetContainer}>
 						<Button
-							onPress={() => handleBarCodeScanned({ data: "COGIMAT-TEST123", type: "qr" } as BarcodeScanningResult)}
+							onPress={() => handleBarCodeScanned({ data: 'COGIMAT-TEST123', type: 'qr' } as BarcodeScanningResult)}
 							size="lg"
 						>
 							<ButtonText>Test QR Code</ButtonText>
@@ -108,7 +109,7 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 	if (!permission) {
 		return (
 			<Center className="flex-1 bg-background-700">
-				<Text className="text-typography-950">{i18n.t("qrScanner.requestingPermission")}</Text>
+				<Text className="text-typography-950">{i18n.t('qrScanner.requestingPermission')}</Text>
 			</Center>
 		);
 	}
@@ -120,16 +121,16 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 				<VStack space="lg" className="items-center">
 					<CameraIcon size={64} color={themeTextColor} />
 					<Heading size="lg" className="text-typography-950">
-						{scannerError || i18n.t("qrScanner.cameraAccessRequired")}
+						{scannerError || i18n.t('qrScanner.cameraAccessRequired')}
 					</Heading>
 					<Text className="text-typography-950 text-center px-8">
-						{scannerError || i18n.t("qrScanner.cameraAccessMessage")}
+						{scannerError || i18n.t('qrScanner.cameraAccessMessage')}
 					</Text>
 					<Button onPress={requestPermission} variant="outline">
 						<ButtonText>Grant Permission</ButtonText>
 					</Button>
 					<Button onPress={onClose} variant="outline">
-						<ButtonText>{i18n.t("general.buttons.goBack")}</ButtonText>
+						<ButtonText>{i18n.t('general.buttons.goBack')}</ButtonText>
 					</Button>
 				</VStack>
 			</Center>
@@ -143,7 +144,7 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 				style={styles.camera}
 				onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
 				barcodeScannerSettings={{
-					barcodeTypes: ["qr"],
+					barcodeTypes: ['qr'],
 				}}
 			>
 				<View style={styles.overlay}>
@@ -152,7 +153,7 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 						<Button onPress={onClose} variant="outline" size="sm">
 							<ArrowLeft size={20} color={themeTextColor} />
 						</Button>
-						<Text style={[styles.headerText, { color: themeTextColor }]}>{i18n.t("qrScanner.scanQRCode")}</Text>
+						<Text style={[styles.headerText, { color: themeTextColor }]}>{i18n.t('qrScanner.scanQRCode')}</Text>
 						<View style={{ width: 40 }} />
 					</View>
 
@@ -163,14 +164,14 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 
 					{/* Instructions */}
 					<View style={styles.instructions}>
-						<Text style={[styles.instructionText, { color: themeTextColor }]}>{i18n.t("qrScanner.instructions")}</Text>
+						<Text style={[styles.instructionText, { color: themeTextColor }]}>{i18n.t('qrScanner.instructions')}</Text>
 					</View>
 
 					{/* Reset Button */}
 					{scanned && (
 						<View style={styles.resetContainer}>
 							<Button onPress={resetScanner} size="lg">
-								<ButtonText>{i18n.t("qrScanner.scanAgain")}</ButtonText>
+								<ButtonText>{i18n.t('qrScanner.scanAgain')}</ButtonText>
 							</Button>
 						</View>
 					)}
@@ -183,61 +184,61 @@ export default function QRCodeScanner({ onQRCodeScanned, onClose }: QRCodeScanne
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#000",
+		backgroundColor: '#000',
 	},
 	camera: {
 		flex: 1,
 	},
 	overlay: {
 		flex: 1,
-		backgroundColor: "rgba(0, 0, 0, 0.5)",
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
 	},
 	header: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
 		paddingHorizontal: 20,
 		paddingTop: 60,
 		paddingBottom: 20,
 	},
 	headerText: {
 		fontSize: 18,
-		fontWeight: "bold",
+		fontWeight: 'bold',
 	},
 	scanArea: {
 		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 	scanFrame: {
 		width: SCAN_AREA_SIZE,
 		height: SCAN_AREA_SIZE,
 		borderWidth: 2,
-		borderColor: "#00ff00",
-		backgroundColor: "transparent",
+		borderColor: '#00ff00',
+		backgroundColor: 'transparent',
 		borderRadius: 20,
 	},
 	placeholderText: {
-		color: "#00ff00",
+		color: '#00ff00',
 		fontSize: 14,
-		textAlign: "center",
+		textAlign: 'center',
 		marginTop: 10,
 	},
 	instructions: {
 		paddingHorizontal: 40,
 		paddingBottom: 40,
-		alignItems: "center",
+		alignItems: 'center',
 	},
 	instructionText: {
 		fontSize: 16,
-		textAlign: "center",
+		textAlign: 'center',
 		lineHeight: 24,
 	},
 	resetContainer: {
-		position: "absolute",
+		position: 'absolute',
 		bottom: 100,
 		left: 0,
 		right: 0,
-		alignItems: "center",
+		alignItems: 'center',
 	},
 });

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface LoadingOverlayState {
 	isVisible: boolean;
@@ -13,7 +13,7 @@ interface UIState {
 const initialState: UIState = {
 	loadingOverlay: {
 		isVisible: false,
-		text: "Loading...",
+		text: 'Loading...',
 	},
 	activeTabIndices: {
 		home: 0,
@@ -23,7 +23,7 @@ const initialState: UIState = {
 };
 
 const uiSlice = createSlice({
-	name: "ui",
+	name: 'ui',
 	initialState,
 	reducers: {
 		showLoadingOverlay: (state, action: PayloadAction<string>) => {

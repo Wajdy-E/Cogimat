@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
-import Tab from "react-native-animated-tab";
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Tab from 'react-native-animated-tab';
 
 interface AnimatedTabProps {
 	options: string[];
@@ -18,10 +18,10 @@ const AnimatedTabs: React.FC<AnimatedTabProps> = ({
 	content,
 	height = 30,
 	borderRadius = 9,
-	activeBackgroundColor = "white",
-	inactiveBackgroundColor = "lightgray",
-	activeLabelColor = "black",
-	inactiveLabelColor = "gray",
+	activeBackgroundColor = 'white',
+	inactiveBackgroundColor = 'lightgray',
+	activeLabelColor = 'black',
+	inactiveLabelColor = 'gray',
 }) => {
 	const [selectedOption, setSelectedOption] = useState(options[0]);
 	const activeIndex = options.indexOf(selectedOption);
@@ -47,7 +47,7 @@ const AnimatedTabs: React.FC<AnimatedTabProps> = ({
 
 const styles = StyleSheet.create({
 	wrapper: {
-		width: "100%",
+		width: '100%',
 	},
 	content: {
 		marginTop: 16,

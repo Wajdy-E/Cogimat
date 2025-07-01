@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { createContext, useState, useEffect, useContext } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type Theme = "light" | "dark";
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
 	theme: Theme;
@@ -17,28 +17,28 @@ interface ThemeContextType {
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-	const [theme, setTheme] = useState<Theme>("light");
+	const [theme, setTheme] = useState<Theme>('light');
 
 	useEffect(() => {
 		(async () => {
-			const savedTheme = (await AsyncStorage.getItem("theme")) as Theme | "light";
+			const savedTheme = (await AsyncStorage.getItem('theme')) as Theme | 'light';
 			if (savedTheme) {
 				setTheme(savedTheme);
-				AsyncStorage.setItem("theme", savedTheme);
+				AsyncStorage.setItem('theme', savedTheme);
 			}
 		})();
 	}, []);
 
 	const toggleTheme = () => {
-		const newTheme = theme === "light" ? "dark" : "light";
+		const newTheme = theme === 'light' ? 'dark' : 'light';
 		setTheme(newTheme);
-		AsyncStorage.setItem("theme", newTheme);
+		AsyncStorage.setItem('theme', newTheme);
 	};
 
-	const themeTextColor = theme === "light" ? "#000000" : "#ffffff";
-	const themeBackgroundColor = theme === "light" ? "#ffffff" : "#000000";
-	const themePrimaryColor = "#57CEB8";
-	const themeSecondaryColor = "#3F4040";
+	const themeTextColor = theme === 'light' ? '#000000' : '#ffffff';
+	const themeBackgroundColor = theme === 'light' ? '#ffffff' : '#000000';
+	const themePrimaryColor = '#57CEB8';
+	const themeSecondaryColor = '#3F4040';
 
 	return (
 		<ThemeContext.Provider
@@ -52,7 +52,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 export const useTheme = () => {
 	const context = useContext(ThemeContext);
 	if (context === undefined) {
-		throw new Error("useTheme must be used within a ThemeProvider");
+		throw new Error('useTheme must be used within a ThemeProvider');
 	}
 	return context;
 };

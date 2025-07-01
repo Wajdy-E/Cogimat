@@ -1,13 +1,13 @@
-import { ColorOption } from "../../data/program/Program";
-import { Button, ButtonIcon } from "../../app/components/ui/button";
-import { CheckIcon } from "@/components/ui/icon";
+import { ColorOption } from '../../data/program/Program';
+import { Button, ButtonIcon } from '../../app/components/ui/button';
+import { CheckIcon } from '@/components/ui/icon';
 
 type ColorProps = ColorOption & {
 	selected: boolean;
 	onPress: () => void;
 };
 
-function Color({ hexcode, selected, onPress }: ColorProps) {
+function Color ({ hexcode, selected, onPress }: ColorProps) {
 	return (
 		<Button
 			onPress={onPress}

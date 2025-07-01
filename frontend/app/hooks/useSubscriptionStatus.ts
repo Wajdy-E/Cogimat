@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import Purchases, { PurchasesEntitlementInfo } from "react-native-purchases";
+import { useState, useEffect } from 'react';
+import Purchases from 'react-native-purchases';
 
 interface SubscriptionStatus {
 	isSubscribed: boolean;
@@ -10,7 +10,7 @@ interface SubscriptionStatus {
 	refetch: () => Promise<void>;
 }
 
-export function useSubscriptionStatus(): SubscriptionStatus {
+export function useSubscriptionStatus (): SubscriptionStatus {
 	const [isSubscribed, setIsSubscribed] = useState(false);
 	const [isMonthly, setIsMonthly] = useState(false);
 	const [isYearly, setIsYearly] = useState(false);
@@ -24,7 +24,7 @@ export function useSubscriptionStatus(): SubscriptionStatus {
 
 			const info = await Purchases.getCustomerInfo();
 			// console.log(info, "info");
-			const activeEntitlement = info.entitlements.active["Pro"];
+			const activeEntitlement = info.entitlements.active['Pro'];
 			// console.log(activeEntitlement, "activeEntitlement");
 
 			setIsSubscribed(activeEntitlement != null);
@@ -32,14 +32,14 @@ export function useSubscriptionStatus(): SubscriptionStatus {
 			if (activeEntitlement) {
 				// Check the product identifier to determine subscription type
 				const productId = activeEntitlement.productIdentifier;
-				setIsMonthly(productId === "com.cogipro.cogimat.Monthly");
-				setIsYearly(productId === "com.cogipro.cogimat.Annual");
+				setIsMonthly(productId === 'com.cogipro.cogimat.Monthly');
+				setIsYearly(productId === 'com.cogipro.cogimat.Annual');
 			} else {
 				setIsMonthly(false);
 				setIsYearly(false);
 			}
 		} catch (err) {
-			setError(err instanceof Error ? err : new Error("Failed to check subscription status"));
+			setError(err instanceof Error ? err : new Error('Failed to check subscription status'));
 			setIsSubscribed(false);
 			setIsMonthly(false);
 			setIsYearly(false);

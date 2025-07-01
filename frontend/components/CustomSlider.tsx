@@ -1,15 +1,15 @@
-import { Box } from "@/components/ui/box";
-import { Center } from "@/components/ui/center";
-import { Heading } from "@/components/ui/heading";
-import { Slider, SliderThumb, SliderTrack, SliderFilledTrack } from "@/components/ui/slider";
-import { Text } from "@/components/ui/text";
-import { ISliderProps } from "@gluestack-ui/slider/lib/types";
-import { useState } from "react";
-import { View } from "react-native";
-import { i18n } from "../i18n";
+import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
+import { Slider, SliderThumb, SliderTrack, SliderFilledTrack } from '@/components/ui/slider';
+import { Text } from '@/components/ui/text';
+import { ISliderProps } from '@gluestack-ui/slider/lib/types';
+import { useState } from 'react';
+import { View } from 'react-native';
+import { i18n } from '../i18n';
 
 export interface Size {
-	size: "sm" | "md" | "lg" | undefined;
+	size: 'sm' | 'md' | 'lg' | undefined;
 }
 
 export interface CustomSliderProps extends ISliderProps {
@@ -20,7 +20,7 @@ export interface CustomSliderProps extends ISliderProps {
 	height?: number;
 	isReadOnly?: boolean;
 }
-export default function CustomSlider(props: CustomSliderProps & Size) {
+export default function CustomSlider (props: CustomSliderProps & Size) {
 	const [currentValue, setCurrentValue] = useState(props.value || props.defaultValue || 0);
 	const handleChange = (value: number) => {
 		setCurrentValue(value);

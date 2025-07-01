@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
-import { VStack } from "@/components/ui/vstack";
-import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
-import { Card } from "@/components/ui/card";
-import { Badge, BadgeText } from "@/components/ui/badge";
-import { useVideoPlayer, VideoView } from "expo-video";
-import { Play, Calendar, Eye, Tag } from "lucide-react-native";
-import { i18n } from "../i18n";
-import axios from "axios";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, RefreshControl } from 'react-native';
+import { VStack } from '@/components/ui/vstack';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { Card } from '@/components/ui/card';
+import { Badge, BadgeText } from '@/components/ui/badge';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { Play, Calendar, Eye, Tag } from 'lucide-react-native';
+import { i18n } from '../i18n';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 interface AdminVideo {
 	id: number;
@@ -35,7 +35,7 @@ interface AdminVideoGalleryProps {
 	onVideoSelect?: (video: AdminVideo) => void;
 }
 
-export default function AdminVideoGallery({
+export default function AdminVideoGallery ({
 	category,
 	showUploadButton = false,
 	onVideoSelect,
@@ -53,7 +53,7 @@ export default function AdminVideoGallery({
 			const response = await axios.get(`${process.env.BASE_URL}/api/admin/video-upload`, { params });
 			setVideos(response.data.videos || []);
 		} catch (error) {
-			console.error("Failed to fetch admin videos:", error);
+			console.error('Failed to fetch admin videos:', error);
 		} finally {
 			setLoading(false);
 			setRefreshing(false);
@@ -70,11 +70,13 @@ export default function AdminVideoGallery({
 	};
 
 	const formatFileSize = (bytes: number): string => {
-		if (bytes === 0) return "0 Bytes";
+		if (bytes === 0) {
+			return '0 Bytes';
+		}
 		const k = 1024;
-		const sizes = ["Bytes", "KB", "MB", "GB"];
+		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+		return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 	};
 
 	const formatDate = (dateString: string): string => {
@@ -93,7 +95,7 @@ export default function AdminVideoGallery({
 	if (loading) {
 		return (
 			<Box className="bg-secondary-500 p-5 rounded-md">
-				<Text className="text-center">{i18n.t("general.loading")}</Text>
+				<Text className="text-center">{i18n.t('general.loading')}</Text>
 			</Box>
 		);
 	}
@@ -110,7 +112,7 @@ export default function AdminVideoGallery({
 						className="w-full"
 					>
 						<ButtonIcon as={Play} />
-						<ButtonText>{i18n.t("admin.videoGallery.uploadNew")}</ButtonText>
+						<ButtonText>{i18n.t('admin.videoGallery.uploadNew')}</ButtonText>
 					</Button>
 				</Box>
 			)}
@@ -119,7 +121,7 @@ export default function AdminVideoGallery({
 				<VStack space="md">
 					{videos.length === 0 ? (
 						<Box className="bg-secondary-500 p-8 rounded-md">
-							<Text className="text-center text-typography-600">{i18n.t("admin.videoGallery.noVideos")}</Text>
+							<Text className="text-center text-typography-600">{i18n.t('admin.videoGallery.noVideos')}</Text>
 						</Box>
 					) : (
 						videos.map((video) => (
@@ -147,7 +149,7 @@ export default function AdminVideoGallery({
 										<View className="flex-row items-center gap-2">
 											<Eye size={16} className="text-typography-600" />
 											<Text size="xs" className="text-typography-600">
-												{video.view_count} {i18n.t("admin.allVideos.views")}
+												{video.view_count} {i18n.t('admin.allVideos.views')}
 											</Text>
 										</View>
 									</View>
@@ -169,7 +171,7 @@ export default function AdminVideoGallery({
 										</Text>
 										<Button onPress={() => handleVideoPress(video)} size="sm" action="primary">
 											<ButtonIcon as={Play} />
-											<ButtonText>{i18n.t("admin.videoGallery.watch")}</ButtonText>
+											<ButtonText>{i18n.t('admin.videoGallery.watch')}</ButtonText>
 										</Button>
 									</View>
 								</VStack>
@@ -194,7 +196,7 @@ export default function AdminVideoGallery({
 									allowsFullscreen
 									allowsPictureInPicture
 									style={{
-										width: "100%",
+										width: '100%',
 										height: 200,
 										borderRadius: 12,
 									}}
@@ -202,7 +204,7 @@ export default function AdminVideoGallery({
 								/>
 
 								<Button onPress={() => setSelectedVideo(null)} action="secondary">
-									<ButtonText>{i18n.t("general.buttons.close")}</ButtonText>
+									<ButtonText>{i18n.t('general.buttons.close')}</ButtonText>
 								</Button>
 							</VStack>
 						</Box>

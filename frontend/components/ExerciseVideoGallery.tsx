@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { View, ScrollView, RefreshControl, Image } from "react-native";
-import { VStack } from "@/components/ui/vstack";
-import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
-import { Card } from "@/components/ui/card";
-import { Badge, BadgeText } from "@/components/ui/badge";
-import { HStack } from "@/components/ui/hstack";
-import { Spinner } from "@/components/ui/spinner";
-import { useVideoPlayer, VideoView } from "expo-video";
-import { Play, Calendar, Eye, Upload } from "lucide-react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../store/store";
-import { showLoadingOverlay, hideLoadingOverlay } from "../store/ui/uiSlice";
-import { i18n } from "../i18n";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Image } from 'react-native';
+import { VStack } from '@/components/ui/vstack';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { Card } from '@/components/ui/card';
+import { HStack } from '@/components/ui/hstack';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { Play, Upload } from 'lucide-react-native';
+import { i18n } from '../i18n';
+import axios from 'axios';
 
 interface ExerciseVideo {
 	id: number;
@@ -37,7 +32,7 @@ interface ExerciseVideoGalleryProps {
 	onUploadClick?: () => void;
 }
 
-export default function ExerciseVideoGallery({
+export default function ExerciseVideoGallery ({
 	exerciseId,
 	showUploadButton = false,
 	onVideoSelect,
@@ -52,7 +47,7 @@ export default function ExerciseVideoGallery({
 			});
 			setVideos(response.data.videos || []);
 		} catch (error) {
-			console.error("Failed to fetch exercise videos:", error);
+			console.error('Failed to fetch exercise videos:', error);
 		}
 	};
 
@@ -72,7 +67,7 @@ export default function ExerciseVideoGallery({
 	if (videos.length === 0) {
 		return (
 			<Box className="bg-secondary-500 p-8 rounded-md">
-				<Text className="text-center text-typography-600">{i18n.t("exercise.videoGallery.noVideos")}</Text>
+				<Text className="text-center text-typography-600">{i18n.t('exercise.videoGallery.noVideos')}</Text>
 			</Box>
 		);
 	}
@@ -82,12 +77,12 @@ export default function ExerciseVideoGallery({
 			{/* Header with Upload Button */}
 			<View className="flex-row justify-between items-center">
 				<Heading size="md" className="text-typography-950">
-					{i18n.t("exercise.videoGallery.title")}
+					{i18n.t('exercise.videoGallery.title')}
 				</Heading>
 				{showUploadButton && (
 					<Button onPress={onUploadClick} size="sm" action="primary">
 						<ButtonIcon as={Upload} />
-						<ButtonText>{i18n.t("exercise.videoGallery.upload")}</ButtonText>
+						<ButtonText>{i18n.t('exercise.videoGallery.upload')}</ButtonText>
 					</Button>
 				)}
 			</View>
@@ -100,8 +95,8 @@ export default function ExerciseVideoGallery({
 								{/* Thumbnail Image */}
 								<View className="w-full h-32 bg-gray-300 rounded-lg overflow-hidden">
 									<Image
-										source={{ uri: "https://your-vercel-blob-url.com/video-thumbnail-placeholder.jpg" }}
-										style={{ width: "100%", height: "100%" }}
+										source={{ uri: 'https://your-vercel-blob-url.com/video-thumbnail-placeholder.jpg' }}
+										style={{ width: '100%', height: '100%' }}
 										resizeMode="cover"
 									/>
 								</View>
@@ -121,7 +116,7 @@ export default function ExerciseVideoGallery({
 
 								<Button onPress={() => handleVideoPress(video)} size="sm" action="primary" className="w-full">
 									<ButtonIcon as={Play} />
-									<ButtonText>{i18n.t("exercise.videoGallery.watch")}</ButtonText>
+									<ButtonText>{i18n.t('exercise.videoGallery.watch')}</ButtonText>
 								</Button>
 							</VStack>
 						</Card>
@@ -144,7 +139,7 @@ export default function ExerciseVideoGallery({
 									allowsFullscreen
 									allowsPictureInPicture
 									style={{
-										width: "100%",
+										width: '100%',
 										height: 200,
 										borderRadius: 12,
 									}}
@@ -154,7 +149,7 @@ export default function ExerciseVideoGallery({
 								{selectedVideo.description && <Text className="text-typography-600">{selectedVideo.description}</Text>}
 
 								<Button onPress={() => setSelectedVideo(null)} action="secondary">
-									<ButtonText>{i18n.t("general.buttons.close")}</ButtonText>
+									<ButtonText>{i18n.t('general.buttons.close')}</ButtonText>
 								</Button>
 							</VStack>
 						</Box>

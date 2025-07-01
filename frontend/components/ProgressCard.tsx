@@ -1,8 +1,8 @@
-import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
-import { Progress, ProgressFilledTrack } from "@/components/ui/progress";
-import { VStack } from "@/components/ui/vstack";
-import { i18n } from "../i18n";
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import { VStack } from '@/components/ui/vstack';
+import { i18n } from '../i18n';
 
 interface ProgressCardProps {
 	value: number; // percentage for progress bar
@@ -13,7 +13,7 @@ interface ProgressCardProps {
 	descriptionKey: string;
 }
 
-export default function ProgressCard(props: ProgressCardProps) {
+export default function ProgressCard (props: ProgressCardProps) {
 	return (
 		<VStack space="lg" className="w-full bg-background-500 rounded-md p-3">
 			<Heading>{i18n.t(props.headingKey)}</Heading>

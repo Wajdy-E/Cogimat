@@ -1,10 +1,10 @@
-import React from "react";
-import { Center } from "@/components/ui/center";
-import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon, CheckboxGroup } from "@/components/ui/checkbox";
-import { VStack } from "@/components/ui/vstack";
-import { CheckIcon } from "@/components/ui/icon";
-import { Size } from "./CustomSlider";
-import { i18n } from "../i18n";
+import React from 'react';
+import { Center } from '@/components/ui/center';
+import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon, CheckboxGroup } from '@/components/ui/checkbox';
+import { VStack } from '@/components/ui/vstack';
+import { CheckIcon } from '@/components/ui/icon';
+import { Size } from './CustomSlider';
+import { i18n } from '../i18n';
 
 export interface CheckboxOption {
 	label: string;
@@ -17,14 +17,14 @@ interface FormCheckboxGroupProps {
 	value: string[];
 	onChange: (values: string[]) => void;
 	className?: string;
-	direction?: "row" | "column";
+	direction?: 'row' | 'column';
 	alignCenter?: boolean;
 	space?: Size;
 	labelLeft?: boolean;
 	checkBoxClasses?: string;
 }
 
-export default function FormCheckboxGroup(props: FormCheckboxGroupProps) {
+export default function FormCheckboxGroup (props: FormCheckboxGroupProps) {
 	const Wrapper = props.alignCenter ? Center : React.Fragment;
 	const wrapperProps = props.alignCenter ? {} : undefined;
 

@@ -1,25 +1,24 @@
-import { useState, useEffect } from "react";
-import { ScrollView, View } from "react-native";
-import { VStack } from "@/components/ui/vstack";
-import { HStack } from "@/components/ui/hstack";
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Plus, Play, Save, Edit, Trash2 } from "lucide-react-native";
-import { Icon } from "@/components/ui/icon";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store/store";
-import { Exercise, CustomExercise, RoutineExercise, Routine } from "../store/data/dataSlice";
-import { fetchRoutines, createRoutine, updateRoutineThunk, deleteRoutine } from "../store/data/dataSaga";
-import RoutineExerciseCard from "./RoutineExerciseCard";
-import ExerciseSelectionModal from "./ExerciseSelectionModal";
-import FormInput from "./FormInput";
-import ModalComponent from "./Modal";
-import AlertModal from "./AlertModal";
-import { i18n } from "../i18n";
-import { useRouter } from "expo-router";
-import { shallowEqual } from "react-redux";
+import { useState, useEffect } from 'react';
+import { ScrollView, View } from 'react-native';
+import { VStack } from '@/components/ui/vstack';
+import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
+import { Heading } from '@/components/ui/heading';
+import { Button, ButtonText, ButtonIcon } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Plus, Play, Save, Edit, Trash2 } from 'lucide-react-native';
+import { Icon } from '@/components/ui/icon';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
+import { Exercise, CustomExercise, RoutineExercise, Routine } from '../store/data/dataSlice';
+import { fetchRoutines, createRoutine, updateRoutineThunk, deleteRoutine } from '../store/data/dataSaga';
+import RoutineExerciseCard from './RoutineExerciseCard';
+import ExerciseSelectionModal from './ExerciseSelectionModal';
+import FormInput from './FormInput';
+import ModalComponent from './Modal';
+import AlertModal from './AlertModal';
+import { i18n } from '../i18n';
+import { useRouter } from 'expo-router';
 
 interface RoutinesProps {
 	classes?: string;
@@ -28,10 +27,10 @@ interface RoutinesProps {
 interface RoutineSlot {
 	id: string;
 	exercise?: Exercise | CustomExercise;
-	exerciseType?: "standard" | "custom";
+	exerciseType?: 'standard' | 'custom';
 }
 
-function Routines(props: RoutinesProps) {
+function Routines (props: RoutinesProps) {
 	const dispatch: AppDispatch = useDispatch();
 	const { routines, exercises, customExercises } = useSelector(
 		(state: RootState) => ({
@@ -39,14 +38,14 @@ function Routines(props: RoutinesProps) {
 			exercises: state.data.exercises || [],
 			customExercises: state.data.customExercises || [],
 		}),
-		shallowEqual
+		shallowEqual,
 	);
 
-	const [slots, setSlots] = useState<RoutineSlot[]>([{ id: "1" }, { id: "2" }, { id: "3" }]);
+	const [slots, setSlots] = useState<RoutineSlot[]>([{ id: '1' }, { id: '2' }, { id: '3' }]);
 	const [showExerciseModal, setShowExerciseModal] = useState(false);
 	const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
 	const [showNameModal, setShowNameModal] = useState(false);
-	const [routineName, setRoutineName] = useState("");
+	const [routineName, setRoutineName] = useState('');
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [routineToDelete, setRoutineToDelete] = useState<number | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
@@ -62,10 +61,10 @@ function Routines(props: RoutinesProps) {
 		setShowExerciseModal(true);
 	};
 
-	const handleSelectExercise = (exercise: Exercise | CustomExercise, exerciseType: "standard" | "custom") => {
+	const handleSelectExercise = (exercise: Exercise | CustomExercise, exerciseType: 'standard' | 'custom') => {
 		if (selectedSlotId) {
 			setSlots((prevSlots) =>
-				prevSlots.map((slot) => (slot.id === selectedSlotId ? { ...slot, exercise, exerciseType } : slot))
+				prevSlots.map((slot) => (slot.id === selectedSlotId ? { ...slot, exercise, exerciseType } : slot)),
 			);
 		}
 	};
@@ -104,20 +103,20 @@ function Routines(props: RoutinesProps) {
 					id: editingRoutineId,
 					name: routineName,
 					exercises: routineExercises,
-				})
+				}),
 			);
 		} else {
 			dispatch(
 				createRoutine({
 					name: routineName,
 					exercises: routineExercises,
-				})
+				}),
 			);
 		}
 
 		// Reset state
-		setRoutineName("");
-		setSlots([{ id: "1" }, { id: "2" }, { id: "3" }]);
+		setRoutineName('');
+		setSlots([{ id: '1' }, { id: '2' }, { id: '3' }]);
 		setIsEditing(false);
 		setEditingRoutineId(null);
 		setShowNameModal(false);
@@ -137,7 +136,7 @@ function Routines(props: RoutinesProps) {
 		const routineExercises = routine.exercises || [];
 		const routineSlots: RoutineSlot[] = routineExercises.map((exercise: any, index: number) => {
 			const exerciseData =
-				exercise.exercise_type === "standard"
+				exercise.exercise_type === 'standard'
 					? exercises.find((e) => e.id === exercise.exercise_id)
 					: customExercises.find((e) => e.id === exercise.exercise_id);
 
@@ -179,19 +178,19 @@ function Routines(props: RoutinesProps) {
 		// Reset editing state when creating new
 		setIsEditing(false);
 		setEditingRoutineId(null);
-		setRoutineName("");
-		setSlots([{ id: "1" }, { id: "2" }, { id: "3" }]);
+		setRoutineName('');
+		setSlots([{ id: '1' }, { id: '2' }, { id: '3' }]);
 		// Open exercise selection modal for the first slot
-		setSelectedSlotId("1");
+		setSelectedSlotId('1');
 		setShowExerciseModal(true);
 	};
 
 	return (
 		<VStack space="lg" className={props.classes}>
 			<HStack className="justify-between items-center">
-				<Heading size="lg">{i18n.t("routines.title")}</Heading>
+				<Heading size="lg">{i18n.t('routines.title')}</Heading>
 				<Button size="sm" variant="solid" action="primary" onPress={handleCreateNew}>
-					<ButtonText>{i18n.t("routines.createNew")}</ButtonText>
+					<ButtonText>{i18n.t('routines.createNew')}</ButtonText>
 					<ButtonIcon as={Plus} size="sm" />
 				</Button>
 			</HStack>
@@ -199,7 +198,7 @@ function Routines(props: RoutinesProps) {
 			{/* Current Routine Builder */}
 			<Card variant="outline" className="p-4">
 				<VStack space="md">
-					<Heading size="md">{i18n.t("routines.builder.title")}</Heading>
+					<Heading size="md">{i18n.t('routines.builder.title')}</Heading>
 
 					<ScrollView horizontal showsHorizontalScrollIndicator={false}>
 						<HStack space="md" className="pb-2">
@@ -216,10 +215,10 @@ function Routines(props: RoutinesProps) {
 											<VStack space="sm" className="items-center">
 												<Icon as={Plus} size="lg" className="text-typography-400" />
 												<Text size="sm" className="text-center text-typography-500">
-													{i18n.t("routines.builder.addExercise")}
+													{i18n.t('routines.builder.addExercise')}
 												</Text>
 												<Button size="sm" variant="outline" onPress={() => handleAddExercise(slot.id)}>
-													<ButtonText>{i18n.t("routines.builder.add")}</ButtonText>
+													<ButtonText>{i18n.t('routines.builder.add')}</ButtonText>
 												</Button>
 											</VStack>
 										</Card>
@@ -230,7 +229,7 @@ function Routines(props: RoutinesProps) {
 							{/* Add/Remove Slot Buttons */}
 							<VStack space="sm" className="justify-center">
 								<Button size="sm" variant="outline" onPress={handleAddSlot}>
-									<ButtonText>{i18n.t("routines.builder.addSlot")}</ButtonText>
+									<ButtonText>{i18n.t('routines.builder.addSlot')}</ButtonText>
 								</Button>
 								{slots.length > 1 && (
 									<Button
@@ -239,7 +238,7 @@ function Routines(props: RoutinesProps) {
 										action="negative"
 										onPress={() => handleRemoveSlot(slots[slots.length - 1].id)}
 									>
-										<ButtonText>{i18n.t("routines.builder.removeSlot")}</ButtonText>
+										<ButtonText>{i18n.t('routines.builder.removeSlot')}</ButtonText>
 									</Button>
 								)}
 							</VStack>
@@ -249,7 +248,7 @@ function Routines(props: RoutinesProps) {
 					{slots.some((slot) => slot.exercise) && (
 						<Button size="lg" variant="solid" action="primary" onPress={handleSaveButtonClick}>
 							<ButtonText>
-								{isEditing ? i18n.t("routines.builder.updateRoutine") : i18n.t("routines.builder.saveRoutine")}
+								{isEditing ? i18n.t('routines.builder.updateRoutine') : i18n.t('routines.builder.saveRoutine')}
 							</ButtonText>
 							<ButtonIcon as={isEditing ? Edit : Save} size="md" />
 						</Button>
@@ -260,7 +259,7 @@ function Routines(props: RoutinesProps) {
 			{/* Saved Routines */}
 			{routines && routines.length > 0 && (
 				<VStack space="md">
-					<Heading size="md">{i18n.t("routines.saved.title")}</Heading>
+					<Heading size="md">{i18n.t('routines.saved.title')}</Heading>
 					{routines.map((routine) => (
 						<Card key={routine.id} variant="outline" className="p-4">
 							<VStack space="md">
@@ -268,11 +267,11 @@ function Routines(props: RoutinesProps) {
 									<VStack space="xs">
 										<Heading size="sm">{routine.name}</Heading>
 										<Text size="sm" className="text-typography-500">
-											{(routine.exercises || []).length} {i18n.t("routines.saved.exercises")}
+											{(routine.exercises || []).length} {i18n.t('routines.saved.exercises')}
 										</Text>
 										{routine.completion_count > 0 && (
 											<Text size="sm" className="text-typography-500">
-												{i18n.t("routines.saved.completed")} {routine.completion_count} {i18n.t("routines.saved.times")}
+												{i18n.t('routines.saved.completed')} {routine.completion_count} {i18n.t('routines.saved.times')}
 											</Text>
 										)}
 									</VStack>
@@ -312,7 +311,7 @@ function Routines(props: RoutinesProps) {
 				isOpen={showNameModal}
 				onClose={() => {
 					setShowNameModal(false);
-					setRoutineName("");
+					setRoutineName('');
 					// Don't reset editing state or slots when canceling - let user continue editing
 				}}
 				onConfirm={handleSaveRoutine}

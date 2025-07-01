@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
 	Drawer,
 	DrawerBackdrop,
@@ -7,19 +7,19 @@ import {
 	DrawerBody,
 	DrawerFooter,
 	DrawerCloseButton,
-} from "../../app/components/ui/drawer";
-import { Button, ButtonGroup, ButtonText } from "../../app/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Icon, CloseIcon } from "@/components/ui/icon";
-import { ExerciseDifficulty } from "../../store/data/dataSlice";
-import { i18n } from "../../i18n";
-import { ScrollView, View } from "react-native";
-import { AppDispatch } from "../../store/store";
-import { useDispatch } from "react-redux";
-import { createCustomExercise } from "../../store/data/dataSaga";
-import { createExerciseSchemaStep1, createExerciseSchemaStep2 } from "../../schemas/schema";
-import CreateExerciseStepTwo from "../excercise-creation/CreateExerciseStep2";
-import CreateExerciseStepOne from "../excercise-creation/CreateExerciseStep1";
+} from '../../app/components/ui/drawer';
+import { Button, ButtonText } from '../../app/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Icon, CloseIcon } from '@/components/ui/icon';
+import { ExerciseDifficulty } from '../../store/data/dataSlice';
+import { i18n } from '../../i18n';
+import { ScrollView, View } from 'react-native';
+import { AppDispatch } from '../../store/store';
+import { useDispatch } from 'react-redux';
+import { createCustomExercise } from '../../store/data/dataSaga';
+import { createExerciseSchemaStep1, createExerciseSchemaStep2 } from '../../schemas/schema';
+import CreateExerciseStepTwo from '../excercise-creation/CreateExerciseStep2';
+import CreateExerciseStepOne from '../excercise-creation/CreateExerciseStep1';
 
 interface CreateExerciseModalProps {
 	isOpen: boolean;
@@ -31,7 +31,7 @@ enum Step {
 	SETTINGS = 2,
 }
 
-function CreateExerciseDrawer(props: CreateExerciseModalProps) {
+function CreateExerciseDrawer (props: CreateExerciseModalProps) {
 	const [step, setStep] = useState<Step>(Step.DESCRIPTION);
 	const scrollViewRef = useRef<ScrollView>(null);
 	const defaultDurationSettings = {
@@ -42,13 +42,12 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	const [durationSettings, setDurationSettings] = useState(defaultDurationSettings);
 
 	const dispatch: AppDispatch = useDispatch();
-	const nameRef = useRef("");
-	const descriptionRef = useRef("");
-	const instructionsRef = useRef("");
-	const focusRef = useRef("");
-	const youtubeUrlRef = useRef("");
+	const nameRef = useRef('');
+	const descriptionRef = useRef('');
+	const instructionsRef = useRef('');
+	const focusRef = useRef('');
+	const youtubeUrlRef = useRef('');
 
-	const [focus, setFocus] = useState("");
 	const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
 	const [formData, setFormData] = useState<{
@@ -68,9 +67,9 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		exerciseTime: number;
 		youtubeUrl?: string;
 	} | null>({
-		name: "",
-		description: "",
-		instructions: "",
+		name: '',
+		description: '',
+		instructions: '',
 		difficulty: ExerciseDifficulty.Beginner,
 		shapes: [],
 		letters: [],
@@ -96,27 +95,26 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 				return acc;
 			}, {});
 			setFormErrors(validationErrors);
-			console.log("Validation Errors:", validationErrors);
+			console.log('Validation Errors:', validationErrors);
 			return false;
 		}
 	};
 
 	const handleBack = () => setStep((prev) => (prev === Step.DESCRIPTION ? prev : ((prev - 1) as Step)));
-	function handleChange(name: keyof typeof formData, value: string) {
-		if (name === "focus") {
+	function handleChange (name: keyof typeof formData, value: string) {
+		if (name === 'focus') {
 			focusRef.current = value;
-			setFocus(value);
-			setFormData((prev) => (prev ? { ...prev, focus: value.split(",") } : prev));
-		} else if (name === "name") {
+			setFormData((prev) => (prev ? { ...prev, focus: value.split(',') } : prev));
+		} else if (name === 'name') {
 			nameRef.current = value;
 			setFormData((prev) => (prev ? { ...prev, name: value } : prev));
-		} else if (name === "description") {
+		} else if (name === 'description') {
 			descriptionRef.current = value;
 			setFormData((prev) => (prev ? { ...prev, description: value } : prev));
-		} else if (name === "instructions") {
+		} else if (name === 'instructions') {
 			instructionsRef.current = value;
 			setFormData((prev) => (prev ? { ...prev, instructions: value } : prev));
-		} else if (name === "youtubeUrl") {
+		} else if (name === 'youtubeUrl') {
 			youtubeUrlRef.current = value;
 			setFormData((prev) => (prev ? { ...prev, youtubeUrl: value } : prev));
 		} else {
@@ -128,7 +126,9 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		if (step === Step.DESCRIPTION) {
 			const valid = await validateForm();
 
-			if (!valid) return;
+			if (!valid) {
+				return;
+			}
 		}
 		setStep((prev) => (prev === Step.SETTINGS ? prev : ((prev + 1) as Step)));
 	};
@@ -142,7 +142,9 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 
 	const handleSubmit = async () => {
 		const valid = await validateForm();
-		if (!valid) return;
+		if (!valid) {
+			return;
+		}
 		await dispatch(createCustomExercise(formData)).unwrap();
 		props.onClose();
 		setFormData(null);
@@ -152,13 +154,13 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		if (step === Step.SETTINGS) {
 			return (
 				<Button onPress={handleSubmit}>
-					<ButtonText>{i18n.t("general.buttons.submit")}</ButtonText>
+					<ButtonText>{i18n.t('general.buttons.submit')}</ButtonText>
 				</Button>
 			);
 		}
 		return (
 			<Button onPress={handleNext}>
-				<ButtonText>{i18n.t("general.buttons.next")}</ButtonText>
+				<ButtonText>{i18n.t('general.buttons.next')}</ButtonText>
 			</Button>
 		);
 	};
@@ -171,8 +173,8 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 					<View className="relative w-full">
 						<Heading size="xl" className="text-center">
 							{step === Step.DESCRIPTION
-								? i18n.t("createExercise.steps.description")
-								: i18n.t("createExercise.steps.settings")}
+								? i18n.t('createExercise.steps.description')
+								: i18n.t('createExercise.steps.settings')}
 						</Heading>
 						<View className="absolute right-0 top-0">
 							<DrawerCloseButton onPress={props.onClose}>
@@ -206,7 +208,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 				<DrawerFooter className="flex-row justify-end items-center gap-3">
 					{step !== Step.DESCRIPTION && (
 						<Button variant="outline" onPress={handleBack}>
-							<ButtonText>{i18n.t("general.buttons.previous")}</ButtonText>
+							<ButtonText>{i18n.t('general.buttons.previous')}</ButtonText>
 						</Button>
 					)}
 					{renderFooterButton()}

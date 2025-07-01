@@ -1,14 +1,14 @@
-import { ArrowRightIcon } from "lucide-react-native";
-import { router } from "expo-router";
-import { GestureResponderEvent, Linking, View } from "react-native";
-import { Link } from "@/components/ui/link";
-import { Heading } from "@/components/ui/heading";
-import { Icon } from "@/components/ui/icon";
-import { Divider } from "@/components/ui/divider";
-import { ReactNode } from "react";
-import { i18n } from "../i18n";
+import { ArrowRightIcon } from 'lucide-react-native';
+import { router } from 'expo-router';
+import { GestureResponderEvent, Linking, View } from 'react-native';
+import { Link } from '@/components/ui/link';
+import { Heading } from '@/components/ui/heading';
+import { Icon } from '@/components/ui/icon';
+import { Divider } from '@/components/ui/divider';
+import { ReactNode } from 'react';
+import { i18n } from '../i18n';
 
-export default function AccountLink(props: {
+export default function AccountLink (props: {
 	title: string;
 	link?: string;
 	isExternal?: boolean;
@@ -17,10 +17,15 @@ export default function AccountLink(props: {
 	children?: ReactNode;
 }) {
 	const handlePress = () => {
-		if (props.onPress) return props.onPress();
+		if (props.onPress) {
+			return props.onPress();
+		}
 		if (props.link) {
-			if (props.isExternal) Linking.openURL(props.link);
-			else router.navigate(props.link);
+			if (props.isExternal) {
+				Linking.openURL(props.link);
+			} else {
+				router.navigate(props.link);
+			}
 		}
 	};
 

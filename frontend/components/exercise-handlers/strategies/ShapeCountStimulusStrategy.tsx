@@ -1,8 +1,8 @@
-import React from "react";
-import { View } from "react-native";
-import { Square, Circle, Triangle, Diamond, LucideIcon } from "lucide-react-native";
-import { Exercise } from "../../../store/data/dataSlice";
-import { StimulusStrategy } from "../UnifiedStimulus";
+import React from 'react';
+import { View } from 'react-native';
+import { Square, Circle, Triangle, Diamond, LucideIcon } from 'lucide-react-native';
+import { Exercise } from '../../../store/data/dataSlice';
+import { StimulusStrategy } from '../UnifiedStimulus';
 
 interface ShapeStimulus {
 	type: string;
@@ -12,10 +12,10 @@ interface ShapeStimulus {
 
 const generateRandomStimulus = (): ShapeStimulus[] => {
 	const shapeTemplates: ShapeStimulus[] = [
-		{ type: "SQUARE", color: "#FF0000", icon: Square },
-		{ type: "CIRCLE", color: "#FFFF00", icon: Circle },
-		{ type: "TRIANGLE", color: "#00FF00", icon: Triangle },
-		{ type: "DIAMOND", color: "#0000FF", icon: Diamond },
+		{ type: 'SQUARE', color: '#FF0000', icon: Square },
+		{ type: 'CIRCLE', color: '#FFFF00', icon: Circle },
+		{ type: 'TRIANGLE', color: '#00FF00', icon: Triangle },
+		{ type: 'DIAMOND', color: '#0000FF', icon: Diamond },
 	];
 
 	const count = Math.floor(Math.random() * 3) + 2; // 2 to 4 shapes
@@ -44,9 +44,13 @@ export const ShapeCountStimulusStrategy: StimulusStrategy = {
 	},
 
 	renderStimulus: (stimulus: any, isWhiteScreen: boolean) => {
-		if (isWhiteScreen) return <View className="absolute inset-0 bg-white" />;
+		if (isWhiteScreen) {
+			return <View className="absolute inset-0 bg-white" />;
+		}
 
-		if (!stimulus || !Array.isArray(stimulus) || !stimulus.length) return null;
+		if (!stimulus || !Array.isArray(stimulus) || !stimulus.length) {
+			return null;
+		}
 
 		return (
 			<View className="absolute inset-0 justify-center items-center bg-background-700 px-6">
@@ -67,13 +71,15 @@ export const ShapeCountStimulusStrategy: StimulusStrategy = {
 		}));
 	},
 
-	getTableHeaders: () => ["exerciseProgress.shape", "exerciseProgress.count"],
+	getTableHeaders: () => ['exerciseProgress.shape', 'exerciseProgress.count'],
 
 	incrementStimulusCount: (
 		stimulus: any,
-		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>
+		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>,
 	) => {
-		if (!Array.isArray(stimulus)) return;
+		if (!Array.isArray(stimulus)) {
+			return;
+		}
 
 		const shapeCounts = new Map<string, number>();
 		stimulus.forEach((shape: ShapeStimulus) => {

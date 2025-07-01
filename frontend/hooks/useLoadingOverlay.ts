@@ -1,11 +1,11 @@
-import { useDispatch } from "react-redux";
-import { showLoadingOverlay, hideLoadingOverlay } from "../store/ui/uiSlice";
-import { i18n } from "../i18n";
+import { useDispatch } from 'react-redux';
+import { showLoadingOverlay, hideLoadingOverlay } from '../store/ui/uiSlice';
+import { i18n } from '../i18n';
 
 export const useLoadingOverlay = () => {
 	const dispatch = useDispatch();
 
-	const show = (message: string = i18n.t("general.loading")) => {
+	const show = (message: string = i18n.t('general.loading')) => {
 		dispatch(showLoadingOverlay(message));
 	};
 
@@ -15,7 +15,7 @@ export const useLoadingOverlay = () => {
 
 	const withLoading = async <T>(
 		asyncFunction: () => Promise<T>,
-		message: string = i18n.t("general.loading")
+		message: string = i18n.t('general.loading'),
 	): Promise<T> => {
 		try {
 			show(message);

@@ -1,11 +1,11 @@
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { useTheme } from "@/components/ui/ThemeProvider";
-import React, { useState } from "react";
-import { View, Text, ScrollView } from "react-native";
-import { Brain, FileChartColumn, UsersRound, ClipboardPen, Trophy, Rocket, Sprout } from "lucide-react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store";
-import { setActiveTabIndex } from "../store/ui/uiSlice";
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { useTheme } from '@/components/ui/ThemeProvider';
+import React from 'react';
+import { View, ScrollView } from 'react-native';
+import { Brain, FileChartColumn, UsersRound, ClipboardPen, Trophy, Rocket, Sprout } from 'lucide-react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store/store';
+import { setActiveTabIndex } from '../store/ui/uiSlice';
 
 const icons = {
 	FileChartColumn,
@@ -26,22 +26,24 @@ export interface TabItem {
 
 export interface TabComponentProps {
 	tabs: TabItem[];
-	tabVariant: "link" | "outline" | "solid" | undefined;
+	tabVariant: 'link' | 'outline' | 'solid' | undefined;
 	iconTop: boolean;
 	roundedFull?: boolean;
 	buttonIconHeight?: number;
 	context?: string;
 }
 
-export default function TabComponent(props: TabComponentProps) {
-	const context = props.context || "default";
+export default function TabComponent (props: TabComponentProps) {
+	const context = props.context || 'default';
 	const activeTabIndex = useSelector((state: RootState) => {
 		try {
-			if (!state || !state.ui || !state.ui.activeTabIndices) return 0;
+			if (!state || !state.ui || !state.ui.activeTabIndices) {
+				return 0;
+			}
 			const tabIndex = state.ui.activeTabIndices[context];
-			return typeof tabIndex === "number" ? tabIndex : 0;
+			return typeof tabIndex === 'number' ? tabIndex : 0;
 		} catch (error) {
-			console.warn("Error accessing tab state:", error);
+			console.warn('Error accessing tab state:', error);
 			return 0;
 		}
 	});
@@ -52,7 +54,7 @@ export default function TabComponent(props: TabComponentProps) {
 		try {
 			dispatch(setActiveTabIndex({ context, index }));
 		} catch (error) {
-			console.warn("Error dispatching tab action:", error);
+			console.warn('Error dispatching tab action:', error);
 		}
 	};
 
@@ -61,7 +63,7 @@ export default function TabComponent(props: TabComponentProps) {
 			<ScrollView
 				horizontal
 				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={{ alignItems: "center" }}
+				contentContainerStyle={{ alignItems: 'center' }}
 				className="py-3 w-[90%] self-center"
 			>
 				{props.tabs.map((tab, index) => {
@@ -71,8 +73,8 @@ export default function TabComponent(props: TabComponentProps) {
 							{index > 0 && <View className="w-px self-center mx-1" />}
 							<Button
 								variant={props.tabVariant}
-								className={`flex flex-1 items-center px-2 gap-2 ${props.iconTop ? "flex-col" : ""} ${props.roundedFull ? "rounded-full" : ""}`}
-								action={index === activeTabIndex ? "primary" : "secondary"}
+								className={`flex flex-1 items-center px-2 gap-2 ${props.iconTop ? 'flex-col' : ''} ${props.roundedFull ? 'rounded-full' : ''}`}
+								action={index === activeTabIndex ? 'primary' : 'secondary'}
 								onPress={() => handleTabPress(index)}
 							>
 								{IconComponent && (
@@ -80,13 +82,13 @@ export default function TabComponent(props: TabComponentProps) {
 										as={IconComponent}
 										height={props.buttonIconHeight}
 										action="negative"
-										className={`${index === activeTabIndex ? "stroke-primary-500" : "stroke-secondary-950"}`}
+										className={`${index === activeTabIndex ? 'stroke-primary-500' : 'stroke-secondary-950'}`}
 									/>
 								)}
 								<ButtonText
 									numberOfLines={1}
 									ellipsizeMode="tail"
-									action={index === activeTabIndex ? "primary" : "secondary"}
+									action={index === activeTabIndex ? 'primary' : 'secondary'}
 									className="max-w-[110px]"
 									size="lg"
 								>

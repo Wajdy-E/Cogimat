@@ -1,5 +1,4 @@
 import { ScrollView, View } from "react-native";
-import { useEffect } from "react";
 import Tab, { TabItem } from "../../components/Tab";
 import { useUser } from "@clerk/clerk-expo";
 import ExerciseCard from "../../components/ExerciseCard";
@@ -24,16 +23,14 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Box } from "@/components/ui/box";
 import { useCustomExercise } from "@/hooks/useCustomExercise";
 import CustomExerciseCard from "../../components/CustomExerciseCard";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { RootState, AppDispatch } from "../../store/store";
-import { shallowEqual } from "react-redux";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ChevronRight, Trophy } from "lucide-react-native";
+import { ChevronRight } from "lucide-react-native";
 import CreateExerciseModal from "../../components/program-components/CreateExerciseModal";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 import UpgradeCard from "../../components/UpgradeCard";
-import { Icon } from "@/components/ui/icon";
-import React from "react";
+import React, { useEffect } from "react";
 import { getPublicExercises } from "../../store/data/dataSaga";
 
 function Home() {

@@ -1,13 +1,13 @@
-import { HStack } from "@/components/ui/hstack";
-import { letterOptions } from "../../data/program/Program";
-import { Button, ButtonText } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { HStack } from '@/components/ui/hstack';
+import { letterOptions } from '../../data/program/Program';
+import { Button, ButtonText } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 
 type LettersProps = {
 	onChange?: (selected: string[]) => void;
 };
 
-function Letters({ onChange }: LettersProps) {
+function Letters ({ onChange }: LettersProps) {
 	const [selectedLetters, setSelectedLetters] = useState<string[]>([]);
 
 	const toggleLetter = (letter: string) => {
@@ -31,7 +31,7 @@ function Letters({ onChange }: LettersProps) {
 					>
 						<ButtonText
 							className={`h-10 w-10 text-center text-4xl ${
-								selectedLetters.includes(letter) ? "text-primary-500" : "text-typography-950"
+								selectedLetters.includes(letter) ? 'text-primary-500' : 'text-typography-950'
 							}`}
 						>
 							{letter}

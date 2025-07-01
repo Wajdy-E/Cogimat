@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface UserSubscriptionState {
 	isMonthly: boolean;
 	isSubscribed: boolean;
@@ -18,15 +18,15 @@ export interface UserBase {
 }
 
 export enum Theme {
-	Light = "light",
-	Dark = "dark",
+	Light = 'light',
+	Dark = 'dark',
 }
 
 export enum LanguageEnum {
-	English = "en",
-	French = "fr",
-	Japanese = "ja",
-	Korean = "ko",
+	English = 'en',
+	French = 'fr',
+	Japanese = 'ja',
+	Korean = 'ko',
 }
 
 export interface UserSettings {
@@ -88,28 +88,31 @@ const initialState: UserState = {
 };
 
 const userSlice = createSlice({
-	name: "user",
+	name: 'user',
 	initialState,
 	reducers: {
-		setCurrentUser(state, action: PayloadAction<UserBase>) {
+		setCurrentUser (state, action: PayloadAction<UserBase>) {
 			state.user.baseInfo = action.payload;
 		},
-		setSubscriptionStatus(state, action: PayloadAction<UserSubscriptionState>) {
+		setSubscriptionStatus (state, action: PayloadAction<UserSubscriptionState>) {
 			state.user.subscription = action.payload;
 		},
-		toggleTheme(state) {
+		toggleTheme (state) {
 			state.user.settings!.theme = state.user.settings!.theme === Theme.Light ? Theme.Dark : Theme.Light;
 		},
-		setTheme(state, action: PayloadAction<Theme>) {
+		setTheme (state, action: PayloadAction<Theme>) {
 			state.user.settings!.theme = action.payload;
 		},
-		setNotifications(state, action: PayloadAction<boolean>) {
+		setNotifications (state, action: PayloadAction<boolean>) {
 			state.user.settings!.allowNotifications = action.payload;
 		},
-		setIsSignedIn(state) {
+		setEmails (state, action: PayloadAction<boolean>) {
+			state.user.settings!.allowEmails = action.payload;
+		},
+		setIsSignedIn (state) {
 			state.isSignedIn = !state.isSignedIn;
 		},
-		setMilestonesProgress(state, { payload }: PayloadAction<UserMilestones>) {
+		setMilestonesProgress (state, { payload }: PayloadAction<UserMilestones>) {
 			state.milestones = payload;
 		},
 		resetState: () => initialState,
@@ -121,6 +124,7 @@ export const {
 	toggleTheme,
 	setTheme,
 	setNotifications,
+	setEmails,
 	setIsSignedIn,
 	setMilestonesProgress,
 	setSubscriptionStatus,

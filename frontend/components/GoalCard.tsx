@@ -1,9 +1,8 @@
-import { View, Text, Pressable } from "react-native";
-import { Check, X } from "lucide-react-native";
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Heading } from "@/components/ui/heading";
-import { Button, ButtonIcon } from "@/components/ui/button";
+import { View, Text, Pressable } from 'react-native';
+import { Check, X } from 'lucide-react-native';
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button, ButtonIcon } from '@/components/ui/button';
 
 type GoalCardProps = {
 	text: string;
@@ -11,7 +10,7 @@ type GoalCardProps = {
 	onCheck: (checked: boolean) => void;
 };
 
-export default function GoalCard({ text, onDelete, onCheck }: GoalCardProps) {
+export default function GoalCard ({ text, onDelete, onCheck }: GoalCardProps) {
 	const [checked, setChecked] = useState(false);
 
 	return (
@@ -25,7 +24,7 @@ export default function GoalCard({ text, onDelete, onCheck }: GoalCardProps) {
 			>
 				<View
 					className={`w-6 h-6 rounded-full border-2 ${
-						checked ? "bg-white border-white" : "border-gray-500"
+						checked ? 'bg-white border-white' : 'border-gray-500'
 					} items-center justify-center`}
 				>
 					{checked && <Check size={14} color="#1C1C1E" />}

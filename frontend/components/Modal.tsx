@@ -1,6 +1,5 @@
-import { Button, ButtonText } from "@/components/ui/button";
-import { Center } from "@/components/ui/center";
-import { Heading } from "@/components/ui/heading";
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
 import {
 	Modal,
 	ModalBackdrop,
@@ -9,11 +8,11 @@ import {
 	ModalHeader,
 	ModalBody,
 	ModalFooter,
-} from "@/components/ui/modal";
-import { Text } from "@/components/ui/text";
-import { Icon, CloseIcon } from "@/components/ui/icon";
-import React, { PropsWithChildren } from "react";
-import { i18n } from "../i18n";
+} from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { Icon, CloseIcon } from '@/components/ui/icon';
+import React, { PropsWithChildren } from 'react';
+import { i18n } from '../i18n';
 interface ModalProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -22,12 +21,12 @@ interface ModalProps {
 	buttonKey?: string;
 	cancelKey?: string;
 	onConfirm?: () => void;
-	size?: "xs" | "sm" | "md" | "lg" | "full";
+	size?: 'xs' | 'sm' | 'md' | 'lg' | 'full';
 }
 
-export default function ModalComponent(props: PropsWithChildren<ModalProps>) {
+export default function ModalComponent (props: PropsWithChildren<ModalProps>) {
 	return (
-		<Modal isOpen={props.isOpen} onClose={props.onClose} size={props.size ?? "md"} useRNModal={false}>
+		<Modal isOpen={props.isOpen} onClose={props.onClose} size={props.size ?? 'md'} useRNModal={false}>
 			<ModalBackdrop />
 			<ModalContent>
 				<ModalHeader>
@@ -46,10 +45,10 @@ export default function ModalComponent(props: PropsWithChildren<ModalProps>) {
 				</ModalBody>
 				<ModalFooter>
 					<Button variant="outline" action="secondary" onPress={props.onClose}>
-						<ButtonText>{i18n.t(props.cancelKey ?? "general.buttons.cancel")}</ButtonText>
+						<ButtonText>{i18n.t(props.cancelKey ?? 'general.buttons.cancel')}</ButtonText>
 					</Button>
 					<Button onPress={props.onConfirm}>
-						<ButtonText>{i18n.t(props.buttonKey ?? "general.buttons.save")}</ButtonText>
+						<ButtonText>{i18n.t(props.buttonKey ?? 'general.buttons.save')}</ButtonText>
 					</Button>
 				</ModalFooter>
 			</ModalContent>

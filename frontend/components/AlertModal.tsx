@@ -5,15 +5,15 @@ import {
 	AlertDialogFooter,
 	AlertDialogBody,
 	AlertDialogBackdrop,
-} from "@/components/ui/alert-dialog";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import React from "react";
-import { i18n } from "../i18n";
-import { Icon } from "@/components/ui/icon";
-import { TriangleAlert } from "lucide-react-native";
+} from '@/components/ui/alert-dialog';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
+import React from 'react';
+import { i18n } from '../i18n';
+import { Icon } from '@/components/ui/icon';
+import { TriangleAlert } from 'lucide-react-native';
 
 interface AlertModalProps {
 	isOpen: boolean;
@@ -23,16 +23,16 @@ interface AlertModalProps {
 	buttonKey?: string;
 	cancelKey?: string;
 	onConfirm: () => void;
-	action?: "default" | "primary" | "secondary" | "positive" | "negative" | undefined;
+	action?: 'default' | 'primary' | 'secondary' | 'positive' | 'negative' | undefined;
 }
 
-export default function AlertModal(props: AlertModalProps) {
+export default function AlertModal (props: AlertModalProps) {
 	return (
 		<AlertDialog
 			isOpen={props.isOpen}
 			onClose={props.onClose}
 			size="lg"
-			accessibilityLabel={i18n.t("general.alerts.warning")}
+			accessibilityLabel={i18n.t('general.alerts.warning')}
 		>
 			<AlertDialogBackdrop />
 			<AlertDialogContent size="lg">
@@ -56,9 +56,9 @@ export default function AlertModal(props: AlertModalProps) {
 							action="secondary"
 							onPress={props.onClose}
 							size="sm"
-							accessibilityLabel={i18n.t(props.cancelKey ?? "general.buttons.cancel")}
+							accessibilityLabel={i18n.t(props.cancelKey ?? 'general.buttons.cancel')}
 						>
-							<ButtonText>{i18n.t(props.cancelKey ?? "general.buttons.cancel")}</ButtonText>
+							<ButtonText>{i18n.t(props.cancelKey ?? 'general.buttons.cancel')}</ButtonText>
 						</Button>
 
 						{props.onConfirm && (
@@ -66,9 +66,9 @@ export default function AlertModal(props: AlertModalProps) {
 								size="sm"
 								onPress={props.onConfirm}
 								action={props.action}
-								accessibilityLabel={i18n.t(props.buttonKey ?? "general.buttons.save")}
+								accessibilityLabel={i18n.t(props.buttonKey ?? 'general.buttons.save')}
 							>
-								<ButtonText>{i18n.t(props.buttonKey ?? "general.buttons.save")}</ButtonText>
+								<ButtonText>{i18n.t(props.buttonKey ?? 'general.buttons.save')}</ButtonText>
 							</Button>
 						)}
 					</AlertDialogFooter>

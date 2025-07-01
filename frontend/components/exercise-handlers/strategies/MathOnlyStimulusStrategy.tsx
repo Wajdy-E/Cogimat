@@ -1,11 +1,11 @@
-import React from "react";
-import { View, Text } from "react-native";
-import { Exercise } from "../../../store/data/dataSlice";
-import { StimulusStrategy } from "../UnifiedStimulus";
+import React from 'react';
+import { View, Text } from 'react-native';
+import { Exercise } from '../../../store/data/dataSlice';
+import { StimulusStrategy } from '../UnifiedStimulus';
 
 const generateValidMathProblem = (): string => {
 	while (true) {
-		const operations = ["+", "-", "x", "/"];
+		const operations = ['+', '-', 'x', '/'];
 		const op = operations[Math.floor(Math.random() * operations.length)];
 
 		let a = 1 + Math.floor(Math.random() * 4);
@@ -15,26 +15,28 @@ const generateValidMathProblem = (): string => {
 		let problem: string;
 
 		switch (op) {
-			case "+":
+			case '+':
 				result = a + b;
 				problem = `${a} + ${b}`;
 				break;
-			case "-":
+			case '-':
 				[a, b] = a >= b ? [a, b] : [b, a];
 				result = a - b;
 				problem = `${a} - ${b}`;
 				break;
-			case "x":
+			case 'x':
 				result = a * b;
 				problem = `${a} x ${b}`;
 				break;
-			case "/":
+			case '/':
 				result = a;
 				problem = `${a * b} / ${b}`;
 				break;
 		}
 
-		if (result >= 1 && result <= 4) return problem!;
+		if (result >= 1 && result <= 4) {
+			return problem!;
+		}
 	}
 };
 
@@ -44,9 +46,13 @@ export const MathOnlyStimulusStrategy: StimulusStrategy = {
 	},
 
 	renderStimulus: (stimulus: any, isWhiteScreen: boolean) => {
-		if (isWhiteScreen) return <View className="absolute inset-0 bg-white" />;
+		if (isWhiteScreen) {
+			return <View className="absolute inset-0 bg-white" />;
+		}
 
-		if (!stimulus) return null;
+		if (!stimulus) {
+			return null;
+		}
 
 		return (
 			<View className="absolute inset-0 justify-center items-center bg-background-700">
@@ -64,11 +70,11 @@ export const MathOnlyStimulusStrategy: StimulusStrategy = {
 		}));
 	},
 
-	getTableHeaders: () => ["exerciseProgress.problem", "exerciseProgress.count"],
+	getTableHeaders: () => ['exerciseProgress.problem', 'exerciseProgress.count'],
 
 	incrementStimulusCount: (
 		stimulus: any,
-		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>
+		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>,
 	) => {
 		setStimulusCount((prev) => {
 			const newMap = new Map(prev);

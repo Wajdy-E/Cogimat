@@ -1,6 +1,6 @@
-import { Pause, Play, X } from "lucide-react-native";
-import React from "react";
-import { TouchableOpacity, View, Text } from "react-native";
+import { Pause, Play, X } from 'lucide-react-native';
+import React from 'react';
+import { TouchableOpacity, View, Text } from 'react-native';
 
 interface ExerciseControlProps {
 	setStimulus: (stimulus: any) => void;
@@ -13,7 +13,7 @@ interface ExerciseControlProps {
 	onStop?: () => void;
 }
 
-function ExerciseControl({
+function ExerciseControl ({
 	setStimulus,
 	setIsWhiteScreen,
 	setIsPaused,

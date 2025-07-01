@@ -1,6 +1,5 @@
-import * as Notifications from "expo-notifications";
-import { Platform } from "react-native";
-import { i18n } from "../i18n";
+import * as Notifications from 'expo-notifications';
+import { i18n } from '../i18n';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -21,36 +20,36 @@ export class NotificationService {
 	private static instance: NotificationService;
 	private notificationIds: Set<string> = new Set();
 
-	private constructor() {}
+	private constructor () {}
 
-	static getInstance(): NotificationService {
+	static getInstance (): NotificationService {
 		if (!NotificationService.instance) {
 			NotificationService.instance = new NotificationService();
 		}
 		return NotificationService.instance;
 	}
 
-	async requestPermissions(): Promise<boolean> {
+	async requestPermissions (): Promise<boolean> {
 		const { status } = await Notifications.requestPermissionsAsync();
-		return status === "granted";
+		return status === 'granted';
 	}
 
-	async checkPermissions(): Promise<boolean> {
+	async checkPermissions (): Promise<boolean> {
 		const { status } = await Notifications.getPermissionsAsync();
-		return status === "granted";
+		return status === 'granted';
 	}
 
-	async scheduleWeeklyWorkoutNotifications(goal: WeeklyGoalNotification): Promise<void> {
+	async scheduleWeeklyWorkoutNotifications (goal: WeeklyGoalNotification): Promise<void> {
 		// Cancel existing notifications for this user
 		await this.cancelUserNotifications(goal.clerk_id);
 
 		const hasPermission = await this.checkPermissions();
 		if (!hasPermission) {
-			console.log("Notification permissions not granted");
+			console.log('Notification permissions not granted');
 			return;
 		}
 
-		const [hours, minutes] = goal.reminder_time.split(":").map(Number);
+		const [hours, minutes] = goal.reminder_time.split(':').map(Number);
 
 		// Schedule notifications for each selected day
 		for (const day of goal.selected_days) {
@@ -61,15 +60,17 @@ export class NotificationService {
 		}
 	}
 
-	private async scheduleNotificationForDay(
+	private async scheduleNotificationForDay (
 		day: string,
 		hours: number,
 		minutes: number,
-		clerkId: string
+		clerkId: string,
 	): Promise<string | null> {
 		try {
 			const dayIndex = this.getDayIndex(day);
-			if (dayIndex === -1) return null;
+			if (dayIndex === -1) {
+				return null;
+			}
 
 			const now = new Date();
 			const scheduledTime = new Date();
@@ -94,10 +95,10 @@ export class NotificationService {
 
 			const notificationId = await Notifications.scheduleNotificationAsync({
 				content: {
-					title: i18n.t("notifications.workoutReminder.title"),
-					body: i18n.t("notifications.workoutReminder.body"),
+					title: i18n.t('notifications.workoutReminder.title'),
+					body: i18n.t('notifications.workoutReminder.body'),
 					data: {
-						type: "weekly_workout",
+						type: 'weekly_workout',
 						clerk_id: clerkId,
 						day: day,
 					},
@@ -111,12 +112,12 @@ export class NotificationService {
 			console.log(`Scheduled notification for ${day} at ${hours}:${minutes}`, notificationId);
 			return notificationId;
 		} catch (error) {
-			console.error("Error scheduling notification:", error);
+			console.error('Error scheduling notification:', error);
 			return null;
 		}
 	}
 
-	private getDayIndex(day: string): number {
+	private getDayIndex (day: string): number {
 		const dayMap: { [key: string]: number } = {
 			sunday: 0,
 			monday: 1,
@@ -129,7 +130,7 @@ export class NotificationService {
 		return dayMap[day.toLowerCase()] ?? -1;
 	}
 
-	async cancelUserNotifications(clerkId: string): Promise<void> {
+	async cancelUserNotifications (clerkId: string): Promise<void> {
 		try {
 			const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
 
@@ -140,35 +141,35 @@ export class NotificationService {
 				}
 			}
 		} catch (error) {
-			console.error("Error canceling user notifications:", error);
+			console.error('Error canceling user notifications:', error);
 		}
 	}
 
-	async cancelAllNotifications(): Promise<void> {
+	async cancelAllNotifications (): Promise<void> {
 		try {
 			await Notifications.cancelAllScheduledNotificationsAsync();
 			this.notificationIds.clear();
 		} catch (error) {
-			console.error("Error canceling all notifications:", error);
+			console.error('Error canceling all notifications:', error);
 		}
 	}
 
-	async getScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
+	async getScheduledNotifications (): Promise<Notifications.NotificationRequest[]> {
 		try {
 			return await Notifications.getAllScheduledNotificationsAsync();
 		} catch (error) {
-			console.error("Error getting scheduled notifications:", error);
+			console.error('Error getting scheduled notifications:', error);
 			return [];
 		}
 	}
 
 	// Method to handle notification received while app is in foreground
-	addNotificationReceivedListener(listener: (notification: Notifications.Notification) => void) {
+	addNotificationReceivedListener (listener: (notification: Notifications.Notification) => void) {
 		return Notifications.addNotificationReceivedListener(listener);
 	}
 
 	// Method to handle notification response (when user taps notification)
-	addNotificationResponseReceivedListener(listener: (response: Notifications.NotificationResponse) => void) {
+	addNotificationResponseReceivedListener (listener: (response: Notifications.NotificationResponse) => void) {
 		return Notifications.addNotificationResponseReceivedListener(listener);
 	}
 }

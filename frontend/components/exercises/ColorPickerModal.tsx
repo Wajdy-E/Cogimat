@@ -1,7 +1,7 @@
-import ModalComponent from "../Modal";
-import WheelColorPicker from "react-native-wheel-color-picker";
+import ModalComponent from '../Modal';
+import WheelColorPicker from 'react-native-wheel-color-picker';
 
-export default function ColorPickerModal({
+export default function ColorPickerModal ({
 	isOpen,
 	onClose,
 	onConfirm,

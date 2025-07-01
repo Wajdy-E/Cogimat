@@ -1,6 +1,6 @@
-import { View } from "react-native";
+import { View } from 'react-native';
 
-function TopGap() {
+function TopGap () {
 	return <View className="mt-16"></View>;
 }
 

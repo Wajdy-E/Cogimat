@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, ScrollView } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
-import { VStack } from "@/components/ui/vstack";
-import { HStack } from "@/components/ui/hstack";
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Progress, ProgressFilledTrack } from "@/components/ui/progress";
-import { ArrowLeft, Play, SkipForward, CheckCircle } from "lucide-react-native";
-import { Icon } from "@/components/ui/icon";
-import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/store";
-import { Routine, Exercise, CustomExercise } from "../../store/data/dataSlice";
+import React, { useEffect, useRef } from 'react';
+import { View, ScrollView } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { VStack } from '@/components/ui/vstack';
+import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
+import { Heading } from '@/components/ui/heading';
+import { Button, ButtonText, ButtonIcon } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import { ArrowLeft, Play, SkipForward, CheckCircle } from 'lucide-react-native';
+import { Icon } from '@/components/ui/icon';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../store/store';
 import {
 	startRoutineExecution,
 	completeExercise,
@@ -22,14 +21,14 @@ import {
 	setRoutineComplete,
 	setShowCountdown,
 	resetRoutineExecution,
-} from "../../store/data/dataSlice";
-import { i18n } from "../../i18n";
+} from '../../store/data/dataSlice';
+import { i18n } from '../../i18n';
 
-export default function RoutineExecution() {
+export default function RoutineExecution () {
 	const params = useLocalSearchParams();
 	const router = useRouter();
 	const dispatch = useDispatch();
-	const routineId = parseInt((params.routineId as string) || "0");
+	const routineId = parseInt((params.routineId as string) || '0');
 	const processedCompletions = useRef<Set<string>>(new Set());
 
 	const { routines, exercises, customExercises, routineExecution } = useSelector(
@@ -39,7 +38,7 @@ export default function RoutineExecution() {
 			customExercises: state.data.customExercises || [],
 			routineExecution: state.data.routineExecution,
 		}),
-		shallowEqual
+		shallowEqual,
 	);
 
 	const routine = routines.find((r) => r.id === routineId);
@@ -54,14 +53,14 @@ export default function RoutineExecution() {
 	// Get current exercise details
 	const currentRoutineExercise = routine?.exercises[routineExecution?.currentExerciseIndex || 0];
 	const currentExercise = currentRoutineExercise
-		? currentRoutineExercise.exercise_type === "standard"
+		? currentRoutineExercise.exercise_type === 'standard'
 			? exercises.find((e) => e.id === currentRoutineExercise.exercise_id)
 			: customExercises.find((e) => e.id === currentRoutineExercise.exercise_id)
 		: null;
 
 	// Check if we're returning from an exercise completion
 	useEffect(() => {
-		const returningFromExercise = params?.returnFromExercise === "true";
+		const returningFromExercise = params?.returnFromExercise === 'true';
 		const completedExerciseId = params?.completedExerciseId;
 
 		if (returningFromExercise && completedExerciseId && routineExecution) {
@@ -109,8 +108,40 @@ export default function RoutineExecution() {
 			if (routineExecution?.showCountdown) {
 				dispatch(setShowCountdown(false));
 			}
-		}, [routineExecution?.showCountdown, dispatch])
+		}, [routineExecution?.showCountdown, dispatch]),
 	);
+
+	// Handle navigation to exercise when countdown is shown
+	useEffect(() => {
+		if (routineExecution?.showCountdown && currentExercise && currentRoutineExercise) {
+			try {
+				const exerciseData = JSON.stringify(currentExercise);
+				const exerciseType = currentRoutineExercise.exercise_type === 'custom' ? 'custom-exercise' : 'exercise';
+				router.push(
+					`/(${exerciseType})/exercise?data=${encodeURIComponent(exerciseData)}&routineMode=true&routineId=${routineId}&exerciseIndex=${routineExecution?.currentExerciseIndex}`,
+				);
+			} catch (error) {
+				console.error('Error navigating to exercise:', error);
+				// Fallback: go back to routine execution
+				dispatch(setShowCountdown(false));
+			}
+		} else if (routineExecution?.showCountdown) {
+			console.error('Current exercise or routine exercise is undefined');
+			dispatch(setShowCountdown(false));
+		}
+	}, [routineExecution?.showCountdown, currentExercise, currentRoutineExercise, router, routineId]);
+
+	// Reset countdown if user navigates back without completing exercise
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			if (routineExecution?.showCountdown) {
+				// If countdown is still showing after 1 second, user probably navigated back
+				dispatch(setShowCountdown(false));
+			}
+		}, 1000);
+
+		return () => clearTimeout(timer);
+	}, [routineExecution?.showCountdown, dispatch]);
 
 	const progress = routine ? ((routineExecution?.completedExercises.length || 0) / routine.exercises.length) * 100 : 0;
 
@@ -126,14 +157,14 @@ export default function RoutineExecution() {
 		}
 	}, [routine, router, exercises.length, customExercises.length]);
 
-	// Show loading if exercises are not loaded yet
+	// Early returns after all hooks
 	if (!routine || (exercises.length === 0 && customExercises.length === 0)) {
 		return <View className="flex-1 justify-center items-center">{/* <Text>{i18n.t("general.loading")}</Text> */}</View>;
 	}
 
 	const handleStartExercise = () => {
 		if (!currentExercise || !currentRoutineExercise) {
-			console.error("Cannot start exercise: current exercise or routine exercise is undefined");
+			console.error('Cannot start exercise: current exercise or routine exercise is undefined');
 			return;
 		}
 
@@ -164,7 +195,7 @@ export default function RoutineExecution() {
 
 	const handleEndRoutine = () => {
 		// Clear URL parameters to prevent auto-redirect
-		router.replace("/(tabs)/progress");
+		router.replace('/(tabs)/progress');
 
 		// Reset all routine execution state
 		dispatch(resetRoutineExecution());
@@ -183,51 +214,20 @@ export default function RoutineExecution() {
 		dispatch(startRoutineExecution({ routineId }));
 	};
 
-	// Handle navigation to exercise when countdown is shown
-	useEffect(() => {
-		if (routineExecution?.showCountdown && currentExercise && currentRoutineExercise) {
-			try {
-				const exerciseData = JSON.stringify(currentExercise);
-				const exerciseType = currentRoutineExercise.exercise_type === "custom" ? "custom-exercise" : "exercise";
-				router.push(
-					`/(${exerciseType})/exercise?data=${encodeURIComponent(exerciseData)}&routineMode=true&routineId=${routineId}&exerciseIndex=${routineExecution?.currentExerciseIndex}`
-				);
-			} catch (error) {
-				console.error("Error navigating to exercise:", error);
-				// Fallback: go back to routine execution
-				dispatch(setShowCountdown(false));
-			}
-		} else if (routineExecution?.showCountdown) {
-			console.error("Current exercise or routine exercise is undefined");
-			dispatch(setShowCountdown(false));
-		}
-	}, [routineExecution?.showCountdown, currentExercise, currentRoutineExercise, router, routineId]);
-
-	// Reset countdown if user navigates back without completing exercise
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			if (routineExecution?.showCountdown) {
-				// If countdown is still showing after 1 second, user probably navigated back
-				dispatch(setShowCountdown(false));
-			}
-		}, 1000);
-
-		return () => clearTimeout(timer);
-	}, [routineExecution?.showCountdown, dispatch]);
-
+	// Early returns after all hooks
 	if (routineExecution?.isRoutineComplete) {
 		return (
 			<View className="flex-1 bg-background-700 justify-center items-center">
 				<VStack space="xl" className="items-center max-w-[90%]">
 					<Icon as={CheckCircle} size="xl" className="text-success-500" />
-					<Heading size="2xl">{i18n.t("routines.execution.complete")}</Heading>
-					<Text className="text-center text-typography-500">{i18n.t("routines.execution.completeMessage")}</Text>
+					<Heading size="2xl">{i18n.t('routines.execution.complete')}</Heading>
+					<Text className="text-center text-typography-500">{i18n.t('routines.execution.completeMessage')}</Text>
 					<HStack space="md">
 						<Button size="lg" variant="outline" onPress={handleRestartRoutine} className="flex-1">
-							<ButtonText>{i18n.t("general.buttons.restart")}</ButtonText>
+							<ButtonText>{i18n.t('general.buttons.restart')}</ButtonText>
 						</Button>
 						<Button size="lg" onPress={handleEndRoutine} className="flex-1">
-							<ButtonText>{i18n.t("general.buttons.done")}</ButtonText>
+							<ButtonText>{i18n.t('general.buttons.done')}</ButtonText>
 						</Button>
 					</HStack>
 				</VStack>
@@ -238,7 +238,7 @@ export default function RoutineExecution() {
 	if (routineExecution?.showCountdown) {
 		return (
 			<View className="flex-1 justify-center items-center">
-				<Text>{i18n.t("general.loading")}</Text>
+				<Text>{i18n.t('general.loading')}</Text>
 			</View>
 		);
 	}
@@ -262,15 +262,15 @@ export default function RoutineExecution() {
 					<Card className="p-4">
 						<VStack space="md">
 							<HStack className="justify-between">
-								<Text>{i18n.t("routines.execution.progress")}</Text>
+								<Text>{i18n.t('routines.execution.progress')}</Text>
 								<Text>{Math.round(progress)}%</Text>
 							</HStack>
 							<Progress value={progress} size="lg">
 								<ProgressFilledTrack className="bg-primary-500" />
 							</Progress>
 							<Text className="text-center">
-								{routineExecution?.completedExercises.length} / {routine.exercises.length}{" "}
-								{i18n.t("routines.saved.exercises")}
+								{routineExecution?.completedExercises.length} / {routine.exercises.length}{' '}
+								{i18n.t('routines.saved.exercises')}
 							</Text>
 						</VStack>
 					</Card>
@@ -279,12 +279,12 @@ export default function RoutineExecution() {
 					{currentExercise && (
 						<Card className="p-4">
 							<VStack space="md">
-								<Heading size="md">{i18n.t("routines.execution.currentExercise")}</Heading>
+								<Heading size="md">{i18n.t('routines.execution.currentExercise')}</Heading>
 								<HStack className="justify-between items-center">
 									<VStack space="sm" className="flex-1">
 										<Text className="font-semibold">{currentExercise.name}</Text>
 										<Text className="text-typography-500">
-											{i18n.t("exercise.difficulty." + currentExercise.difficulty.toLowerCase())}
+											{i18n.t('exercise.difficulty.' + currentExercise.difficulty.toLowerCase())}
 										</Text>
 									</VStack>
 									<Text className="text-typography-500">
@@ -298,12 +298,12 @@ export default function RoutineExecution() {
 					{/* Exercise List */}
 					<Card className="p-4">
 						<Heading size="md" className="mb-4">
-							{i18n.t("routines.execution.exerciseList")}
+							{i18n.t('routines.execution.exerciseList')}
 						</Heading>
 						<VStack space="sm">
 							{routine.exercises.map((routineExercise, index) => {
 								const exercise =
-									routineExercise.exercise_type === "standard"
+									routineExercise.exercise_type === 'standard'
 										? exercises.find((e) => e.id === routineExercise.exercise_id)
 										: customExercises.find((e) => e.id === routineExercise.exercise_id);
 
@@ -313,7 +313,7 @@ export default function RoutineExecution() {
 								return (
 									<HStack
 										key={`${routineExercise.exercise_type}-${routineExercise.exercise_id}`}
-										className={`p-3 rounded-lg ${isCurrent ? "bg-primary-500" : "bg-background-400"}`}
+										className={`p-3 rounded-lg ${isCurrent ? 'bg-primary-500' : 'bg-background-400'}`}
 									>
 										<HStack className="flex-1 items-center" space="sm">
 											{isCompleted ? (
@@ -322,13 +322,13 @@ export default function RoutineExecution() {
 												<View className="w-4 h-4 rounded-full border-2 border-typography-300" />
 											)}
 											<Text
-												className={`font-medium ${isCompleted ? "line-through text-typography-400" : "text-white"}`}
+												className={`font-medium ${isCompleted ? 'line-through text-typography-400' : 'text-white'}`}
 											>
-												{exercise?.name || i18n.t("routines.execution.exerciseNotFound")}
+												{exercise?.name || i18n.t('routines.execution.exerciseNotFound')}
 											</Text>
 										</HStack>
 										{isCurrent && (
-											<Text className="text-white font-semibold">{i18n.t("routines.execution.current")}</Text>
+											<Text className="text-white font-semibold">{i18n.t('routines.execution.current')}</Text>
 										)}
 									</HStack>
 								);
@@ -342,11 +342,11 @@ export default function RoutineExecution() {
 			<HStack className="justify-center p-4 bg-background-600" space="md" style={{ paddingBottom: 30 }}>
 				<Button size="lg" variant="outline" onPress={handleSkipExercise} className="flex-1">
 					<ButtonIcon as={SkipForward} />
-					<ButtonText>{i18n.t("routines.execution.skip")}</ButtonText>
+					<ButtonText>{i18n.t('routines.execution.skip')}</ButtonText>
 				</Button>
 				<Button size="lg" onPress={handleStartExercise} className="flex-1" disabled={!currentExercise}>
 					<ButtonIcon as={Play} />
-					<ButtonText>{i18n.t("routines.execution.start")}</ButtonText>
+					<ButtonText>{i18n.t('routines.execution.start')}</ButtonText>
 				</Button>
 			</HStack>
 		</View>

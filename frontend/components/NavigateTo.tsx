@@ -1,9 +1,9 @@
-import { useRouter } from "expo-router";
-import { View } from "react-native";
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react-native";
+import { useRouter } from 'expo-router';
+import { View } from 'react-native';
+import { Text } from '@/components/ui/text';
+import { Heading } from '@/components/ui/heading';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react-native';
 interface NavigateTo {
 	to?: string;
 	text?: string;
@@ -11,10 +11,10 @@ interface NavigateTo {
 	heading?: string;
 	onPress?: () => void;
 }
-function NavigateTo(props: NavigateTo) {
+function NavigateTo (props: NavigateTo) {
 	const router = useRouter();
 
-	function handlePress() {
+	function handlePress () {
 		if (props.onPress) {
 			props.onPress();
 		}

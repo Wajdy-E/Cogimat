@@ -1,25 +1,24 @@
-import { View, SafeAreaView, ScrollView } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Heading } from "@/components/ui/heading";
-import { Exercise, CustomizableExerciseOptions } from "../../store/data/dataSlice";
-import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ArrowLeft, Edit, ArrowRight } from "lucide-react-native";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { AppDispatch, RootState } from "../../store/store";
-import { useTheme } from "@/components/ui/ThemeProvider";
-import { useExercise } from "@/hooks/useExercise";
-import { VStack } from "@/components/ui/vstack";
-import { Box } from "@/components/ui/box";
-import { Divider } from "@/components/ui/divider";
-import { Text } from "@/components/ui/text";
-import { Icon } from "@/components/ui/icon";
-import { useState, useEffect } from "react";
-import { updateExercise } from "../../store/data/dataSlice";
-import { i18n } from "../../i18n";
-import CustomSlider from "../../components/CustomSlider";
-import ExerciseVideoUpload from "../../components/ExerciseVideoUpload";
+import { View, SafeAreaView, ScrollView } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Heading } from '@/components/ui/heading';
+import { Exercise, CustomizableExerciseOptions } from '../../store/data/dataSlice';
+import { Button, ButtonGroup, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { ArrowLeft, Edit } from 'lucide-react-native';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { useTheme } from '@/components/ui/ThemeProvider';
+import { useExercise } from '@/hooks/useExercise';
+import { VStack } from '@/components/ui/vstack';
+import { Box } from '@/components/ui/box';
+import { Divider } from '@/components/ui/divider';
+import { Text } from '@/components/ui/text';
+import { useState, useEffect } from 'react';
+import { updateExercise } from '../../store/data/dataSlice';
+import { i18n } from '../../i18n';
+import CustomSlider from '../../components/CustomSlider';
+import ExerciseVideoUpload from '../../components/ExerciseVideoUpload';
 
-export default function ExerciseSettings() {
+export default function ExerciseSettings () {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user.user.baseInfo, shallowEqual);
@@ -29,15 +28,14 @@ export default function ExerciseSettings() {
 	// Safely handle the id parameter
 	let exerciseId: number | null = null;
 	try {
-		if (id && typeof id === "string") {
+		if (id && typeof id === 'string') {
 			exerciseId = parseInt(id);
 		}
 	} catch (error) {
-		console.error("Error parsing exercise id:", error);
+		console.error('Error parsing exercise id:', error);
 	}
 
-	// Only call useExercise if we have a valid id
-	const exerciseData = exerciseId ? useExercise(exerciseId) : null;
+	const exerciseData = useExercise(exerciseId);
 
 	// Handle the case where useExercise returns an array, null, or undefined
 	let exercises: Exercise | null = null;
@@ -46,7 +44,7 @@ export default function ExerciseSettings() {
 			exercises = exerciseData as Exercise;
 		}
 	} catch (error) {
-		console.error("Error processing exercise data:", error);
+		console.error('Error processing exercise data:', error);
 	}
 
 	// Customization settings state
@@ -54,7 +52,7 @@ export default function ExerciseSettings() {
 	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
-		exercises?.customizableOptions
+		exercises?.customizableOptions,
 	);
 
 	// Admin video upload state
@@ -80,17 +78,17 @@ export default function ExerciseSettings() {
 						<View className="flex-row items-center justify-between gap-3 w-[90%]">
 							<View className="flex-row items-center gap-3">
 								<Button variant="link" onPress={() => router.push(`/(exercise)/${id}`)}>
-									<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
+									<ButtonIcon as={ArrowLeft} size={'xxl' as any} stroke={themeTextColor} />
 								</Button>
 								<Heading className="text-typography-950" size="2xl">
-									{i18n.t("exercise.page.settings")}
+									{i18n.t('exercise.page.settings')}
 								</Heading>
 							</View>
 						</View>
 					</View>
 				</SafeAreaView>
 				<View className="flex-1 justify-center items-center">
-					<Text>{i18n.t("general.loading")}</Text>
+					<Text>{i18n.t('general.loading')}</Text>
 				</View>
 			</View>
 		);
@@ -103,10 +101,10 @@ export default function ExerciseSettings() {
 					<View className="flex-row items-center justify-between gap-3 w-[90%]">
 						<View className="flex-row items-center gap-3">
 							<Button variant="link" onPress={() => router.push(`/(exercise)/${id}`)}>
-								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
+								<ButtonIcon as={ArrowLeft} size={'xxl' as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="2xl">
-								{i18n.t("exercise.page.settings")}
+								{i18n.t('exercise.page.settings')}
 							</Heading>
 						</View>
 					</View>
@@ -122,7 +120,7 @@ export default function ExerciseSettings() {
 								<View>
 									<View className="flex-row justify-between items-center">
 										<Heading size="md" className="text-primary-500">
-											{i18n.t("exercise.sections.durationSettings")}
+											{i18n.t('exercise.sections.durationSettings')}
 										</Heading>
 										<Button variant="link" onPress={() => setIsEditing(!isEditing)}>
 											<ButtonIcon as={Edit} size="md" />
@@ -131,32 +129,32 @@ export default function ExerciseSettings() {
 									<Divider className="bg-slate-400" />
 								</View>
 
-								<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
+								<VStack space="3xl" className={`${!isEditing ? 'opacity-70' : ''}`}>
 									{Object.entries(durationSettings || {}).map(([key, value]) =>
-										key !== "onScreenColor" && key !== "offScreenColor" ? (
+										key !== 'onScreenColor' && key !== 'offScreenColor' ? (
 											<CustomSlider
 												key={key}
 												title={`exercise.form.${key}`}
 												size="md"
-												minValue={key === "exerciseTime" ? 1 : 0.5}
-												maxValue={key === "exerciseTime" ? 5 : 15}
-												step={key === "exerciseTime" ? 0.5 : 0.1}
+												minValue={0.5}
+												maxValue={key === 'exerciseTime' ? 5 : 15}
+												step={key === 'exerciseTime' ? 0.5 : 0.1}
 												value={parseFloat(value.toString())}
 												defaultValue={parseFloat(value.toString())}
-												suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+												suffix={key === 'exerciseTime' ? 'general.time.minutes' : 'general.time.seconds'}
 												isReadOnly={!isEditing}
 												onChange={(newValue) =>
 													setDurationSettings((prev) =>
 														prev
 															? {
-																	...prev,
-																	[key]: newValue.toString(),
-																}
-															: undefined
+																...prev,
+																[key]: newValue.toString(),
+															}
+															: undefined,
 													)
 												}
 											/>
-										) : null
+										) : null,
 									)}
 								</VStack>
 
@@ -171,7 +169,7 @@ export default function ExerciseSettings() {
 											action="secondary"
 											size="md"
 										>
-											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
+											<ButtonText>{i18n.t('general.buttons.cancel')}</ButtonText>
 										</Button>
 										<Button
 											onPress={() => {
@@ -183,7 +181,7 @@ export default function ExerciseSettings() {
 											action="primary"
 											size="md"
 										>
-											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
+											<ButtonText>{i18n.t('general.buttons.save')}</ButtonText>
 										</Button>
 									</ButtonGroup>
 								)}
@@ -196,7 +194,7 @@ export default function ExerciseSettings() {
 								<VStack space="lg">
 									<View>
 										<Heading size="md" className="text-primary-500">
-											{i18n.t("exercise.sections.adminVideoUpload")}
+											{i18n.t('exercise.sections.adminVideoUpload')}
 										</Heading>
 										<Divider className="bg-slate-400" />
 									</View>
@@ -210,7 +208,7 @@ export default function ExerciseSettings() {
 										/>
 									) : (
 										<Button onPress={() => setShowVideoUpload(true)} action="primary" className="w-full">
-											<ButtonText>{i18n.t("exercise.sections.uploadVideo")}</ButtonText>
+											<ButtonText>{i18n.t('exercise.sections.uploadVideo')}</ButtonText>
 										</Button>
 									)}
 								</VStack>

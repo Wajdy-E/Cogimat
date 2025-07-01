@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { HStack } from "@/components/ui/hstack";
-import { colorOptions } from "../../data/program/Program";
-import Color from "./Color";
+import { useEffect, useState } from 'react';
+import { HStack } from '@/components/ui/hstack';
+import { colorOptions } from '../../data/program/Program';
+import Color from './Color';
 
 type ColorsProps = {
 	onChange?: (selectedColors: string[]) => void; // Array of selected color names (or hex)
 };
 
-function Colors({ onChange }: ColorsProps) {
+function Colors ({ onChange }: ColorsProps) {
 	const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
 	const toggleColor = (name: string) => {

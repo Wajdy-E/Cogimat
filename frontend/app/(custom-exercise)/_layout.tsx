@@ -1,11 +1,11 @@
-import { Tabs } from "expo-router";
+import { Tabs } from 'expo-router';
 
-function Layout() {
+function Layout () {
 	return (
 		<Tabs
 			screenOptions={({ route }) => ({
 				header: () => null,
-				tabBarStyle: { display: "none" },
+				tabBarStyle: { display: 'none' },
 			})}
 		></Tabs>
 	);

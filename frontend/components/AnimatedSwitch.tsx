@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, View } from "react-native";
-import { HStack } from "@/components/ui/hstack";
-import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, View } from 'react-native';
+import { HStack } from '@/components/ui/hstack';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
 interface AnimatedSwitchProps {
 	onChange: (value: boolean) => void;
 	defaultValue: boolean;
@@ -15,7 +15,7 @@ interface AnimatedSwitchProps {
 	thumbSize?: number;
 }
 
-function AnimatedSwitch(props: AnimatedSwitchProps) {
+function AnimatedSwitch (props: AnimatedSwitchProps) {
 	const SWITCH_WIDTH = props.width || 80;
 	const SWITCH_HEIGHT = props.height || 35;
 	const THUMB_SIZE = props.thumbSize || 29;
@@ -43,7 +43,7 @@ function AnimatedSwitch(props: AnimatedSwitchProps) {
 
 	const bgColor = anim.interpolate({
 		inputRange: [0, 1],
-		outputRange: ["#6b7280", "#22c55e"], // Tailwind gray-500 to green-500
+		outputRange: ['#6b7280', '#22c55e'], // Tailwind gray-500 to green-500
 	});
 
 	const toggle = () => {
@@ -95,7 +95,7 @@ export default AnimatedSwitch;
 
 const StyleSheet = {
 	absoluteFillObject: {
-		position: "absolute" as const,
+		position: 'absolute' as const,
 		top: 0,
 		right: 0,
 		bottom: 0,

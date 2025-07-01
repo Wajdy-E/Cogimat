@@ -1,12 +1,11 @@
-import { Tabs } from "expo-router";
-import CommunityExerciseHeader from "../../components/CommunityExerciseHeader";
+import { Tabs } from 'expo-router';
 
-function Layout() {
+function Layout () {
 	return (
 		<Tabs
 			screenOptions={({ route }) => ({
 				header: () => null,
-				tabBarStyle: { display: "none" },
+				tabBarStyle: { display: 'none' },
 			})}
 		></Tabs>
 	);

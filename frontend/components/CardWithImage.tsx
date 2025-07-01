@@ -1,11 +1,11 @@
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Image } from "@/components/ui/image";
-import { Link, LinkText } from "@/components/ui/link";
-import { Text } from "@/components/ui/text";
-import { Icon, ArrowRightIcon } from "@/components/ui/icon";
+import React from 'react';
+import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Image } from '@/components/ui/image';
+import { Link, LinkText } from '@/components/ui/link';
+import { Text } from '@/components/ui/text';
+import { Icon, ArrowRightIcon } from '@/components/ui/icon';
 
 export interface BlogCardProps {
 	/** URL for the image to display */
@@ -32,7 +32,7 @@ export interface BlogCardProps {
 	linkTextClassName?: string;
 }
 
-export default function BlogCard(props: BlogCardProps) {
+export default function BlogCard (props: BlogCardProps) {
 	return (
 		<Card className={props.cardClassName}>
 			<Image source={{ uri: props.imageUri }} className={props.imageClassName} alt={props.imageAlt} />
@@ -43,7 +43,7 @@ export default function BlogCard(props: BlogCardProps) {
 			<Link href={props.linkUrl} isExternal>
 				<HStack className="items-center">
 					<LinkText size="sm" className={props.linkTextClassName}>
-						{props.linkText || "Read Blog"}
+						{props.linkText || 'Read Blog'}
 					</LinkText>
 					<Icon as={ArrowRightIcon} size="sm" className="text-info-600 mt-0.5 ml-0.5" />
 				</HStack>

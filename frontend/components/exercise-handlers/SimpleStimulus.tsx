@@ -1,9 +1,9 @@
-import React from "react";
-import { Exercise } from "../../store/data/dataSlice";
-import UnifiedStimulus from "./UnifiedStimulus";
-import { SimpleStimulusStrategy } from "./strategies";
+import React from 'react';
+import { Exercise } from '../../store/data/dataSlice';
+import UnifiedStimulus from './UnifiedStimulus';
+import { SimpleStimulusStrategy } from './strategies';
 
-export default function SimpleStimulus({
+export default function SimpleStimulus ({
 	exercise,
 	onComplete,
 	onStop,

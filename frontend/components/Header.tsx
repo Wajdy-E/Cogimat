@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { View, SafeAreaView } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Heading } from "@/components/ui/heading";
-import { Exercise } from "../store/data/dataSlice";
-import { Button, ButtonIcon } from "@/components/ui/button";
-import { ArrowLeft, Star, Settings } from "lucide-react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store/store";
-import { setFavourite } from "../store/data/dataSaga";
-import { useTheme } from "@/components/ui/ThemeProvider";
-import AlertModal from "./AlertModal";
-import { i18n } from "../i18n";
+import React, { useState } from 'react';
+import { View, SafeAreaView } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Heading } from '@/components/ui/heading';
+import { Exercise } from '../store/data/dataSlice';
+import { Button, ButtonIcon } from '@/components/ui/button';
+import { ArrowLeft, Star, Settings } from 'lucide-react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
+import { setFavourite } from '../store/data/dataSaga';
+import { useTheme } from '@/components/ui/ThemeProvider';
+import AlertModal from './AlertModal';
+import { i18n } from '../i18n';
 
 interface HeaderProps {
 	showSettings?: boolean;
@@ -18,7 +18,7 @@ interface HeaderProps {
 	isExerciseActive?: boolean;
 }
 
-export default function Header({ showSettings = true, onBack, isExerciseActive = false }: HeaderProps) {
+export default function Header ({ showSettings = true, onBack, isExerciseActive = false }: HeaderProps) {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
 	const router = useRouter();
@@ -34,7 +34,7 @@ export default function Header({ showSettings = true, onBack, isExerciseActive =
 			setShowExitAlert(true);
 		} else {
 			// Navigate back immediately if exercise is not active
-			router.push("/(tabs)");
+			router.push('/(tabs)');
 		}
 	};
 
@@ -45,7 +45,7 @@ export default function Header({ showSettings = true, onBack, isExerciseActive =
 			onBack();
 		}
 		// Navigate back
-		router.push("/(tabs)");
+		router.push('/(tabs)');
 	};
 
 	const handleCancelExit = () => {
@@ -60,10 +60,10 @@ export default function Header({ showSettings = true, onBack, isExerciseActive =
 					<View className="flex-row items-center justify-between gap-3 w-[90%]">
 						<View className="flex-row items-center gap-3 flex-1">
 							<Button variant="link" onPress={handleBackPress}>
-								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
+								<ButtonIcon as={ArrowLeft} size={'xxl' as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="xl" numberOfLines={1} style={{ flex: 1 }}>
-								{i18n.t("general.loading")}
+								{i18n.t('general.loading')}
 							</Heading>
 						</View>
 					</View>
@@ -72,15 +72,17 @@ export default function Header({ showSettings = true, onBack, isExerciseActive =
 		);
 	}
 
-	function onFavourite() {
+	function onFavourite () {
 		try {
-			if (!exercises) return;
+			if (!exercises) {
+				return;
+			}
 
 			const exerciseCopy = { ...exercises };
 			exerciseCopy.isFavourited = !exercises.isFavourited;
 			dispatch(setFavourite({ isFavourited: exerciseCopy.isFavourited, exerciseId: exerciseCopy.id }));
 		} catch (error) {
-			console.error("Error in onFavourite:", error);
+			console.error('Error in onFavourite:', error);
 		}
 	}
 
@@ -91,7 +93,7 @@ export default function Header({ showSettings = true, onBack, isExerciseActive =
 					<View className="flex-row items-center justify-between gap-3 w-[90%]">
 						<View className="flex-row items-center gap-3 flex-1">
 							<Button variant="link" onPress={handleBackPress}>
-								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
+								<ButtonIcon as={ArrowLeft} size={'xxl' as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="xl" numberOfLines={1} style={{ flex: 1 }}>
 								{exercises.name}
@@ -101,15 +103,15 @@ export default function Header({ showSettings = true, onBack, isExerciseActive =
 							<Button variant="link" onPress={onFavourite}>
 								<ButtonIcon
 									as={Star}
-									stroke={`${exercises.isFavourited ? "yellow" : "white"}`}
-									fill={`${exercises.isFavourited ? "yellow" : "white"}`}
-									size={"xxl" as any}
-									className={`${exercises.isFavourited ? "fill-yellow-300" : ""}`}
+									stroke={`${exercises.isFavourited ? 'yellow' : 'white'}`}
+									fill={`${exercises.isFavourited ? 'yellow' : 'white'}`}
+									size={'xxl' as any}
+									className={`${exercises.isFavourited ? 'fill-yellow-300' : ''}`}
 								/>
 							</Button>
 							{showSettings && (
 								<Button variant="link" onPress={() => router.push(`/(exercise)/settings?id=${id}`)}>
-									<ButtonIcon as={Settings} size={"xxl" as any} stroke={themeTextColor} />
+									<ButtonIcon as={Settings} size={'xxl' as any} stroke={themeTextColor} />
 								</Button>
 							)}
 						</View>

@@ -1,6 +1,6 @@
-import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
-import { TokenCache } from "@clerk/clerk-expo/dist/cache";
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+import { TokenCache } from '@clerk/clerk-expo/dist/cache';
 
 const createTokenCache = (): TokenCache => {
 	return {
@@ -9,7 +9,7 @@ const createTokenCache = (): TokenCache => {
 				const item = await SecureStore.getItemAsync(key);
 				return item;
 			} catch (error) {
-				console.error("secure store get item error: ", error);
+				console.error('secure store get item error: ', error);
 				await SecureStore.deleteItemAsync(key);
 				return null;
 			}
@@ -20,4 +20,4 @@ const createTokenCache = (): TokenCache => {
 	};
 };
 
-export const tokenCache = Platform.OS !== "web" ? createTokenCache() : undefined;
+export const tokenCache = Platform.OS !== 'web' ? createTokenCache() : undefined;

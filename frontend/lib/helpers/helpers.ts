@@ -1,6 +1,6 @@
-import { CustomExercise, Exercise } from "../../store/data/dataSlice";
+import { CustomExercise, Exercise } from '../../store/data/dataSlice';
 
-export function customExerciseToExercise(customExercise: CustomExercise) {
+export function customExerciseToExercise (customExercise: CustomExercise) {
 	return {
 		difficulty: customExercise.difficulty,
 		description: customExercise.description,
@@ -11,7 +11,7 @@ export function customExerciseToExercise(customExercise: CustomExercise) {
 		instructions: customExercise.instructions,
 		name: customExercise.name,
 		customizableOptions: customExercise.customizableOptions,
-		type: "simple-stimulus",
+		type: 'simple-stimulus',
 		timeToComplete: (customExercise.customizableOptions.exerciseTime * 60).toString(),
 		videoUrl: customExercise.videoUrl,
 		imageFileUrl: customExercise.imageFileUrl,
