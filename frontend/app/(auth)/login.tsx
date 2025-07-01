@@ -174,7 +174,7 @@ function Login() {
 				<BackButton />
 				<Heading className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("login.title")}</Heading>
 			</View>
-			<View className="flex-1 justify-around p-4">
+			<VStack className="flex-1 justify-center p-4" space="lg">
 				<Box>
 					<Heading size="4xl">{i18n.t("login.welcomeBack")}</Heading>
 				</Box>
@@ -245,7 +245,7 @@ function Login() {
 						</Center>
 					</VStack>
 				</Box>
-			</View>
+			</VStack>
 		</SafeAreaView>
 	);
 }

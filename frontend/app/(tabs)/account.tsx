@@ -306,7 +306,7 @@ function Account() {
 				<FormInput
 					formSize="md"
 					label="account.username"
-					placeholder={user?.username ?? ""}
+					placeholder="account.enterUsername"
 					inputType="text"
 					inputSize="md"
 					onChange={(text) => (usernameRef.current = text)}

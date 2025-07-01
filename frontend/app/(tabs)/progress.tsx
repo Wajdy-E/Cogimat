@@ -21,6 +21,7 @@ import ProgressCard from "../../components/ProgressCard";
 import { shallowEqual } from "react-redux";
 import WeeklyWorkoutGoal from "./WeeklyGoal";
 import Routines from "../../components/Routines";
+import NotificationTest from "../../components/NotificationTest";
 
 export const milestoneCardConfigs: MilestoneCardConfig[] = [
 	{
@@ -132,6 +133,9 @@ function Progress() {
 			))}
 
 			<WeeklyWorkoutGoal />
+
+			{/* Temporary notification test - remove after testing */}
+			<NotificationTest />
 		</VStack>,
 
 		<VStack space="lg">

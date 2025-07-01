@@ -29,7 +29,7 @@
 		},
 		"android": {
 			"package": "com.cogimat.cogipro",
-			"permissions": ["INTERNET", "CAMERA"],
+			"permissions": ["INTERNET", "CAMERA", "RECEIVE_BOOT_COMPLETED", "VIBRATE"],
 			"adaptiveIcon": {
 				"foreground-image": "./assets/icon.png",
 				"backgroundColor": "#042932"

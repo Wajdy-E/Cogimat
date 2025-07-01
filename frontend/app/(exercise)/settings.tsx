@@ -117,7 +117,7 @@ export default function ExerciseSettings() {
 				<View className="px-5">
 					<VStack space="lg">
 						{/* Duration Settings */}
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
+						<Box className="bg-secondary-500 p-5 rounded-md">
 							<VStack space="lg" className="px-3 pb-4">
 								<View>
 									<View className="flex-row justify-between items-center">
@@ -192,7 +192,7 @@ export default function ExerciseSettings() {
 
 						{/* Admin Video Upload Section */}
 						{user?.isAdmin && (
-							<Box className="bg-secondary-500 p-5 rounded-2xl">
+							<Box className="bg-secondary-500 p-5 rounded-md">
 								<VStack space="lg">
 									<View>
 										<Heading size="md" className="text-primary-500">

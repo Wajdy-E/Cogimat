@@ -140,7 +140,7 @@ export default function ExerciseVideoUpload({
 	};
 
 	return (
-		<Box className="bg-secondary-500 p-5 rounded-2xl">
+		<Box className="bg-secondary-500 p-5 rounded-md">
 			<VStack space="lg">
 				<View className="flex-row justify-between items-center">
 					<Heading size="lg" className="text-primary-500">

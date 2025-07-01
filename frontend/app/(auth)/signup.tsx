@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, View, Platform, SafeAreaView } from "react-native";
-import { Button, ButtonText } from "../components/ui/button";
+import { Alert, View, Platform, SafeAreaView, ScrollView } from "react-native";
+import { Button, ButtonIcon, ButtonText } from "../components/ui/button";
 import FormInput from "../../components/FormInput";
 import { VStack } from "@/components/ui/vstack";
 import { Center } from "@/components/ui/center";
@@ -21,7 +21,7 @@ import Apple from "../../assets/apple.svg";
 import Google from "../../assets/google.svg";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { InputIcon } from "@/components/ui/input";
-import { Eye, EyeClosed, ArrowRight, QrCode, Camera } from "lucide-react-native";
+import { Eye, EyeClosed, ArrowRight, QrCode, Camera, Loader } from "lucide-react-native";
 import QRCodeScanner from "../../components/QRCodeScanner";
 import { Box } from "@/components/ui/box";
 import { setCurrentUserThunk } from "../../store/auth/authSaga";
@@ -86,6 +86,8 @@ export default function SignUp() {
 					path: "oauth-callback",
 				}),
 			});
+
+			console.log("createdSessionId", createdSessionId);
 
 			if (createdSessionId) {
 				await setActive?.({ session: createdSessionId });
@@ -239,18 +241,17 @@ export default function SignUp() {
 				</View>
 				<View className="flex-1 justify-around p-4">
 					<Box>
-						<Heading size="4xl">{i18n.t("qrSignup.welcome")}</Heading>
+						<Heading size="3xl">{i18n.t("qrSignup.welcome")}</Heading>
 						<Text className="text-typography-950 mt-2">{i18n.t("qrSignup.description")}</Text>
 					</Box>
 					<Box>
 						<VStack space="lg">
 							{/* QR Code Display */}
 							{qrCode ? (
-								<Box className="bg-primary-100 p-4 rounded-lg border border-primary-300">
+								<Box className="bg-background-500 p-4 rounded-lg border border-secondary-0">
 									<VStack space="sm" className="items-center">
 										<QrCode size={32} color={themeTextColor} />
 										<Text className="text-typography-950 font-medium">{i18n.t("qrSignup.qrCodeScanned")}</Text>
-										<Text className="text-typography-950 text-sm">{qrCode}</Text>
 										<Button onPress={() => setQrCode("")} variant="outline" size="sm">
 											<ButtonText>{i18n.t("qrSignup.changeQRCode")}</ButtonText>
 										</Button>
@@ -270,12 +271,12 @@ export default function SignUp() {
 
 							<Button
 								size="lg"
-								className="rounded-full"
+								className={`rounded-full ${loading || !qrCode ? "opacity-25" : ""}`}
 								onPress={() => handleQRCodeSignup(user)}
 								disabled={loading || !qrCode}
 							>
 								<ButtonText>{i18n.t("qrSignup.createAccount")}</ButtonText>
-								<ArrowRight size={20} />
+								<ButtonIcon as={loading ? Loader : ArrowRight} size="xl" />
 							</Button>
 						</VStack>
 					</Box>
@@ -322,7 +323,10 @@ export default function SignUp() {
 				<BackButton />
 				<Text className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("signup.title")}</Text>
 			</View>
-			<View className="w-screen flex-1 justify-center items-center">
+			<ScrollView
+				className="w-screen flex-1"
+				contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center", paddingBottom: 50 }}
+			>
 				<VStack space="md" className="w-[90%]">
 					<Center className="flex gap-5">
 						<FormInput
@@ -371,6 +375,7 @@ export default function SignUp() {
 
 						<Button className="w-full rounded-full" disabled={loading} onPress={signUpWithEmail} size="xl">
 							<ButtonText>{i18n.t("signup.form.signUp")}</ButtonText>
+							<ButtonIcon as={loading ? Loader : ArrowRight} size="xl" />
 						</Button>
 
 						{Platform.OS === "ios" && (
@@ -403,7 +408,7 @@ export default function SignUp() {
 						</Text>
 					</Center>
 				</VStack>
-			</View>
+			</ScrollView>
 		</SafeAreaView>
 	);
 }

@@ -12,12 +12,50 @@ import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
 import { useLanguageInitialization } from "./hooks/useLanguageInitialization";
 import LoadingOverlay from "../components/LoadingOverlay";
+import * as Notifications from "expo-notifications";
+import { useRouter } from "expo-router";
+import backgroundNotificationService from "../lib/backgroundNotificationService";
+import { setupNotifications } from "../lib/notificationSetup";
 
 const publishableKey = process.env.CLERK_PROD_KEY!;
 
 function ThemedApp() {
 	const { theme } = useTheme();
 	const isLanguageInitialized = useLanguageInitialization();
+	const router = useRouter();
+
+	// Handle notification responses and reschedule notifications on app start
+	useEffect(() => {
+		// Set up notifications and reschedule all notifications when app starts
+		const initializeNotifications = async () => {
+			try {
+				await setupNotifications();
+				await backgroundNotificationService.rescheduleAllNotifications();
+			} catch (error) {
+				console.log("Notification setup failed, continuing without notifications:", error);
+			}
+		};
+
+		initializeNotifications();
+
+		const subscription = Notifications.addNotificationResponseReceivedListener(async (response) => {
+			const data = response.notification.request.content.data;
+
+			if (data?.type === "weekly_workout") {
+				// Navigate to exercises tab when user taps workout reminder
+				router.push("/(tabs)/all-exercises");
+
+				// Reschedule future notifications to ensure continuity
+				try {
+					await backgroundNotificationService.rescheduleAllNotifications();
+				} catch (error) {
+					console.log("Error rescheduling notifications after tap:", error);
+				}
+			}
+		});
+
+		return () => subscription.remove();
+	}, [router]);
 
 	// Don't render until language is initialized
 	if (!isLanguageInitialized) {

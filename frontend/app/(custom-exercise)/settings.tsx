@@ -173,7 +173,7 @@ export default function CustomExerciseSettings() {
 				<View className="px-5">
 					<VStack space="lg">
 						{/* Duration Settings */}
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
+						<Box className="bg-secondary-500 p-5 rounded-md">
 							<VStack space="lg" className="px-3 pb-4">
 								<View>
 									<View className="flex-row justify-between items-center">
@@ -252,7 +252,7 @@ export default function CustomExerciseSettings() {
 						</Box>
 
 						{/* Public Access Settings */}
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
+						<Box className="bg-secondary-500 p-5 rounded-md">
 							<VStack space="lg">
 								<View>
 									<Heading size="md" className="text-primary-500">
@@ -280,7 +280,7 @@ export default function CustomExerciseSettings() {
 						</Box>
 
 						{/* Delete Exercise Section - Available for all users */}
-						<Box className="bg-secondary-500 p-5 rounded-2xl">
+						<Box className="bg-secondary-500 p-5 rounded-md">
 							<VStack space="lg">
 								<View className="flex-row justify-between items-center">
 									<View className="flex-1">
@@ -299,7 +299,7 @@ export default function CustomExerciseSettings() {
 
 						{/* Cogipro Premium Settings - Only for admins */}
 						{user.baseInfo?.isAdmin && (
-							<Box className="bg-secondary-500 p-5 rounded-2xl">
+							<Box className="bg-secondary-500 p-5 rounded-md">
 								<VStack space="lg">
 									<View>
 										<Heading size="md" className="text-primary-500">

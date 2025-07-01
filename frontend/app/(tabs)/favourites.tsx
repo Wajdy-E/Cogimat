@@ -7,11 +7,13 @@ import { Exercise, ExerciseDifficulty, CustomExercise } from "../../store/data/d
 import ExerciseCard from "../../components/ExerciseCard";
 import CustomExerciseCard from "../../components/CustomExerciseCard";
 import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/store";
 import { getPublicExercises } from "../../store/data/dataSaga";
+import { i18n } from "../../i18n";
 
 function Favourites() {
 	const dispatch: AppDispatch = useDispatch();
@@ -62,6 +64,17 @@ function Favourites() {
 	}, [exercises, customExercises, publicExercises]);
 
 	const tabs: TabItem[] = useMemo(() => {
+		// Get exercises for each difficulty level
+		const beginnerExercises = allFavoritedExercises.filter(
+			({ exercise }) => exercise.difficulty === ExerciseDifficulty.Beginner
+		);
+		const intermediateExercises = allFavoritedExercises.filter(
+			({ exercise }) => exercise.difficulty === ExerciseDifficulty.Intermediate
+		);
+		const advancedExercises = allFavoritedExercises.filter(
+			({ exercise }) => exercise.difficulty === ExerciseDifficulty.Advanced
+		);
+
 		return [
 			{
 				title: "Beginner",
@@ -74,9 +87,10 @@ function Favourites() {
 							contentContainerStyle={{ paddingBottom: 50 }}
 						>
 							<VStack space="md">
-								{allFavoritedExercises
-									.filter(({ exercise }) => exercise.difficulty === ExerciseDifficulty.Beginner)
-									.map(({ exercise, type }) => {
+								{beginnerExercises.length === 0 ? (
+									<Text className="text-center  mt-6">{i18n.t("pages.favourites.emptyState.beginner")}</Text>
+								) : (
+									beginnerExercises.map(({ exercise, type }) => {
 										// Determine if it's a community exercise based on type
 										const isCommunityExercise = type === "community" || "publicAccess" in exercise;
 
@@ -113,7 +127,8 @@ function Favourites() {
 												/>
 											);
 										}
-									})}
+									})
+								)}
 							</VStack>
 						</ScrollView>
 					</View>
@@ -130,9 +145,10 @@ function Favourites() {
 							contentContainerStyle={{ paddingBottom: 50 }}
 						>
 							<VStack space="md">
-								{allFavoritedExercises
-									.filter(({ exercise }) => exercise.difficulty === ExerciseDifficulty.Intermediate)
-									.map(({ exercise, type }) => {
+								{intermediateExercises.length === 0 ? (
+									<Text className="text-center  mt-6">{i18n.t("pages.favourites.emptyState.intermediate")}</Text>
+								) : (
+									intermediateExercises.map(({ exercise, type }) => {
 										// Determine if it's a community exercise based on type
 										const isCommunityExercise = type === "community" || "publicAccess" in exercise;
 
@@ -169,7 +185,8 @@ function Favourites() {
 												/>
 											);
 										}
-									})}
+									})
+								)}
 							</VStack>
 						</ScrollView>
 					</View>
@@ -186,9 +203,10 @@ function Favourites() {
 							contentContainerStyle={{ paddingBottom: 50 }}
 						>
 							<VStack space="md">
-								{allFavoritedExercises
-									.filter(({ exercise }) => exercise.difficulty === ExerciseDifficulty.Advanced)
-									.map(({ exercise, type }) => {
+								{advancedExercises.length === 0 ? (
+									<Text className="text-center  mt-6">{i18n.t("pages.favourites.emptyState.advanced")}</Text>
+								) : (
+									advancedExercises.map(({ exercise, type }) => {
 										// Determine if it's a community exercise based on type
 										const isCommunityExercise = type === "community" || "publicAccess" in exercise;
 
@@ -225,7 +243,8 @@ function Favourites() {
 												/>
 											);
 										}
-									})}
+									})
+								)}
 							</VStack>
 						</ScrollView>
 					</View>

@@ -131,7 +131,7 @@ export default function AllVideos() {
 	if (loading) {
 		return (
 			<View className="bg-background-800 h-screen">
-				<Box className="bg-secondary-500 p-5 rounded-2xl m-5">
+				<Box className="bg-secondary-500 p-5 rounded-md m-5">
 					<Text className="text-center">{i18n.t("general.loading")}</Text>
 				</Box>
 			</View>
@@ -197,7 +197,7 @@ export default function AllVideos() {
 			>
 				<VStack space="md">
 					{filteredVideos.length === 0 ? (
-						<Box className="bg-secondary-500 p-8 rounded-2xl">
+						<Box className="bg-secondary-500 p-8 rounded-md">
 							<Text className="text-center text-typography-600">{i18n.t("admin.allVideos.noVideos")}</Text>
 						</Box>
 					) : (
@@ -251,7 +251,7 @@ export default function AllVideos() {
 			{selectedVideo && (
 				<Box className="absolute inset-0 bg-black/80 z-50">
 					<View className="flex-1 justify-center items-center p-4">
-						<Box className="bg-background-800 p-4 rounded-2xl w-full max-w-md">
+						<Box className="bg-background-800 p-4 rounded-md w-full max-w-md">
 							<VStack space="md">
 								<Heading size="md" className="text-typography-950">
 									{selectedVideo.title}

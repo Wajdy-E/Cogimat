@@ -149,7 +149,7 @@ export default function AdminVideoUpload({ onUploadSuccess, onClose }: AdminVide
 	};
 
 	return (
-		<Box className="bg-secondary-500 p-5 rounded-2xl">
+		<Box className="bg-secondary-500 p-5 rounded-md">
 			<VStack space="lg">
 				<Heading size="lg" className="text-primary-500">
 					{i18n.t("admin.videoUpload.title")}

@@ -71,7 +71,7 @@ export default function ExerciseVideoGallery({
 
 	if (videos.length === 0) {
 		return (
-			<Box className="bg-secondary-500 p-8 rounded-2xl">
+			<Box className="bg-secondary-500 p-8 rounded-md">
 				<Text className="text-center text-typography-600">{i18n.t("exercise.videoGallery.noVideos")}</Text>
 			</Box>
 		);
@@ -133,7 +133,7 @@ export default function ExerciseVideoGallery({
 			{selectedVideo && (
 				<Box className="absolute inset-0 bg-black/80 z-50">
 					<View className="flex-1 justify-center items-center p-4">
-						<Box className="bg-background-800 p-4 rounded-2xl w-full max-w-md">
+						<Box className="bg-background-800 p-4 rounded-md w-full max-w-md">
 							<VStack space="md">
 								<Heading size="md" className="text-typography-950">
 									{selectedVideo.title}

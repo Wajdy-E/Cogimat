@@ -14,7 +14,7 @@ export default function LoadingOverlay() {
 
 	return (
 		<View className="absolute inset-0 bg-black/50 z-50 flex items-center justify-center">
-			<Box className="bg-background-800 p-6 rounded-2xl mx-4">
+			<Box className="bg-background-800 p-6 rounded-md mx-4">
 				<HStack space="md" className="items-center">
 					<Spinner />
 					<Text size="lg" className="text-typography-950">

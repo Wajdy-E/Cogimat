@@ -4,13 +4,15 @@ import { Heading } from "@/components/ui/heading";
 import DatePicker from "react-native-date-picker";
 import FormCheckboxGroup from "../../components/FormCheckboxGroup";
 import { VStack } from "@/components/ui/vstack";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
 import { fetchWeeklyWorkoutGoal, saveWeeklyWorkoutGoal } from "../../store/data/dataSaga";
 import { i18n } from "../../i18n";
 import { useAppAlert } from "../../hooks/useAppAlert";
 import { useTheme } from "@/components/ui/ThemeProvider";
+import { CalendarCheck, Loader } from "lucide-react-native";
+import backgroundNotificationService from "../../lib/backgroundNotificationService";
 
 enum days {
 	sunday = "Sunday",
@@ -77,6 +79,22 @@ function WeeklyWorkoutGoal() {
 				})
 			).unwrap();
 
+			// Schedule notifications for the selected days and time
+			if (user?.baseInfo?.id) {
+				try {
+					await backgroundNotificationService.saveWeeklyGoal({
+						clerk_id: user.baseInfo.id,
+						selected_days: selectedDays,
+						reminder_time: reminderTime,
+					});
+					console.log("Weekly workout notifications scheduled successfully");
+				} catch (notificationError) {
+					console.error("Error scheduling notifications:", notificationError);
+					// Don't show error to user as the goal was saved successfully
+					// This could happen if expo-device is not available in development
+				}
+			}
+
 			showAlert({
 				title: i18n.t("general.alerts.success"),
 				message: i18n.t("progress.weeklyGoal.scheduleSaved"),
@@ -116,6 +134,7 @@ function WeeklyWorkoutGoal() {
 				</View>
 				<Button size="lg" variant="solid" action="primary" onPress={handleSave} disabled={isLoading}>
 					<ButtonText>{isLoading ? i18n.t("general.loading") : i18n.t("progress.weeklyGoal.save")}</ButtonText>
+					<ButtonIcon as={isLoading ? Loader : CalendarCheck} />
 				</Button>
 			</VStack>
 		</ScrollView>

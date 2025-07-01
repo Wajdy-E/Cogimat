@@ -48,6 +48,9 @@ function Home() {
 		shallowEqual
 	);
 
+	// Get user info from Redux to check admin status
+	const userInfo = useSelector((state: RootState) => state.user.user.baseInfo);
+
 	// Safely handle exercises data
 	const exercises: Exercise[] = Array.isArray(exerciseData) ? exerciseData : [];
 	const customExercises: CustomExercise[] = Array.isArray(customExerciseData) ? customExerciseData : [];
@@ -228,6 +231,13 @@ function Home() {
 	return (
 		<ScrollView className="bg-background-700" contentContainerStyle={{ paddingBottom: 50 }}>
 			<SafeAreaView>
+				{/* Admin Top Bar */}
+				{userInfo?.isAdmin && (
+					<Box className="w-full bg-red-600 py-2 mb-5">
+						<Text className="text-white text-center font-bold text-sm">{i18n.t("home.adminTopBar")}</Text>
+					</Box>
+				)}
+
 				<View className="flex-row items-center gap-3 w-[90%] self-center">
 					<Avatar size="xl">
 						<AvatarImage source={{ uri: user?.imageUrl }} />

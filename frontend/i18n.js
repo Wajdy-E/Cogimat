@@ -31,6 +31,13 @@ const translations = {
 			createExercise: "Create Exercise",
 			favourites: "Favourites",
 			account: "Account",
+			favourites: {
+				emptyState: {
+					beginner: "No beginner exercises in your favourites yet",
+					intermediate: "No intermediate exercises in your favourites yet",
+					advanced: "No advanced exercises in your favourites yet",
+				},
+			},
 		},
 		home: {
 			greeting: "Hi, {{name}}",
@@ -57,6 +64,7 @@ const translations = {
 			article1: "Article 1",
 			article2: "Article 2",
 			article3: "Article 3",
+			adminTopBar: "YOU ARE LOGGED IN AS AN ADMIN",
 		},
 		account: {
 			signout: "Sign out",
@@ -91,7 +99,13 @@ const translations = {
 			adminSection: "Admin Tools",
 			cogiproInc: "COGIPRO, INC.",
 			enterUsername: "Enter username...",
-			usernameHelper: "Username must be at least 4 characters long and at most 64 characters long",
+			usernameHelper: "Username must be at least 4 characters long and can only contain letters, numbers and - or _.",
+		},
+		notifications: {
+			workoutReminder: {
+				title: "Workout Reminder",
+				body: "Time for your scheduled workout! Complete an exercise to stay on track.",
+			},
 		},
 		signup: {
 			title: "Sign Up",
@@ -159,7 +173,7 @@ const translations = {
 		qrSignup: {
 			title: "QR Code Sign Up",
 			welcome: "Welcome to Cogimat",
-			description: "Scan the QR code from your product to gain access to all basic features",
+			description: "Scan the QR code from your Cogimat package to gain access to the app.",
 			scanQRCode: "Scan QR Code",
 			qrCodeScanned: "QR Code Scanned",
 			changeQRCode: "Change QR Code",
@@ -167,7 +181,7 @@ const translations = {
 			noQRCode: "No QR Code",
 			scanQRCodeFirst: "Please scan a QR code first",
 			success: "Success",
-			accessGranted: "Access granted! You can now use all basic features.",
+			accessGranted: "Access granted! You can now use the app.",
 			error: "Error",
 			alreadyHaveAccount: "Already have an account?",
 			login: "Login",
@@ -655,6 +669,13 @@ const translations = {
 			createExercise: "Créer un exercice",
 			favourites: "Favoris",
 			account: "Compte",
+			favourites: {
+				emptyState: {
+					beginner: "Aucun exercice débutant dans vos favoris pour le moment",
+					intermediate: "Aucun exercice intermédiaire dans vos favoris pour le moment",
+					advanced: "Aucun exercice avancé dans vos favoris pour le moment",
+				},
+			},
 		},
 		home: {
 			greeting: "Salut, {{name}}",
@@ -680,6 +701,7 @@ const translations = {
 			article1: "Article 1",
 			article2: "Article 2",
 			article3: "Article 3",
+			adminTopBar: "VOU DÉJÀ LOGGÉ EN TANT ADMIN",
 		},
 		account: {
 			signout: "Se déconnecter",
@@ -714,7 +736,14 @@ const translations = {
 			adminSection: "Outils d'administration",
 			cogiproInc: "COGIPRO, INC.",
 			enterUsername: "Entrez le nom d'utilisateur...",
-			usernameHelper: "Le nom d'utilisateur doit contenir au moins 4 caractères et au plus 64 caractères",
+			usernameHelper:
+				"Le nom d'utilisateur doit contenir au moins 4 caractères et ne peut contenir que des lettres, des chiffres et des - ou des _.",
+		},
+		notifications: {
+			workoutReminder: {
+				title: "Rappel d'entraînement",
+				body: "Il est temps pour votre entraînement programmé ! Faites un exercice pour rester sur la bonne voie.",
+			},
 		},
 		signup: {
 			title: "S'inscrire",
@@ -782,7 +811,7 @@ const translations = {
 		qrSignup: {
 			title: "Inscription par QR Code",
 			welcome: "Bienvenue sur Cogimat",
-			description: "Scannez le QR code de votre produit pour accéder à toutes les fonctionnalités de base",
+			description: "Scannez le QR code de votre produit pour accéder à l'application",
 			scanQRCode: "Scanner le QR Code",
 			qrCodeScanned: "QR Code Scanné",
 			changeQRCode: "Changer le QR Code",
@@ -790,7 +819,7 @@ const translations = {
 			noQRCode: "Aucun QR Code",
 			scanQRCodeFirst: "Veuillez d'abord scanner un QR code",
 			success: "Succès",
-			accessGranted: "Accès accordé ! Vous pouvez maintenant utiliser toutes les fonctionnalités de base.",
+			accessGranted: "Accès accordé ! Vous pouvez maintenant utiliser l'application.",
 			error: "Erreur",
 			alreadyHaveAccount: "Vous avez déjà un compte ?",
 			login: "Se connecter",
