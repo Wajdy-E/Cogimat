@@ -1,0 +1,655 @@
+{
+	"beginner": "Débutant",
+	"intermediate": "Intermédiaire",
+	"advanced": "Avancé",
+	"pages": {
+		"home": "Accueil",
+		"progress": "Progrès",
+		"createExercise": "Créer un exercice",
+		"account": "Compte",
+		"allExercises": "Tous les exercices",
+		"weeklyGoal": "Objectif hebdomadaire",
+		"communityExercises": "Exercices communautaires",
+		"routine": "Routine",
+		"favourites": {
+			"title": "Favoris",
+			"beginner": "Débutant",
+			"intermediate": "Intermédiaire",
+			"advanced": "Avancé",
+			"emptyState": {
+				"beginner": "Aucun exercice débutant dans vos favoris pour le moment",
+				"intermediate": "Aucun exercice intermédiaire dans vos favoris pour le moment",
+				"advanced": "Aucun exercice avancé dans vos favoris pour le moment"
+			}
+		}
+	},
+	"home": {
+		"greeting": "Salut, {{name}}",
+		"subtitle": "Il est temps de repousser vos limites.",
+		"tabs": {
+			"allExercises": "Tous les exercices",
+			"interactiveExercises": "Exercices interactifs",
+			"noCustomExercises": "Vous n'avez créé aucun exercice personnalisé",
+			"createCustomExercise": "Créer mon premier exercice personnalisé",
+			"noPublicExercises": "Il n'y a pas d'exercices publics. Veuillez vérifier plus tard.",
+			"myCustomExercises": "Mes exercices personnalisés",
+			"community": "Communauté"
+		},
+		"exercisePrograms": {
+			"allTitle": "Programmes d'exercices",
+			"customTitle": "Mes exercices personnalisés",
+			"communityTitle": "Exercices de la communauté",
+			"seeAll": "Voir tout"
+		},
+		"exerciseOfTheDay": "Exercice du jour",
+		"exclusiveExercises": "Exclusivités CogiPro",
+		"articleDateFormat": "D MMMM YYYY",
+		"articlesAndTips": "Articles & Astuces",
+		"article1": "Article 1",
+		"article2": "Article 2",
+		"article3": "Article 3",
+		"adminTopBar": "VOU DÉJÀ LOGGÉ EN TANT ADMIN"
+	},
+	"account": {
+		"signout": "Se déconnecter",
+		"username": "Nom d'utilisateur",
+		"signOutConfirm": "Êtes-vous sûr de vouloir vous déconnecter ?",
+		"deleteAccountConfirm": "Êtes-vous sûr de vouloir supprimer votre compte ?",
+		"deleteAccount": "Supprimer le compte",
+		"title": "Compte",
+		"email": "Adresse e-mail",
+		"subscribe": "S'abonner à CogiPro",
+		"subscriptionCode": "J'ai un code QR d'abonnement",
+		"viewReport": "Voir le rapport de fitness",
+		"askTeam": "Question de fitness ? Demandez à notre équipe",
+
+		"appSettings": "Paramètres de l'application",
+		"notifications": "Notifications",
+		"darkMode": "Mode sombre",
+		"emailMarketing": "Marketing par e-mail",
+		"appLanguage": "Langue de l'application",
+		"english": "🇬🇧 Anglais",
+		"français": "🇫🇷 Français",
+		"日本語": "🇯🇵 Japonais",
+		"help": "Aide",
+		"billingHelp": "Aide pour le compte et la facturation",
+		"contactSupport": "Contacter le support",
+		"restore": "Restaurer l'abonnement",
+
+		"legal": "Mentions légales",
+		"terms": "Conditions générales",
+		"privacy": "Politique de confidentialité",
+		"version": "Version",
+		"adminSection": "Outils d'administration",
+		"cogiproInc": "COGIPRO, INC.",
+		"enterUsername": "Entrez le nom d'utilisateur...",
+		"usernameHelper": "Le nom d'utilisateur peut contenir que des lettres, des chiffres et des - ou des _."
+	},
+	"notifications": {
+		"workoutReminder": {
+			"title": "Rappel d'entraînement",
+			"body": "Il est temps pour votre entraînement programmé ! Faites un exercice pour rester sur la bonne voie."
+		}
+	},
+	"signup": {
+		"title": "S'inscrire",
+		"verifyEmailTitle": "Vérifiez votre e-mail",
+		"verify": "Vérifier",
+		"verifyCode": "Code de vérification",
+		"verifyCodePlaceholder": "Entrez votre code de vérification",
+		"orSignUpWith": "Ou s'inscrire avec",
+		"googleSignUp": "Continuer avec Google",
+		"appleSignUp": "Continuer avec Apple",
+		"alreadyHaveAccount": "Vous avez déjà un compte ?",
+		"login": "Se connecter",
+		"alert": {
+			"invalidData": "Données d'inscription invalides",
+			"verificationFailed": "La vérification a échoué"
+		},
+		"form": {
+			"firstName": "Prénom",
+			"firstNamePlaceholder": "Entrez votre prénom",
+			"lastName": "Nom de famille",
+			"lastNamePlaceholder": "Entrez votre nom de famille",
+			"email": "E-mail",
+			"emailPlaceholder": "Entrez votre e-mail",
+			"password": "Mot de passe",
+			"passwordPlaceholder": "Entrez votre mot de passe",
+			"signUp": "S'inscrire"
+		},
+		"errors": {
+			"firstNameShort": "Le prénom doit contenir au moins 2 caractères",
+			"firstNameRequired": "Le prénom est requis",
+			"lastNameShort": "Le nom de famille doit contenir au moins 2 caractères",
+			"lastNameRequired": "Le nom de famille est requis",
+			"invalidEmail": "Adresse e-mail invalide",
+			"emailRequired": "L'e-mail est requis",
+			"passwordShort": "Le mot de passe doit contenir au moins 6 caractères",
+			"passwordRequired": "Le mot de passe est requis"
+		}
+	},
+	"login": {
+		"title": "Se connecter",
+		"welcomeBack": "Bon retour !",
+		"email": "E-mail",
+		"emailPlaceholder": "Entrez votre e-mail",
+		"password": "Mot de passe",
+		"passwordPlaceholder": "Entrez votre mot de passe",
+		"forgotPassword": "Mot de passe oublié ?",
+		"loginButton": "Connexion",
+		"orSignInWith": "Ou se connecter avec",
+		"googleSignIn": "Continuer avec Google",
+		"appleSignIn": "Continuer avec Apple",
+		"noAccount": "Vous n'avez pas de compte ?",
+		"scanQRCode": "Scanner le QR Code",
+		"signUp": "S'inscrire",
+		"alerts": {
+			"validationError": "Erreur de validation",
+			"invalidCredentials": "La connexion a échoué. Veuillez vérifier vos identifiants."
+		},
+		"errors": {
+			"invalidEmail": "Format d'e-mail invalide",
+			"emailRequired": "L'e-mail est requis",
+			"passwordShort": "Le mot de passe doit contenir au moins 6 caractères",
+			"passwordRequired": "Le mot de passe est requis"
+		}
+	},
+	"qrSignup": {
+		"title": "Inscription par QR Code",
+		"welcome": "Bienvenue sur Cogimat",
+		"description": "Scannez le QR code de votre produit pour accéder à l'application",
+		"scanQRCode": "Scanner le QR Code",
+		"qrCodeScanned": "QR Code Scanné",
+		"changeQRCode": "Changer le QR Code",
+		"createAccount": "Créer un compte",
+		"noQRCode": "Aucun QR Code",
+		"scanQRCodeFirst": "Veuillez d'abord scanner un QR code",
+		"success": "Succès",
+		"accessGranted": "Accès accordé ! Vous pouvez maintenant utiliser l'application.",
+		"error": "Erreur",
+		"alreadyHaveAccount": "Vous avez déjà un compte ?",
+		"login": "Se connecter"
+	},
+	"qrScanner": {
+		"scanQRCode": "Scanner le QR Code",
+		"instructions": "Pointez votre caméra vers le QR code sur l'emballage de votre produit",
+		"invalidCode": "QR Code Invalide",
+		"invalidCodeMessage": "Ce QR code n'est pas valide pour Cogimat. Veuillez scanner le QR code de l'emballage de votre produit.",
+		"requestingPermission": "Demande d'autorisation caméra...",
+		"cameraAccessRequired": "Accès Caméra Requis",
+		"cameraAccessMessage": "L'accès à la caméra est nécessaire pour scanner les QR codes. Veuillez activer les autorisations caméra dans les paramètres de votre appareil.",
+		"scanAgain": "Scanner à nouveau"
+	},
+	"forgotPassword": {
+		"title": "Mot de passe oublié",
+		"email": "E-mail",
+		"emailPlaceholder": "Entrez votre e-mail",
+		"enterResetCode": "Entrez le code de réinitialisation",
+		"resetCodePlaceholder": "Entrez le code de réinitialisation",
+		"sendPasswordResetCode": "Envoyer le code de réinitialisation",
+		"passwordResetCodeSent": "Code de réinitialisation envoyé",
+		"passwordResetCodeSentMessage": "Veuillez vérifier votre e-mail pour le code de réinitialisation.",
+		"reset": "Réinitialiser",
+		"resetCode": "Code de réinitialisation",
+		"newPassword": "Nouveau mot de passe",
+		"newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+		"resetCodeRequired": "Le code de réinitialisation est requis"
+	},
+
+	"general": {
+		"buttons": {
+			"next": "Suivant",
+			"previous": "Précédent",
+			"done": "Terminé",
+			"cancel": "Annuler",
+			"save": "Enregistrer",
+			"submit": "Soumettre",
+			"delete": "Supprimer",
+			"edit": "Modifier",
+			"play": "Jouer l'exercice",
+			"favorite": "Basculer favori",
+			"confirm": "Confirmer",
+			"close": "Fermer",
+			"goBack": "Retour",
+			"ok": "OK",
+			"restart": "Réinitialiser"
+		},
+		"time": {
+			"seconds": "secondes",
+			"minutes": "minutes",
+			"hours": "heures",
+			"days": "jours"
+		},
+		"pageSubHeadings": {
+			"allExercises": "Tous les exercices",
+			"myCustomExercises": "Mes exercices personnalisés"
+		},
+		"filters": {
+			"all": "Tous",
+			"standard": "Nos exercices",
+			"custom": "Mes exercices",
+			"favouritesOnly": "Favoris uniquement",
+			"difficulty": "Difficulté",
+			"sort": "Trier",
+			"sortAZ": "A → Z",
+			"sortZA": "Z → A"
+		},
+		"noExercisesFound": "Aucun exercice trouvé",
+		"alerts": {
+			"warning": "Avertissement",
+			"error": "Erreur",
+			"success": "Succès",
+			"info": "Information"
+		},
+		"loading": "Chargement...",
+		"search": {
+			"placeholder": "Rechercher..."
+		}
+	},
+	"createExercise": {
+		"steps": {
+			"description": "Détails de l'exercice",
+			"settings": "Paramètres"
+		},
+		"form": {
+			"nameLabel": "Nom de l'exercice",
+			"namePlaceholder": "Entrez le nom de l'exercice",
+			"descriptionLabel": "Description",
+			"focusLabel": "Focus",
+			"focusPlaceholder": "Entrez les zones de focus",
+			"descriptionPlaceholder": "Entrez la description",
+			"instructionsLabel": "Instructions",
+			"instructionsPlaceholder": "Votre texte ici...",
+			"difficultyLabel": "Difficulté",
+			"difficultyPlaceholder": "Difficulté (Facile, Moyen, Difficile)",
+			"focusHelper": "Liste séparée par des virgules des zones de focus",
+			"sets": "Séries",
+			"reps": "Répétitions",
+			"restTime": "Temps de repos",
+			"restTimePlaceholder": "Entrez le temps de repos",
+			"ytUrl": "URL YouTube",
+			"ytUrlPlaceholder": "Entrez l'URL YouTube",
+			"ytUrlHelper": "Lorsqu'entré, remplace la vidéo téléchargée ci-dessous",
+			"uploadThumbnail": "Télécharger la vignette",
+			"uploadVideoTutorial": "Télécharger la vidéo de tutoriel"
+		}
+	},
+	"exercise": {
+		"difficulty": {
+			"beginner": "Débutant",
+			"intermediate": "Intermédiaire",
+			"advanced": "Avancé"
+		},
+		"form": {
+			"offScreenTime": "Temps hors écran",
+			"onScreenTime": "Temps à l'écran",
+			"exerciseTime": "Temps d'exercice",
+			"restTime": "Temps de repos",
+			"startNow": "Commencer maintenant"
+		},
+		"premium": {
+			"locked": "Premium",
+			"unlocked": "Premium ✓",
+			"upgradeTitle": "Mettre à niveau pour accéder",
+			"upgradeMessage": "Ceci est un exercice premium. Mettez à niveau vers CogiPro pour accéder à cette fonctionnalité et à d'autres fonctionnalités premium."
+		},
+		"sections": {
+			"customization": "Personnalisation",
+			"durationSettings": "Paramètres de durée",
+			"adminVideoUpload": "Téléchargement de vidéo admin",
+			"uploadVideo": "Télécharger un exemple créatif"
+		},
+		"page": {
+			"description": "Description",
+			"instructions": "Instructions",
+			"customizeExercise": "Personnaliser cet exercice",
+			"communityAccess": "Accès Communautaire",
+			"makePublic": "Rendre Public",
+			"makePublicMessage": "Cela rendra votre exercice disponible à tous les utilisateurs de la communauté.",
+			"makePublicDescription": "Rendre cet exercice disponible à tous les utilisateurs de la communauté",
+			"submitToCogipro": "Soumettre à Cogipro",
+			"submitToCogiproMessage": "Cela rendra votre exercice disponible dans Cogipro Premium pour tous les utilisateurs.",
+			"submitToCogiproPremium": "Soumettre à Cogipro Premium",
+			"submitToCogiproPremiumMessage": "Cela rendra votre exercice disponible dans Cogipro Premium pour tous les utilisateurs.",
+			"submitToCogiproPremiumDescription": "Rendre cet exercice disponible dans Cogipro Premium",
+			"unsubmitFromCogipro": "Retirer de Cogipro",
+			"unsubmitFromCogiproMessage": "Cela retirera votre exercice de Cogipro Premium. Il ne sera plus disponible pour les utilisateurs premium.",
+			"unsubmitFromCogiproPremium": "Retirer de Cogipro Premium",
+			"unsubmitFromCogiproPremiumMessage": "Cela retirera votre exercice de Cogipro Premium. Il ne sera plus disponible pour les utilisateurs premium.",
+			"settings": "Paramètres",
+			"customizeExercise": "Personnaliser cet exercice",
+			"cogiproPremiumSettings": "Paramètres de Cogipro Premium",
+			"submitToCogiproDescription": "Rendre cet exercice disponible dans Cogipro",
+			"accessDenied": "Accès refusé. Privilèges administratifs requis.",
+			"deleteExercise": "Supprimer l'exercice",
+			"deleteExerciseMessage": "Êtes-vous sûr de vouloir supprimer cet exercice ? Cette action ne peut être annulée.",
+			"deleteExerciseDescription": "Supprimer définitivement cet exercice de votre compte"
+		},
+		"card": {
+			"minutes": "min",
+			"seconds": "sec",
+			"imageAlt": "Miniature de l'exercice",
+			"greeting": "Bonjour!"
+		},
+		"videoUpload": {
+			"title": "Télécharger une vidéo d'exercice",
+			"subtitle": "Partagez des façons créatives d'utiliser {{exerciseName}}",
+			"titleLabel": "Titre de la vidéo",
+			"titlePlaceholder": "Entrez le titre de la vidéo",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Décrivez votre approche créative",
+			"videoLabel": "Fichier vidéo",
+			"selectVideo": "Sélectionner une vidéo",
+			"upload": "Télécharger la vidéo",
+			"uploading": "Téléchargement..."
+		},
+		"videoGallery": {
+			"title": "Exemples créatifs",
+			"upload": "Télécharger",
+			"noVideos": "Aucune vidéo disponible pour cet exercice",
+			"watch": "Regarder"
+		},
+		"exit": {
+			"title": "Quitter l'exercice ?",
+			"message": "Êtes-vous sûr de vouloir quitter ? Votre progression sera perdue.",
+			"confirm": "Quitter",
+			"cancel": "Continuer l'exercice"
+		},
+		"loading": "Chargement de l'exercice...",
+		"notFound": "Exercice non trouvé",
+		"invalidOrMissing": "Exercice invalide ou manquant",
+		"startingIn": "Démarrage dans"
+	},
+	"progress": {
+		"milestones": "Étapes importantes",
+		"overview": "Aperçu",
+		"actions": {
+			"deleteGoal": "Êtes-vous sûr de vouloir supprimer cet objectif ?"
+		},
+		"days": {
+			"monday": "Lundi",
+			"tuesday": "Mardi",
+			"wednesday": "Mercredi",
+			"thursday": "Jeudi",
+			"friday": "Vendredi",
+			"saturday": "Samedi",
+			"sunday": "Dimanche"
+		},
+		"goals": {
+			"workouts": "ENTRAÎNEMENTS",
+			"milestones": "ÉTAPES IMPORTANTES",
+			"weeklyGoal": "OBJECTIF HEBDOMADAIRE",
+			"tbd": "À DÉFINIR",
+			"customGoalsTitle": "Mes objectifs personnalisés",
+			"setGoalButton": "Définir un nouvel objectif",
+			"modal": {
+				"label": "Définir un objectif",
+				"placeholder": "ex. Compléter 5 entraînements"
+			}
+		},
+		"weeklyGoal": {
+			"title": "Définir votre planning",
+			"reminderTime": "Temps pour recevoir le rappel",
+			"save": "Enregistrer le planning",
+			"scheduleSaved": "Planning enregistré avec succès",
+			"scheduleError": "Échec de l'enregistrement du planning"
+		}
+	},
+	"yupErrors": {
+		"form": {
+			"nameRequired": "Le nom est requis",
+			"nameMin": "Le nom doit contenir au moins 3 caractères",
+			"nameMax": "Le nom ne peut pas dépasser 50 caractères",
+
+			"descriptionRequired": "La description est requise",
+			"descriptionMin": "La description doit contenir au moins 10 caractères",
+			"descriptionMax": "La description ne peut pas dépasser 500 caractères",
+
+			"instructionsRequired": "Les instructions sont requises",
+			"instructionsMin": "Les instructions doivent contenir au moins 10 caractères",
+			"instructionsMax": "Les instructions ne peuvent pas dépasser 1000 caractères",
+
+			"focusMin": "Le focus doit être un mot",
+			"focusMax": "Maximum 5 points de focus",
+
+			"difficultyRequired": "La difficulté est requise",
+			"difficultyInvalid": "Niveau de difficulté invalide",
+
+			"visualInputMissing": "Sélectionnez au moins une forme, lettre, nombre ou couleur",
+
+			"offScreenTime": "Le temps hors écran doit être d'au moins 0,5 seconde",
+			"onScreenTime": "Le temps à l'écran doit être d'au moins 0,5 seconde",
+			"exerciseTime": "Le temps d'exercice doit être d'au moins 1 minute",
+			"restTime": "Le temps de repos doit être d'au moins 1 seconde",
+
+			"offScreenColor": "La couleur hors écran est requise",
+			"onScreenColor": "La couleur à l'écran est requise",
+
+			"invalidUrl": "Doit être une URL valide",
+
+			"firstNameRequired": "Le prénom est requis",
+			"firstNameMin": "Le prénom doit contenir au moins 2 caractères",
+
+			"lastNameRequired": "Le nom de famille est requis",
+			"lastNameMin": "Le nom de famille doit contenir au moins 2 caractères",
+
+			"emailRequired": "L'e-mail est requis",
+			"emailInvalid": "Adresse e-mail invalide",
+
+			"passwordRequired": "Le mot de passe est requis",
+			"passwordMin": "Le mot de passe doit contenir au moins 6 caractères"
+		}
+	},
+	"milestones": {
+		"exercisesCompleted": {
+			"heading": "Total des exercices terminés",
+			"description": "Suivez le nombre total d'exercices que vous avez terminés dans tous les types.",
+			"subtext": "{{count}} sur {{target}} terminés"
+		},
+		"beginner": {
+			"heading": "Exercices débutants",
+			"description": "Construisez votre base en terminant l'entraînement de niveau débutant.",
+			"subtext": "{{count}} sur {{target}} terminés"
+		},
+		"intermediate": {
+			"heading": "Exercices intermédiaires",
+			"description": "Défiez-vous avec des tâches de niveau intermédiaire.",
+			"subtext": "{{count}} sur {{target}} terminés"
+		},
+		"advanced": {
+			"heading": "Exercices avancés",
+			"description": "Prouvez vos compétences avec des exercices de difficulté avancée.",
+			"subtext": "{{count}} sur {{target}} terminés"
+		},
+		"customCreated": {
+			"heading": "Exercices personnalisés créés",
+			"description": "Créez et personnalisez vos propres routines d'entraînement.",
+			"subtext": "{{count}} sur {{target}} créés"
+		},
+		"goals": {
+			"heading": "Objectifs créés",
+			"description": "Définissez des objectifs pour rester motivé et sur la bonne voie avec vos progrès.",
+			"subtext": "{{count}} sur {{target}} créés"
+		},
+		"articles": {
+			"heading": "Articles éducatifs lus",
+			"description": "Élargissez vos connaissances en terminant les supports d'apprentissage.",
+			"subtext": "{{count}} sur {{target}} lus"
+		}
+	},
+	"routines": {
+		"title": "Routines",
+		"createNew": "Créer Nouveau",
+		"builder": {
+			"title": "Constructeur de Routine",
+			"addExercise": "Ajouter un exercice à la routine",
+			"add": "Ajouter",
+			"addSlot": "Ajouter un Emplacement",
+			"removeSlot": "Supprimer l'Emplacement",
+			"saveRoutine": "Sauvegarder la Routine",
+			"updateRoutine": "Mettre à Jour la Routine"
+		},
+		"saved": {
+			"title": "Routines Sauvegardées",
+			"exercises": "exercices",
+			"completed": "Terminé",
+			"times": "fois"
+		},
+		"name": {
+			"label": "Nom de la Routine",
+			"placeholder": "Entrez le nom de la routine"
+		},
+		"delete": {
+			"title": "Supprimer la Routine"
+		},
+		"selectExercise": {
+			"title": "Sélectionner un Exercice",
+			"searchPlaceholder": "Rechercher des exercices...",
+			"standardTab": "Nos Exercices",
+			"customTab": "Mes Exercices",
+			"noStandardExercises": "Aucun exercice standard trouvé",
+			"noCustomExercises": "Aucun exercice personnalisé trouvé"
+		},
+		"execution": {
+			"progress": "Progression",
+			"currentExercise": "Exercice en cours",
+			"exerciseList": "Liste des Exercices",
+			"complete": "Routine Terminée !",
+			"completeMessage": "Félicitations ! Vous avez terminé tous les exercices de cette routine.",
+			"skip": "Sauter",
+			"pause": "Pause",
+			"resume": "Reprendre",
+			"start": "Commencer",
+			"current": "En cours",
+			"exerciseNotFound": "Exercice non trouvé",
+			"standardExercise": "Exercice Standard",
+			"customExercise": "Exercice Personnalisé"
+		}
+	},
+	"exerciseProgress": {
+		"stimulus": "Stimulus",
+		"count": "Compteur",
+		"caption": "Progression : {{reps}} répétitions terminées en {{time}}"
+	},
+	"paywall": {
+		"title": "Mettre à niveau vers CogiPro",
+		"subtitle": "Débloquez toutes les fonctionnalités premium",
+		"features": {
+			"title": "Ce que vous obtiendrez",
+			"list": [
+				"Exercices personnalisés illimités",
+				"Suivi avancé des exercices",
+				"Support prioritaire",
+				"Expérience sans publicité",
+				"Mises à jour de contenu exclusives"
+			]
+		},
+		"pricing": {
+			"monthly": "Mensuel",
+			"annual": "Annuel",
+			"monthlyPrice": "9,99 €/mois",
+			"annualPrice": "79,99 €/an",
+			"annualSaving": "Économisez 33%",
+			"monthlySaving": ""
+		},
+		"buttons": {
+			"subscribe": "Continuer",
+			"restore": "Restaurer les achats"
+		}
+	},
+	"upgradeCard": {
+		"title": "Mettre à niveau vers CogiPro",
+		"description": "Obtenez un accès exclusif à des moyens uniques et créatifs d'utiliser votre Cogimat, avec des exercices conçus par notre équipe d'experts.",
+		"button": "Mettre à niveau"
+	},
+	"admin": {
+		"videoUpload": {
+			"title": "Télécharger une vidéo admin",
+			"titleLabel": "Titre de la vidéo",
+			"titlePlaceholder": "Entrez le titre de la vidéo",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Entrez la description de la vidéo (optionnel)",
+			"categoryLabel": "Catégorie",
+			"videoLabel": "Fichier vidéo",
+			"selectVideo": "Sélectionner une vidéo",
+			"upload": "Télécharger la vidéo",
+			"uploading": "Téléchargement...",
+			"titleRequired": "Le titre est requis",
+			"videoRequired": "La vidéo est requise",
+			"error": "Erreur",
+			"userNotAuthenticated": "Utilisateur non authentifié",
+			"uploading": "Téléchargement de la vidéo...",
+			"success": "Succès",
+			"uploaded": "Vidéo téléchargée avec succès !",
+			"uploadFailed": "Échec du téléchargement",
+			"failedToUpload": "Échec du téléchargement de la vidéo"
+		},
+		"videoGallery": {
+			"uploadNew": "Télécharger une nouvelle vidéo",
+			"noVideos": "Aucune vidéo disponible",
+			"watch": "Regarder",
+			"views": "vues"
+		},
+		"videoManagement": {
+			"title": "Gestion des vidéos",
+			"gallery": "Galerie",
+			"upload": "Télécharger"
+		},
+		"allVideos": {
+			"title": "Toutes les vidéos",
+			"searchPlaceholder": "Rechercher des vidéos...",
+			"noVideos": "Aucune vidéo trouvée",
+			"watch": "Regarder",
+			"views": "vues"
+		},
+		"qrCodes": {
+			"title": "Gestion des QR Codes",
+			"statistics": "Statistiques des QR Codes",
+			"usageStatistics": "Statistiques d'Utilisation",
+			"totalCodes": "Codes Totaux",
+			"usedCodes": "Codes Utilisés",
+			"unusedCodes": "Codes Non Utilisés",
+			"usageRate": "Taux d'Utilisation",
+			"generate10000": "Générer 10 000 QR Codes",
+			"refreshStatistics": "Actualiser les Statistiques",
+			"printQrCodePages": "Imprimer les Pages de QR Codes",
+			"eachPageContains50": "Chaque page contient 50 QR codes disposés en grille 5x10 pour faciliter l'impression.",
+			"instructions": "Instructions",
+			"instruction1": "1. Générez 10 000 QR codes en utilisant le bouton ci-dessus",
+			"instruction2": "2. Téléchargez les pages de QR codes pour l'impression",
+			"noDataAvailable": "Aucune donnée disponible",
+			"download": "Télécharger",
+			"downloadReady": "Les QR codes pour la page {{page}} sont prêts pour l'impression",
+			"alerts": {
+				"error": "Erreur",
+				"success": "Succès",
+				"fetchError": "Échec de la récupération des statistiques des QR codes",
+				"generateError": "Échec de la génération des QR codes",
+				"generateSuccess": "10 000 QR codes générés avec succès !",
+				"downloadError": "Échec du téléchargement des QR codes"
+			}
+		},
+		"categories": {
+			"allCategories": "Toutes les Catégories",
+			"exerciseTutorials": "Tutoriels d'Exercices",
+			"general": "Général",
+			"tutorials": "Tutoriels",
+			"announcements": "Annonces",
+			"exerciseGuides": "Guides d'Exercices",
+			"tipsAndTricks": "Astuces et Conseils"
+		}
+	},
+	"mediaPicker": {
+		"permissionRequired": "Permission Requise",
+		"permissionMessage": "Pour sélectionner un {{mediaType}}, veuillez activer l'accès à la bibliothèque multimédia dans les paramètres de votre appareil.",
+		"permissionDenied": "L'autorisation d'accéder à la bibliothèque multimédia est requise !",
+		"cancel": "Annuler",
+		"openSettings": "Ouvrir les Paramètres",
+		"pickVideo": "Sélectionner une vidéo",
+		"pickImage": "Sélectionner une image"
+	},
+	"exerciseCreation": {
+		"exerciseParameters": "Paramètres d'Exercice",
+		"timingSettings": "Paramètres de Temps"
+	}
+}

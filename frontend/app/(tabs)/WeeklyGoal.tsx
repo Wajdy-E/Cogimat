@@ -129,7 +129,7 @@ function WeeklyWorkoutGoal() {
 				/>
 				<View className="flex justify-center items-center">
 					<Heading className="self-start text-start">{i18n.t("progress.weeklyGoal.reminderTime")}</Heading>
-					<DatePicker date={date} onDateChange={setDate} mode="time" theme={theme} />
+					<DatePicker date={date} onDateChange={setDate} mode="time" theme={theme} locale={i18n.locale} />
 				</View>
 				<Button size="lg" variant="solid" action="primary" onPress={handleSave} disabled={isLoading}>
 					<ButtonText>{isLoading ? i18n.t("general.loading") : i18n.t("progress.weeklyGoal.save")}</ButtonText>

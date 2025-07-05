@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import { VStack } from '@/components/ui/vstack';
-import { Box } from '@/components/ui/box';
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { Heading } from '@/components/ui/heading';
-import { Text } from '@/components/ui/text';
-import { Input, InputField } from '@/components/ui/input';
-import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import React, { useState } from "react";
+import { View } from "react-native";
+import { VStack } from "@/components/ui/vstack";
+import { Box } from "@/components/ui/box";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
+import { Input, InputField } from "@/components/ui/input";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import {
 	FormControl,
 	FormControlLabel,
@@ -14,16 +14,16 @@ import {
 	FormControlError,
 	FormControlErrorIcon,
 	FormControlErrorText,
-} from '@/components/ui/form-control';
-import { Upload, X, AlertCircle } from 'lucide-react-native';
-import CustomVideoPicker from './CustomVideoPicker';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
-import { showLoadingOverlay, hideLoadingOverlay } from '../store/ui/uiSlice';
-import { useAppAlert } from '../hooks/useAppAlert';
-import { i18n } from '../i18n';
-import { HStack } from '@/components/ui/hstack';
-import { uploadExerciseVideo } from '../lib/exerciseMediaUpload';
+} from "@/components/ui/form-control";
+import { Upload, X, AlertCircle } from "lucide-react-native";
+import CustomVideoPicker from "./CustomVideoPicker";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+import { showLoadingOverlay, hideLoadingOverlay } from "../store/ui/uiSlice";
+import { useAppAlert } from "../hooks/useAppAlert";
+import { i18n } from "../i18n";
+import { HStack } from "@/components/ui/hstack";
+import { uploadExerciseVideo } from "../lib/exerciseMediaUpload";
 
 interface ExerciseVideo {
 	title: string;
@@ -38,16 +38,16 @@ interface ExerciseVideoUploadProps {
 	onClose?: () => void;
 }
 
-export default function ExerciseVideoUpload ({
+export default function ExerciseVideoUpload({
 	exerciseId,
 	exerciseName,
 	onUploadSuccess,
 	onClose,
 }: ExerciseVideoUploadProps) {
 	const [formData, setFormData] = useState<ExerciseVideo>({
-		title: '',
-		description: '',
-		videoUri: '',
+		title: "",
+		description: "",
+		videoUri: "",
 	});
 	const [errors, setErrors] = useState<Partial<ExerciseVideo>>({});
 	const user = useSelector((state: RootState) => state.user.user.baseInfo);
@@ -61,11 +61,11 @@ export default function ExerciseVideoUpload ({
 		const newErrors: Partial<ExerciseVideo> = {};
 
 		if (!formData.title.trim()) {
-			newErrors.title = 'Title is required';
+			newErrors.title = "Title is required";
 		}
 
 		if (!formData.videoUri) {
-			newErrors.videoUri = 'Video is required';
+			newErrors.videoUri = "Video is required";
 		}
 
 		setErrors(newErrors);
@@ -77,13 +77,13 @@ export default function ExerciseVideoUpload ({
 			return;
 		}
 		if (!user?.id) {
-			showError('Error', 'User not authenticated');
+			showError("Error", "User not authenticated");
 			return;
 		}
 
 		try {
 			// Show uploading message
-			dispatch(showLoadingOverlay('Uploading video...'));
+			dispatch(showLoadingOverlay("Uploading video..."));
 
 			// Upload video to Vercel Blob
 			const videoUrl = await uploadExerciseVideo(formData.videoUri, exerciseId);
@@ -92,17 +92,17 @@ export default function ExerciseVideoUpload ({
 			const uploadData = {
 				title: formData.title,
 				description: formData.description,
-				category: 'exercise-tutorial',
+				category: "exercise-tutorial",
 				adminId: user.id,
 				exerciseId: exerciseId.toString(),
 				videoData: videoUrl, // Now this is the blob URL
-				fileName: formData.videoUri.split('/').pop() || 'video.mp4',
+				fileName: formData.videoUri.split("/").pop() || "video.mp4",
 			};
 
 			const response = await fetch(`${process.env.BASE_URL}/api/admin/video-upload`, {
-				method: 'POST',
+				method: "POST",
 				headers: {
-					'Content-Type': 'application/json',
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(uploadData),
 			});
@@ -114,20 +114,20 @@ export default function ExerciseVideoUpload ({
 			const result = await response.json();
 
 			if (result.success) {
-				showSuccess('Success', 'Video uploaded successfully!');
+				showSuccess("Success", "Video uploaded successfully!");
 				setFormData({
-					title: '',
-					description: '',
-					videoUri: '',
+					title: "",
+					description: "",
+					videoUri: "",
 				});
 				onUploadSuccess?.();
 				onClose?.();
 			} else {
-				throw new Error(result.error || 'Upload failed');
+				throw new Error(result.error || "Upload failed");
 			}
 		} catch (error: any) {
-			console.error('Upload failed:', error);
-			showError('Upload Failed', error.message || 'Failed to upload video');
+			console.error("Upload failed:", error);
+			showError("Upload Failed", error.message || "Failed to upload video");
 		} finally {
 			dispatch(hideLoadingOverlay());
 		}
@@ -145,7 +145,7 @@ export default function ExerciseVideoUpload ({
 			<VStack space="lg">
 				<View className="flex-row justify-between items-center">
 					<Heading size="lg" className="text-primary-500">
-						{i18n.t('exercise.videoUpload.title')}
+						{i18n.t("exercise.videoUpload.title")}
 					</Heading>
 					{onClose && (
 						<Button variant="link" onPress={onClose}>
@@ -154,17 +154,17 @@ export default function ExerciseVideoUpload ({
 					)}
 				</View>
 
-				<Text className="text-typography-600">{i18n.t('exercise.videoUpload.subtitle', { exerciseName })}</Text>
+				<Text className="text-typography-600">{i18n.t("exercise.videoUpload.subtitle", { exerciseName })}</Text>
 
 				<FormControl isInvalid={!!errors.title}>
 					<FormControlLabel>
-						<FormControlLabelText>{i18n.t('exercise.videoUpload.titleLabel')}</FormControlLabelText>
+						<FormControlLabelText>{i18n.t("exercise.videoUpload.titleLabel")}</FormControlLabelText>
 					</FormControlLabel>
 					<Input>
 						<InputField
-							placeholder={i18n.t('exercise.videoUpload.titlePlaceholder')}
+							placeholder={i18n.t("exercise.videoUpload.titlePlaceholder")}
 							value={formData.title}
-							onChangeText={(text) => updateFormData('title', text)}
+							onChangeText={(text) => updateFormData("title", text)}
 						/>
 					</Input>
 					{errors.title && (
@@ -177,24 +177,24 @@ export default function ExerciseVideoUpload ({
 
 				<FormControl>
 					<FormControlLabel>
-						<FormControlLabelText>{i18n.t('exercise.videoUpload.descriptionLabel')}</FormControlLabelText>
+						<FormControlLabelText>{i18n.t("exercise.videoUpload.descriptionLabel")}</FormControlLabelText>
 					</FormControlLabel>
 					<Textarea>
 						<TextareaInput
-							placeholder={i18n.t('exercise.videoUpload.descriptionPlaceholder')}
+							placeholder={i18n.t("exercise.videoUpload.descriptionPlaceholder")}
 							value={formData.description}
-							onChangeText={(text) => updateFormData('description', text)}
+							onChangeText={(text) => updateFormData("description", text)}
 						/>
 					</Textarea>
 				</FormControl>
 
 				<FormControl isInvalid={!!errors.videoUri}>
 					<FormControlLabel>
-						<FormControlLabelText>{i18n.t('exercise.videoUpload.videoLabel')}</FormControlLabelText>
+						<FormControlLabelText>{i18n.t("exercise.videoUpload.videoLabel")}</FormControlLabelText>
 					</FormControlLabel>
 					<CustomVideoPicker
-						onVideoPicked={(file) => updateFormData('videoUri', file.uri)}
-						buttonText={i18n.t('exercise.videoUpload.selectVideo')}
+						onVideoPicked={(file) => updateFormData("videoUri", file.uri)}
+						buttonText={i18n.t("exercise.videoUpload.selectVideo")}
 					/>
 					{errors.videoUri && (
 						<FormControlError>
@@ -204,10 +204,10 @@ export default function ExerciseVideoUpload ({
 					)}
 				</FormControl>
 
-				<Button onPress={handleUpload} disabled={!isFormValid} action="primary" className="w-full" variant="outline">
+				<Button onPress={handleUpload} disabled={!isFormValid} action="primary" className="w-full" variant="solid">
 					<HStack space="sm">
 						<ButtonIcon as={Upload} />
-						<ButtonText>{i18n.t('exercise.videoUpload.upload')}</ButtonText>
+						<ButtonText>{i18n.t("exercise.videoUpload.upload")}</ButtonText>
 					</HStack>
 				</Button>
 			</VStack>

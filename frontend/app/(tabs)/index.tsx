@@ -240,7 +240,7 @@ function Home() {
 						<AvatarImage source={{ uri: user?.imageUrl }} />
 					</Avatar>
 					<View>
-						<Heading className="text-primary-500" size="2xl">
+						<Heading className="text-primary-500" size="xl">
 							{i18n.t("home.greeting", { name: user?.firstName })}
 						</Heading>
 						<Text className="w-[90%]">{i18n.t("home.subtitle")}</Text>

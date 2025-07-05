@@ -80,7 +80,7 @@ function Favourites() {
 
 		return [
 			{
-				title: "Beginner",
+				title: i18n.t("pages.favourites.beginner"),
 				iconName: "Sprout",
 				content: (
 					<View>
@@ -141,7 +141,7 @@ function Favourites() {
 				),
 			},
 			{
-				title: "Intermediate",
+				title: i18n.t("pages.favourites.intermediate"),
 				iconName: "Rocket",
 				content: (
 					<View>
@@ -202,7 +202,7 @@ function Favourites() {
 				),
 			},
 			{
-				title: "Advanced",
+				title: i18n.t("pages.favourites.advanced"),
 				iconName: "Trophy",
 				content: (
 					<View>

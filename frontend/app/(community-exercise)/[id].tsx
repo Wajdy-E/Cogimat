@@ -280,7 +280,23 @@ function CommunityExerciseProgram() {
 							<View className="flex-row flex-wrap justify-start gap-4">
 								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 									<BadgeIcon as={getIconForType()} />
-									<BadgeText size="lg">{exercise.difficulty}</BadgeText>
+									<BadgeText size="lg">{i18n.t(`${exercise.difficulty.toLowerCase()}`)}</BadgeText>
+								</Badge>
+
+								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
+									<BadgeIcon as={Clock} />
+									{(() => {
+										// Convert from seconds to minutes for display
+										const totalSeconds = parseFloat(exercise.customizableOptions.exerciseTime.toString());
+										const minutes = Math.floor(totalSeconds / 60);
+										const seconds = totalSeconds % 60;
+										return (
+											<BadgeText>
+												{minutes} {i18n.t("exercise.card.minutes")}
+												{seconds > 0 && ` ${seconds} ${i18n.t("exercise.card.seconds")}`}
+											</BadgeText>
+										);
+									})()}
 								</Badge>
 								{(exercise.focus ?? []).length > 0
 									? (exercise.focus ?? []).map((f: string) => {
@@ -292,20 +308,6 @@ function CommunityExerciseProgram() {
 											);
 										})
 									: null}
-								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
-									<BadgeIcon as={Clock} />
-									{(() => {
-										// Convert from seconds to minutes for display
-										const totalSeconds = parseFloat(exercise.customizableOptions.exerciseTime.toString());
-										const minutes = Math.floor(totalSeconds / 60);
-										const seconds = totalSeconds % 60;
-										return (
-											<BadgeText>
-												{minutes} min {seconds} sec
-											</BadgeText>
-										);
-									})()}
-								</Badge>
 							</View>
 
 							<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>

@@ -1,1 +1,647 @@
- 
+{
+	"beginner": "Beginner",
+	"intermediate": "Intermediate",
+	"advanced": "Advanced",
+	"pages": {
+		"home": "Home",
+		"progress": "Progress",
+		"createExercise": "Create Exercise",
+		"account": "Account",
+		"allExercises": "All Exercises",
+		"weeklyGoal": "Weekly workout goal",
+		"communityExercises": "Community Exercises",
+		"routine": "Routine",
+		"favourites": {
+			"title": "Favourites",
+			"beginner": "Beginner",
+			"intermediate": "Intermediate",
+			"advanced": "Advanced",
+			"emptyState": {
+				"beginner": "No beginner exercises in your favourites yet",
+				"intermediate": "No intermediate exercises in your favourites yet",
+				"advanced": "No advanced exercises in your favourites yet"
+			}
+		}
+	},
+	"home": {
+		"greeting": "Hi, {{name}}",
+		"subtitle": "It's time to challenge your limits.",
+		"tabs": {
+			"allExercises": "All Exercises",
+			"interactiveExercises": "Interactive Exercises",
+			"noCustomExercises": "You have not created any custom exercises",
+			"createCustomExercise": "Create my first custom exercise",
+			"noPublicExercises": "There are no public exercises. Please check again later.",
+			"myCustomExercises": "My Custom Exercises",
+			"community": "Community"
+		},
+		"exercisePrograms": {
+			"allTitle": "Exercise programs",
+			"customTitle": "My Custom Exercises",
+			"communityTitle": "Community Exercises",
+			"seeAll": "See All"
+		},
+		"exerciseOfTheDay": "Exercise of the day",
+		"exclusiveExercises": "CogiPro Exclusives",
+		"articleDateFormat": "MMMM D, YYYY",
+		"articlesAndTips": "Articles & Tips",
+		"article1": "Article 1",
+		"article2": "Article 2",
+		"article3": "Article 3",
+		"adminTopBar": "YOU ARE LOGGED IN AS AN ADMIN"
+	},
+	"account": {
+		"signout": "Sign out",
+		"username": "Username",
+		"signOutConfirm": "Are you sure you want to sign out?",
+		"deleteAccountConfirm": "Are you sure you want to delete your account?",
+		"deleteAccount": "Delete account",
+		"title": "Account",
+		"email": "Email Address",
+		"subscribe": "Subscribe to CogiPro",
+		"subscriptionCode": "I Have a Subscription QR Code",
+		"viewReport": "View fitness report",
+		"askTeam": "Fitness question? Ask our team",
+
+		"appSettings": "App Settings",
+		"notifications": "Notifications",
+		"darkMode": "Dark Mode",
+		"emailMarketing": "Email Marketing",
+		"appLanguage": "App Language",
+		"english": "🇬🇧 English",
+		"français": "🇫🇷 Français",
+		"日本語": "🇯🇵 日本語",
+		"help": "Help",
+		"billingHelp": "Account & Billing Help",
+		"contactSupport": "Contact Support",
+		"restore": "Restore Subscription",
+
+		"legal": "Legal",
+		"terms": "Terms & Conditions",
+		"privacy": "Privacy Policy",
+		"version": "Version",
+		"adminSection": "Admin Tools",
+		"cogiproInc": "COGIPRO, INC.",
+		"enterUsername": "Enter username...",
+		"usernameHelper": "Username can only contain letters, numbers and - or _."
+	},
+	"notifications": {
+		"workoutReminder": {
+			"title": "Workout Reminder",
+			"body": "Time for your scheduled workout! Complete an exercise to stay on track."
+		}
+	},
+	"signup": {
+		"title": "Sign Up",
+		"verifyEmailTitle": "Verify Your Email",
+		"verify": "Verify",
+		"verifyCode": "Verification Code",
+		"verifyCodePlaceholder": "Enter your verification code",
+		"orSignUpWith": "Or sign up with",
+		"googleSignUp": "Continue with Google",
+		"appleSignUp": "Continue with Apple",
+		"alreadyHaveAccount": "Already have an account?",
+		"login": "Log in",
+		"alert": {
+			"invalidData": "Invalid signup data",
+			"verificationFailed": "Verification failed"
+		},
+		"form": {
+			"firstName": "First Name",
+			"firstNamePlaceholder": "Enter your first name",
+			"lastName": "Last Name",
+			"lastNamePlaceholder": "Enter your last name",
+			"email": "Email",
+			"emailPlaceholder": "Enter your email",
+			"password": "Password",
+			"passwordPlaceholder": "Enter your password",
+			"signUp": "Sign Up"
+		},
+		"errors": {
+			"firstNameShort": "First name must be at least 2 characters",
+			"firstNameRequired": "First name is required",
+			"lastNameShort": "Last name must be at least 2 characters",
+			"lastNameRequired": "Last name is required",
+			"invalidEmail": "Invalid email address",
+			"emailRequired": "Email is required",
+			"passwordShort": "Password must be at least 6 characters",
+			"passwordRequired": "Password is required"
+		}
+	},
+	"login": {
+		"title": "Log In",
+		"welcomeBack": "Welcome Back!",
+		"email": "Email",
+		"emailPlaceholder": "Enter your email",
+		"password": "Password",
+		"passwordPlaceholder": "Enter your password",
+		"forgotPassword": "Forgot Password?",
+		"loginButton": "Login",
+		"orSignInWith": "Or Sign In With",
+		"googleSignIn": "Continue with Google",
+		"appleSignIn": "Continue with Apple",
+		"noAccount": "Don't have an account?",
+		"scanQRCode": "Scan QR Code",
+		"signUp": "Sign Up",
+		"alerts": {
+			"validationError": "Validation Error",
+			"invalidCredentials": "Login failed. Please check your credentials."
+		},
+		"errors": {
+			"invalidEmail": "Invalid email format",
+			"emailRequired": "Email is required",
+			"passwordShort": "Password must be at least 6 characters",
+			"passwordRequired": "Password is required"
+		}
+	},
+	"qrSignup": {
+		"title": "QR Code Sign Up",
+		"welcome": "Welcome to Cogimat",
+		"description": "Scan the QR code from your Cogimat package to gain access to the app.",
+		"scanQRCode": "Scan QR Code",
+		"qrCodeScanned": "QR Code Scanned",
+		"changeQRCode": "Change QR Code",
+		"createAccount": "Create Account",
+		"noQRCode": "No QR Code",
+		"scanQRCodeFirst": "Please scan a QR code first",
+		"success": "Success",
+		"accessGranted": "Access granted! You can now use the app.",
+		"error": "Error",
+		"alreadyHaveAccount": "Already have an account?",
+		"login": "Login"
+	},
+	"qrScanner": {
+		"scanQRCode": "Scan QR Code",
+		"instructions": "Point your camera at the QR code on your product packaging",
+		"invalidCode": "Invalid QR Code",
+		"invalidCodeMessage": "This QR code is not valid for Cogimat. Please scan the QR code from your product packaging.",
+		"requestingPermission": "Requesting camera permission...",
+		"cameraAccessRequired": "Camera Access Required",
+		"cameraAccessMessage": "Camera access is required to scan QR codes. Please enable camera permissions in your device settings.",
+		"scanAgain": "Scan Again"
+	},
+	"forgotPassword": {
+		"title": "Forgot Password",
+		"email": "Email",
+		"emailPlaceholder": "Enter your email",
+		"enterResetCode": "Enter the reset",
+		"resetCodePlaceholder": "Enter reset code",
+		"sendPasswordResetCode": "Send password reset code",
+		"passwordResetCodeSent": "Password reset code sent",
+		"passwordResetCodeSentMessage": "Please check your email for a password reset code.",
+		"reset": "Reset",
+		"resetCode": "Reset Code",
+		"newPassword": "New Password",
+		"newPasswordPlaceholder": "Enter new password",
+		"resetCodeRequired": "Reset code is required"
+	},
+
+	"general": {
+		"buttons": {
+			"next": "Next",
+			"previous": "Previous",
+			"done": "Done",
+			"cancel": "Cancel",
+			"save": "Save",
+			"submit": "Submit",
+			"delete": "Delete",
+			"edit": "Edit",
+			"play": "Play Exercise",
+			"favorite": "Toggle Favorite",
+			"confirm": "Confirm",
+			"close": "Close",
+			"goBack": "Go Back",
+			"ok": "OK",
+			"restart": "Restart"
+		},
+		"time": {
+			"seconds": "seconds",
+			"minutes": "minutes",
+			"hours": "hours",
+			"days": "days"
+		},
+		"pageSubHeadings": {
+			"allExercises": "All Exercises",
+			"myCustomExercises": "My Custom Exercises"
+		},
+		"filters": {
+			"all": "All",
+			"standard": "Our Exercises",
+			"custom": "My Exercises",
+			"favouritesOnly": "Favourited",
+			"difficulty": "Difficulty",
+			"sort": "Sort",
+			"sortAZ": "A → Z",
+			"sortZA": "Z → A"
+		},
+		"noExercisesFound": "No exercises found",
+		"alerts": {
+			"warning": "Warning",
+			"error": "Error",
+			"success": "Success",
+			"info": "Information"
+		},
+		"loading": "Loading...",
+		"search": {
+			"placeholder": "Search..."
+		}
+	},
+	"createExercise": {
+		"steps": {
+			"description": "Exercise details",
+			"settings": "Settings"
+		},
+		"form": {
+			"nameLabel": "Exercise Name",
+			"namePlaceholder": "Enter exercise name",
+			"descriptionLabel": "Description",
+			"focusLabel": "Focus",
+			"focusPlaceholder": "Enter focus areas",
+			"descriptionPlaceholder": "Enter description",
+			"instructionsLabel": "Instructions",
+			"instructionsPlaceholder": "Your text goes here...",
+			"difficultyLabel": "Difficulty",
+			"difficultyPlaceholder": "Difficulty (Easy, Medium, Hard)",
+			"focusHelper": "Comma separated list of focus areas",
+			"sets": "Sets",
+			"reps": "Reps",
+			"restTime": "Rest Time",
+			"restTimePlaceholder": "Enter rest time",
+			"ytUrl": "Youtube URL",
+			"ytUrlPlaceholder": "Enter Youtube URL",
+			"ytUrlHelper": "When entered overrides uploaded video below",
+			"uploadThumbnail": "Upload Thumbnail",
+			"uploadVideoTutorial": "Upload video tutorial"
+		}
+	},
+	"exercise": {
+		"difficulty": {
+			"beginner": "Beginner",
+			"intermediate": "Intermediate",
+			"advanced": "Advanced"
+		},
+		"form": {
+			"offScreenTime": "Off screen time",
+			"onScreenTime": "On screen time",
+			"exerciseTime": "Exercise time",
+			"restTime": "Rest Time",
+			"startNow": "Start Now"
+		},
+		"premium": {
+			"locked": "Premium",
+			"unlocked": "Premium ✓",
+			"upgradeTitle": "Upgrade to Access",
+			"upgradeMessage": "This is a premium exercise. Upgrade to CogiPro to access this and other premium features."
+		},
+		"sections": {
+			"customization": "Customization",
+			"durationSettings": "Duration Settings",
+			"adminVideoUpload": "Admin Video Upload",
+			"uploadVideo": "Upload Creative Example"
+		},
+		"page": {
+			"description": "Description",
+			"instructions": "Instructions",
+			"customizeExercise": "Customize this exercise",
+			"communityAccess": "Community Access",
+			"makePublic": "Make Public",
+			"makePublicMessage": "This will make your exercise available to all users in the community.",
+			"makePublicDescription": "Make this exercise available to all users in the community",
+			"submitToCogipro": "Submit to Cogipro",
+			"submitToCogiproMessage": "This will make your exercise available in Cogipro Premium for all users.",
+			"submitToCogiproPremium": "Submit to Cogipro Premium",
+			"submitToCogiproPremiumMessage": "This will make your exercise available in Cogipro Premium for all users.",
+			"submitToCogiproPremiumDescription": "Make this exercise available in Cogipro Premium",
+			"unsubmitFromCogipro": "Remove from Cogipro",
+			"unsubmitFromCogiproMessage": "This will remove your exercise from Cogipro Premium. It will no longer be available to premium users.",
+			"unsubmitFromCogiproPremium": "Remove from Cogipro Premium",
+			"unsubmitFromCogiproPremiumMessage": "This will remove your exercise from Cogipro Premium. It will no longer be available to premium users.",
+			"settings": "Settings",
+			"cogiproPremiumSettings": "Cogipro Admin Settings",
+			"submitToCogiproDescription": "Make this exercise available in Cogipro",
+			"accessDenied": "Access denied. Admin privileges required.",
+			"deleteExercise": "Delete Exercise",
+			"deleteExerciseMessage": "Are you sure you want to delete this exercise? This action cannot be undone.",
+			"deleteExerciseDescription": "Permanently remove this exercise from your account"
+		},
+		"card": {
+			"minutes": "min",
+			"seconds": "sec",
+			"imageAlt": "Exercise thumbnail",
+			"greeting": "Hello!"
+		},
+		"videoUpload": {
+			"title": "Upload Exercise Video",
+			"subtitle": "Share creative ways to use {{exerciseName}}",
+			"titleLabel": "Video Title",
+			"titlePlaceholder": "Enter video title",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Describe your creative approach",
+			"videoLabel": "Video File",
+			"selectVideo": "Select Video",
+			"upload": "Upload Video",
+			"uploading": "Uploading..."
+		},
+		"videoGallery": {
+			"title": "Creative Examples",
+			"upload": "Upload",
+			"noVideos": "No videos available for this exercise",
+			"watch": "Watch"
+		},
+		"exit": {
+			"title": "Exit Exercise?",
+			"message": "Are you sure you want to exit? Your progress will be lost.",
+			"confirm": "Exit",
+			"cancel": "Continue Exercise"
+		},
+		"loading": "Loading exercise...",
+		"notFound": "Exercise not found",
+		"invalidOrMissing": "Invalid or missing exercise",
+		"startingIn": "Starting in"
+	},
+	"progress": {
+		"milestones": "Milestones",
+		"overview": "Overview",
+		"actions": {
+			"deleteGoal": "Are you sure you want to delete this goal?"
+		},
+		"days": {
+			"monday": "Monday",
+			"tuesday": "Tuesday",
+			"wednesday": "Wednesday",
+			"thursday": "Thursday",
+			"friday": "Friday",
+			"saturday": "Saturday",
+			"sunday": "Sunday"
+		},
+		"goals": {
+			"workouts": "WORKOUTS",
+			"milestones": "MILESTONES",
+			"weeklyGoal": "WEEKLY GOAL",
+			"tbd": "TBD",
+			"customGoalsTitle": "My Custom Goals",
+			"setGoalButton": "Set a new goal",
+			"modal": {
+				"label": "Set a goal",
+				"placeholder": "e.g. Complete 5 workouts"
+			}
+		},
+		"weeklyGoal": {
+			"title": "Set your schedule",
+			"reminderTime": "Time to receive reminder",
+			"save": "Save Schedule",
+			"scheduleSaved": "Schedule saved successfully",
+			"scheduleError": "Failed to save schedule"
+		}
+	},
+	"yupErrors": {
+		"form": {
+			"nameRequired": "Name is required",
+			"nameMin": "Name must be at least 3 characters",
+			"nameMax": "Name cannot exceed 50 characters",
+
+			"descriptionRequired": "Description is required",
+			"descriptionMin": "Description must be at least 10 characters",
+			"descriptionMax": "Description cannot exceed 500 characters",
+
+			"instructionsRequired": "Instructions are required",
+			"instructionsMin": "Instructions must be at least 10 characters",
+			"instructionsMax": "Instructions cannot exceed 1000 characters",
+
+			"focusMin": "Focus must be a word",
+			"focusMax": "Maximum 5 focus points",
+
+			"difficultyRequired": "Difficulty is required",
+			"difficultyInvalid": "Invalid difficulty level",
+
+			"visualInputMissing": "Select at least one of shapes, letters, numbers, or colors",
+
+			"offScreenTime": "Off screen time must be at least 0.5 seconds",
+			"onScreenTime": "On screen time must be at least 0.5 seconds",
+			"exerciseTime": "Exercise time must be at least 1 minute",
+			"restTime": "Rest time must be at least 1 second",
+
+			"offScreenColor": "Off screen color is required",
+			"onScreenColor": "On screen color is required",
+
+			"invalidUrl": "Must be a valid URL",
+
+			"firstNameRequired": "First name is required",
+			"firstNameMin": "First name must be at least 2 characters",
+
+			"lastNameRequired": "Last name is required",
+			"lastNameMin": "Last name must be at least 2 characters",
+
+			"emailRequired": "Email is required",
+			"emailInvalid": "Invalid email address",
+
+			"passwordRequired": "Password is required",
+			"passwordMin": "Password must be at least 6 characters"
+		}
+	},
+	"milestones": {
+		"exercisesCompleted": {
+			"heading": "Total Exercises Completed",
+			"description": "Track the total number of exercises you've completed across all types.",
+			"subtext": "{{count}} of {{target}} completed"
+		},
+		"beginner": {
+			"heading": "Beginner Exercises",
+			"description": "Build your foundation by completing beginner-level training.",
+			"subtext": "{{count}} of {{target}} completed"
+		},
+		"intermediate": {
+			"heading": "Intermediate Exercises",
+			"description": "Challenge yourself with intermediate-level tasks.",
+			"subtext": "{{count}} of {{target}} completed"
+		},
+		"advanced": {
+			"heading": "Advanced Exercises",
+			"description": "Prove your skills with advanced difficulty exercises.",
+			"subtext": "{{count}} of {{target}} completed"
+		},
+		"customCreated": {
+			"heading": "Custom Exercises Created",
+			"description": "Create and personalize your own training routines.",
+			"subtext": "{{count}} of {{target}} completed"
+		},
+		"goals": {
+			"heading": "Goals Created",
+			"description": "Set goals to stay motivated and on track with your progress.",
+			"subtext": "{{count}} of {{target}} completed"
+		},
+		"articles": {
+			"heading": "Educational Articles Read",
+			"description": "Expand your knowledge by completing learning materials.",
+			"subtext": "{{count}} of {{target}} completed"
+		}
+	},
+	"routines": {
+		"title": "Routines",
+		"createNew": "Create New",
+		"builder": {
+			"title": "Routine Builder",
+			"addExercise": "Add an exercise to routine",
+			"add": "Add",
+			"addSlot": "Add Slot",
+			"removeSlot": "Remove Slot",
+			"saveRoutine": "Save Routine",
+			"updateRoutine": "Update Routine"
+		},
+		"saved": {
+			"title": "Saved Routines",
+			"exercises": "exercises",
+			"completed": "Completed",
+			"times": "times"
+		},
+		"name": {
+			"label": "Routine Name",
+			"placeholder": "Enter routine name"
+		},
+		"delete": {
+			"title": "Delete Routine"
+		},
+		"selectExercise": {
+			"title": "Select Exercise",
+			"searchPlaceholder": "Search exercises...",
+			"standardTab": "Our Exercises",
+			"customTab": "My Exercises",
+			"noStandardExercises": "No standard exercises found",
+			"noCustomExercises": "No custom exercises found"
+		},
+		"execution": {
+			"progress": "Progress",
+			"currentExercise": "Current Exercise",
+			"exerciseList": "Exercise List",
+			"complete": "Routine Complete!",
+			"completeMessage": "Congratulations! You've completed all exercises in this routine.",
+			"skip": "Skip",
+			"pause": "Pause",
+			"resume": "Resume",
+			"start": "Start",
+			"current": "Current",
+			"exerciseNotFound": "Exercise not found",
+			"standardExercise": "Standard Exercise",
+			"customExercise": "Custom Exercise"
+		}
+	},
+	"exerciseProgress": {
+		"stimulus": "Stimulus",
+		"count": "Count",
+		"caption": "Progress: {{reps}} reps completed in {{time}}"
+	},
+	"paywall": {
+		"title": "Upgrade to CogiPro",
+		"subtitle": "Unlock all premium features",
+		"features": {
+			"title": "What you'll get",
+			"list": ["Exclusive exercise videos by our team", "Exclusive access to new features", "Priority support"]
+		},
+		"pricing": {
+			"monthly": "Monthly",
+			"annual": "Annual",
+			"monthlyPrice": "$9.99/month",
+			"annualPrice": "$79.99/year",
+			"annualSaving": "Save 33%",
+			"monthlySaving": ""
+		},
+		"buttons": {
+			"subscribe": "Continue",
+			"restore": "Restore Purchases"
+		}
+	},
+	"upgradeCard": {
+		"title": "Upgrade to CogiPro",
+		"description": "Get exclusive access to unique and creative ways to use your Cogimat, featuring exercises designed by our expert team.",
+		"button": "Upgrade"
+	},
+	"admin": {
+		"videoUpload": {
+			"title": "Upload Admin Video",
+			"titleLabel": "Video Title",
+			"titlePlaceholder": "Enter video title",
+			"descriptionLabel": "Description",
+			"descriptionPlaceholder": "Enter video description (optional)",
+			"categoryLabel": "Category",
+			"videoLabel": "Video File",
+			"selectVideo": "Select Video",
+			"upload": "Upload Video",
+			"uploading": "Uploading...",
+			"titleRequired": "Title is required",
+			"videoRequired": "Video is required",
+			"error": "Error",
+			"userNotAuthenticated": "User not authenticated",
+			"success": "Success",
+			"uploaded": "Video uploaded successfully!",
+			"uploadFailed": "Upload failed",
+			"failedToUpload": "Failed to upload video"
+		},
+		"videoGallery": {
+			"uploadNew": "Upload New Video",
+			"noVideos": "No videos available",
+			"watch": "Watch",
+			"views": "views"
+		},
+		"videoManagement": {
+			"title": "Video Management",
+			"gallery": "Gallery",
+			"upload": "Upload"
+		},
+		"allVideos": {
+			"title": "All Videos",
+			"searchPlaceholder": "Search videos...",
+			"noVideos": "No videos found",
+			"watch": "Watch",
+			"views": "views"
+		},
+		"qrCodes": {
+			"title": "QR Code Management",
+			"statistics": "QR Code Statistics",
+			"usageStatistics": "Usage Statistics",
+			"totalCodes": "Total Codes",
+			"usedCodes": "Used Codes",
+			"unusedCodes": "Unused Codes",
+			"usageRate": "Usage Rate",
+			"generate10000": "Generate 10,000 QR Codes",
+			"refreshStatistics": "Refresh Statistics",
+			"printQrCodePages": "Print QR Code Pages",
+			"eachPageContains50": "Each page contains 50 QR codes arranged in a 5x10 grid for easy printing.",
+			"instructions": "Instructions",
+			"instruction1": "1. Generate 10,000 QR codes using the button above",
+			"instruction2": "2. Download the QR code pages for printing",
+			"noDataAvailable": "No data available",
+			"download": "Download",
+			"downloadReady": "QR codes for page {{page}} are ready for printing",
+			"alerts": {
+				"error": "Error",
+				"success": "Success",
+				"fetchError": "Failed to fetch QR code statistics",
+				"generateError": "Failed to generate QR codes",
+				"generateSuccess": "10,000 QR codes generated successfully!",
+				"downloadError": "Failed to download QR codes"
+			}
+		},
+		"categories": {
+			"allCategories": "All Categories",
+			"exerciseTutorials": "Exercise Tutorials",
+			"general": "General",
+			"tutorials": "Tutorials",
+			"announcements": "Announcements",
+			"exerciseGuides": "Exercise Guides",
+			"tipsAndTricks": "Tips & Tricks"
+		}
+	},
+	"mediaPicker": {
+		"permissionRequired": "Permission Required",
+		"permissionMessage": "To select a {{mediaType}}, please enable media library access in your device settings.",
+		"permissionDenied": "Permission to access media library is required!",
+		"cancel": "Cancel",
+		"openSettings": "Open Settings",
+		"pickVideo": "Select Video",
+		"pickImage": "Select Image"
+	},
+	"exerciseCreation": {
+		"exerciseParameters": "Exercise Parameters",
+		"timingSettings": "Timing Settings"
+	}
+}

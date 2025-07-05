@@ -19,7 +19,7 @@ import { Center } from "@/components/ui/center";
 import SwitchRow from "../../components/SwitchRow";
 import AlertModal from "../../components/AlertModal";
 import { i18n } from "../../i18n";
-import { setNotifications, Theme, setEmails } from "../../store/auth/authSlice";
+import { setNotifications, Theme, setEmails, LanguageEnum } from "../../store/auth/authSlice";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { deleteUserThunk } from "../../store/auth/authSaga";
 import { Pencil } from "lucide-react-native";
@@ -29,10 +29,9 @@ import FormSelect from "../../components/FormSelect";
 import { setPaywallModalPopup } from "../../store/data/dataSlice";
 import PaywallDrawer from "../../components/PaywallDrawer";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
+import { useLanguageManagement } from "../../hooks/useLanguageManagement";
 
 export const resetState = createAction("RESET_STATE");
-
-const LANGUAGE_STORAGE_KEY = "app_language";
 
 function Account() {
 	const router = useRouter();
@@ -41,6 +40,8 @@ function Account() {
 	const { signOut } = useClerk();
 	const { user } = useUser();
 	const { isSubscribed } = useSubscriptionStatus();
+	const { currentLanguage, changeLanguage, getLanguageLabel } = useLanguageManagement();
+
 	let emailAddress = "";
 	if (user) {
 		emailAddress = typeof user.emailAddresses === "string" ? user.emailAddresses : user.emailAddresses[0].emailAddress;
@@ -60,26 +61,6 @@ function Account() {
 		shallowEqual
 	);
 
-	const getLanguageLabel = (locale: string) => {
-		switch (locale) {
-			case "en":
-				return i18n.t("account.english");
-			case "fr":
-				return i18n.t("account.français");
-			case "ja":
-				return i18n.t("account.日本語");
-			default:
-				return i18n.t("account.english");
-		}
-	};
-
-	const getDefaultLanguageLabel = () => {
-		return getLanguageLabel(i18n.locale);
-	};
-
-	const [selectedLanguage, setSelectedLanguage] = useState(getDefaultLanguageLabel());
-	const [languageUpdateTrigger, setLanguageUpdateTrigger] = useState(0);
-
 	const languageOptions = useMemo(
 		() => [
 			{ label: "account.english", value: "en" },
@@ -90,22 +71,7 @@ function Account() {
 	);
 
 	const handleLanguageChange = async (value: string) => {
-		try {
-			// Update i18n locale
-			i18n.locale = value;
-
-			// Save to AsyncStorage
-			await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, value);
-
-			// Update the selected language display
-			setSelectedLanguage(getLanguageLabel(value));
-
-			// Trigger a re-render by updating state
-			// This ensures all components using i18n.t() will update
-			setLanguageUpdateTrigger((prev) => prev + 1);
-		} catch (error) {
-			console.error("Error saving language preference:", error);
-		}
+		await changeLanguage(value);
 	};
 
 	const isPaywallOpen = useSelector((state: RootState) => state.data.popupStates.paywallIsOpen);
@@ -257,12 +223,12 @@ function Account() {
 						<FormSelect
 							size="lg"
 							label="account.appLanguage"
-							value={selectedLanguage}
+							value={getLanguageLabel(currentLanguage ?? LanguageEnum.English)}
 							variant="underlined"
 							onValueChange={(value) => handleLanguageChange(value)}
 							options={languageOptions}
 							title="account.appLanguage"
-							selectedValue={selectedLanguage}
+							selectedValue={getLanguageLabel(currentLanguage ?? LanguageEnum.English)}
 							displayAsRow
 						/>
 					</VStack>

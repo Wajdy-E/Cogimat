@@ -49,7 +49,6 @@ export default function ExerciseSettings() {
 	}
 
 	const [isEditing, setIsEditing] = useState(false);
-	console.log("exercises", exercises?.customizableOptions, exercises?.timeToComplete);
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions>(
 		exercises
 			? getExerciseCustomizedOptions(exercises, customizedExercises)
@@ -59,8 +58,6 @@ export default function ExerciseSettings() {
 					onScreenTime: 1,
 				}
 	);
-
-	console.log("durationSettings", durationSettings);
 
 	// Update durationSettings when exercise or customizedExercises change
 	useEffect(() => {

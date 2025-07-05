@@ -231,12 +231,9 @@ function ExerciseProgram() {
 							<View className="flex-row flex-wrap justify-start gap-4">
 								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 									<BadgeIcon as={getIconForType(exercise.difficulty)} />
-									<BadgeText size="lg">{exercise.difficulty}</BadgeText>
+									<BadgeText size="lg">{i18n.t(`${exercise.difficulty.toLowerCase()}`)}</BadgeText>
 								</Badge>
-								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
-									<BadgeIcon as={Brain} />
-									<BadgeText>{exercise.focus}</BadgeText>
-								</Badge>
+
 								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 									<BadgeIcon as={Clock} />
 									{(() => {
@@ -246,10 +243,15 @@ function ExerciseProgram() {
 										const seconds = totalSeconds % 60;
 										return (
 											<BadgeText>
-												{minutes} min {seconds} sec
+												{minutes} {i18n.t("exercise.card.minutes")}
+												{seconds > 0 && ` ${seconds} ${i18n.t("exercise.card.seconds")}`}
 											</BadgeText>
 										);
 									})()}
+								</Badge>
+								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
+									<BadgeIcon as={Brain} />
+									<BadgeText>{exercise.focus}</BadgeText>
 								</Badge>
 							</View>
 							<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>
