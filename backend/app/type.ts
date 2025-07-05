@@ -12,6 +12,7 @@ export interface UserBase {
 
 export interface Exercise {
 	id: number;
+	uniqueIdentifier: string;
 	name: string;
 	type: string;
 	difficulty: ExerciseDifficulty;
