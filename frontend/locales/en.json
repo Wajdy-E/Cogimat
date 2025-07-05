@@ -101,6 +101,7 @@
 		"googleSignUp": "Continue with Google",
 		"appleSignUp": "Continue with Apple",
 		"alreadyHaveAccount": "Already have an account?",
+		"register": "Register",
 		"login": "Log in",
 		"alert": {
 			"invalidData": "Invalid signup data",

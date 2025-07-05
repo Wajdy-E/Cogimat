@@ -101,6 +101,7 @@
 		"googleSignUp": "Googleで続行",
 		"appleSignUp": "Appleで続行",
 		"alreadyHaveAccount": "すでにアカウントをお持ちですか？",
+		"register": "登録",
 		"login": "ログイン",
 		"alert": {
 			"invalidData": "無効なサインアップデータ",
