@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
 				$6, $7, $8, $9, $10,
 				$11, $12, $13, $14, $15,
 				$16, $17, $18
-			) RETURNING id`,
+			) RETURNING id, unique_identifier`,
 			[
 				clerk_id,
 				name,
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
 			]
 		);
 
-		return NextResponse.json({ success: true, id: result[0].id });
+		return NextResponse.json({ success: true, id: result[0].id, unique_identifier: result[0].unique_identifier });
 	} catch (error) {
 		console.error("Create Exercise Error:", error);
 		return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
@@ -142,6 +142,8 @@ export async function PATCH(req: NextRequest) {
 			exerciseTime,
 			publicAccess,
 			youtubeUrl,
+			submittedToCogipro,
+			isPremium,
 		} = body;
 
 		if (!id || !clerk_id) {
@@ -179,8 +181,10 @@ export async function PATCH(req: NextRequest) {
 				exercise_time = $15,
 				public_access = $16,
 				youtube_url = $17,
-				updated_at = CURRENT_TIMESTAMP
-			WHERE id = $18 AND clerk_id = $19`,
+				updated_at = CURRENT_TIMESTAMP,
+				submitted_to_cogipro = $18,
+				is_premium = $19
+			WHERE id = $20 AND clerk_id = $21`,
 			[
 				name,
 				description,
@@ -199,6 +203,8 @@ export async function PATCH(req: NextRequest) {
 				exerciseTime,
 				publicAccess,
 				youtubeUrl,
+				submittedToCogipro,
+				isPremium,
 				id,
 				clerk_id,
 			]

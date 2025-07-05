@@ -1,22 +1,22 @@
-import { Animated, ScrollView, View, Image as RNImage } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Heading } from '@/components/ui/heading';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-import { useCommunityExercise } from '@/hooks/useCustomExercise';
-import { i18n } from '../../i18n';
-import { Clock, Sprout, Rocket, Trophy, CirclePlay, Brain } from 'lucide-react-native';
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { useRef, useEffect, useState } from 'react';
-import { Badge, BadgeIcon, BadgeText } from '@/components/ui/badge';
-import WebView from 'react-native-webview';
-import { useVideoPlayer, VideoView } from 'expo-video';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store/store';
-import { setCurrentExercise } from '../../store/data/dataSlice';
-import { getPublicExercises } from '../../store/data/dataSaga';
-import CustomExerciseHeader from '../../components/CustomExerciseHeader';
-import React from 'react';
+import { Animated, ScrollView, View, Image as RNImage } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { useCommunityExercise } from "@/hooks/useCustomExercise";
+import { i18n } from "../../i18n";
+import { Clock, Sprout, Rocket, Trophy, CirclePlay, Brain } from "lucide-react-native";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { useRef, useEffect, useState } from "react";
+import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
+import WebView from "react-native-webview";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
+import { setCurrentExercise } from "../../store/data/dataSlice";
+import { getPublicExercises } from "../../store/data/dataSaga";
+import CustomExerciseHeader from "../../components/CustomExerciseHeader";
+import React from "react";
 
 // Separate component for video items to avoid hooks violation
 const VideoMediaItem = ({ url, index }: { url: string; index: number }) => {
@@ -30,8 +30,8 @@ const VideoMediaItem = ({ url, index }: { url: string; index: number }) => {
 			allowsFullscreen
 			allowsPictureInPicture
 			style={{
-				width: '100%',
-				height: '100%',
+				width: "100%",
+				height: "100%",
 				borderRadius: 20,
 			}}
 			contentFit="cover"
@@ -39,7 +39,7 @@ const VideoMediaItem = ({ url, index }: { url: string; index: number }) => {
 	);
 };
 
-function CommunityExerciseProgram () {
+function CommunityExerciseProgram() {
 	const { id } = useLocalSearchParams();
 	const router = useRouter();
 	const dispatch: AppDispatch = useDispatch();
@@ -52,11 +52,11 @@ function CommunityExerciseProgram () {
 	// Safely handle the id parameter
 	let exerciseId: number | null = null;
 	try {
-		if (id && typeof id === 'string') {
+		if (id && typeof id === "string") {
 			exerciseId = parseInt(id);
 		}
 	} catch (error) {
-		console.error('Error parsing exercise id:', error);
+		console.error("Error parsing exercise id:", error);
 	}
 
 	// Use the new useCommunityExercise hook that searches both custom and public exercises
@@ -69,7 +69,7 @@ function CommunityExerciseProgram () {
 				try {
 					await dispatch(getPublicExercises()).unwrap();
 				} catch (error) {
-					console.error('Error fetching public exercises:', error);
+					console.error("Error fetching public exercises:", error);
 				}
 			}
 			setIsLoading(false);
@@ -106,7 +106,7 @@ function CommunityExerciseProgram () {
 					duration: 1000,
 					useNativeDriver: true,
 				}),
-			]),
+			])
 		).start();
 	}, [floatAnim]);
 
@@ -116,7 +116,7 @@ function CommunityExerciseProgram () {
 			<>
 				<CustomExerciseHeader showSettings={false} />
 				<View className="flex-1 justify-center items-center bg-background-700">
-					<Text>{i18n.t('exercise.loading')}</Text>
+					<Text>{i18n.t("exercise.loading")}</Text>
 				</View>
 			</>
 		);
@@ -127,7 +127,7 @@ function CommunityExerciseProgram () {
 			<>
 				<CustomExerciseHeader showSettings={false} />
 				<View className="flex-1 justify-center items-center bg-background-700">
-					<Text>{i18n.t('exercise.notFound')}</Text>
+					<Text>{i18n.t("exercise.notFound")}</Text>
 				</View>
 			</>
 		);
@@ -135,11 +135,11 @@ function CommunityExerciseProgram () {
 
 	const getIconForType = () => {
 		switch (exercise.difficulty) {
-			case 'Beginner':
+			case "Beginner":
 				return Sprout;
-			case 'Intermediate':
+			case "Intermediate":
 				return Rocket;
-			case 'Advanced':
+			case "Advanced":
 				return Trophy;
 			default:
 				return Sprout;
@@ -148,11 +148,11 @@ function CommunityExerciseProgram () {
 
 	// Prepare media items for horizontal scroll
 	const mediaItems: Array<{
-		type: 'youtube' | 'video' | 'image';
+		type: "youtube" | "video" | "image";
 		url: string;
 	}> = [];
 	const placeholderImageUrl =
-		'https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/placeholder-ND4gRGq1YR5dapuS2ObPKZZ9SfAXju.png';
+		"https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/placeholder-ND4gRGq1YR5dapuS2ObPKZZ9SfAXju.png";
 
 	// Helper function to extract YouTube video ID
 	const getYouTubeVideoId = (url: string) => {
@@ -165,21 +165,21 @@ function CommunityExerciseProgram () {
 		const videoId = getYouTubeVideoId(exercise.youtubeUrl);
 		if (videoId) {
 			mediaItems.push({
-				type: 'youtube',
+				type: "youtube",
 				url: `https://www.youtube.com/embed/${videoId}?si=SWqkZtlRD8J8sBL-`,
 			});
 		}
 	}
 	if (exercise.videoUrl) {
-		mediaItems.push({ type: 'video', url: exercise.videoUrl });
+		mediaItems.push({ type: "video", url: exercise.videoUrl });
 	}
 	if (exercise.imageFileUrl) {
-		mediaItems.push({ type: 'image', url: exercise.imageFileUrl });
+		mediaItems.push({ type: "image", url: exercise.imageFileUrl });
 	}
 
 	// If no media items, add placeholder
 	if (mediaItems.length === 0) {
-		mediaItems.push({ type: 'image', url: placeholderImageUrl });
+		mediaItems.push({ type: "image", url: placeholderImageUrl });
 	}
 
 	const onStartExercise = () => {
@@ -206,17 +206,17 @@ function CommunityExerciseProgram () {
 										height: 200,
 										marginRight: index < mediaItems.length - 1 ? 15 : 0,
 										borderRadius: 20,
-										overflow: 'hidden',
-										position: 'relative',
+										overflow: "hidden",
+										position: "relative",
 									}}
 								>
 									{/* Media type indicator */}
 									<View
 										style={{
-											position: 'absolute',
+											position: "absolute",
 											top: 10,
 											right: 10,
-											backgroundColor: 'rgba(0,0,0,0.7)',
+											backgroundColor: "rgba(0,0,0,0.7)",
 											paddingHorizontal: 8,
 											paddingVertical: 4,
 											borderRadius: 12,
@@ -225,17 +225,17 @@ function CommunityExerciseProgram () {
 									>
 										<Text
 											style={{
-												color: 'white',
+												color: "white",
 												fontSize: 10,
-												fontWeight: 'bold',
-												textTransform: 'uppercase',
+												fontWeight: "bold",
+												textTransform: "uppercase",
 											}}
 										>
 											{item.type}
 										</Text>
 									</View>
 
-									{item.type === 'youtube' && (
+									{item.type === "youtube" && (
 										<WebView
 											source={{ uri: item.url }}
 											injectedJavaScriptBeforeContentLoaded={`
@@ -243,8 +243,8 @@ function CommunityExerciseProgram () {
 												true;
 											`}
 											style={{
-												width: '100%',
-												height: '100%',
+												width: "100%",
+												height: "100%",
 												borderRadius: 20,
 											}}
 											allowsInlineMediaPlayback={true}
@@ -252,14 +252,14 @@ function CommunityExerciseProgram () {
 										/>
 									)}
 
-									{item.type === 'video' && <VideoMediaItem url={item.url} index={index} />}
+									{item.type === "video" && <VideoMediaItem url={item.url} index={index} />}
 
-									{item.type === 'image' && (
+									{item.type === "image" && (
 										<RNImage
 											source={{ uri: item.url }}
 											style={{
-												width: '100%',
-												height: '100%',
+												width: "100%",
+												height: "100%",
 												borderRadius: 20,
 											}}
 											resizeMode="cover"
@@ -284,20 +284,21 @@ function CommunityExerciseProgram () {
 								</Badge>
 								{(exercise.focus ?? []).length > 0
 									? (exercise.focus ?? []).map((f: string) => {
-										return (
-											<Badge size="lg" variant="solid" action="info" className="flex-row gap-3" key={f}>
-												<BadgeIcon as={Brain} />
-												<BadgeText>{f}</BadgeText>
-											</Badge>
-										);
-									})
+											return (
+												<Badge size="lg" variant="solid" action="info" className="flex-row gap-3" key={f}>
+													<BadgeIcon as={Brain} />
+													<BadgeText>{f}</BadgeText>
+												</Badge>
+											);
+										})
 									: null}
 								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 									<BadgeIcon as={Clock} />
 									{(() => {
-										const totalMinutes = parseFloat(exercise.customizableOptions?.exerciseTime.toString() || '60');
-										const minutes = Math.floor(totalMinutes);
-										const seconds = Math.round((totalMinutes - minutes) * 60);
+										// Convert from seconds to minutes for display
+										const totalSeconds = parseFloat(exercise.customizableOptions.exerciseTime.toString());
+										const minutes = Math.floor(totalSeconds / 60);
+										const seconds = totalSeconds % 60;
 										return (
 											<BadgeText>
 												{minutes} min {seconds} sec
@@ -307,9 +308,9 @@ function CommunityExerciseProgram () {
 								</Badge>
 							</View>
 
-							<Heading size="lg">{i18n.t('exercise.page.description')}</Heading>
+							<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>
 							<Text>{exercise.description}</Text>
-							<Heading size="lg">{i18n.t('exercise.page.instructions')}</Heading>
+							<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
 							<Text>{exercise.instructions}</Text>
 						</VStack>
 					</View>
@@ -317,14 +318,14 @@ function CommunityExerciseProgram () {
 
 				<Animated.View
 					style={{
-						position: 'absolute',
-						bottom: '20%',
-						alignSelf: 'center',
+						position: "absolute",
+						bottom: "20%",
+						alignSelf: "center",
 						transform: [{ translateY: floatAnim }],
 					}}
 				>
 					<Button onPress={onStartExercise} className="rounded-full w-full" variant="solid" action="primary" size="xl">
-						<ButtonText>{i18n.t('exercise.form.startNow')}</ButtonText>
+						<ButtonText>{i18n.t("exercise.form.startNow")}</ButtonText>
 						<ButtonIcon as={CirclePlay} />
 					</Button>
 				</Animated.View>

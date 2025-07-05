@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "../../../../lib/db";
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
 	try {
-		const routineId = parseInt(params.id);
+		const { id } = await context.params;
+		const routineId = parseInt(id);
 		const { clerk_id, name, description, exercises, is_active } = await req.json();
 
 		if (!clerk_id || !name || !exercises || !Array.isArray(exercises)) {
@@ -41,9 +42,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 	}
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
 	try {
-		const routineId = parseInt(params.id);
+		const { id } = await context.params;
+		const routineId = parseInt(id);
 		const { searchParams } = new URL(req.url);
 		const clerk_id = searchParams.get("clerk_id");
 

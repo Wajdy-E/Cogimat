@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Exercise } from '../../store/data/dataSlice';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store/store';
-import { updateUserMilestone } from '../../store/auth/authSaga';
-import ExerciseControl from '../exercises/ExerciseControl';
-import ExerciseProgress from '../exercises/ExerciseProgress';
+import React, { useEffect, useState } from "react";
+import { Exercise, getExerciseCustomizedOptions } from "../../store/data/dataSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
+import { updateUserMilestone } from "../../store/auth/authSaga";
+import ExerciseControl from "../exercises/ExerciseControl";
+import ExerciseProgress from "../exercises/ExerciseProgress";
 
 export interface StimulusStrategy {
 	generateStimulus: (exercise: Exercise) => any;
@@ -24,8 +24,9 @@ interface UnifiedStimulusProps {
 	strategy: StimulusStrategy;
 }
 
-export default function UnifiedStimulus ({ exercise, onComplete, onStop, strategy }: UnifiedStimulusProps) {
+export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy }: UnifiedStimulusProps) {
 	const dispatch = useDispatch<AppDispatch>();
+	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises);
 	const [stimulus, setStimulus] = useState<any>(null);
 	const [isWhiteScreen, setIsWhiteScreen] = useState(false);
 	const [isPaused, setIsPaused] = useState(false);
@@ -33,12 +34,11 @@ export default function UnifiedStimulus ({ exercise, onComplete, onStop, strateg
 	const [timeCompleted, setTimeCompleted] = useState(0);
 	const [exerciseCompleted, setExerciseCompleted] = useState(false);
 
-	const custom = exercise.customizableOptions;
-	const offScreenTime = custom?.offScreenTime ?? 0.5;
-	const onScreenTime = custom?.onScreenTime ?? 1;
-	const totalDuration = parseInt(exercise.timeToComplete) || 60;
+	const custom = getExerciseCustomizedOptions(exercise, customizedExercises);
+	const offScreenTime = custom.offScreenTime;
+	const onScreenTime = custom.onScreenTime;
+	const totalDuration = custom.exerciseTime;
 	const [timeLeft, setTimeLeft] = useState(totalDuration);
-
 	// Independent timer effect
 	useEffect(() => {
 		if (exerciseCompleted) {
@@ -54,9 +54,9 @@ export default function UnifiedStimulus ({ exercise, onComplete, onStop, strateg
 						// Update milestones
 						dispatch(
 							updateUserMilestone({
-								milestoneType: 'exercisesCompleted',
+								milestoneType: "exercisesCompleted",
 								exerciseDifficulty: exercise.difficulty,
-							}),
+							})
 						);
 					}
 					return Math.max(newTime, 0);
@@ -109,17 +109,28 @@ export default function UnifiedStimulus ({ exercise, onComplete, onStop, strateg
 		}
 	};
 
+	function onEnd() {
+		setExerciseCompleted(false);
+		setTimeCompleted(0);
+		setStimulusCount(new Map());
+		setTimeLeft(custom.exerciseTime);
+		setIsPaused(false);
+		if (onComplete) {
+			onComplete();
+		}
+	}
+
 	if (exerciseCompleted) {
 		return (
 			<ExerciseProgress
 				repsCompleted={Array.from(stimulusCount.values()).reduce((a, b) => a + b, 0)}
 				totalTime={timeCompleted}
-				onEnd={onComplete || (() => {})}
+				onEnd={onEnd}
 				onRestart={() => {
 					setExerciseCompleted(false);
 					setTimeCompleted(0);
 					setStimulusCount(new Map());
-					setTimeLeft(totalDuration);
+					setTimeLeft(custom.exerciseTime);
 					setIsPaused(false);
 				}}
 				rowData={strategy.getProgressData(stimulusCount)}

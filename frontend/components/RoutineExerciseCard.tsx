@@ -1,28 +1,31 @@
-import { Image } from '@/components/ui/image';
-import { View } from 'react-native';
-import { Exercise, ExerciseDifficulty, CustomExercise } from '../store/data/dataSlice';
-import { Card } from '@/components/ui/card';
-import { Heading } from '@/components/ui/heading';
-import { Text } from '@/components/ui/text';
-import { Clock, Sprout, Rocket, Trophy, X } from 'lucide-react-native';
-import { Icon } from '@/components/ui/icon';
-import { VStack } from '@/components/ui/vstack';
-import { Button, ButtonIcon } from '@/components/ui/button';
-import { i18n } from '../i18n';
+import { Image } from "@/components/ui/image";
+import { View } from "react-native";
+import { Exercise, ExerciseDifficulty, CustomExercise, getExerciseCustomizedOptions } from "../store/data/dataSlice";
+import { Card } from "@/components/ui/card";
+import { Heading } from "@/components/ui/heading";
+import { Text } from "@/components/ui/text";
+import { Clock, Sprout, Rocket, Trophy, X } from "lucide-react-native";
+import { Icon } from "@/components/ui/icon";
+import { VStack } from "@/components/ui/vstack";
+import { Button, ButtonIcon } from "@/components/ui/button";
+import { i18n } from "../i18n";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 interface RoutineExerciseCardProps {
 	exercise: Exercise | CustomExercise;
-	exerciseType: 'standard' | 'custom';
+	exerciseType: "standard" | "custom";
 	onRemove?: () => void;
 	classes?: string;
 }
 
-const placeHolder = require('../assets/exercise-thumbnails/placeholder.png');
+const placeHolder = require("../assets/exercise-thumbnails/placeholder.png");
 
-function RoutineExerciseCard (props: RoutineExerciseCardProps) {
+function RoutineExerciseCard(props: RoutineExerciseCardProps) {
+	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises);
 	const exerciseImage = props.exercise.imageFileUrl ? { uri: props.exercise.imageFileUrl } : placeHolder;
 
-	function getIconForType () {
+	function getIconForType() {
 		return (
 			<Icon
 				size="md"
@@ -37,19 +40,20 @@ function RoutineExerciseCard (props: RoutineExerciseCardProps) {
 		);
 	}
 
-	function getTimeDisplay () {
-		if ('timeToComplete' in props.exercise) {
-			// Standard exercise
-			const totalSeconds = parseInt(props.exercise.timeToComplete, 10);
+	function getTimeDisplay() {
+		if ("timeToComplete" in props.exercise) {
+			// Standard exercise - use customized options if available
+			const options = getExerciseCustomizedOptions(props.exercise as Exercise, customizedExercises);
+			const totalSeconds = options.exerciseTime;
 			const minutes = Math.floor(totalSeconds / 60);
 			const seconds = totalSeconds % 60;
-			return `${minutes}${i18n.t('exercise.card.minutes')}${seconds > 0 ? ` ${seconds}${i18n.t('exercise.card.seconds')}` : ''}`;
+			return `${minutes}${i18n.t("exercise.card.minutes")}${seconds > 0 ? ` ${seconds}${i18n.t("exercise.card.seconds")}` : ""}`;
 		} else {
-			// Custom exercise
-			const totalMinutes = parseFloat(props.exercise.customizableOptions?.exerciseTime.toString() || '60');
-			const minutes = Math.floor(totalMinutes);
-			const seconds = Math.round((totalMinutes - minutes) * 60);
-			return `${minutes}${i18n.t('exercise.card.minutes')}${seconds > 0 ? ` ${seconds}${i18n.t('exercise.card.seconds')}` : ''}`;
+			// Custom exercise - use its own customizableOptions
+			const totalSeconds = parseFloat(props.exercise.customizableOptions.exerciseTime.toString());
+			const minutes = Math.floor(totalSeconds / 60);
+			const seconds = totalSeconds % 60;
+			return `${minutes}${i18n.t("exercise.card.minutes")}${seconds > 0 ? ` ${seconds}${i18n.t("exercise.card.seconds")}` : ""}`;
 		}
 	}
 
@@ -71,7 +75,7 @@ function RoutineExerciseCard (props: RoutineExerciseCardProps) {
 					)}
 				</View>
 				<View className="p-2">
-					<Heading size="sm" numberOfLines={1} style={{ maxWidth: '90%' }}>
+					<Heading size="sm" numberOfLines={1} style={{ maxWidth: "90%" }}>
 						{props.exercise.name}
 					</Heading>
 					<View className="flex-row gap-2">
@@ -79,7 +83,7 @@ function RoutineExerciseCard (props: RoutineExerciseCardProps) {
 							<Icon size="sm" as={Clock} />
 							<Text size="sm">{getTimeDisplay()}</Text>
 						</View>
-						<View className="flex-row items-center gap-1" style={{ maxWidth: '100%' }}>
+						<View className="flex-row items-center gap-1" style={{ maxWidth: "100%" }}>
 							{getIconForType()}
 							<Text size="sm" ellipsizeMode="tail" numberOfLines={1}>
 								{i18n.t(`exercise.difficulty.${props.exercise.difficulty.toLowerCase()}`)}

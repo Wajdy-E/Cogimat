@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "../../../../../lib/db";
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, context: { params: Promise<{ id: string }> }) {
 	try {
-		const routineId = parseInt(params.id);
+		const { id } = await context.params;
+		const routineId = parseInt(id);
 		const { clerk_id } = await req.json();
 
 		if (!clerk_id) {
@@ -12,11 +13,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
 		const result = await query(
 			`UPDATE routines 
-			 SET completion_count = completion_count + 1, 
-			     last_completed_at = CURRENT_TIMESTAMP,
-			     updated_at = CURRENT_TIMESTAMP
-			 WHERE id = $1 AND clerk_id = $2 AND is_active = true 
-			 RETURNING *`,
+         SET completion_count = completion_count + 1, 
+             last_completed_at = CURRENT_TIMESTAMP,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = $1 AND clerk_id = $2 AND is_active = true 
+         RETURNING *`,
 			[routineId, clerk_id]
 		);
 

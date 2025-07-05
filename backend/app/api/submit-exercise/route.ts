@@ -18,17 +18,18 @@ export async function POST(req: NextRequest) {
 			imageFileUrl,
 			isPremium,
 			parameters,
+			uniqueIdentifier,
 		} = body;
 
 		let stringifyParams = JSON.stringify(parameters);
-		const exerciseTime = timeToComplete / 60;
+		const exerciseTime = timeToComplete; // Now stored in seconds
 		await query(
 			`INSERT INTO exercises (
 			  name, type, difficulty, description, instructions, is_challenge, video_url, time_to_complete, 
-			  focus, parameters, exercise_time, is_premium, image_file_name
+			  focus, parameters, exercise_time, is_premium, image_file_name, unique_identifier
 			) VALUES (
 			  $1, $2, $3, $4, $5, $6, $7, $8,
-			  $9, $10, $11, $12, $13
+			  $9, $10, $11, $12, $13, $14
 			)`,
 			[
 				name,
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
 				exerciseTime,
 				isPremium,
 				imageFileUrl,
+				uniqueIdentifier,
 			]
 		);
 
@@ -57,15 +59,38 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
 	try {
 		const { searchParams } = new URL(req.url);
-		const exerciseId = searchParams.get("exerciseId");
-		const name = searchParams.get("name");
+		const uniqueIdentifier = searchParams.get("uniqueIdentifier");
+		const action = searchParams.get("action"); // "remove" or "unpremium"
 
-		if (!exerciseId || !name) {
-			return NextResponse.json({ success: false, error: "Missing exerciseId or name" }, { status: 400 });
+		if (!uniqueIdentifier) {
+			return NextResponse.json({ success: false, error: "Missing uniqueIdentifier" }, { status: 400 });
 		}
 
-		// Delete the exercise from the exercises table
-		await query(`DELETE FROM exercises WHERE id = $1 AND name = $2`, [exerciseId, name]);
+		console.log(`Unsubmit exercise: ${uniqueIdentifier}, action: ${action}`);
+
+		if (action === "unpremium") {
+			// Set is_premium to false but keep the exercise
+			console.log(`Setting is_premium to false for exercise: ${uniqueIdentifier}`);
+			await query(`UPDATE exercises SET is_premium = false WHERE unique_identifier = $1`, [uniqueIdentifier]);
+		} else {
+			// Check if the exercise is premium before deleting
+			const exercise = await query(`SELECT is_premium FROM exercises WHERE unique_identifier = $1`, [uniqueIdentifier]);
+
+			if (exercise.length === 0) {
+				console.log(`Exercise not found: ${uniqueIdentifier}`);
+				return NextResponse.json({ success: false, error: "Exercise not found" }, { status: 404 });
+			}
+
+			if (exercise[0].is_premium) {
+				// Don't delete premium exercises, just return success
+				console.log(`Premium exercise not deleted: ${uniqueIdentifier}`);
+				return NextResponse.json({ success: true, message: "Premium exercise not deleted" });
+			} else {
+				// Delete non-premium exercise from the exercises table
+				console.log(`Deleting non-premium exercise: ${uniqueIdentifier}`);
+				await query(`DELETE FROM exercises WHERE unique_identifier = $1`, [uniqueIdentifier]);
+			}
+		}
 
 		return NextResponse.json({ success: true });
 	} catch (error) {

@@ -1,25 +1,25 @@
-import { ScrollView } from 'react-native';
-import { useState, useMemo, useEffect } from 'react';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
-import { i18n } from '../../i18n';
-import CustomExerciseCard from '../../components/CustomExerciseCard';
-import { CustomExercise, ExerciseDifficulty } from '../../store/data/dataSlice';
-import FormSelect from '../../components/FormSelect';
-import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from '@/components/ui/checkbox';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../../store/store';
-import { CheckIcon } from '@/components/ui/icon';
-import { getPublicExercises } from '../../store/data/dataSaga';
+import { ScrollView } from "react-native";
+import { useState, useMemo, useEffect } from "react";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { HStack } from "@/components/ui/hstack";
+import { i18n } from "../../i18n";
+import CustomExerciseCard from "../../components/CustomExerciseCard";
+import { CustomExercise, ExerciseDifficulty } from "../../store/data/dataSlice";
+import FormSelect from "../../components/FormSelect";
+import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from "@/components/ui/checkbox";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../store/store";
+import { CheckIcon } from "@/components/ui/icon";
+import { getPublicExercises } from "../../store/data/dataSaga";
 
-function CommunityExercises () {
+function CommunityExercises() {
 	const dispatch: AppDispatch = useDispatch();
 	const publicExercises = useSelector((state: RootState) => state.data.publicExercises);
 
 	const [showOnlyFavourited, setShowOnlyFavourited] = useState(false);
-	const [difficultyFilter, setDifficultyFilter] = useState<ExerciseDifficulty | 'All'>('All');
-	const [sortAlpha, setSortAlpha] = useState<'asc' | 'desc'>('asc');
+	const [difficultyFilter, setDifficultyFilter] = useState<ExerciseDifficulty | "All">("All");
+	const [sortAlpha, setSortAlpha] = useState<"asc" | "desc">("asc");
 
 	// Fetch public exercises when component mounts
 	useEffect(() => {
@@ -29,26 +29,26 @@ function CommunityExercises () {
 	const filteredExercises = useMemo(() => {
 		let all: CustomExercise[] = [...publicExercises];
 
-		if (difficultyFilter !== 'All') {
+		if (difficultyFilter !== "All") {
 			all = all.filter((e) => e.difficulty === difficultyFilter);
 		}
 		if (showOnlyFavourited) {
 			all = all.filter((e) => e.isFavourited);
 		}
-		all = all.sort((a, b) => (sortAlpha === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)));
+		all = all.sort((a, b) => (sortAlpha === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)));
 		return all;
 	}, [publicExercises, showOnlyFavourited, difficultyFilter, sortAlpha]);
 
 	const difficultyOptions = [
-		{ label: 'general.filters.all', value: 'all' },
-		{ label: 'exercise.difficulty.beginner', value: 'Beginner' },
-		{ label: 'exercise.difficulty.intermediate', value: 'Intermediate' },
-		{ label: 'exercise.difficulty.advanced', value: 'Advanced' },
+		{ label: "general.filters.all", value: "all" },
+		{ label: "exercise.difficulty.beginner", value: "Beginner" },
+		{ label: "exercise.difficulty.intermediate", value: "Intermediate" },
+		{ label: "exercise.difficulty.advanced", value: "Advanced" },
 	];
 
-	const sortOptions: { label: string; value: 'asc' | 'desc' }[] = [
-		{ label: 'general.filters.sortAZ', value: 'asc' },
-		{ label: 'general.filters.sortZA', value: 'desc' },
+	const sortOptions: { label: string; value: "asc" | "desc" }[] = [
+		{ label: "general.filters.sortAZ", value: "asc" },
+		{ label: "general.filters.sortZA", value: "desc" },
 	];
 
 	return (
@@ -57,29 +57,29 @@ function CommunityExercises () {
 				<HStack space="lg" className="flex-row flex-wrap self-end">
 					<FormSelect
 						{...({
-							title: 'general.filters.difficulty',
+							title: "general.filters.difficulty",
 							options: difficultyOptions,
 							selectedValue: difficultyFilter,
-							onValueChange: (val: any) => setDifficultyFilter(val as ExerciseDifficulty | 'All'),
-							variant: 'rounded',
-							size: 'md',
-							placeholder: i18n.t('general.filters.difficulty'),
-							className: 'flex-row items-center gap-2',
-							labelSize: 'lg',
+							onValueChange: (val: any) => setDifficultyFilter(val as ExerciseDifficulty | "All"),
+							variant: "rounded",
+							size: "md",
+							placeholder: i18n.t("general.filters.difficulty"),
+							className: "flex-row items-center gap-2",
+							labelSize: "lg",
 						} as any)}
 					/>
 
 					<FormSelect
 						{...({
-							title: 'general.filters.sort',
+							title: "general.filters.sort",
 							options: sortOptions,
 							selectedValue: sortAlpha,
-							onValueChange: (val: any) => setSortAlpha(val as 'asc' | 'desc'),
-							variant: 'rounded',
-							size: 'md',
-							placeholder: i18n.t('general.filters.sort'),
-							className: 'flex-row items-center gap-2',
-							labelSize: 'lg',
+							onValueChange: (val: any) => setSortAlpha(val as "asc" | "desc"),
+							variant: "rounded",
+							size: "md",
+							placeholder: i18n.t("general.filters.sort"),
+							className: "flex-row items-center gap-2",
+							labelSize: "lg",
 						} as any)}
 					/>
 				</HStack>
@@ -89,7 +89,7 @@ function CommunityExercises () {
 						<CheckboxIndicator>
 							<CheckboxIcon as={CheckIcon} />
 						</CheckboxIndicator>
-						<CheckboxLabel>{i18n.t('general.filters.favouritesOnly')}</CheckboxLabel>
+						<CheckboxLabel>{i18n.t("general.filters.favouritesOnly")}</CheckboxLabel>
 					</Checkbox>
 				</HStack>
 			</VStack>
@@ -100,7 +100,7 @@ function CommunityExercises () {
 						key={`community-${exercise.id}`}
 						name={exercise.name}
 						imageFileUrl={exercise.imageFileUrl}
-						time={exercise.customizableOptions?.exerciseTime.toString()}
+						time={exercise.customizableOptions.exerciseTime.toString()}
 						difficulty={exercise.difficulty}
 						id={exercise.id}
 						exercise={exercise}
@@ -112,7 +112,7 @@ function CommunityExercises () {
 				))}
 
 				{filteredExercises.length === 0 && (
-					<Text className="text-center text-muted-foreground mt-6">{i18n.t('general.noExercisesFound')}</Text>
+					<Text className="text-center text-muted-foreground mt-6">{i18n.t("general.noExercisesFound")}</Text>
 				)}
 			</VStack>
 		</ScrollView>

@@ -13,7 +13,7 @@ import { Box } from "@/components/ui/box";
 import { Divider } from "@/components/ui/divider";
 import { Text } from "@/components/ui/text";
 import { useState, useEffect } from "react";
-import { updateExercise } from "../../store/data/dataSlice";
+import { updateExercise, getExerciseCustomizedOptions } from "../../store/data/dataSlice";
 import { i18n } from "../../i18n";
 import CustomSlider from "../../components/CustomSlider";
 import ExerciseVideoUpload from "../../components/ExerciseVideoUpload";
@@ -22,6 +22,7 @@ export default function ExerciseSettings() {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user.user.baseInfo, shallowEqual);
+	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises, shallowEqual);
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
 
@@ -47,24 +48,54 @@ export default function ExerciseSettings() {
 		console.error("Error processing exercise data:", error);
 	}
 
-	// Customization settings state
-	const [showOffScreenColorPicker, setShowOffScreenColorPicker] = useState(false);
-	const [showOnScreenColorPicker, setShowOnScreenColorPicker] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
-	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
-		exercises?.customizableOptions
+	console.log("exercises", exercises?.customizableOptions, exercises?.timeToComplete);
+	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions>(
+		exercises
+			? getExerciseCustomizedOptions(exercises, customizedExercises)
+			: {
+					exerciseTime: 150,
+					offScreenTime: 0.5,
+					onScreenTime: 1,
+				}
 	);
+
+	console.log("durationSettings", durationSettings);
+
+	// Update durationSettings when exercise or customizedExercises change
+	useEffect(() => {
+		if (exercises) {
+			setDurationSettings(getExerciseCustomizedOptions(exercises, customizedExercises));
+		}
+	}, [exercises, customizedExercises]);
 
 	// Admin video upload state
 	const [showVideoUpload, setShowVideoUpload] = useState(false);
 
-	// Update state when exercises data becomes available
-	useEffect(() => {
-		if (exercises?.customizableOptions) {
-			setDurationSettings(exercises.customizableOptions);
-		}
-	}, [exercises]);
+	const handleSliderChange = (key: string, newValue: number) => {
+		setDurationSettings((prev) => ({
+			...prev,
+			[key]: key === "exerciseTime" ? (newValue * 60).toString() : newValue.toString(),
+		}));
+	};
 
+	function onEditCancel() {
+		if (!exercises) {
+			return;
+		}
+		setDurationSettings({ ...getExerciseCustomizedOptions(exercises, customizedExercises) });
+		setIsEditing(false);
+	}
+
+	function onEditSave() {
+		if (!exercises) {
+			return;
+		}
+
+		dispatch(updateExercise({ exerciseId: exercises.id, options: { ...durationSettings } }));
+
+		setIsEditing(false);
+	}
 	const handleVideoUploadSuccess = () => {
 		setShowVideoUpload(false);
 	};
@@ -130,57 +161,31 @@ export default function ExerciseSettings() {
 								</View>
 
 								<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
-									{Object.entries(durationSettings || {}).map(([key, value]) =>
-										key !== "onScreenColor" && key !== "offScreenColor" ? (
-											<CustomSlider
-												key={key}
-												title={`exercise.form.${key}`}
-												size="md"
-												minValue={0.5}
-												maxValue={key === "exerciseTime" ? 5 : 15}
-												step={key === "exerciseTime" ? 0.5 : 0.1}
-												value={parseFloat(value.toString())}
-												defaultValue={parseFloat(value.toString())}
-												suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
-												isReadOnly={!isEditing}
-												onChange={(newValue) =>
-													setDurationSettings((prev) =>
-														prev
-															? {
-																	...prev,
-																	[key]: newValue.toString(),
-																}
-															: undefined
-													)
-												}
-											/>
-										) : null
-									)}
+									{Object.entries(durationSettings).map(([key, value]) => (
+										<CustomSlider
+											key={key}
+											title={`exercise.form.${key}`}
+											size="md"
+											minValue={0.5}
+											maxValue={key === "exerciseTime" ? 5 : 15}
+											step={0.5}
+											value={key === "exerciseTime" ? parseFloat(value.toString()) / 60 : parseFloat(value.toString())}
+											defaultValue={
+												key === "exerciseTime" ? parseFloat(value.toString()) / 60 : parseFloat(value.toString())
+											}
+											suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+											isReadOnly={!isEditing}
+											onChange={(newValue) => handleSliderChange(key, newValue)}
+										/>
+									))}
 								</VStack>
 
 								{isEditing && (
 									<ButtonGroup className="flex-row self-end py-3">
-										<Button
-											variant="outline"
-											onPress={() => {
-												setIsEditing(false);
-												setDurationSettings(exercises.customizableOptions);
-											}}
-											action="secondary"
-											size="md"
-										>
+										<Button variant="outline" onPress={onEditCancel} action="secondary" size="md">
 											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
 										</Button>
-										<Button
-											onPress={() => {
-												if (durationSettings) {
-													dispatch(updateExercise({ ...durationSettings }));
-												}
-												setIsEditing(false);
-											}}
-											action="primary"
-											size="md"
-										>
+										<Button onPress={onEditSave} action="primary" size="md">
 											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
 										</Button>
 									</ButtonGroup>

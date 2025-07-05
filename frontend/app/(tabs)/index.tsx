@@ -96,7 +96,7 @@ function Home() {
 								.slice(0, 10)
 								.map((exercise) => (
 									<ExerciseCard
-										key={exercise.id}
+										key={`standard-exercise-${exercise.id}`}
 										name={exercise.name}
 										imageFileUrl={exercise.imageFileUrl}
 										time={exercise.timeToComplete}
@@ -155,7 +155,7 @@ function Home() {
 									.slice(0, 10)
 									.map((exercise) => (
 										<CustomExerciseCard
-											key={exercise.id}
+											key={`custom-exercise-${exercise.id}`}
 											name={exercise.name}
 											imageFileUrl={exercise.imageFileUrl}
 											time={exercise.customizableOptions.exerciseTime.toString()}
@@ -204,7 +204,7 @@ function Home() {
 							) : (
 								publicExercises?.map((exercise) => (
 									<CustomExerciseCard
-										key={exercise.id}
+										key={`community-exercise-${exercise.id}`}
 										name={exercise.name}
 										imageFileUrl={exercise.imageFileUrl}
 										time={exercise.customizableOptions.exerciseTime.toString()}
@@ -289,7 +289,7 @@ function Home() {
 										.slice(0, 10)
 										.map((exercise) => (
 											<ExerciseCard
-												key={exercise.id}
+												key={`${exercise.id}-${exercise.uniqueIdentifier}`}
 												name={exercise.name}
 												imageFileUrl={exercise.imageFileUrl}
 												time={exercise.timeToComplete}

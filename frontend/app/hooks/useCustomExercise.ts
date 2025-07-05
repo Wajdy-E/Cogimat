@@ -1,8 +1,8 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { CustomExercise, ExerciseDifficulty } from '../../store/data/dataSlice';
-import { RootState } from '../../store/store';
-import { shallowEqual } from 'react-redux';
+import { useEffect, useState, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { CustomExercise, ExerciseDifficulty } from "../../store/data/dataSlice";
+import { RootState } from "../../store/store";
+import { shallowEqual } from "react-redux";
 
 export const useCustomExercise = (get: ExerciseDifficulty | number | null) => {
 	const [customExercises, setExercises] = useState<CustomExercise[] | CustomExercise | null>(null);
@@ -12,8 +12,10 @@ export const useCustomExercise = (get: ExerciseDifficulty | number | null) => {
 		if (get === null) {
 			setExercises(allExercises);
 		} else if (get in ExerciseDifficulty) {
+			console.log("Filtering exercises by difficulty:", get);
 			setExercises(allExercises.filter((exercise) => exercise.difficulty === get));
 		} else {
+			console.log("Filtering exercises by id:", get);
 			const foundExercise = allExercises.find((exercise) => exercise.id === get);
 			setExercises(foundExercise || null);
 		}

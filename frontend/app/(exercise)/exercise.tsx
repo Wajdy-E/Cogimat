@@ -1,40 +1,42 @@
 // app/exercise.tsx
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Exercise } from '../../store/data/dataSlice';
-import { Text } from '@/components/ui/text';
-import SimpleStimulus from '../../components/exercise-handlers/SimpleStimulus';
-import MathStimulus from '../../components/exercise-handlers/MathStimulus';
-import MathOnlyStimulus from '../../components/exercise-handlers/MathOnlyStimulus';
-import ShapeCountStimulus from '../../components/exercise-handlers/ShapeCountStimulus';
-import { View } from 'react-native';
-import Countdown from '../../components/Countdown';
-import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../store/store';
-import { setCurrentExercise } from '../../store/data/dataSlice';
-import Header from '../../components/Header';
-import { i18n } from '../../i18n';
+import React, { useState, useEffect } from "react";
+import { View, Text } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store/store";
+import { Exercise, setCurrentExercise, setPaywallModalPopup } from "../../store/data/dataSlice";
+import { i18n } from "../../i18n";
+import { useSubscriptionStatus } from "../../app/hooks/useSubscriptionStatus";
+
+// Import exercise handlers
+import MathStimulus from "../../components/exercise-handlers/MathStimulus";
+import MathOnlyStimulus from "../../components/exercise-handlers/MathOnlyStimulus";
+import SimpleStimulus from "../../components/exercise-handlers/SimpleStimulus";
+import ShapeCountStimulus from "../../components/exercise-handlers/ShapeCountStimulus";
+import Countdown from "../../components/Countdown";
+import Header from "../../components/Header";
 
 const handlerMap: Record<string, React.FC<{ exercise: Exercise; onComplete?: () => void; onStop?: () => void }>> = {
 	default: SimpleStimulus,
-	'letter-sequence': SimpleStimulus,
-	'shape-color-combo': SimpleStimulus,
-	'math-combo': MathStimulus,
-	'math-only': MathOnlyStimulus,
-	'shape-count': ShapeCountStimulus,
+	"letter-sequence": SimpleStimulus,
+	"shape-color-combo": SimpleStimulus,
+	"math-combo": MathStimulus,
+	"math-only": MathOnlyStimulus,
+	"shape-count": ShapeCountStimulus,
 };
 
-export default function ExerciseRouter () {
+export default function ExerciseRouter() {
 	const params = useLocalSearchParams();
 	const router = useRouter();
 	const dispatch: AppDispatch = useDispatch();
 	const [showCountdown, setShowCountdown] = useState(true);
 	const [exerciseStopped, setExerciseStopped] = useState(false);
 
+	const { isSubscribed } = useSubscriptionStatus();
+
 	// Check if this is routine mode
-	const isRoutineMode = params?.routineMode === 'true';
+	const isRoutineMode = params?.routineMode === "true";
 	const routineId = params?.routineId;
-	const exerciseIndex = params?.exerciseIndex;
 
 	let exercise: Exercise | undefined;
 	try {
@@ -42,6 +44,17 @@ export default function ExerciseRouter () {
 	} catch {
 		exercise = undefined;
 	}
+
+	// Check if this is a premium exercise and user is not subscribed
+	useEffect(() => {
+		if (exercise?.isPremium && !isSubscribed) {
+			// Show paywall instead of allowing exercise execution
+			dispatch(setPaywallModalPopup(true));
+			// Navigate back to prevent access
+			router.back();
+			return;
+		}
+	}, [exercise, isSubscribed, dispatch, router]);
 
 	// Set the current exercise in Redux state
 	useEffect(() => {
@@ -60,18 +73,20 @@ export default function ExerciseRouter () {
 
 	// Early return after all hooks
 	if (!exercise) {
-		return <Text>{i18n.t('exercise.invalidOrMissing')}</Text>;
+		return <Text>{i18n.t("exercise.invalidOrMissing")}</Text>;
+	}
+
+	// Additional check for premium exercises
+	if (exercise.isPremium && !isSubscribed) {
+		return <Text>{i18n.t("exercise.premium.upgradeMessage")}</Text>;
 	}
 
 	const Component = handlerMap[exercise.type] || handlerMap.default;
 
 	const handleExerciseComplete = () => {
-		console.log('isRoutineMode', isRoutineMode, routineId, exercise);
 		if (isRoutineMode && routineId && exercise) {
-			// Navigate back to routine execution screen with completion info
-			console.log('pushing to routine execution');
 			router.push(
-				`/(tabs)/routine-execution?routineId=${routineId}&returnFromExercise=true&completedExerciseId=${exercise.id}`,
+				`/(tabs)/routine-execution?routineId=${routineId}&returnFromExercise=true&completedExerciseId=${exercise.id}`
 			);
 		} else {
 			// Navigate back to the specific exercise page

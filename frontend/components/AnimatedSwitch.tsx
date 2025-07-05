@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, View } from 'react-native';
-import { HStack } from '@/components/ui/hstack';
-import { Box } from '@/components/ui/box';
-import { Button, ButtonText } from '@/components/ui/button';
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Easing, View } from "react-native";
+import { HStack } from "@/components/ui/hstack";
+import { Box } from "@/components/ui/box";
+import { Button, ButtonText } from "@/components/ui/button";
 interface AnimatedSwitchProps {
 	onChange: (value: boolean) => void;
-	defaultValue: boolean;
+	defaultValue?: boolean;
+	value?: boolean;
 	onIcon?: React.ReactNode;
 	offIcon?: React.ReactNode;
 	onText?: string;
@@ -15,26 +16,32 @@ interface AnimatedSwitchProps {
 	thumbSize?: number;
 }
 
-function AnimatedSwitch (props: AnimatedSwitchProps) {
+function AnimatedSwitch(props: AnimatedSwitchProps) {
 	const SWITCH_WIDTH = props.width || 80;
 	const SWITCH_HEIGHT = props.height || 35;
 	const THUMB_SIZE = props.thumbSize || 29;
 	const PADDING = 3;
-	const [isOn, setIsOn] = useState<boolean>(props.defaultValue);
-	const anim = useRef(new Animated.Value(props.defaultValue ? 1 : 0)).current;
+	const isControlled = props.value !== undefined;
+	const [isOn, setIsOn] = useState<boolean>(props.defaultValue || false);
+	const anim = useRef(new Animated.Value(props.defaultValue || false ? 1 : 0)).current;
+
+	// Use value prop if provided (controlled), otherwise use internal state
+	const currentValue = isControlled ? props.value! : isOn;
 
 	useEffect(() => {
-		setIsOn(props.defaultValue);
-	}, [props.defaultValue]);
+		if (!isControlled) {
+			setIsOn(props.defaultValue || false);
+		}
+	}, [props.defaultValue, isControlled]);
 
 	useEffect(() => {
 		Animated.timing(anim, {
-			toValue: isOn ? 1 : 0,
+			toValue: currentValue ? 1 : 0,
 			duration: 250,
 			easing: Easing.out(Easing.circle),
 			useNativeDriver: false,
 		}).start();
-	}, [isOn]);
+	}, [currentValue]);
 
 	const translateX = anim.interpolate({
 		inputRange: [0, 1],
@@ -43,12 +50,14 @@ function AnimatedSwitch (props: AnimatedSwitchProps) {
 
 	const bgColor = anim.interpolate({
 		inputRange: [0, 1],
-		outputRange: ['#6b7280', '#22c55e'], // Tailwind gray-500 to green-500
+		outputRange: ["#6b7280", "#22c55e"], // Tailwind gray-500 to green-500
 	});
 
 	const toggle = () => {
-		const newValue = !isOn;
-		setIsOn(newValue);
+		const newValue = !currentValue;
+		if (!isControlled) {
+			setIsOn(newValue);
+		}
 		props.onChange(newValue);
 	};
 
@@ -62,7 +71,7 @@ function AnimatedSwitch (props: AnimatedSwitchProps) {
 					style={[StyleSheet.absoluteFillObject, { borderRadius: SWITCH_HEIGHT / 2 }, { backgroundColor: bgColor }]}
 				/>
 
-				{isOn ? (
+				{currentValue ? (
 					<View className="abssolute top-0 bottom-0 justify-center" style={{ left: 10, zIndex: 10 }}>
 						<HStack className="items-center space-x-1">
 							{props.onIcon}
@@ -95,7 +104,7 @@ export default AnimatedSwitch;
 
 const StyleSheet = {
 	absoluteFillObject: {
-		position: 'absolute' as const,
+		position: "absolute" as const,
 		top: 0,
 		right: 0,
 		bottom: 0,
