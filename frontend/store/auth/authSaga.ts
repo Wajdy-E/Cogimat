@@ -54,7 +54,6 @@ export const checkIfUserExistsAndHasQrAccess = createAsyncThunk(
 	async (clerk_id: string, { rejectWithValue }) => {
 		try {
 			const response = await axios.get(`${BASE_URL}/api/auth/check-if-user-exists`, { params: { clerk_id } });
-			console.log("response", response);
 			const data = response.data;
 
 			return {

@@ -45,7 +45,6 @@ export default function Home() {
 	}, [showAuthButtons, fadeAnim]);
 
 	useEffect(() => {
-		console.log("in use effect");
 		async function handleAuthState() {
 			// Prevent multiple simultaneous executions
 			if (isProcessingRef.current) {
@@ -93,14 +92,10 @@ export default function Home() {
 
 							router.push("/(tabs)/");
 						} else {
-							// User doesn't have QR access, route to signup for QR validation
-							router.push("/(auth)/signup");
+							console.log("signing out");
+							await signOut();
 						}
-					} else {
-						// Invalid user data, route to signup for QR validation
-						router.push("/(auth)/signup");
 					}
-					// User is not signed in, show auth buttons after 2 second
 				}
 			} catch (error) {
 				console.error("Error fetching initial data:", error);

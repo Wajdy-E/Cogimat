@@ -86,10 +86,10 @@ export default function SignUp() {
 			setShowQRPrompt(false);
 			setQrCode("");
 			setShowScanner(false);
+			signOut();
 		};
 	}, []);
 
-	// Reset QR prompt state when user signs out
 	useEffect(() => {
 		if (!isSignedIn) {
 			setShowQRPrompt(false);
@@ -218,18 +218,10 @@ export default function SignUp() {
 
 				try {
 					const result = await dispatch(checkIfUserExistsAndHasQrAccess(id)).unwrap();
-					console.log("result", result);
-
-					// Check if user exists and has QR access
 					if (result.exists && result.hasQrAccess) {
-						// User exists and has QR access - they can proceed normally
-						// You might want to redirect them to the main app here
-						console.log("User exists and has QR access");
-						// For now, we'll still show QR prompt but you can modify this logic
 						setShowQRPrompt(false);
 					} else {
-						// User doesn't exist or doesn't have QR access - show QR prompt
-						console.log("User doesn't exist or doesn't have QR access");
+						console.log("user does not exist or does not have QR access");
 						setShowQRPrompt(true);
 					}
 				} catch (error) {
