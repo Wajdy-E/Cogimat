@@ -66,6 +66,7 @@ export interface UserState {
 	user: User;
 	isSignedIn: boolean;
 	milestones: UserMilestones | null;
+	cancelledQRSignup: boolean;
 }
 
 const initialState: UserState = {
@@ -85,6 +86,7 @@ const initialState: UserState = {
 	},
 	isSignedIn: false,
 	milestones: null,
+	cancelledQRSignup: false,
 };
 
 const userSlice = createSlice({
@@ -118,6 +120,9 @@ const userSlice = createSlice({
 		setMilestonesProgress(state, { payload }: PayloadAction<UserMilestones>) {
 			state.milestones = payload;
 		},
+		setCancelledQRSignup(state, action: PayloadAction<boolean>) {
+			state.cancelledQRSignup = action.payload;
+		},
 		resetState: () => initialState,
 	},
 });
@@ -132,5 +137,6 @@ export const {
 	setIsSignedIn,
 	setMilestonesProgress,
 	setSubscriptionStatus,
+	setCancelledQRSignup,
 } = userSlice.actions;
 export default userSlice.reducer;

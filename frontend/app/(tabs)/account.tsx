@@ -121,10 +121,10 @@ function Account() {
 			dispatch(resetState());
 			await persistor.purge();
 			await signOut();
-			router.push("/AppLoaded");
+			router.push("/index");
 		} catch (error) {
 			console.error("Error during sign out:", error);
-			router.push("/AppLoaded");
+			router.push("/index");
 		}
 	}
 
@@ -135,7 +135,7 @@ function Account() {
 			await signOut();
 			persistor.purge();
 			dispatch(resetState());
-			router.push("/AppLoaded");
+			router.push("/index");
 		}
 	}
 

@@ -11,9 +11,9 @@ import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
-import { useSignUp, useSSO, useUser } from "@clerk/clerk-expo";
+import { useAuth, useSignUp, useSSO, useUser } from "@clerk/clerk-expo";
 import { OAuthStrategy } from "@clerk/types";
-import { createUser } from "../../store/auth/authSaga";
+import { checkIfUserExistsAndHasQrAccess, createUser } from "../../store/auth/authSaga";
 import { AppDispatch } from "../../store/store";
 import { i18n } from "../../i18n";
 import { Text } from "@/components/ui/text";
@@ -28,6 +28,7 @@ import { setCurrentUserThunk } from "../../store/auth/authSaga";
 import { fetchExercises, fetchGoals, getCustomExercises, getPublicExercises } from "../../store/data/dataSaga";
 import { fetchUserMilestones } from "../../store/auth/authSaga";
 import { Ionicons } from "@expo/vector-icons";
+import { setCancelledQRSignup } from "../../store/auth/authSlice";
 
 export const useWarmUpBrowser = () => {
 	useEffect(() => {
@@ -77,6 +78,7 @@ export default function SignUp() {
 
 	const { startSSOFlow } = useSSO();
 	const { user, isSignedIn } = useUser();
+	const { signOut } = useAuth();
 
 	// Reset QR prompt state when component unmounts or user signs out
 	useEffect(() => {
@@ -120,14 +122,15 @@ export default function SignUp() {
 	const handleQRCodeScanned = (scannedQRCode: string) => {
 		setQrCode(scannedQRCode);
 		setShowScanner(false);
+		dispatch(setCancelledQRSignup(false));
 	};
 
 	// Handle back button press in QR prompt
-	const handleQRPromptBack = () => {
+	const handleQRPromptBack = async () => {
 		setShowQRPrompt(false);
 		setQrCode("");
-		// Sign out the user to reset the auth state
-		router.replace("/AppLoaded");
+		dispatch(setCancelledQRSignup(true));
+		await signOut();
 	};
 
 	// Handle QR code signup using the createUser thunk
@@ -195,26 +198,47 @@ export default function SignUp() {
 
 	// Handle successful authentication (email or provider)
 	useEffect(() => {
-		if (user && isSignedIn) {
-			// Set the current user in Redux from Clerk data
-			const { firstName, lastName, emailAddresses, id, username } = user;
-			const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0]?.emailAddress;
+		const checkUserAndQR = async () => {
+			if (user && isSignedIn) {
+				// Set the current user in Redux from Clerk data
+				const { firstName, lastName, emailAddresses, id, username } = user;
+				const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0]?.emailAddress;
 
-			dispatch(
-				setCurrentUserThunk({
-					firstName,
-					lastName,
-					email: emailAddress,
-					id,
-					username,
-					profileUri: user.imageUrl,
-					isAdmin: false, // Will be updated from backend data
-				})
-			);
+				dispatch(
+					setCurrentUserThunk({
+						firstName,
+						lastName,
+						email: emailAddress,
+						id,
+						username,
+						profileUri: user.imageUrl,
+						isAdmin: false, // Will be updated from backend data
+					})
+				);
 
-			// Show QR code prompt instead of immediately creating user
-			setShowQRPrompt(true);
-		}
+				try {
+					const result = await dispatch(checkIfUserExistsAndHasQrAccess(id)).unwrap();
+					console.log("result", result);
+
+					// Check if user exists and has QR access
+					if (result.exists && result.hasQrAccess) {
+						// User exists and has QR access - they can proceed normally
+						// You might want to redirect them to the main app here
+						console.log("User exists and has QR access");
+						// For now, we'll still show QR prompt but you can modify this logic
+						setShowQRPrompt(false);
+					} else {
+						// User doesn't exist or doesn't have QR access - show QR prompt
+						console.log("User doesn't exist or doesn't have QR access");
+						setShowQRPrompt(true);
+					}
+				} catch (error) {
+					console.error("Error checking user existence:", error);
+				}
+			}
+		};
+
+		checkUserAndQR();
 	}, [user, isSignedIn]);
 
 	async function signUpWithEmail() {
@@ -225,7 +249,7 @@ export default function SignUp() {
 			setLoading(true);
 			await signUpSchema.validate({ firstName, lastName, email, password });
 
-			const createdUser = await signUp.create({ emailAddress: email, password, firstName, lastName });
+			await signUp.create({ emailAddress: email, password, firstName, lastName });
 
 			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
@@ -262,6 +286,7 @@ export default function SignUp() {
 		return <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} onClose={() => setShowScanner(false)} />;
 	}
 
+	console.log("showQRPrompt", showQRPrompt);
 	// Render QR code prompt after successful authentication
 	if (showQRPrompt) {
 		return (
