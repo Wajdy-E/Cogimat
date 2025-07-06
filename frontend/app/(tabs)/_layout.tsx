@@ -19,11 +19,11 @@ export default function TabsLayout() {
 	const dispatch = useDispatch();
 	const { themeBackgroundColor, themeTextColor } = useTheme();
 
-	const isOpen = useSelector((state: RootState) => state.data.popupStates.customExerciseModalIsOpen ?? false);
-	const isPaywallOpen = useSelector((state: RootState) => state.data.popupStates.paywallIsOpen);
+	const isOpen = useSelector((state: RootState) => state.data?.popupStates?.customExerciseModalIsOpen ?? false);
+	const isPaywallOpen = useSelector((state: RootState) => state.data?.popupStates?.paywallIsOpen ?? false);
 
 	return (
-		<View className="h-screen">
+		<View className="flex-1">
 			<Tabs
 				screenOptions={{
 					tabBarStyle: { backgroundColor: themeBackgroundColor },
@@ -39,7 +39,7 @@ export default function TabsLayout() {
 				}}
 			>
 				<Tabs.Screen
-					name="index"
+					name="home"
 					options={{
 						headerShown: false,
 						title: i18n.t("pages.home"),

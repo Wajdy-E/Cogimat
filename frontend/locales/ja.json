@@ -232,8 +232,10 @@
 			"favouritesOnly": "お気に入りのみ",
 			"difficulty": "難易度",
 			"sort": "並び替え",
-			"sortAZ": "A → Z",
-			"sortZA": "Z → A"
+			"sortAZ": "あ → ん",
+			"sortZA": "ん → あ",
+			"asc": "昇順",
+			"desc": "降順"
 		},
 		"noExercisesFound": "エクササイズが見つかりません",
 		"alerts": {

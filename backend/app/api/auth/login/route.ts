@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { query } from "../../../../lib/db";
 import { UserBase } from "@/type";
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
 	try {
-		const { email } = await req.json();
+		// const { email } = await req.json();
+		const { searchParams } = new URL(req.url);
+		const clerk_id = searchParams.get("clerk_id");
 
-		if (!email) {
-			return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
+		if (!clerk_id) {
+			return NextResponse.json({ message: "Clerk ID is required" }, { status: 400 });
 		}
 
 		const res = await query(
@@ -21,8 +23,8 @@ export async function POST(req: Request) {
 			   is_admin AS "isAdmin",
 			   has_qr_access AS "hasQrAccess"
 			 FROM users 
-			 WHERE email = $1`,
-			[email]
+			 WHERE clerk_id = $1`,
+			[clerk_id]
 		);
 
 		if (res.length === 0) {

@@ -1,31 +1,32 @@
-import { GestureResponderEvent, View, Alert, SafeAreaView, Platform } from 'react-native';
-import { Button, ButtonIcon, ButtonText } from '../../app/components/ui/button';
-import { VStack } from '../components/ui/vstack';
-import { Heading } from '../components/ui/heading';
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useRouter } from 'expo-router';
-import FormInput from '../../components/FormInput';
-import * as Yup from 'yup';
-import BackButton from '../../components/BackButton';
-import { Center } from '@/components/ui/center';
-import { OAuthStrategy } from '@clerk/types';
-import * as WebBrowser from 'expo-web-browser';
-import * as AuthSession from 'expo-auth-session';
-import { useSignIn, useSSO, useUser } from '@clerk/clerk-expo';
-import { setCurrentUserThunk, fetchUserData } from '../../store/auth/authSaga';
-import { AppDispatch, RootState } from '../../store/store';
-import { Text } from '@/components/ui/text';
-import { i18n } from '../../i18n';
-import Apple from '../../assets/apple.svg';
-import Google from '../../assets/google.svg';
-import { useTheme } from '@/components/ui/ThemeProvider';
-import { Box } from '@/components/ui/box';
-import { ArrowRight, Eye, EyeClosed } from 'lucide-react-native';
-import { InputIcon } from '@/components/ui/input';
+import { GestureResponderEvent, View, Alert, SafeAreaView, Platform } from "react-native";
+import { Button, ButtonIcon, ButtonText } from "../../app/components/ui/button";
+import { VStack } from "../components/ui/vstack";
+import { Heading } from "../components/ui/heading";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useRouter } from "expo-router";
+import FormInput from "../../components/FormInput";
+import * as Yup from "yup";
+import BackButton from "../../components/BackButton";
+import { Center } from "@/components/ui/center";
+import { OAuthStrategy } from "@clerk/types";
+import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from "expo-auth-session";
+import { useSignIn, useSSO, useUser } from "@clerk/clerk-expo";
+import { setCurrentUserThunk, fetchUserData, fetchUserMilestones } from "../../store/auth/authSaga";
+import { AppDispatch, RootState } from "../../store/store";
+import { Text } from "@/components/ui/text";
+import { i18n } from "../../i18n";
+import Apple from "../../assets/apple.svg";
+import Google from "../../assets/google.svg";
+import { useTheme } from "@/components/ui/ThemeProvider";
+import { Box } from "@/components/ui/box";
+import { ArrowRight, Eye, EyeClosed } from "lucide-react-native";
+import { InputIcon } from "@/components/ui/input";
+import { fetchExercises, getCustomExercises, fetchGoals, getPublicExercises } from "../../store/data/dataSaga";
 const loginSchema = Yup.object().shape({
-	email: Yup.string().email(i18n.t('login.errors.invalidEmail')).required(i18n.t('login.errors.emailRequired')),
-	password: Yup.string().min(6, i18n.t('login.errors.passwordShort')).required(i18n.t('login.errors.passwordRequired')),
+	email: Yup.string().email(i18n.t("login.errors.invalidEmail")).required(i18n.t("login.errors.emailRequired")),
+	password: Yup.string().min(6, i18n.t("login.errors.passwordShort")).required(i18n.t("login.errors.passwordRequired")),
 });
 
 export const useWarmUpBrowser = () => {
@@ -38,16 +39,15 @@ export const useWarmUpBrowser = () => {
 };
 WebBrowser.maybeCompleteAuthSession();
 
-function Login () {
-	const [email, setEmail] = useState<string>('');
-	const [password, setPassword] = useState<string>('');
+function Login() {
+	const [email, setEmail] = useState<string>("");
+	const [password, setPassword] = useState<string>("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const dispatch: AppDispatch = useDispatch();
 	const { signIn, setActive, isLoaded } = useSignIn();
 	const { themeTextColor } = useTheme();
 	const router = useRouter();
-	const userState = useSelector((state: RootState) => state.user);
 
 	useWarmUpBrowser();
 
@@ -68,7 +68,7 @@ function Login () {
 				password,
 			});
 
-			if (signInAttempt.status === 'complete') {
+			if (signInAttempt.status === "complete") {
 				await setActive({ session: signInAttempt.createdSessionId });
 			} else {
 				// If the status isn't complete, check why. User might need to
@@ -77,10 +77,10 @@ function Login () {
 			}
 		} catch (error) {
 			if (error instanceof Yup.ValidationError) {
-				Alert.alert('Validation Error', error.message);
+				Alert.alert("Validation Error", error.message);
 			} else {
-				console.error('Login failed', error);
-				Alert.alert('Login failed. Please check your credentials.');
+				console.error("Login failed", error);
+				Alert.alert("Login failed. Please check your credentials.");
 			}
 		} finally {
 			setLoading(false);
@@ -92,8 +92,8 @@ function Login () {
 			const { createdSessionId, setActive } = await startSSOFlow({
 				strategy: `oauth_${strategy}` as OAuthStrategy,
 				redirectUrl: AuthSession.makeRedirectUri({
-					scheme: 'cogimat',
-					path: 'oauth-callback',
+					scheme: "cogimat",
+					path: "oauth-callback",
 				}),
 			});
 			if (createdSessionId) {
@@ -114,7 +114,7 @@ function Login () {
 	useEffect(() => {
 		if (user) {
 			const { firstName, lastName, emailAddresses, id, username } = user;
-			const emailAddress = typeof emailAddresses === 'string' ? emailAddresses : emailAddresses[0].emailAddress;
+			const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0].emailAddress;
 
 			// First, set the current user in Redux from Clerk data
 			dispatch(
@@ -126,21 +126,21 @@ function Login () {
 					username,
 					profileUri: user.imageUrl,
 					isAdmin: false, // Will be updated from backend data
-				}),
+				})
 			);
 
 			// Then fetch user data from backend to check QR access status and get isAdmin
-			dispatch(fetchUserData(emailAddress)).then((result) => {
-				if (result.meta.requestStatus === 'fulfilled') {
+			dispatch(fetchUserData(id)).then(async (result) => {
+				if (result.meta.requestStatus === "fulfilled") {
 					const userData = result.payload as any;
 
 					if (userData === null) {
 						// User not found in database, needs QR validation
-						router.replace('/(auth)/signup');
-					} else if (userData && typeof userData === 'object' && 'hasQrAccess' in userData) {
+						router.replace("/(auth)/signup");
+					} else if (userData && typeof userData === "object" && "hasQrAccess" in userData) {
 						const hasQrAccess = userData.hasQrAccess;
 						const isAdmin = userData.isAdmin || false;
-
+						console.log("Has QR access", hasQrAccess);
 						// Update user with backend data including isAdmin
 						dispatch(
 							setCurrentUserThunk({
@@ -152,18 +152,26 @@ function Login () {
 								profileUri: user.imageUrl,
 								isAdmin: isAdmin,
 								hasQrAccess: hasQrAccess,
-							}),
+							})
 						);
 
 						if (hasQrAccess) {
-							router.replace('/(tabs)/');
+							console.log("Has QR access, routing to home");
+							await Promise.all([
+								dispatch(fetchExercises()).unwrap(),
+								dispatch(getCustomExercises()).unwrap(),
+								dispatch(getPublicExercises()).unwrap(),
+								dispatch(fetchUserMilestones()).unwrap(),
+								dispatch(fetchGoals()).unwrap(),
+							]);
+							router.replace("/(tabs)/home");
 						} else {
 							// User doesn't have QR access, route to signup for QR validation
-							router.replace('/(auth)/signup');
+							router.replace("/(auth)/signup");
 						}
 					} else {
 						// Invalid user data, route to signup for QR validation
-						router.replace('/(auth)/signup');
+						router.replace("/(auth)/signup");
 					}
 				}
 			});
@@ -174,11 +182,11 @@ function Login () {
 		<SafeAreaView className="h-screen bg-background-700">
 			<View className="w-full flex-row items-center justify-between text-center">
 				<BackButton />
-				<Heading className="text-2xl font-bold mb-6 w-[90%]">{i18n.t('login.title')}</Heading>
+				<Heading className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("login.title")}</Heading>
 			</View>
 			<VStack className="flex-1 justify-center p-4" space="lg">
 				<Box>
-					<Heading size="4xl">{i18n.t('login.welcomeBack')}</Heading>
+					<Heading size="4xl">{i18n.t("login.welcomeBack")}</Heading>
 				</Box>
 				<Box>
 					<VStack space="lg">
@@ -200,49 +208,49 @@ function Login () {
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
-							inputType={showPassword ? 'text' : 'password'}
+							inputType={showPassword ? "text" : "password"}
 							onChange={(text) => setPassword(text)}
 							inputIcon={<InputIcon as={showPassword ? Eye : EyeClosed} />}
 							onIconClick={() => setShowPassword((prev) => !prev)}
 						/>
 
 						<Button size="lg" className="rounded-full" onPress={(e) => handleSubmit(e)} disabled={loading}>
-							<ButtonText>{i18n.t('login.loginButton')}</ButtonText>
+							<ButtonText>{i18n.t("login.loginButton")}</ButtonText>
 							<ButtonIcon as={ArrowRight} />
 						</Button>
 
-						{Platform.OS === 'ios' && (
+						{Platform.OS === "ios" && (
 							<Button
-								onPress={() => onProviderSignIn('apple')}
+								onPress={() => onProviderSignIn("apple")}
 								variant="outline"
 								size="xl"
 								className="rounded-full w-100 border-secondary-0"
-								style={{ width: '100%' }}
+								style={{ width: "100%" }}
 							>
 								<Apple height={20} width={20} fill={themeTextColor} />
-								<ButtonText className="text-typography-950">{i18n.t('login.appleSignIn')}</ButtonText>
+								<ButtonText className="text-typography-950">{i18n.t("login.appleSignIn")}</ButtonText>
 							</Button>
 						)}
 
 						<Button
-							onPress={() => onProviderSignIn('google')}
+							onPress={() => onProviderSignIn("google")}
 							variant="outline"
 							size="xl"
 							className="rounded-full w-full border-secondary-0"
 						>
 							<Google height={20} width={20} />
-							<ButtonText className="text-typography-950">{i18n.t('login.googleSignIn')}</ButtonText>
+							<ButtonText className="text-typography-950">{i18n.t("login.googleSignIn")}</ButtonText>
 						</Button>
 
 						<Center className="flex gap-4">
 							<Text>
-								{i18n.t('login.noAccount')}{' '}
-								<Link href={'/signup'} className="underline text-primary-500">
-									{i18n.t('signup.form.signUp')}
+								{i18n.t("login.noAccount")}{" "}
+								<Link href={"/signup"} className="underline text-primary-500">
+									{i18n.t("signup.form.signUp")}
 								</Link>
 							</Text>
 							<Link href="/ForgotPassword" className="underline text-primary-500">
-								{i18n.t('login.forgotPassword')}
+								{i18n.t("login.forgotPassword")}
 							</Link>
 						</Center>
 					</VStack>

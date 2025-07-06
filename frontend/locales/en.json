@@ -233,7 +233,9 @@
 			"difficulty": "Difficulty",
 			"sort": "Sort",
 			"sortAZ": "A → Z",
-			"sortZA": "Z → A"
+			"sortZA": "Z → A",
+			"asc": "Ascending",
+			"desc": "Descending"
 		},
 		"noExercisesFound": "No exercises found",
 		"alerts": {

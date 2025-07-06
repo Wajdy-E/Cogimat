@@ -4,9 +4,8 @@ import * as ImagePicker from "expo-image-picker";
 import * as Notifications from "expo-notifications";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createAction } from "@reduxjs/toolkit";
-import { useClerk, useUser } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppDispatch, persistor, RootState } from "../../store/store";
 import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from "../components/ui/avatar";
 import { VStack } from "@/components/ui/vstack";
@@ -37,7 +36,7 @@ function Account() {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const appDispatch: AppDispatch = useDispatch();
-	const { signOut } = useClerk();
+	const { signOut } = useAuth();
 	const { user } = useUser();
 	const { isSubscribed } = useSubscriptionStatus();
 	const { currentLanguage, changeLanguage, getLanguageLabel } = useLanguageManagement();
@@ -121,10 +120,10 @@ function Account() {
 			dispatch(resetState());
 			await persistor.purge();
 			await signOut();
-			router.push("/index");
+			router.navigate("/(auth)");
 		} catch (error) {
 			console.error("Error during sign out:", error);
-			router.push("/index");
+			router.navigate("/(auth)");
 		}
 	}
 
@@ -135,7 +134,7 @@ function Account() {
 			await signOut();
 			persistor.purge();
 			dispatch(resetState());
-			router.push("/index");
+			router.navigate("/(auth)");
 		}
 	}
 
@@ -234,15 +233,15 @@ function Account() {
 					</VStack>
 					<VStack space="md">
 						<Heading className="text-primary-500">{i18n.t("account.help")}</Heading>
-						<AccountLink title="account.billingHelp" link="unknown" isExternal />
-						<AccountLink title="account.contactSupport" link="unknown" isExternal />
-						<AccountLink title="account.restore" link="unknown" />
+						<AccountLink title="account.billingHelp" link="https://cogimat.com/" isExternal />
+						<AccountLink title="account.contactSupport" link="https://cogimat.com/" isExternal />
+						<AccountLink title="account.restore" link="https://cogimat.com/" />
 						<AccountLink title="account.deleteAccount" onPress={() => setShowDeleteModal(true)} />
 					</VStack>
 					<VStack space="md">
 						<Heading className="text-primary-500">{i18n.t("account.legal")}</Heading>
-						<AccountLink title="account.terms" link="unknown" isExternal />
-						<AccountLink title="account.privacy" link="unknown" isExternal />
+						<AccountLink title="account.terms" link="https://cogimat.com/" isExternal />
+						<AccountLink title="account.privacy" link="https://cogimat.com/" isExternal />
 						<Divider className="bg-secondary-100" />
 						<View className="flex-row justify-between w-full">
 							<Heading size="sm">{i18n.t("account.version")}</Heading>

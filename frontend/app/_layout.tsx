@@ -1,14 +1,15 @@
-import { Stack } from "expo-router";
+import "../global.css";
+import { Stack, Tabs } from "expo-router";
 import { Provider } from "react-redux";
 import { store, persistor } from "../store/store";
 import { GluestackUIProvider } from "./components/ui/gluestack-ui-provider";
 import { PersistGate } from "redux-persist/integration/react";
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "../cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useTheme } from "./components/ui/ThemeProvider";
 import { useEffect } from "react";
-import { Platform } from "react-native";
+import { Platform, SafeAreaView } from "react-native";
 import Purchases from "react-native-purchases";
 import { useLanguageInitialization } from "./hooks/useLanguageInitialization";
 import LoadingOverlay from "../components/LoadingOverlay";
@@ -24,6 +25,7 @@ function ThemedApp() {
 	const { theme } = useTheme();
 	const isLanguageInitialized = useLanguageInitialization();
 	const router = useRouter();
+	const { isSignedIn } = useAuth();
 
 	// Handle notification responses and reschedule notifications on app start
 	useEffect(() => {
@@ -63,18 +65,31 @@ function ThemedApp() {
 		return null; // Or a loading screen
 	}
 
+	console.log("isSignedIn", isSignedIn);
 	return (
 		<LanguageAwareWrapper>
 			<GluestackUIProvider mode={theme}>
-				<SafeAreaProvider>
-					<Stack
+				<SignedIn>
+					<Tabs
 						screenOptions={{
 							animation: "fade",
 							headerShown: false,
+							tabBarStyle: {
+								display: "none",
+							},
 						}}
 					/>
 					<LoadingOverlay />
-				</SafeAreaProvider>
+				</SignedIn>
+
+				<SignedOut>
+					<Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+						<Stack.Screen name="index" options={{ headerShown: false }} />
+						<Stack.Screen name="login" options={{ headerShown: false }} />
+						<Stack.Screen name="signup" options={{ headerShown: false }} />
+						<Stack.Screen name="ForgotPassword" options={{ headerShown: false }} />
+					</Stack>
+				</SignedOut>
 			</GluestackUIProvider>
 		</LanguageAwareWrapper>
 	);
@@ -96,9 +111,11 @@ export default function Layout() {
 			<ClerkLoaded>
 				<Provider store={store}>
 					<PersistGate loading={null} persistor={persistor}>
-						<ThemeProvider>
-							<ThemedApp />
-						</ThemeProvider>
+						<SafeAreaProvider>
+							<ThemeProvider>
+								<ThemedApp />
+							</ThemeProvider>
+						</SafeAreaProvider>
 					</PersistGate>
 				</Provider>
 			</ClerkLoaded>

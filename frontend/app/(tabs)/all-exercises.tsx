@@ -39,9 +39,10 @@ function AllExercises() {
 	const [showSources, setShowSources] = useState(activeFilter);
 
 	const [showOnlyFavourited, setShowOnlyFavourited] = useState(false);
-	const [difficultyFilter, setDifficultyFilter] = useState<ExerciseDifficulty | "All">("All");
+	const [difficultyFilter, setDifficultyFilter] = useState<ExerciseDifficulty | "all">("all");
 	const [sortAlpha, setSortAlpha] = useState<"asc" | "desc">("asc");
 
+	console.log(difficultyFilter);
 	const filteredExercises = useMemo(() => {
 		let all: UnifiedExercise[] = [];
 
@@ -51,7 +52,7 @@ function AllExercises() {
 		if (showSources.includes(FilterType.Custom)) {
 			all = all.concat(customExercises.map((e) => ({ ...e, isCustom: true })));
 		}
-		if (difficultyFilter !== "All") {
+		if (difficultyFilter !== "all") {
 			all = all.filter((e) => e.difficulty === difficultyFilter);
 		}
 		if (showOnlyFavourited) {
@@ -90,8 +91,8 @@ function AllExercises() {
 						{...({
 							title: "general.filters.difficulty",
 							options: difficultyOptions,
-							selectedValue: difficultyFilter,
-							onValueChange: (val: any) => setDifficultyFilter(val as ExerciseDifficulty | "All"),
+							onValueChange: (val: any) => setDifficultyFilter(val as ExerciseDifficulty | "all"),
+							defaultValue: i18n.t("general.filters.all"),
 							variant: "rounded",
 							size: "md",
 							placeholder: i18n.t("general.filters.difficulty"),
@@ -104,11 +105,11 @@ function AllExercises() {
 						{...({
 							title: "general.filters.sort",
 							options: sortOptions,
-							selectedValue: sortAlpha,
 							onValueChange: (val: any) => setSortAlpha(val as "asc" | "desc"),
+							defaultValue: i18n.t("general.filters.sortAZ"),
 							variant: "rounded",
 							size: "md",
-							placeholder: i18n.t("general.filters.sort"),
+							placeholder: i18n.t("general.filters.sortAZ"),
 							className: "flex-row items-center gap-2",
 							labelSize: "lg",
 						} as any)}

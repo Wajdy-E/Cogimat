@@ -98,7 +98,6 @@ export const submitExercise = createAsyncThunk<any, { exercise: Exercise }>(
 			}
 
 			const { data } = await axios.post(`${BASE_URL}/api/submit-exercise`, exercise);
-			console.log("data", data);
 			if (data.success) {
 				dispatch(addExercise(exercise));
 			}

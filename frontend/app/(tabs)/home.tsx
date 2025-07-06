@@ -47,7 +47,6 @@ function Home() {
 
 	// Get user info from Redux to check admin status
 	const userInfo = useSelector((state: RootState) => state.user.user.baseInfo);
-
 	// Safely handle exercises data
 	const exercises: Exercise[] = Array.isArray(exerciseData) ? exerciseData : [];
 	const customExercises: CustomExercise[] = Array.isArray(customExerciseData) ? customExerciseData : [];
@@ -247,6 +246,7 @@ function Home() {
 					</View>
 				</View>
 			</SafeAreaView>
+
 			<Tab tabs={tabs} tabVariant="link" iconTop buttonIconHeight={25} context="home" />
 
 			<VStack space="md" className="w-[90%] self-center py-7">

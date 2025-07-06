@@ -90,7 +90,7 @@ export const fetchUserMilestones = createAsyncThunk(
 	async (_, { getState, dispatch }) => {
 		try {
 			const state = getState() as RootState;
-			const userId = state.user.user.baseInfo?.id;
+			const userId = state.user?.user?.baseInfo?.id;
 			if (!userId) {
 				throw new Error("User is not authenticated");
 			}
@@ -126,7 +126,7 @@ export const updateUserMilestone = createAsyncThunk(
 	) => {
 		try {
 			const state = getState() as RootState;
-			const userId = state.user.user.baseInfo?.id;
+			const userId = state.user?.user?.baseInfo?.id;
 			if (!userId) {
 				throw new Error("User is not authenticated");
 			}
@@ -151,7 +151,7 @@ export const updateSubscriptionStatus = createAsyncThunk<void, UserSubscriptionS
 	async (subscriptionData: UserSubscriptionState, { dispatch, getState }) => {
 		try {
 			const state = getState() as RootState;
-			const userId = state.user.user.baseInfo?.id;
+			const userId = state.user?.user?.baseInfo?.id;
 
 			if (!userId) {
 				throw new Error("User is not authenticated");
@@ -172,9 +172,9 @@ export const updateSubscriptionStatus = createAsyncThunk<void, UserSubscriptionS
 
 export const fetchUserData = createAsyncThunk<UserBase | null, string>(
 	"auth/fetchUserData",
-	async (email: string, { dispatch, rejectWithValue }) => {
+	async (clerk_id: string, { dispatch, rejectWithValue }) => {
 		try {
-			const response = await axios.post(`${BASE_URL}/api/auth/login`, { email });
+			const response = await axios.get(`${BASE_URL}/api/auth/login`, { params: { clerk_id } });
 			const userData = response.data.user;
 			dispatch(setCurrentUser(userData as UserBase));
 			return userData;
