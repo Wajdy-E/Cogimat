@@ -28,9 +28,9 @@ import {
 } from "./dataSlice";
 import axios from "axios";
 import { RootState } from "../store";
-import { Color, colorOptions, Letter, NumberEnum, Shape } from "@/data/program/Program";
+import { Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
 import { updateUserMilestone } from "../auth/authSaga";
-import { uploadExerciseImage, uploadExerciseVideo } from "@/lib/exerciseMediaUpload";
+import { uploadExerciseImage, uploadExerciseVideo } from "../../lib/exerciseMediaUpload";
 const BASE_URL = process.env.BASE_URL;
 
 //#region Sagas

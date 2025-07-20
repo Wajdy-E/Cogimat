@@ -1,31 +1,28 @@
 import "../global.css";
-import { Stack, Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 import { store, persistor } from "../store/store";
 import { GluestackUIProvider } from "./components/ui/gluestack-ui-provider";
 import { PersistGate } from "redux-persist/integration/react";
-import { ClerkProvider, ClerkLoaded, SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import { tokenCache } from "../cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useTheme } from "./components/ui/ThemeProvider";
 import { useEffect } from "react";
-import { Platform, SafeAreaView } from "react-native";
+import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
-import { useLanguageInitialization } from "./hooks/useLanguageInitialization";
-import LoadingOverlay from "../components/LoadingOverlay";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
-import backgroundNotificationService from "../lib/backgroundNotificationService";
-import { setupNotifications } from "../lib/notificationSetup";
-import { LanguageAwareWrapper } from "../components/LanguageAwareWrapper";
+import backgroundNotificationService from "@/lib/backgroundNotificationService";
+import { setupNotifications } from "@/lib/notificationSetup";
+import { LanguageAwareWrapper } from "@/components/LanguageAwareWrapper";
 
 const publishableKey = process.env.CLERK_PROD_KEY!;
 
 function ThemedApp() {
 	const { theme } = useTheme();
-	const isLanguageInitialized = useLanguageInitialization();
 	const router = useRouter();
-	const { isSignedIn } = useAuth();
 
 	// Handle notification responses and reschedule notifications on app start
 	useEffect(() => {
@@ -58,38 +55,20 @@ function ThemedApp() {
 		});
 
 		return () => subscription.remove();
-	}, [router]);
+	}, []);
 
-	// Don't render until language is initialized
-	if (!isLanguageInitialized) {
-		return null; // Or a loading screen
-	}
+	console.log("check");
 
-	console.log("isSignedIn", isSignedIn);
 	return (
 		<LanguageAwareWrapper>
 			<GluestackUIProvider mode={theme}>
-				<SignedIn>
-					<Tabs
-						screenOptions={{
-							animation: "fade",
-							headerShown: false,
-							tabBarStyle: {
-								display: "none",
-							},
-						}}
-					/>
-					<LoadingOverlay />
-				</SignedIn>
-
-				<SignedOut>
-					<Stack screenOptions={{ headerShown: false }} initialRouteName="index">
-						<Stack.Screen name="index" options={{ headerShown: false }} />
-						<Stack.Screen name="login" options={{ headerShown: false }} />
-						<Stack.Screen name="signup" options={{ headerShown: false }} />
-						<Stack.Screen name="ForgotPassword" options={{ headerShown: false }} />
-					</Stack>
-				</SignedOut>
+				<Stack
+					screenOptions={{
+						animation: "fade",
+						headerShown: false,
+					}}
+				/>
+				<LoadingOverlay />
 			</GluestackUIProvider>
 		</LanguageAwareWrapper>
 	);

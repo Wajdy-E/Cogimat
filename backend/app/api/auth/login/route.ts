@@ -18,7 +18,8 @@ export async function GET(req: Request) {
 			   email AS "email", 
 			   first_name AS "firstName", 
 			   last_name AS "lastName", 
-			   username AS "username", 
+			   username AS "username",
+			   is_subscribed AS "isSubscribed",
 			   creation_date AS "createdAt",
 			   is_admin AS "isAdmin",
 			   has_qr_access AS "hasQrAccess"

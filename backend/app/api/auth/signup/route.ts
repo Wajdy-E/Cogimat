@@ -8,13 +8,13 @@ export async function POST(req: Request) {
 		const { email, id, firstName, lastName, qrCode } = result;
 
 		if (!email || !firstName || !lastName) {
-			return NextResponse.json({ message: "Please fill in all fields" }, { status: 400 });
+			return NextResponse.json({ message: "signup.errors.missingFields" }, { status: 400 });
 		}
 
 		const existingUser = await query("SELECT * FROM users WHERE email=$1", [email]);
 
 		if (existingUser.length > 0) {
-			return NextResponse.json({ message: "User already exists. Please log in." }, { status: 400 });
+			return NextResponse.json({ message: "signup.userExists.message" }, { status: 400 });
 		}
 
 		let hasQrAccess = false;
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 			if (!isValid) {
 				return NextResponse.json(
 					{
-						message: "Invalid or already used QR code. Please check your product packaging.",
+						message: "qrSignup.invalidQRCode",
 					},
 					{ status: 400 }
 				);

@@ -1,34 +1,49 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Alert, View, Platform, SafeAreaView, ScrollView } from "react-native";
-import { Button, ButtonIcon, ButtonText } from "../components/ui/button";
-import FormInput from "../../components/FormInput";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import FormInput from "@/components/FormInput";
 import { VStack } from "@/components/ui/vstack";
 import { Center } from "@/components/ui/center";
 import { Heading } from "@/components/ui/heading";
 import { Link, useRouter } from "expo-router";
-import BackButton from "../../components/BackButton";
-import * as Yup from "yup";
-import { useDispatch } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
+import BackButton from "@/components/BackButton";
+import { useDispatch, useSelector } from "react-redux";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import { useAuth, useSignUp, useSSO, useUser } from "@clerk/clerk-expo";
 import { OAuthStrategy } from "@clerk/types";
-import { checkIfUserExistsAndHasQrAccess, createUser } from "../../store/auth/authSaga";
-import { AppDispatch } from "../../store/store";
-import { i18n } from "../../i18n";
+import { AppDispatch, persistor, RootState } from "../../store/store";
+import { i18n } from "../i18n";
 import { Text } from "@/components/ui/text";
 import Apple from "../../assets/apple.svg";
 import Google from "../../assets/google.svg";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { InputIcon } from "@/components/ui/input";
 import { Eye, EyeClosed, ArrowRight, QrCode, Camera, Loader } from "lucide-react-native";
-import QRCodeScanner from "../../components/QRCodeScanner";
+import QRCodeScanner from "@/components/QRCodeScanner";
 import { Box } from "@/components/ui/box";
-import { setCurrentUserThunk } from "../../store/auth/authSaga";
-import { fetchExercises, fetchGoals, getCustomExercises, getPublicExercises } from "../../store/data/dataSaga";
-import { fetchUserMilestones } from "../../store/auth/authSaga";
 import { Ionicons } from "@expo/vector-icons";
-import { setCancelledQRSignup } from "../../store/auth/authSlice";
+import { signUpSchema } from "@/schemas/schema";
+import {
+	handleEmailSignup,
+	handleProviderLogin,
+	handleEmailVerification,
+	handleQRCodeSignup,
+	handleSignOut,
+} from "../../store/auth/authSaga";
+import {
+	setSignupFormField,
+	setQrCode,
+	setShowQrScanner,
+	setVerificationCode,
+	setUserAlreadyExists,
+	resetAuthState,
+	setVerificationCodeError,
+	setPendingVerification,
+	setIsSigningUp,
+	setSessionId,
+} from "../../store/auth/authSlice";
 
 export const useWarmUpBrowser = () => {
 	useEffect(() => {
@@ -46,241 +61,169 @@ export default function SignUp() {
 	const dispatch: AppDispatch = useDispatch();
 	const { isLoaded, signUp, setActive } = useSignUp();
 	const { themeTextColor } = useTheme();
+	const isFocused = useIsFocused();
+	const { startSSOFlow } = useSSO();
+	const { user } = useUser();
+	const { signOut } = useAuth();
 
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
-	const [loading, setLoading] = useState(false);
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [pendingVerification, setPendingVerification] = useState(false);
-	const [code, setCode] = useState("");
-
-	// QR Code states
-	const [qrCode, setQrCode] = useState("");
-	const [showScanner, setShowScanner] = useState(false);
-	const [showQRPrompt, setShowQRPrompt] = useState(false);
-
-	const signUpSchema = Yup.object().shape({
-		firstName: Yup.string()
-			.min(2, i18n.t("signup.errors.firstNameShort"))
-			.required(i18n.t("signup.errors.firstNameRequired")),
-		lastName: Yup.string()
-			.min(2, i18n.t("signup.errors.lastNameShort"))
-			.required(i18n.t("signup.errors.lastNameRequired")),
-		email: Yup.string().email(i18n.t("signup.errors.invalidEmail")).required(i18n.t("signup.errors.emailRequired")),
-		password: Yup.string()
-			.min(6, i18n.t("signup.errors.passwordShort"))
-			.required(i18n.t("signup.errors.passwordRequired")),
-	});
+	// Redux state
+	const {
+		signupForm,
+		qrCode,
+		showQrScanner,
+		showQrPrompt,
+		pendingVerification,
+		verificationCode,
+		sessionId,
+		isSigningUp,
+		authError,
+		verificationCodeError,
+		userAlreadyExists,
+	} = useSelector((state: RootState) => state.user);
 
 	useWarmUpBrowser();
 
-	const { startSSOFlow } = useSSO();
-	const { user, isSignedIn } = useUser();
-	const { signOut } = useAuth();
-
-	// Reset QR prompt state when component unmounts or user signs out
-	useEffect(() => {
-		return () => {
-			setShowQRPrompt(false);
-			setQrCode("");
-			setShowScanner(false);
-			signOut();
-		};
-	}, []);
-
-	useEffect(() => {
-		if (!isSignedIn) {
-			setShowQRPrompt(false);
-			setQrCode("");
-			setShowScanner(false);
-		}
-	}, [isSignedIn]);
-
-	const onProviderSignIn = useCallback(async (strategy: string) => {
-		try {
-			const { createdSessionId, setActive } = await startSSOFlow({
-				strategy: `oauth_${strategy}` as OAuthStrategy,
-				redirectUrl: AuthSession.makeRedirectUri({
-					scheme: "cogimat",
-					path: "oauth-callback",
-				}),
-			});
-
-			console.log("createdSessionId", createdSessionId);
-
-			if (createdSessionId) {
-				await setActive?.({ session: createdSessionId });
-			}
-		} catch (err) {
-			console.error("OAuth Error:", JSON.stringify(err, null, 2));
-		}
-	}, []);
-
 	// Handle QR code scanning
 	const handleQRCodeScanned = (scannedQRCode: string) => {
-		setQrCode(scannedQRCode);
-		setShowScanner(false);
-		dispatch(setCancelledQRSignup(false));
+		dispatch(setQrCode(scannedQRCode));
+		dispatch(setShowQrScanner(false));
 	};
 
 	// Handle back button press in QR prompt
 	const handleQRPromptBack = async () => {
-		setShowQRPrompt(false);
-		setQrCode("");
-		dispatch(setCancelledQRSignup(true));
-		await signOut();
+		dispatch(resetAuthState());
+		await dispatch(handleSignOut({ signOut, deleteUser: true, userId: user?.id }));
+		router.replace("/(auth)");
 	};
 
-	// Handle QR code signup using the createUser thunk
-	const handleQRCodeSignup = async (userData: any) => {
+	// Handle QR code signup
+	const handleQRCodeSignupClick = async () => {
 		if (!qrCode) {
 			Alert.alert(i18n.t("qrSignup.noQRCode"), i18n.t("qrSignup.scanQRCodeFirst"));
 			return;
 		}
 
+		if (!sessionId) {
+			Alert.alert(i18n.t("qrSignup.error"), "Session not found. Please try again.");
+			return;
+		}
+
 		try {
-			setLoading(true);
-
-			const { firstName, lastName, emailAddresses, id, username } = userData;
-			const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0]?.emailAddress;
-
-			// Create user in database with QR validation
-			const createdUser = await dispatch(
-				createUser({
-					firstName,
-					lastName,
-					email: emailAddress,
-					id,
-					username,
+			const result = await dispatch(
+				handleQRCodeSignup({
+					userData: user,
 					qrCode,
+					sessionId,
+					setActive,
 				})
 			).unwrap();
-
-			// Set the current user in Redux with the created user data
-			dispatch(
-				setCurrentUserThunk({
-					firstName,
-					lastName,
-					email: emailAddress,
-					id,
-					username,
-					profileUri: userData.imageUrl,
-					isAdmin: createdUser.isAdmin || false, // Use isAdmin from backend
-					hasQrAccess: true, // User now has QR access
-				})
-			);
-
-			// Fetch all necessary data before redirecting
-			await Promise.all([
-				dispatch(fetchExercises()).unwrap(),
-				dispatch(getCustomExercises()).unwrap(),
-				dispatch(getPublicExercises()).unwrap(),
-				dispatch(fetchUserMilestones()).unwrap(),
-				dispatch(fetchGoals()).unwrap(),
-			]);
-
-			Alert.alert(i18n.t("qrSignup.success"), i18n.t("qrSignup.accessGranted"), [
-				{
-					text: i18n.t("general.buttons.ok"),
-					onPress: () => router.replace("/(tabs)/"),
-				},
-			]);
+			if (result.success) {
+				Alert.alert(i18n.t("qrSignup.success"), i18n.t("qrSignup.accessGranted"), [
+					{
+						text: i18n.t("general.buttons.ok"),
+						onPress: () => router.replace("/(tabs)/home"),
+					},
+				]);
+			}
 		} catch (error: any) {
 			console.error("QR Code Signup Error:", error);
-			const errorMessage = error.message || i18n.t("qrSignup.error");
-			Alert.alert(i18n.t("qrSignup.error"), errorMessage);
-		} finally {
-			setLoading(false);
+			Alert.alert(i18n.t("qrSignup.error"), error);
 		}
 	};
 
-	// Handle successful authentication (email or provider)
 	useEffect(() => {
-		const checkUserAndQR = async () => {
-			if (user && isSignedIn) {
-				// Set the current user in Redux from Clerk data
-				const { firstName, lastName, emailAddresses, id, username } = user;
-				const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0]?.emailAddress;
-
-				dispatch(
-					setCurrentUserThunk({
-						firstName,
-						lastName,
-						email: emailAddress,
-						id,
-						username,
-						profileUri: user.imageUrl,
-						isAdmin: false, // Will be updated from backend data
-					})
-				);
-
-				try {
-					const result = await dispatch(checkIfUserExistsAndHasQrAccess(id)).unwrap();
-					if (result.exists && result.hasQrAccess) {
-						setShowQRPrompt(false);
-					} else {
-						console.log("user does not exist or does not have QR access");
-						setShowQRPrompt(true);
-					}
-				} catch (error) {
-					console.error("Error checking user existence:", error);
-				}
-			}
-		};
-
-		checkUserAndQR();
-	}, [user, isSignedIn]);
-
-	async function signUpWithEmail() {
-		if (!isLoaded) {
-			return;
+		if (user && isFocused && qrCode && showQrPrompt) {
 		}
+	}, [user]);
+
+	// Handle provider sign in
+	const onProviderSignIn = useCallback(
+		async (strategy: string) => {
+			await dispatch(handleProviderLogin({ strategy, startSSOFlow }));
+		},
+		[dispatch, startSSOFlow]
+	);
+
+	// Handle email signup
+	const signUpWithEmail = async () => {
+		if (!isLoaded) return;
+
 		try {
-			setLoading(true);
-			await signUpSchema.validate({ firstName, lastName, email, password });
-
-			await signUp.create({ emailAddress: email, password, firstName, lastName });
-
-			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
-			setPendingVerification(true);
-		} catch (error) {
-			Alert.alert(i18n.t("signup.alert.invalidData"), (error as Error).message);
-		} finally {
-			setLoading(false);
+			await signUpSchema.validate(signupForm);
+			console.log("signupForm", signupForm);
+			await dispatch(
+				handleEmailSignup({
+					email: signupForm.email,
+					password: signupForm.password,
+					firstName: signupForm.firstName,
+					lastName: signupForm.lastName,
+					signUp,
+					signOut,
+				})
+			);
+		} catch (error: any) {
+			Alert.alert(i18n.t("signup.alert.invalidData"), error.message);
 		}
-	}
+	};
 
-	async function verifyEmailCode() {
-		if (!isLoaded) {
-			return;
-		}
-		try {
-			const signUpAttempt = await signUp.attemptEmailAddressVerification({
-				code,
-			});
+	const onResendCode = async () => {
+		await signUp?.prepareEmailAddressVerification({ strategy: "email_code" });
+		Alert.alert(i18n.t("signup.alert.codeResent"), i18n.t("signup.alert.checkEmail"));
+	};
 
-			if (signUpAttempt.status === "complete") {
-				await setActive({ session: signUpAttempt.createdSessionId });
-				// User will be handled in useEffect when user is available, which will show QR prompt
-			} else {
-				console.error("Verification incomplete:", signUpAttempt);
+	// Handle email verification
+	const verifyEmailCode = async () => {
+		if (!isLoaded) return;
+
+		const result = await dispatch(
+			handleEmailVerification({
+				code: verificationCode,
+				signUp,
+				setActive,
+			})
+		).unwrap();
+
+		console.log(result);
+		if (result.success) {
+			dispatch(setVerificationCodeError(null));
+			// Store the session ID for later use in QR signup
+			if (result.sessionId) {
+				dispatch(setSessionId(result.sessionId));
 			}
-		} catch (error) {
-			Alert.alert(i18n.t("signup.alert.verificationFailed"), (error as Error).message);
 		}
-	}
+	};
+
+	// Handle user already exists alert
+	useEffect(() => {
+		if (userAlreadyExists) {
+			Alert.alert(i18n.t("signup.userExists.title"), i18n.t("signup.userExists.message"), [
+				{
+					text: i18n.t("general.buttons.cancel"),
+					onPress: () => dispatch(setUserAlreadyExists(false)),
+				},
+				{
+					text: i18n.t("signup.userExists.goToLogin"),
+					onPress: () => {
+						dispatch(setUserAlreadyExists(false));
+						router.replace("/(auth)/login");
+					},
+				},
+			]);
+		}
+	}, [userAlreadyExists]);
+
+	const onBackToSignup = () => {
+		dispatch(setPendingVerification(false));
+		dispatch(setIsSigningUp(false));
+	};
 
 	// Render QR scanner
-	if (showScanner) {
-		return <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} onClose={() => setShowScanner(false)} />;
+	if (showQrScanner) {
+		return <QRCodeScanner onQRCodeScanned={handleQRCodeScanned} onClose={() => dispatch(setShowQrScanner(false))} />;
 	}
 
-	console.log("showQRPrompt", showQRPrompt);
 	// Render QR code prompt after successful authentication
-	if (showQRPrompt) {
+	if (showQrPrompt) {
 		return (
 			<SafeAreaView className="h-screen bg-background-700">
 				<View className="w-full flex-row items-center justify-between text-center">
@@ -306,14 +249,14 @@ export default function SignUp() {
 									<VStack space="sm" className="items-center">
 										<QrCode size={32} color={themeTextColor} />
 										<Text className="text-typography-950 font-medium">{i18n.t("qrSignup.qrCodeScanned")}</Text>
-										<Button onPress={() => setQrCode("")} variant="outline" size="sm">
+										<Button onPress={() => dispatch(setQrCode(""))} variant="outline" size="sm">
 											<ButtonText>{i18n.t("qrSignup.changeQRCode")}</ButtonText>
 										</Button>
 									</VStack>
 								</Box>
 							) : (
 								<Button
-									onPress={() => setShowScanner(true)}
+									onPress={() => dispatch(setShowQrScanner(true))}
 									variant="outline"
 									size="xl"
 									className="rounded-full border-secondary-0"
@@ -325,12 +268,12 @@ export default function SignUp() {
 
 							<Button
 								size="lg"
-								className={`rounded-full ${loading || !qrCode ? "opacity-25" : ""}`}
-								onPress={() => handleQRCodeSignup(user)}
-								disabled={loading || !qrCode}
+								className={`rounded-full ${!qrCode ? "opacity-25" : ""}`}
+								onPress={handleQRCodeSignupClick}
+								disabled={!qrCode}
 							>
 								<ButtonText>{i18n.t("qrSignup.createAccount")}</ButtonText>
-								<ButtonIcon as={loading ? Loader : ArrowRight} size="xl" />
+								<ButtonIcon as={ArrowRight} size="xl" />
 							</Button>
 
 							<Button
@@ -354,7 +297,13 @@ export default function SignUp() {
 			<SafeAreaView className="flex-1 justify-center items-center bg-background-700">
 				<Center className="flex-1 justify-center items-center bg-background-700">
 					<View className="w-full flex-row items-center justify-between px-6 py-4 text-center">
-						<BackButton />
+						<Ionicons
+							name="caret-back-outline"
+							size={24}
+							color={themeTextColor}
+							onPress={() => onBackToSignup()}
+							className="mb-[20px]"
+						/>
 						<Text className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("signup.verifyEmailTitle")}</Text>
 					</View>
 					<View className="w-screen flex-1 justify-center items-center">
@@ -362,15 +311,25 @@ export default function SignUp() {
 							<FormInput
 								label={"signup.verifyCode"}
 								placeholder={"signup.verifyCodePlaceholder"}
-								value={code}
+								value={verificationCode}
 								formSize="lg"
 								inputSize="lg"
 								isRequired={true}
 								inputType="text"
-								onChange={(text) => setCode(text)}
+								formErrorKey={verificationCodeError ? "signup.alert.verificationFailed" : undefined}
+								onChange={(text) => dispatch(setVerificationCode(text))}
 							/>
-							<Button className="w-full rounded-lg" disabled={loading} onPress={verifyEmailCode} size="xl">
+							<Button className="w-full rounded-lg" onPress={verifyEmailCode} size="md">
 								<ButtonText>{i18n.t("signup.verify")}</ButtonText>
+							</Button>
+							<Button
+								className="w-full rounded-lg"
+								onPress={() => onResendCode()}
+								size="md"
+								variant="outline"
+								action="secondary"
+							>
+								<ButtonText>{i18n.t("signup.resendCode")}</ButtonText>
 							</Button>
 						</VStack>
 					</View>
@@ -395,50 +354,51 @@ export default function SignUp() {
 						<FormInput
 							label={"signup.form.firstName"}
 							placeholder={"signup.form.firstNamePlaceholder"}
-							value={firstName}
+							value={signupForm.firstName}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
 							inputType="text"
-							onChange={(text) => setFirstName(text)}
+							onChange={(text) => dispatch(setSignupFormField({ field: "firstName", value: text }))}
 						/>
 						<FormInput
 							label={"signup.form.lastName"}
 							placeholder={"signup.form.lastNamePlaceholder"}
-							value={lastName}
+							value={signupForm.lastName}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
 							inputType="text"
-							onChange={(text) => setLastName(text)}
+							onChange={(text) => dispatch(setSignupFormField({ field: "lastName", value: text }))}
 						/>
 						<FormInput
 							label={"signup.form.email"}
 							placeholder={"signup.form.emailPlaceholder"}
-							value={email}
+							value={signupForm.email}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
 							inputType="text"
-							onChange={(text) => setEmail(text)}
+							onChange={(text) => dispatch(setSignupFormField({ field: "email", value: text }))}
 						/>
 
 						<FormInput
 							label={"signup.form.password"}
 							placeholder={"signup.form.passwordPlaceholder"}
-							value={password}
+							value={signupForm.password}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
-							inputType={showPassword ? "text" : "password"}
-							onChange={(text) => setPassword(text)}
-							inputIcon={<InputIcon as={showPassword ? Eye : EyeClosed} />}
-							onIconClick={() => setShowPassword((prev) => !prev)}
+							inputType={signupForm.showPassword ? "text" : "password"}
+							onChange={(text) => dispatch(setSignupFormField({ field: "password", value: text }))}
+							inputIcon={<InputIcon as={signupForm.showPassword ? Eye : EyeClosed} />}
+							onIconClick={() =>
+								dispatch(setSignupFormField({ field: "showPassword", value: !signupForm.showPassword }))
+							}
 						/>
-
-						<Button className="w-full rounded-full" disabled={loading} onPress={signUpWithEmail} size="xl">
+						<Button className="w-full rounded-full" onPress={signUpWithEmail} size="xl">
 							<ButtonText>{i18n.t("signup.form.signUp")}</ButtonText>
-							<ButtonIcon as={loading ? Loader : ArrowRight} size="xl" />
+							<ButtonIcon as={isSigningUp ? Loader : ArrowRight} size="xl" />
 						</Button>
 
 						{Platform.OS === "ios" && (
