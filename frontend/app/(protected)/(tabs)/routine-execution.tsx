@@ -53,7 +53,7 @@ export default function RoutineExecution() {
 		if (routine && !routineExecution) {
 			dispatch(startRoutineExecution({ routineId }));
 		}
-	}, [routine, routineExecution, dispatch, routineId]);
+	}, [routine, routineExecution, routineId]);
 
 	// Get current exercise details
 	const currentRoutineExercise = routine?.exercises[routineExecution?.currentExerciseIndex || 0];
@@ -143,14 +143,7 @@ export default function RoutineExecution() {
 				isProcessingCompletion.current = false;
 			}, 100);
 		}
-	}, [
-		params?.returnFromExercise,
-		params?.completedExerciseId,
-		routine?.exercises.length,
-		routineExecution,
-		dispatch,
-		router,
-	]);
+	}, [params?.returnFromExercise, params?.completedExerciseId, routine?.exercises.length, routineExecution]);
 
 	// Cleanup: reset state when component unmounts or user navigates away
 	useEffect(() => {
@@ -160,7 +153,7 @@ export default function RoutineExecution() {
 			processedCompletions.current.clear();
 			isProcessingCompletion.current = false;
 		};
-	}, [dispatch]);
+	}, []);
 
 	// Reset state when user navigates away and comes back
 	useFocusEffect(
@@ -169,7 +162,7 @@ export default function RoutineExecution() {
 			if (routineExecution?.showCountdown) {
 				dispatch(setShowCountdown(false));
 			}
-		}, [routineExecution?.showCountdown, dispatch])
+		}, [routineExecution?.showCountdown])
 	);
 
 	// Handle navigation to exercise when countdown is shown
@@ -207,15 +200,7 @@ export default function RoutineExecution() {
 			});
 			dispatch(setShowCountdown(false));
 		}
-	}, [
-		routineExecution?.showCountdown,
-		currentExercise,
-		currentRoutineExercise,
-		router,
-		routineId,
-		isSubscribed,
-		dispatch,
-	]);
+	}, [routineExecution?.showCountdown, currentExercise, currentRoutineExercise, routineId, isSubscribed]);
 
 	// Reset countdown if user navigates back without completing exercise
 	useEffect(() => {
@@ -227,7 +212,7 @@ export default function RoutineExecution() {
 		}, 1000);
 
 		return () => clearTimeout(timer);
-	}, [routineExecution?.showCountdown, dispatch]);
+	}, [routineExecution?.showCountdown]);
 
 	const progress = routine ? ((routineExecution?.completedExercises.length || 0) / routine.exercises.length) * 100 : 0;
 
@@ -241,7 +226,7 @@ export default function RoutineExecution() {
 		if (exercises.length === 0 && customExercises.length === 0) {
 			// Exercises not loaded yet, waiting...
 		}
-	}, [routine, router, exercises.length, customExercises.length]);
+	}, [routine, exercises.length, customExercises.length]);
 
 	// Early returns after all hooks
 	if (!routine || (exercises.length === 0 && customExercises.length === 0)) {

@@ -34,14 +34,14 @@ function ExerciseProgram() {
 		if (exercise) {
 			dispatch(setCurrentExercise(exercise));
 		}
-	}, [exercise, dispatch]);
+	}, [exercise]);
 
 	// Cleanup: clear selected exercise when component unmounts
 	useEffect(() => {
 		return () => {
 			dispatch(setCurrentExercise(null));
 		};
-	}, [dispatch]);
+	}, []);
 
 	const router = useRouter();
 

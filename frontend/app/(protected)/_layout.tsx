@@ -1,39 +1,57 @@
 import { Stack } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
-import { Redirect } from "expo-router";
-import { fetchUserMilestones } from "@/store/auth/authSaga";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
-import { fetchExercises, getCustomExercises, getPublicExercises, fetchGoals } from "@/store/data/dataSaga";
-import { useEffect } from "react";
+import { useAuthContext } from "@/utils/authContext";
+import AuthLoading from "@/components/AuthLoading";
+
+export const unstable_settings = {
+	initialRouteName: "(tabs)",
+};
 
 export default function ProtectedLayout() {
-	const { isSignedIn, isLoaded } = useAuth();
-	const dispatch: AppDispatch = useDispatch();
+	const { isLoggedIn, isReady, isLoading } = useAuthContext();
 
-	if (!isSignedIn && isLoaded) {
-		return <Redirect href="/" />;
+	// Show loading while auth is initializing
+	if (!isReady || isLoading) {
+		return <AuthLoading />;
 	}
 
-	async function fetchData() {
-		try {
-			await Promise.all([
-				dispatch(fetchExercises()),
-				dispatch(getCustomExercises()),
-				dispatch(getPublicExercises()),
-				dispatch(fetchUserMilestones()),
-				dispatch(fetchGoals()),
-			]);
-		} catch (error: any) {
-			console.error("Authentication error:", error);
-		}
+	// If not logged in, AuthContext will handle routing automatically
+	// We don't need to redirect here since AuthContext will do it
+	if (!isLoggedIn) {
+		return <AuthLoading />;
 	}
 
-	useEffect(() => {
-		if (isSignedIn && isLoaded) {
-			fetchData();
-		}
-	}, []);
-
-	return <Stack />;
+	return (
+		<Stack>
+			<Stack.Screen
+				name="(tabs)"
+				options={{
+					headerShown: false,
+				}}
+			/>
+			<Stack.Screen
+				name="(exercise)"
+				options={{
+					headerShown: false,
+				}}
+			/>
+			<Stack.Screen
+				name="(custom-exercise)"
+				options={{
+					headerShown: false,
+				}}
+			/>
+			<Stack.Screen
+				name="(community-exercise)"
+				options={{
+					headerShown: false,
+				}}
+			/>
+			<Stack.Screen
+				name="(admin)"
+				options={{
+					headerShown: false,
+				}}
+			/>
+		</Stack>
+	);
 }

@@ -4,9 +4,10 @@ import * as ImagePicker from "expo-image-picker";
 import * as Notifications from "expo-notifications";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createAction } from "@reduxjs/toolkit";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import { AppDispatch, persistor, RootState } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
+import { useAuthContext } from "@/utils/authContext";
 import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from "@/components/ui/avatar";
 import { VStack } from "@/components/ui/vstack";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
@@ -36,7 +37,7 @@ function Account() {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const appDispatch: AppDispatch = useDispatch();
-	const { signOut } = useAuth();
+	const { logOut } = useAuthContext();
 	const { user } = useUser();
 	const { isSubscribed } = useSubscriptionStatus();
 	const { currentLanguage, changeLanguage, getLanguageLabel } = useLanguageManagement();
@@ -117,24 +118,17 @@ function Account() {
 	async function handleSignOut() {
 		try {
 			setShowSignoutModal(false);
-			dispatch(resetState());
-			await persistor.purge();
-			await signOut();
-			router.navigate("/(auth)");
+			await logOut();
 		} catch (error) {
 			console.error("Error during sign out:", error);
-			router.navigate("/(auth)");
 		}
 	}
 
 	async function handleAccountDeletion() {
 		setShowDeleteModal(false);
 		if (user?.id) {
-			appDispatch(deleteUserThunk(user.id));
-			await signOut();
-			persistor.purge();
-			dispatch(resetState());
-			router.navigate("/(auth)");
+			await appDispatch(deleteUserThunk(user.id));
+			await logOut();
 		}
 	}
 

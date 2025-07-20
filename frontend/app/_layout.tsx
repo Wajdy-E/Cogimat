@@ -17,6 +17,7 @@ import { useRouter } from "expo-router";
 import backgroundNotificationService from "@/lib/backgroundNotificationService";
 import { setupNotifications } from "@/lib/notificationSetup";
 import { LanguageAwareWrapper } from "@/components/LanguageAwareWrapper";
+import { AuthProvider } from "@/utils/authContext";
 
 const publishableKey = process.env.CLERK_PROD_KEY!;
 
@@ -43,7 +44,7 @@ function ThemedApp() {
 
 			if (data?.type === "weekly_workout") {
 				// Navigate to exercises tab when user taps workout reminder
-				router.push("/(tabs)/all-exercises");
+				router.push("/(protected)/(tabs)/all-exercises");
 
 				// Reschedule future notifications to ensure continuity
 				try {
@@ -57,8 +58,6 @@ function ThemedApp() {
 		return () => subscription.remove();
 	}, []);
 
-	console.log("check");
-
 	return (
 		<LanguageAwareWrapper>
 			<GluestackUIProvider mode={theme}>
@@ -67,7 +66,22 @@ function ThemedApp() {
 						animation: "fade",
 						headerShown: false,
 					}}
-				/>
+				>
+					<Stack.Screen
+						name="(protected)"
+						options={{
+							headerShown: false,
+							animation: "none",
+						}}
+					/>
+					<Stack.Screen
+						name="(auth)"
+						options={{
+							headerShown: false,
+							animation: "none",
+						}}
+					/>
+				</Stack>
 				<LoadingOverlay />
 			</GluestackUIProvider>
 		</LanguageAwareWrapper>
@@ -92,7 +106,9 @@ export default function Layout() {
 					<PersistGate loading={null} persistor={persistor}>
 						<SafeAreaProvider>
 							<ThemeProvider>
-								<ThemedApp />
+								<AuthProvider>
+									<ThemedApp />
+								</AuthProvider>
 							</ThemeProvider>
 						</SafeAreaProvider>
 					</PersistGate>

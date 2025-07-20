@@ -76,21 +76,21 @@ function CommunityExerciseProgram() {
 		};
 
 		fetchPublicExercisesIfNeeded();
-	}, [dispatch, publicExercises.length]);
+	}, [publicExercises.length]);
 
 	// Set the current exercise in Redux state
 	useEffect(() => {
 		if (exercise) {
 			dispatch(setCurrentExercise(exercise));
 		}
-	}, [exercise, dispatch]);
+	}, [exercise]);
 
 	// Cleanup: clear selected exercise when component unmounts
 	useEffect(() => {
 		return () => {
 			dispatch(setCurrentExercise(null));
 		};
-	}, [dispatch]);
+	}, []);
 
 	// Animation effect
 	useEffect(() => {

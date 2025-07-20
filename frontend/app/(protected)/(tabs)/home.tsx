@@ -57,7 +57,7 @@ function Home() {
 	// Fetch public exercises when component mounts
 	useEffect(() => {
 		dispatch(getPublicExercises());
-	}, [dispatch]);
+	}, []);
 
 	const dailyChallenge = exercises.find((ex) => ex.isChallenge);
 	const onPressAllExercises = (isCustom: boolean) => {

@@ -18,8 +18,9 @@ import {
 	setCancelledQRSignup,
 	setVerificationCodeError,
 } from "./authSlice";
-import { RootState } from "@/store";
+import { RootState } from "@/store/store";
 import { fetchExercises, getCustomExercises, getPublicExercises, fetchGoals } from "../data/dataSaga";
+import { SetActive, SignOut, SignUpResource, UserResource } from "@clerk/types";
 
 const BASE_URL = process.env.BASE_URL;
 console.log("BASE_URL", BASE_URL);
@@ -34,6 +35,7 @@ export const createUser = createAsyncThunk<UserBase, CreateUserData>(
 	async (userData: CreateUserData, { dispatch, rejectWithValue }) => {
 		try {
 			const response = await axios.post(`${BASE_URL}/api/auth/signup`, userData);
+			console.log("createUser response", response.data);
 			dispatch(setCurrentUser(userData as UserBase));
 			return response.data;
 		} catch (error: any) {
@@ -217,14 +219,23 @@ export const fetchUserData = createAsyncThunk<{ data: { user: UserBase; message:
 // New authentication thunks
 export const handleEmailSignup = createAsyncThunk<
 	{ success: boolean; message?: string },
-	{ email: string; password: string; firstName: string; lastName: string; signUp: any; signOut: any }
+	{
+		email: string;
+		password: string;
+		firstName: string;
+		lastName: string;
+		signUp: SignUpResource | undefined;
+		signOut: SignOut;
+	}
 >(
 	"auth/handleEmailSignup",
 	async ({ email, password, firstName, lastName, signUp, signOut }, { dispatch, rejectWithValue }) => {
 		try {
 			dispatch(setIsSigningUp(true));
 			dispatch(setAuthError(null));
-
+			if (!signUp) {
+				return rejectWithValue("Signup not initialized");
+			}
 			await signUp.create({ emailAddress: email, password, firstName, lastName });
 			await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
@@ -297,22 +308,26 @@ export const handleProviderLogin = createAsyncThunk<
 
 export const handleEmailVerification = createAsyncThunk<
 	{ success: boolean; message?: string; sessionId?: string },
-	{ code: string; signUp: any; setActive: any }
+	{ code: string; signUp: SignUpResource | undefined; setActive: SetActive | undefined }
 >("auth/handleEmailVerification", async ({ code, signUp, setActive }, { dispatch, rejectWithValue }) => {
 	console.log("handleEmailVerification saga called");
 	try {
 		dispatch(setAuthError(null));
-
+		if (!signUp) {
+			return rejectWithValue("Signup not initialized");
+		}
 		const signUpAttempt = await signUp.attemptEmailAddressVerification({ code });
 
 		if (signUpAttempt.status === "complete") {
 			console.log("Email verification complete, storing session for later activation");
 			// Store the session ID but don't activate it yet
 			// We'll activate it after QR signup is complete
+			await setActive?.({ session: signUpAttempt.createdSessionId });
+
 			dispatch(setPendingVerification(false));
 			dispatch(setShowQrPrompt(true));
 			console.log("Email verification saga completed successfully");
-			return { success: true, sessionId: signUpAttempt.createdSessionId };
+			return { success: true, sessionId: signUpAttempt.createdSessionId || undefined };
 		} else {
 			throw new Error("Verification incomplete");
 		}
@@ -325,11 +340,14 @@ export const handleEmailVerification = createAsyncThunk<
 
 export const handleQRCodeSignup = createAsyncThunk<
 	{ success: boolean; message?: string },
-	{ userData: any; qrCode: string; sessionId: string; setActive: any }
->("auth/handleQRCodeSignup", async ({ userData, qrCode, sessionId, setActive }, { dispatch, rejectWithValue }) => {
+	{ userData: UserResource | null | undefined; qrCode: string }
+>("auth/handleQRCodeSignup", async ({ userData, qrCode }, { dispatch, rejectWithValue }) => {
 	try {
 		dispatch(setAuthError(null));
 		console.log(userData, "userData");
+		if (!userData) {
+			return rejectWithValue("User data not found");
+		}
 		const { firstName, lastName, emailAddresses, id, username } = userData;
 		const emailAddress = typeof emailAddresses === "string" ? emailAddresses : emailAddresses[0]?.emailAddress;
 

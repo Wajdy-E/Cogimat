@@ -103,27 +103,22 @@ export default function SignUp() {
 			return;
 		}
 
-		if (!sessionId) {
-			Alert.alert(i18n.t("qrSignup.error"), "Session not found. Please try again.");
-			return;
-		}
-
 		try {
-			const result = await dispatch(
-				handleQRCodeSignup({
-					userData: user,
-					qrCode,
-					sessionId,
-					setActive,
-				})
-			).unwrap();
-			if (result.success) {
-				Alert.alert(i18n.t("qrSignup.success"), i18n.t("qrSignup.accessGranted"), [
-					{
-						text: i18n.t("general.buttons.ok"),
-						onPress: () => router.replace("/(tabs)/home"),
-					},
-				]);
+			if (isLoaded) {
+				const result = await dispatch(
+					handleQRCodeSignup({
+						userData: user,
+						qrCode,
+					})
+				).unwrap();
+				if (result.success) {
+					Alert.alert(i18n.t("qrSignup.success"), i18n.t("qrSignup.accessGranted"), [
+						{
+							text: i18n.t("general.buttons.ok"),
+							onPress: () => router.replace("/(tabs)/home"),
+						},
+					]);
+				}
 			}
 		} catch (error: any) {
 			console.error("QR Code Signup Error:", error);
@@ -131,18 +126,10 @@ export default function SignUp() {
 		}
 	};
 
-	useEffect(() => {
-		if (user && isFocused && qrCode && showQrPrompt) {
-		}
-	}, [user]);
-
 	// Handle provider sign in
-	const onProviderSignIn = useCallback(
-		async (strategy: string) => {
-			await dispatch(handleProviderLogin({ strategy, startSSOFlow }));
-		},
-		[dispatch, startSSOFlow]
-	);
+	const onProviderSignIn = useCallback(async (strategy: string) => {
+		await dispatch(handleProviderLogin({ strategy, startSSOFlow }));
+	}, []);
 
 	// Handle email signup
 	const signUpWithEmail = async () => {
@@ -150,7 +137,6 @@ export default function SignUp() {
 
 		try {
 			await signUpSchema.validate(signupForm);
-			console.log("signupForm", signupForm);
 			await dispatch(
 				handleEmailSignup({
 					email: signupForm.email,
