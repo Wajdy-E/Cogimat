@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { initializeLanguage } from "@/i18n";
 import { i18n } from "@/i18n";
-import { setLanguage, LanguageEnum } from "../store/auth/authSlice";
-import { AppDispatch } from "../store/store";
+import { setLanguage, LanguageEnum } from "@/store/auth/authSlice";
+import { AppDispatch } from "@/store/store";
 
 export const useLanguageInitialization = () => {
 	const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);

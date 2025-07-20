@@ -1,6 +1,6 @@
 import { Image } from "@/components/ui/image";
 import { View, TouchableOpacity } from "react-native";
-import { Exercise, ExerciseDifficulty, getExerciseCustomizedOptions } from "../store/data/dataSlice";
+import { Exercise, ExerciseDifficulty, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
@@ -9,9 +9,9 @@ import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
 import PlayButton from "./PlayButton";
 import FavouriteButton from "./FavouriteButton";
-import { setFavourite } from "../store/data/dataSaga";
+import { setFavourite } from "@/store/data/dataSaga";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { i18n } from "../i18n";
 
 interface ExerciseCardProps {

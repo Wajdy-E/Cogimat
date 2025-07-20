@@ -3,10 +3,10 @@ import { ImageBackground, View, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
 import { useEffect, useRef } from "react";
-import { fetchExercises, fetchGoals, getCustomExercises, getPublicExercises } from "../../store/data/dataSaga";
-import { AppDispatch } from "../../store/store";
+import { fetchExercises, fetchGoals, getCustomExercises, getPublicExercises } from "@/store/data/dataSaga";
+import { AppDispatch } from "@/store/store";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { fetchUserMilestones, setCurrentUserThunk, checkIfUserExistsAndHasQrAccess } from "../../store/auth/authSaga";
+import { fetchUserMilestones, setCurrentUserThunk, checkIfUserExistsAndHasQrAccess } from "@/store/auth/authSaga";
 import { Button, ButtonText } from "@/components/ui/button";
 import { i18n } from "../i18n";
 

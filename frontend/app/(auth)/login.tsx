@@ -10,7 +10,7 @@ import BackButton from "@/components/BackButton";
 import { Center } from "@/components/ui/center";
 import * as WebBrowser from "expo-web-browser";
 import { useSignIn, useSSO } from "@clerk/clerk-expo";
-import { AppDispatch, RootState } from "../../store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { Text } from "@/components/ui/text";
 import { i18n } from "../i18n";
 import Apple from "../../assets/apple.svg";
@@ -19,8 +19,8 @@ import { useTheme } from "@/components/ui/ThemeProvider";
 import { Box } from "@/components/ui/box";
 import { ArrowRight, Eye, EyeClosed } from "lucide-react-native";
 import { InputIcon } from "@/components/ui/input";
-import { handleEmailLogin, handleProviderLogin } from "../../store/auth/authSaga";
-import { setLoginFormField } from "../../store/auth/authSlice";
+import { handleEmailLogin, handleProviderLogin } from "@/store/auth/authSaga";
+import { setLoginFormField } from "@/store/auth/authSlice";
 import { loginSchema } from "@/schemas/schema";
 
 export const useWarmUpBrowser = () => {

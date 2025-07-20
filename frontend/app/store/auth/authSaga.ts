@@ -18,7 +18,7 @@ import {
 	setCancelledQRSignup,
 	setVerificationCodeError,
 } from "./authSlice";
-import { RootState } from "../store";
+import { RootState } from "@/store";
 import { fetchExercises, getCustomExercises, getPublicExercises, fetchGoals } from "../data/dataSaga";
 
 const BASE_URL = process.env.BASE_URL;

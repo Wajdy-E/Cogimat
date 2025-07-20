@@ -16,8 +16,8 @@ import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-import { ExerciseDifficulty, setCurrentExercise, getExerciseCustomizedOptions } from "../../store/data/dataSlice";
-import { RootState } from "../../store/store";
+import { ExerciseDifficulty, setCurrentExercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
+import { RootState } from "@/store/store";
 import { i18n } from "../../i18n";
 import ExerciseVideoGallery from "@/components/ExerciseVideoGallery";
 import Header from "@/components/Header";

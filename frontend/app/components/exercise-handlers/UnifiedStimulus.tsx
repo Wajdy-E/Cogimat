@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Exercise, getExerciseCustomizedOptions } from "../../store/data/dataSlice";
+import { Exercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../store/store";
-import { updateUserMilestone } from "../../store/auth/authSaga";
+import { AppDispatch, RootState } from "@/store/store";
+import { updateUserMilestone } from "@/store/auth/authSaga";
 import ExerciseControl from "../exercises/ExerciseControl";
 import ExerciseProgress from "../exercises/ExerciseProgress";
 

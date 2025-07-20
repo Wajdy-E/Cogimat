@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store/store";
-import { Exercise, setCurrentExercise, setPaywallModalPopup } from "../../store/data/dataSlice";
+import { AppDispatch } from "@/store/store";
+import { Exercise, setCurrentExercise, setPaywallModalPopup } from "@/store/data/dataSlice";
 import { i18n } from "../../i18n";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 

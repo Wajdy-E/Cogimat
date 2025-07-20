@@ -18,8 +18,8 @@ import {
 import { Upload, X, AlertCircle } from "lucide-react-native";
 import CustomVideoPicker from "./CustomVideoPicker";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../store/store";
-import { showLoadingOverlay, hideLoadingOverlay } from "../store/ui/uiSlice";
+import { RootState } from "@/store/store";
+import { showLoadingOverlay, hideLoadingOverlay } from "@/store/ui/uiSlice";
 import { useAppAlert } from "../hooks/useAppAlert";
 import { i18n } from "../i18n";
 import { HStack } from "@/components/ui/hstack";

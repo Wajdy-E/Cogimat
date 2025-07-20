@@ -1,11 +1,11 @@
 // components/exerciseHandlers/ShapeCountStimulus.tsx
 
-import React from 'react';
-import { Exercise } from '../../store/data/dataSlice';
-import UnifiedStimulus from './UnifiedStimulus';
-import { ShapeCountStimulusStrategy } from './strategies';
+import React from "react";
+import { Exercise } from "@/store/data/dataSlice";
+import UnifiedStimulus from "./UnifiedStimulus";
+import { ShapeCountStimulusStrategy } from "./strategies";
 
-export default function ShapeCountStimulus ({
+export default function ShapeCountStimulus({
 	exercise,
 	onComplete,
 	onStop,

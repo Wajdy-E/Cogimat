@@ -3,15 +3,15 @@ import { useEffect } from "react";
 import Tab, { TabItem } from "@/components/Tab";
 import { useExercise } from "@/hooks/useExercise";
 import { useCustomExercise } from "@/hooks/useCustomExercise";
-import { Exercise, ExerciseDifficulty, CustomExercise, getExerciseCustomizedOptions } from "../../store/data/dataSlice";
+import { Exercise, ExerciseDifficulty, CustomExercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
 import ExerciseCard from "@/components/ExerciseCard";
 import CustomExerciseCard from "@/components/CustomExerciseCard";
 import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../../store/store";
-import { getPublicExercises } from "../../store/data/dataSaga";
+import { RootState, AppDispatch } from "@/store/store";
+import { getPublicExercises } from "@/store/data/dataSaga";
 import { i18n } from "../../i18n";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 

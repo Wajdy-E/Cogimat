@@ -5,13 +5,13 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { i18n } from "../../i18n";
 import CustomExerciseCard from "@/components/CustomExerciseCard";
-import { CustomExercise, ExerciseDifficulty } from "../../store/data/dataSlice";
+import { CustomExercise, ExerciseDifficulty } from "@/store/data/dataSlice";
 import FormSelect from "@/components/FormSelect";
 import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from "@/components/ui/checkbox";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../../store/store";
+import { RootState, AppDispatch } from "@/store/store";
 import { CheckIcon } from "@/components/ui/icon";
-import { getPublicExercises } from "../../store/data/dataSaga";
+import { getPublicExercises } from "@/store/data/dataSaga";
 
 function CommunityExercises() {
 	const dispatch: AppDispatch = useDispatch();

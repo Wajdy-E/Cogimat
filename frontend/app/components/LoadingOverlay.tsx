@@ -1,13 +1,13 @@
-import React from 'react';
-import { View } from 'react-native';
-import { Box } from '@/components/ui/box';
-import { HStack } from '@/components/ui/hstack';
-import { Spinner } from '@/components/ui/spinner';
-import { Text } from '@/components/ui/text';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import React from "react";
+import { View } from "react-native";
+import { Box } from "@/components/ui/box";
+import { HStack } from "@/components/ui/hstack";
+import { Spinner } from "@/components/ui/spinner";
+import { Text } from "@/components/ui/text";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
-export default function LoadingOverlay () {
+export default function LoadingOverlay() {
 	const { isVisible, text } = useSelector((state: RootState) => state.ui.loadingOverlay);
 
 	if (!isVisible) {

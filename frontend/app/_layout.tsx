@@ -1,7 +1,7 @@
 import "../global.css";
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
-import { store, persistor } from "../store/store";
+import { store, persistor } from "@/store/store";
 import { GluestackUIProvider } from "./components/ui/gluestack-ui-provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";

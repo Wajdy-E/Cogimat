@@ -12,9 +12,9 @@ import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import WebView from "react-native-webview";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../store/store";
-import { setCurrentExercise } from "../../store/data/dataSlice";
-import { getPublicExercises } from "../../store/data/dataSaga";
+import { AppDispatch, RootState } from "@/store/store";
+import { setCurrentExercise } from "@/store/data/dataSlice";
+import { getPublicExercises } from "@/store/data/dataSaga";
 import CustomExerciseHeader from "@/components/CustomExerciseHeader";
 import React from "react";
 

@@ -12,7 +12,7 @@ import { Progress, ProgressFilledTrack } from "@/components/ui/progress";
 import { ArrowLeft, Play, SkipForward, CheckCircle } from "lucide-react-native";
 import { Icon } from "@/components/ui/icon";
 import { shallowEqual, useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../../store/store";
+import { RootState, AppDispatch } from "@/store/store";
 import {
 	startRoutineExecution,
 	completeExercise,
@@ -23,7 +23,7 @@ import {
 	resetRoutineExecution,
 	setCurrentExercise,
 	setPaywallModalPopup,
-} from "../../store/data/dataSlice";
+} from "@/store/data/dataSlice";
 import { i18n } from "../../i18n";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 

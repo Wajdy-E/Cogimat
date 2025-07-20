@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { RootState } from "@/store/store";
 import { i18n } from "../i18n";
 
 interface LanguageAwareWrapperProps {

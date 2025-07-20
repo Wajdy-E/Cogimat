@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { Exercise, ExerciseDifficulty } from "../../store/data/dataSlice";
-import { RootState } from "../../store/store";
+import { Exercise, ExerciseDifficulty } from "@/store/data/dataSlice";
+import { RootState } from "@/store/store";
 import { shallowEqual } from "react-redux";
 
 export const useExercise = (get: ExerciseDifficulty | number | null) => {

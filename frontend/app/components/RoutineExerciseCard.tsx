@@ -1,6 +1,6 @@
 import { Image } from "@/components/ui/image";
 import { View } from "react-native";
-import { Exercise, ExerciseDifficulty, CustomExercise, getExerciseCustomizedOptions } from "../store/data/dataSlice";
+import { Exercise, ExerciseDifficulty, CustomExercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
@@ -10,7 +10,7 @@ import { VStack } from "@/components/ui/vstack";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { i18n } from "../i18n";
 import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { RootState } from "@/store/store";
 
 interface RoutineExerciseCardProps {
 	exercise: Exercise | CustomExercise;

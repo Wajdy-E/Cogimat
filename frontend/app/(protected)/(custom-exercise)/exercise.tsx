@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "../../store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import Countdown from "@/components/Countdown";
 import { Letter, NumberEnum, colorOptions, ColorOption } from "@/data/program/Program";
 import { LucideIcon, Square, Triangle, Circle, Diamond } from "lucide-react-native";
-import { CustomExercise } from "../../store/data/dataSlice";
-import { updateUserMilestone } from "../../store/auth/authSaga";
+import { CustomExercise } from "@/store/data/dataSlice";
+import { updateUserMilestone } from "@/store/auth/authSaga";
 import ExerciseControl from "@/components/exercises/ExerciseControl";
 import ExerciseProgress from "@/components/exercises/ExerciseProgress";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { setCurrentExercise } from "../../store/data/dataSlice";
+import { setCurrentExercise } from "@/store/data/dataSlice";
 import CustomExerciseHeader from "@/components/CustomExerciseHeader";
 import { i18n } from "../../i18n";
 

@@ -15,11 +15,11 @@ import {
 	FilterType,
 	setCurrentFilter,
 	getExerciseCustomizedOptions,
-} from "../../store/data/dataSlice";
+} from "@/store/data/dataSlice";
 import FormSelect from "@/components/FormSelect";
 import { Checkbox, CheckboxGroup, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from "@/components/ui/checkbox";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { RootState } from "@/store/store";
 import { CheckIcon } from "@/components/ui/icon";
 
 type UnifiedExercise = (Exercise & { isCustom: false }) | (CustomExercise & { isCustom: true });

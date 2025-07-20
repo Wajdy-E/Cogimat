@@ -16,9 +16,9 @@ import {
 	ExerciseDifficulty,
 	getExerciseCustomizedOptions,
 	setPaywallModalPopup,
-} from "../store/data/dataSlice";
+} from "@/store/data/dataSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../store/store";
+import { RootState, AppDispatch } from "@/store/store";
 import { i18n } from "../i18n";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 

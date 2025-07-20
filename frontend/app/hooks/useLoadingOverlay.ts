@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { showLoadingOverlay, hideLoadingOverlay } from "../store/ui/uiSlice";
+import { showLoadingOverlay, hideLoadingOverlay } from "@/store/ui/uiSlice";
 import { i18n } from "@/i18n";
 
 export const useLoadingOverlay = () => {

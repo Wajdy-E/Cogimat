@@ -1,11 +1,11 @@
 // components/exerciseHandlers/MathOnlyStimulus.tsx
 
-import React from 'react';
-import { Exercise } from '../../store/data/dataSlice';
-import UnifiedStimulus from './UnifiedStimulus';
-import { MathOnlyStimulusStrategy } from './strategies';
+import React from "react";
+import { Exercise } from "@/store/data/dataSlice";
+import UnifiedStimulus from "./UnifiedStimulus";
+import { MathOnlyStimulusStrategy } from "./strategies";
 
-export default function MathOnlyStimulus ({
+export default function MathOnlyStimulus({
 	exercise,
 	onComplete,
 	onStop,

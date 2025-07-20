@@ -2,8 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { i18n } from "@/i18n";
-import { setLanguage, LanguageEnum } from "../store/auth/authSlice";
-import { AppDispatch, RootState } from "../store/store";
+import { setLanguage, LanguageEnum } from "@/store/auth/authSlice";
+import { AppDispatch, RootState } from "@/store/store";
 
 const LANGUAGE_STORAGE_KEY = "app_language";
 

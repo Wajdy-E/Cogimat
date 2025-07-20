@@ -1,11 +1,11 @@
 import { View, SafeAreaView, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heading } from "@/components/ui/heading";
-import { CustomExercise, Exercise, CustomizableExerciseOptions } from "../../store/data/dataSlice";
+import { CustomExercise, Exercise, CustomizableExerciseOptions } from "@/store/data/dataSlice";
 import { Button, ButtonGroup, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { ArrowLeft, Trash2, Edit } from "lucide-react-native";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { AppDispatch, RootState } from "../../store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { useCustomExercise } from "@/hooks/useCustomExercise";
 import { VStack } from "@/components/ui/vstack";
@@ -21,7 +21,7 @@ import {
 	submitExercise,
 	unsubmitExercise,
 	deleteCustomExercise,
-} from "../../store/data/dataSaga";
+} from "@/store/data/dataSaga";
 import AlertModal from "@/components/AlertModal";
 import { i18n } from "../../i18n";
 import { customExerciseToExercise } from "@/lib/helpers/helpers";

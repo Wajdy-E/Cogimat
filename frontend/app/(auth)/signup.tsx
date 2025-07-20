@@ -13,7 +13,7 @@ import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import { useAuth, useSignUp, useSSO, useUser } from "@clerk/clerk-expo";
 import { OAuthStrategy } from "@clerk/types";
-import { AppDispatch, persistor, RootState } from "../../store/store";
+import { AppDispatch, persistor, RootState } from "@/store/store";
 import { i18n } from "../i18n";
 import { Text } from "@/components/ui/text";
 import Apple from "../../assets/apple.svg";
@@ -31,7 +31,7 @@ import {
 	handleEmailVerification,
 	handleQRCodeSignup,
 	handleSignOut,
-} from "../../store/auth/authSaga";
+} from "@/store/auth/authSaga";
 import {
 	setSignupFormField,
 	setQrCode,
@@ -43,7 +43,7 @@ import {
 	setPendingVerification,
 	setIsSigningUp,
 	setSessionId,
-} from "../../store/auth/authSlice";
+} from "@/store/auth/authSlice";
 
 export const useWarmUpBrowser = () => {
 	useEffect(() => {

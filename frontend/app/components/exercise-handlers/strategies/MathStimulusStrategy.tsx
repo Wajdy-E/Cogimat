@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { Square, Triangle, Circle, Diamond } from 'lucide-react-native';
-import { Exercise } from '../../../store/data/dataSlice';
-import { Letter, NumberEnum } from '../../../data/program/Program';
-import { StimulusStrategy } from '../UnifiedStimulus';
+import React from "react";
+import { View, Text } from "react-native";
+import { Square, Triangle, Circle, Diamond } from "lucide-react-native";
+import { Exercise } from "../@/store/data/dataSlice";
+import { Letter, NumberEnum } from "../../../data/program/Program";
+import { StimulusStrategy } from "../UnifiedStimulus";
 
 interface IconWithColor {
 	icon: any;
@@ -12,22 +12,22 @@ interface IconWithColor {
 
 const getIconForShape = (shape: string): IconWithColor => {
 	switch (shape.toUpperCase()) {
-		case 'SQUARE':
-			return { icon: Square, color: '#FF0000' };
-		case 'TRIANGLE':
-			return { icon: Triangle, color: '#00FF00' };
-		case 'CIRCLE':
-			return { icon: Circle, color: '#FFFF00' };
-		case 'DIAMOND':
-			return { icon: Diamond, color: '#0000FF' };
+		case "SQUARE":
+			return { icon: Square, color: "#FF0000" };
+		case "TRIANGLE":
+			return { icon: Triangle, color: "#00FF00" };
+		case "CIRCLE":
+			return { icon: Circle, color: "#FFFF00" };
+		case "DIAMOND":
+			return { icon: Diamond, color: "#0000FF" };
 		default:
-			return { icon: Square, color: '#CCCCCC' };
+			return { icon: Square, color: "#CCCCCC" };
 	}
 };
 
 const generateValidMathProblem = (): string => {
 	while (true) {
-		const operations = ['+', '-', 'x', '/'];
+		const operations = ["+", "-", "x", "/"];
 		const op = operations[Math.floor(Math.random() * operations.length)];
 
 		let a = 1 + Math.floor(Math.random() * 4);
@@ -37,20 +37,20 @@ const generateValidMathProblem = (): string => {
 		let problem: string;
 
 		switch (op) {
-			case '+':
+			case "+":
 				result = a + b;
 				problem = `${a} + ${b}`;
 				break;
-			case '-':
+			case "-":
 				[a, b] = a >= b ? [a, b] : [b, a];
 				result = a - b;
 				problem = `${a} - ${b}`;
 				break;
-			case 'x':
+			case "x":
 				result = a * b;
 				problem = `${a} x ${b}`;
 				break;
-			case '/':
+			case "/":
 				result = a;
 				problem = `${a * b} / ${b}`;
 				break;
@@ -69,22 +69,22 @@ export const MathStimulusStrategy: StimulusStrategy = {
 		const options = [];
 
 		if (params.shapes?.length) {
-			options.push('shapes');
+			options.push("shapes");
 		}
 		if (params.colors?.length) {
-			options.push('colors');
+			options.push("colors");
 		}
 		if (params.letters?.length) {
-			options.push('letters');
+			options.push("letters");
 		}
 		if (params.numbers?.length) {
-			options.push('numbers');
+			options.push("numbers");
 		}
-		options.push('math');
+		options.push("math");
 
 		const type = options[Math.floor(Math.random() * options.length)];
 
-		if (type === 'math') {
+		if (type === "math") {
 			return generateValidMathProblem();
 		}
 
@@ -101,10 +101,10 @@ export const MathStimulusStrategy: StimulusStrategy = {
 			return null;
 		}
 
-		if (typeof stimulus === 'object' && 'hexcode' in stimulus) {
+		if (typeof stimulus === "object" && "hexcode" in stimulus) {
 			return <View className="absolute inset-0" style={{ backgroundColor: stimulus.hexcode }} />;
-		} else if (typeof stimulus === 'string') {
-			if (['SQUARE', 'TRIANGLE', 'CIRCLE', 'DIAMOND'].includes(stimulus)) {
+		} else if (typeof stimulus === "string") {
+			if (["SQUARE", "TRIANGLE", "CIRCLE", "DIAMOND"].includes(stimulus)) {
 				const { icon: Icon, color } = getIconForShape(stimulus);
 				return (
 					<View className="absolute inset-0 justify-center items-center bg-background-700">
@@ -114,10 +114,10 @@ export const MathStimulusStrategy: StimulusStrategy = {
 			} else if (
 				Object.values(Letter).includes(stimulus as Letter) ||
 				Object.values(NumberEnum).includes(stimulus) ||
-				stimulus.includes('+') ||
-				stimulus.includes('-') ||
-				stimulus.includes('x') ||
-				stimulus.includes('/')
+				stimulus.includes("+") ||
+				stimulus.includes("-") ||
+				stimulus.includes("x") ||
+				stimulus.includes("/")
 			) {
 				return (
 					<View className="absolute inset-0 justify-center items-center bg-background-700">
@@ -147,13 +147,13 @@ export const MathStimulusStrategy: StimulusStrategy = {
 		});
 	},
 
-	getTableHeaders: () => ['exerciseProgress.stimulus', 'exerciseProgress.count'],
+	getTableHeaders: () => ["exerciseProgress.stimulus", "exerciseProgress.count"],
 
 	incrementStimulusCount: (
 		stimulus: any,
-		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>,
+		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>
 	) => {
-		const key = typeof stimulus === 'object' ? JSON.stringify(stimulus) : String(stimulus);
+		const key = typeof stimulus === "object" ? JSON.stringify(stimulus) : String(stimulus);
 		setStimulusCount((prev) => {
 			const newMap = new Map(prev);
 			newMap.set(key, (newMap.get(key) || 0) + 1);

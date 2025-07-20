@@ -12,7 +12,7 @@ import { Play, Upload } from "lucide-react-native";
 import { i18n } from "../i18n";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setPaywallModalPopup } from "../store/data/dataSlice";
+import { setPaywallModalPopup } from "@/store/data/dataSlice";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
 import PaywallDrawer from "./PaywallDrawer";
 

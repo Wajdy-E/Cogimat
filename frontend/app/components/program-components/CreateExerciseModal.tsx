@@ -11,12 +11,12 @@ import {
 import { Button, ButtonText } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Icon, CloseIcon } from "@/components/ui/icon";
-import { ExerciseDifficulty } from "../../store/data/dataSlice";
+import { ExerciseDifficulty } from "@/store/data/dataSlice";
 import { i18n } from "../../i18n";
 import { ScrollView, View } from "react-native";
-import { AppDispatch } from "../../store/store";
+import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
-import { createCustomExercise } from "../../store/data/dataSaga";
+import { createCustomExercise } from "@/store/data/dataSaga";
 import { createExerciseSchemaStep1, createExerciseSchemaStep2 } from "../../schemas/schema";
 import CreateExerciseStepTwo from "../excercise-creation/CreateExerciseStep2";
 import CreateExerciseStepOne from "../excercise-creation/CreateExerciseStep1";

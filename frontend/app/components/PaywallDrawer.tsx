@@ -13,10 +13,10 @@ import { Text } from "@/components/ui/text";
 import { Icon, CloseIcon, CheckIcon } from "@/components/ui/icon";
 import { i18n } from "../i18n";
 import { Image, ScrollView, View } from "react-native";
-import { AppDispatch } from "../store/store";
+import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
 import Purchases from "react-native-purchases";
-import { updateSubscriptionStatus } from "../store/auth/authSaga";
+import { updateSubscriptionStatus } from "@/store/auth/authSaga";
 import { Star } from "lucide-react-native";
 
 interface PaywallDrawerProps {
