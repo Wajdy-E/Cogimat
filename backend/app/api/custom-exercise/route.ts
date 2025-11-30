@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
 			letters,
 			numbers,
 			colors,
+			arrows,
 			focus,
 			imageUri,
 			videoUri,
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
 			youtubeUrl,
 		} = body;
 
+		console.log(arrows, body);
 		let imageUriBlob = imageUri;
 		let videoUriBlob = videoUri;
 
@@ -81,12 +83,13 @@ export async function POST(req: NextRequest) {
 				exercise_time,
 				is_favourited,
 				public_access,
-				youtube_url
+				youtube_url,
+				arrows
 			) VALUES (
 				$1, $2, $3, $4,
 				$5, $6, $7, $8,
 				$9, $10, $11, $12,
-				$13, $14, $15, $16, $17
+				$13, $14, $15, $16, $17, $18
 			) RETURNING id, unique_identifier`,
 			[
 				clerk_id,
@@ -106,6 +109,7 @@ export async function POST(req: NextRequest) {
 				isFavourited,
 				publicAccess,
 				youtubeUrl,
+				arrows,
 			]
 		);
 
@@ -129,6 +133,7 @@ export async function PATCH(req: NextRequest) {
 			letters,
 			numbers,
 			colors,
+			arrows,
 			focus,
 			imageUri,
 			videoUri,
@@ -178,8 +183,9 @@ export async function PATCH(req: NextRequest) {
 				youtube_url = $17,
 				updated_at = CURRENT_TIMESTAMP,
 				submitted_to_cogipro = $18,
-				is_premium = $19
-			WHERE id = $20 AND clerk_id = $21`,
+				is_premium = $19,
+				arrows = $20
+			WHERE id = $21 AND clerk_id = $22`,
 			[
 				name,
 				instructions,
@@ -199,6 +205,7 @@ export async function PATCH(req: NextRequest) {
 				youtubeUrl,
 				submittedToCogipro,
 				isPremium,
+				arrows,
 				id,
 				clerk_id,
 			]
