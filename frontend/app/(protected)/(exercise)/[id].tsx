@@ -237,7 +237,10 @@ function ExerciseProgram() {
 								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
 									<BadgeIcon as={Clock} />
 									{(() => {
-										const customOptions = getExerciseCustomizedOptions(exercise, customizedExercises);
+										const customOptions = getExerciseCustomizedOptions(
+											exercise,
+											customizedExercises
+										);
 										const totalSeconds = customOptions.exerciseTime;
 										const minutes = Math.floor(totalSeconds / 60);
 										const seconds = totalSeconds % 60;
@@ -254,12 +257,8 @@ function ExerciseProgram() {
 									<BadgeText>{exercise.focus}</BadgeText>
 								</Badge>
 							</View>
-							<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>
-							<Text>{exercise.description}</Text>
 							<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
 							<Text>{exercise.instructions}</Text>
-
-							{/* Settings Button */}
 							<Button
 								onPress={() => router.push(`/(exercise)/settings?id=${id}`)}
 								variant="outline"
@@ -269,7 +268,6 @@ function ExerciseProgram() {
 							>
 								<ButtonText>{i18n.t("exercise.page.customizeExercise")}</ButtonText>
 							</Button>
-
 							<ExerciseVideoGallery exerciseId={exercise.id} />
 						</VStack>
 					</View>

@@ -76,7 +76,9 @@ function Progress() {
 	const appDispatch: AppDispatch = useDispatch();
 	const router = useRouter();
 	const goals = useSelector((state: RootState) => state.data.goals);
-	const userMilestones = useSelector((state: RootState) => state.user.milestones ?? ([] as unknown as UserMilestones));
+	const userMilestones = useSelector(
+		(state: RootState) => state.user.milestones ?? ([] as unknown as UserMilestones)
+	);
 	const [showAddGoalModal, setShowAddGoalModal] = useState(false);
 	const [goalToDelete, setGoalToDelete] = useState<string | null>(null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -118,7 +120,13 @@ function Progress() {
 			<Routines />
 			<Heading size="lg">{i18n.t("progress.goals.customGoalsTitle")}</Heading>
 
-			<Button size="lg" variant="solid" action="primary" className="mb-3" onPress={() => setShowAddGoalModal(true)}>
+			<Button
+				size="lg"
+				variant="solid"
+				action="primary"
+				className="mb-3"
+				onPress={() => setShowAddGoalModal(true)}
+			>
 				<ButtonText>{i18n.t("progress.goals.setGoalButton")}</ButtonText>
 				<ButtonIcon as={Edit} size="md" />
 			</Button>
@@ -134,8 +142,6 @@ function Progress() {
 					onCheck={() => handleToggleCheck(goal.id ?? null)}
 				/>
 			))}
-
-			<WeeklyWorkoutGoal />
 
 			{/* Temporary notification test - remove after testing */}
 			{/* <NotificationTest /> */}
@@ -169,10 +175,17 @@ function Progress() {
 		>
 			<View className="w-[90%] self-center">
 				<View className="mt-5 flex self-center">
-					<AnimatedTab options={[i18n.t("progress.overview"), i18n.t("progress.milestones")]} content={tabs} />
+					<AnimatedTab
+						options={[i18n.t("progress.overview"), i18n.t("progress.milestones")]}
+						content={tabs}
+					/>
 				</View>
 			</View>
-			<ModalComponent isOpen={showAddGoalModal} onClose={() => setShowAddGoalModal(false)} onConfirm={handleAddGoal}>
+			<ModalComponent
+				isOpen={showAddGoalModal}
+				onClose={() => setShowAddGoalModal(false)}
+				onConfirm={handleAddGoal}
+			>
 				<FormInput
 					formSize="md"
 					label="progress.goals.modal.label"

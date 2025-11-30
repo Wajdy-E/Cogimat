@@ -18,8 +18,8 @@ import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
 import { createCustomExercise } from "@/store/data/dataSaga";
 import { createExerciseSchemaStep1, createExerciseSchemaStep2 } from "../../schemas/schema";
-import CreateExerciseStepTwo from "../excercise-creation/CreateExerciseStep2";
-import CreateExerciseStepOne from "../excercise-creation/CreateExerciseStep1";
+import CreateExerciseStepOne from "../excercise-creation/CreateExerciseStep2";
+import CreateExerciseStepTwo from "../excercise-creation/CreateExerciseStep1";
 
 interface CreateExerciseModalProps {
 	isOpen: boolean;
@@ -27,12 +27,12 @@ interface CreateExerciseModalProps {
 }
 
 enum Step {
-	DESCRIPTION = 1,
-	SETTINGS = 2,
+	SETTINGS = 1,
+	DESCRIPTION = 2,
 }
 
 function CreateExerciseDrawer(props: CreateExerciseModalProps) {
-	const [step, setStep] = useState<Step>(Step.DESCRIPTION);
+	const [step, setStep] = useState<Step>(Step.SETTINGS);
 	const scrollViewRef = useRef<ScrollView>(null);
 	const defaultDurationSettings = {
 		offScreenTime: 0.5,
@@ -59,6 +59,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		letters: string[];
 		numbers: number[];
 		colors: string[];
+		arrows: string[];
 		focus?: string[];
 		imageUri?: string;
 		videoUri?: string;
@@ -75,6 +76,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		letters: [],
 		numbers: [],
 		colors: [],
+		arrows: [],
 		focus: [],
 		imageUri: undefined,
 		videoUri: undefined,
@@ -86,7 +88,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 
 	const validateForm = async () => {
 		try {
-			const schema = step === Step.DESCRIPTION ? createExerciseSchemaStep1 : createExerciseSchemaStep2;
+			const schema = step === Step.SETTINGS ? createExerciseSchemaStep2 : createExerciseSchemaStep1;
 			await schema.validate(formData, { abortEarly: false });
 			return true;
 		} catch (err: any) {
@@ -100,7 +102,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		}
 	};
 
-	const handleBack = () => setStep((prev) => (prev === Step.DESCRIPTION ? prev : ((prev - 1) as Step)));
+	const handleBack = () => setStep((prev) => (prev === Step.SETTINGS ? prev : ((prev - 1) as Step)));
 	function handleChange(name: keyof typeof formData, value: string) {
 		if (name === "focus") {
 			focusRef.current = value;
@@ -123,14 +125,14 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	}
 
 	const handleNext = async () => {
-		if (step === Step.DESCRIPTION) {
+		if (step === Step.SETTINGS) {
 			const valid = await validateForm();
 
 			if (!valid) {
 				return;
 			}
 		}
-		setStep((prev) => (prev === Step.SETTINGS ? prev : ((prev + 1) as Step)));
+		setStep((prev) => (prev === Step.DESCRIPTION ? prev : ((prev + 1) as Step)));
 	};
 
 	// Auto-scroll to top when step changes
@@ -151,7 +153,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	};
 
 	const renderFooterButton = () => {
-		if (step === Step.SETTINGS) {
+		if (step === Step.DESCRIPTION) {
 			return (
 				<Button onPress={handleSubmit}>
 					<ButtonText>{i18n.t("general.buttons.submit")}</ButtonText>
@@ -172,9 +174,9 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 				<DrawerHeader>
 					<View className="relative w-full">
 						<Heading size="xl" className="text-center">
-							{step === Step.DESCRIPTION
-								? i18n.t("createExercise.steps.description")
-								: i18n.t("createExercise.steps.settings")}
+							{step === Step.SETTINGS
+								? i18n.t("createExercise.steps.settings")
+								: i18n.t("createExercise.steps.description")}
 						</Heading>
 						<View className="absolute right-0 top-0">
 							<DrawerCloseButton onPress={props.onClose}>
@@ -189,12 +191,8 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 					showsVerticalScrollIndicator={false}
 				>
 					<DrawerBody>
-						{step === Step.DESCRIPTION && (
-							<CreateExerciseStepOne formData={formData} formErrors={formErrors} onChange={handleChange} />
-						)}
-
 						{step === Step.SETTINGS && (
-							<CreateExerciseStepTwo
+							<CreateExerciseStepOne
 								formData={formData}
 								durationSettings={durationSettings}
 								formErrors={formErrors}
@@ -203,10 +201,18 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 								onConfirm={{}}
 							/>
 						)}
+						{step === Step.DESCRIPTION && (
+							<CreateExerciseStepTwo
+								formData={formData}
+								formErrors={formErrors}
+								onChange={handleChange}
+								focus={focusRef.current}
+							/>
+						)}
 					</DrawerBody>
 				</ScrollView>
 				<DrawerFooter className="flex-row justify-end items-center gap-3">
-					{step !== Step.DESCRIPTION && (
+					{step !== Step.SETTINGS && (
 						<Button variant="outline" onPress={handleBack}>
 							<ButtonText>{i18n.t("general.buttons.previous")}</ButtonText>
 						</Button>

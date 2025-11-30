@@ -17,11 +17,6 @@ export const createExerciseSchemaStep1 = Yup.object().shape({
 		.min(3, "yupErrors.form.nameMin")
 		.max(50, "yupErrors.form.nameMax"),
 
-	description: Yup.string()
-		.required("yupErrors.form.descriptionRequired")
-		.min(10, "yupErrors.form.descriptionMin")
-		.max(500, "yupErrors.form.descriptionMax"),
-
 	instructions: Yup.string()
 		.required("yupErrors.form.instructionsRequired")
 		.min(10, "yupErrors.form.instructionsMin")
@@ -71,5 +66,7 @@ export const signUpSchema = Yup.object().shape({
 
 export const loginSchema = Yup.object().shape({
 	email: Yup.string().email(i18n.t("login.errors.invalidEmail")).required(i18n.t("login.errors.emailRequired")),
-	password: Yup.string().min(6, i18n.t("login.errors.passwordShort")).required(i18n.t("login.errors.passwordRequired")),
+	password: Yup.string()
+		.min(6, i18n.t("login.errors.passwordShort"))
+		.required(i18n.t("login.errors.passwordRequired")),
 });

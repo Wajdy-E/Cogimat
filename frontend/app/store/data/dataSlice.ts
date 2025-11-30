@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NumberEnum, Letter, Shape, Color, ColorOption } from "../../data/program/Program";
+import { NumberEnum, Letter, Shape, Color, ColorOption, Arrow } from "../../data/program/Program";
 
 export interface Exercise {
 	id: number;
@@ -7,7 +7,6 @@ export interface Exercise {
 	name: string;
 	type: string;
 	difficulty: ExerciseDifficulty;
-	description: string;
 	timeToComplete: string;
 	instructions: string;
 	parameters: ExerciseParameters;
@@ -34,7 +33,6 @@ export interface CustomExercise {
 	name: string;
 	type: string;
 	difficulty: ExerciseDifficulty;
-	description: string;
 	instructions: string;
 	parameters: ExerciseParameters;
 	videoUrl?: string;
@@ -53,6 +51,7 @@ export interface ExerciseParameters {
 	colors?: ColorOption[] | Color[];
 	numbers?: NumberEnum[];
 	letters?: Letter[];
+	arrows?: Arrow[];
 }
 
 export enum ExerciseDifficulty {
@@ -167,7 +166,10 @@ const dataSlice = createSlice({
 			const exercise = state.exercises.find((ex) => ex.id === action.payload);
 			state.selectedExercise = exercise || null;
 		},
-		updateExercise(state, { payload }: PayloadAction<{ exerciseId: number; options: CustomizableExerciseOptions }>) {
+		updateExercise(
+			state,
+			{ payload }: PayloadAction<{ exerciseId: number; options: CustomizableExerciseOptions }>
+		) {
 			state.customizedExercises[payload.exerciseId] = payload.options;
 		},
 		updateCustomOptions(state, action) {

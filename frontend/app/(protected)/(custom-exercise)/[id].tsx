@@ -227,7 +227,9 @@ function ExerciseProgram() {
 									<BadgeIcon as={Clock} />
 									{(() => {
 										// Convert from seconds to minutes for display
-										const totalSeconds = parseFloat(exercise.customizableOptions.exerciseTime.toString());
+										const totalSeconds = parseFloat(
+											exercise.customizableOptions.exerciseTime.toString()
+										);
 										const minutes = Math.floor(totalSeconds / 60);
 										const seconds = totalSeconds % 60;
 										return (
@@ -242,7 +244,13 @@ function ExerciseProgram() {
 								{(exercise.focus ?? []).length > 0
 									? (exercise.focus ?? []).map((f: string) => {
 											return (
-												<Badge size="lg" variant="solid" action="info" className="flex-row gap-3" key={f}>
+												<Badge
+													size="lg"
+													variant="solid"
+													action="info"
+													className="flex-row gap-3"
+													key={f}
+												>
 													<BadgeIcon as={Brain} />
 													<BadgeText>{f}</BadgeText>
 												</Badge>
@@ -250,13 +258,9 @@ function ExerciseProgram() {
 										})
 									: null}
 							</View>
-
-							<Heading size="lg">{i18n.t("exercise.page.description")}</Heading>
-							<Text>{exercise.description}</Text>
 							<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
 							<Text>{exercise.instructions}</Text>
 
-							{/* Settings Button */}
 							<Button
 								onPress={() => router.push(`/(custom-exercise)/settings?id=${id}`)}
 								variant="outline"

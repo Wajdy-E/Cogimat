@@ -15,6 +15,7 @@ import Letters from "../program-components/Letters";
 import Numbers from "../program-components/Numbers";
 import Shapes from "../program-components/Shapes";
 import Colors from "../program-components/Colors";
+import Arrows from "../program-components/Arrows";
 
 export default function CreateExerciseStepTwo({
 	formData,
@@ -43,22 +44,30 @@ export default function CreateExerciseStepTwo({
 				{i18n.t("exerciseCreation.exerciseParameters")}
 			</Heading>
 
-			{["colors", "shapes", "numbers", "letters"].map((type, idx) => (
-				<View key={type}>
-					{type === "colors" && (
-						<Colors onChange={(selected) => setFormData((prev: any) => ({ ...prev, colors: selected }))} />
-					)}
-					{type === "shapes" && (
-						<Shapes onChange={(selected) => setFormData((prev: any) => ({ ...prev, shapes: selected }))} />
-					)}
-					{type === "numbers" && (
-						<Numbers onChange={(selected) => setFormData((prev: any) => ({ ...prev, numbers: selected }))} />
-					)}
-					{type === "letters" && (
-						<Letters onChange={(selected) => setFormData((prev: any) => ({ ...prev, letters: selected }))} />
-					)}
-				</View>
-			))}
+			<VStack space="sm">
+				<Heading size="md">{i18n.t("exerciseCreation.colors")}</Heading>
+				<Colors onChange={(selected) => setFormData((prev: any) => ({ ...prev, colors: selected }))} />
+			</VStack>
+
+			<VStack space="sm">
+				<Heading size="md">{i18n.t("exerciseCreation.shapes")}</Heading>
+				<Shapes onChange={(selected) => setFormData((prev: any) => ({ ...prev, shapes: selected }))} />
+			</VStack>
+
+			<VStack space="sm">
+				<Heading size="md">{i18n.t("exerciseCreation.numbers")}</Heading>
+				<Numbers onChange={(selected) => setFormData((prev: any) => ({ ...prev, numbers: selected }))} />
+			</VStack>
+
+			<VStack space="sm">
+				<Heading size="md">{i18n.t("exerciseCreation.letters")}</Heading>
+				<Letters onChange={(selected) => setFormData((prev: any) => ({ ...prev, letters: selected }))} />
+			</VStack>
+
+			<VStack space="sm">
+				<Heading size="md">{i18n.t("exerciseCreation.arrows")}</Heading>
+				<Arrows onChange={(selected) => setFormData((prev: any) => ({ ...prev, arrows: selected }))} />
+			</VStack>
 
 			{formErrors.condition && (
 				<FormControl isInvalid={!!formErrors.condition}>

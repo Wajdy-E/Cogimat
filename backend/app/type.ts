@@ -16,7 +16,6 @@ export interface Exercise {
 	name: string;
 	type: string;
 	difficulty: ExerciseDifficulty;
-	description: string;
 	timeToComplete: string;
 	instructions: string;
 	parameters: ExerciseParameters;

@@ -4,7 +4,6 @@ export function customExerciseToExercise(customExercise: CustomExercise, isPremi
 	return {
 		uniqueIdentifier: customExercise.uniqueIdentifier,
 		difficulty: customExercise.difficulty,
-		description: customExercise.description,
 		isPremium: isPremium,
 		isChallenge: false,
 		focus: customExercise.focus?.toString(),

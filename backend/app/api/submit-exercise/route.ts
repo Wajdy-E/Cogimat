@@ -9,7 +9,6 @@ export async function POST(req: NextRequest) {
 			name,
 			type,
 			difficulty,
-			description,
 			instructions,
 			isChallenge,
 			videoUrl,
@@ -25,17 +24,16 @@ export async function POST(req: NextRequest) {
 		const exerciseTime = timeToComplete; // Now stored in seconds
 		await query(
 			`INSERT INTO exercises (
-			  name, type, difficulty, description, instructions, is_challenge, video_url, time_to_complete, 
+			  name, type, difficulty, instructions, is_challenge, video_url, time_to_complete, 
 			  focus, parameters, exercise_time, is_premium, image_file_name, unique_identifier
 			) VALUES (
-			  $1, $2, $3, $4, $5, $6, $7, $8,
-			  $9, $10, $11, $12, $13, $14
+			  $1, $2, $3, $4, $5, $6, $7,
+			  $8, $9, $10, $11, $12, $13
 			)`,
 			[
 				name,
 				type,
 				difficulty,
-				description,
 				instructions,
 				isChallenge,
 				videoUrl,
@@ -74,7 +72,9 @@ export async function DELETE(req: NextRequest) {
 			await query(`UPDATE exercises SET is_premium = false WHERE unique_identifier = $1`, [uniqueIdentifier]);
 		} else {
 			// Check if the exercise is premium before deleting
-			const exercise = await query(`SELECT is_premium FROM exercises WHERE unique_identifier = $1`, [uniqueIdentifier]);
+			const exercise = await query(`SELECT is_premium FROM exercises WHERE unique_identifier = $1`, [
+				uniqueIdentifier,
+			]);
 
 			if (exercise.length === 0) {
 				console.log(`Exercise not found: ${uniqueIdentifier}`);

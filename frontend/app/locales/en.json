@@ -11,6 +11,7 @@
 		"weeklyGoal": "Weekly workout goal",
 		"communityExercises": "Community Exercises",
 		"routine": "Routine",
+		"notifications": "Notifications",
 		"favourites": {
 			"title": "Favourites",
 			"beginner": "Beginner",
@@ -65,6 +66,7 @@
 
 		"appSettings": "App Settings",
 		"notifications": "Notifications",
+		"notificationSettings": "Notification Settings",
 		"darkMode": "Dark Mode",
 		"emailMarketing": "Email Marketing",
 		"appLanguage": "App Language",
@@ -218,6 +220,8 @@
 		"error": "Authentication Error"
 	},
 	"general": {
+		"viewMore": "View More",
+		"showLess": "Show Less",
 		"buttons": {
 			"next": "Next",
 			"previous": "Previous",
@@ -665,6 +669,11 @@
 	},
 	"exerciseCreation": {
 		"exerciseParameters": "Exercise Parameters",
-		"timingSettings": "Timing Settings"
+		"timingSettings": "Timing Settings",
+		"colors": "Colors",
+		"shapes": "Shapes",
+		"numbers": "Numbers",
+		"letters": "Letters",
+		"arrows": "Arrows"
 	}
 }

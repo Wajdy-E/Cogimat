@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
 		const {
 			clerk_id,
 			name,
-			description,
 			instructions,
 			difficulty,
 			shapes,
@@ -68,7 +67,6 @@ export async function POST(req: NextRequest) {
 			`INSERT INTO customexercises (
 				clerk_id,
 				name,
-				description,
 				instructions,
 				difficulty,
 				shapes,
@@ -85,15 +83,14 @@ export async function POST(req: NextRequest) {
 				public_access,
 				youtube_url
 			) VALUES (
-				$1, $2, $3, $4, $5,
-				$6, $7, $8, $9, $10,
-				$11, $12, $13, $14, $15,
-				$16, $17, $18
+				$1, $2, $3, $4,
+				$5, $6, $7, $8,
+				$9, $10, $11, $12,
+				$13, $14, $15, $16, $17
 			) RETURNING id, unique_identifier`,
 			[
 				clerk_id,
 				name,
-				description,
 				instructions,
 				difficulty,
 				shapes,
@@ -126,7 +123,6 @@ export async function PATCH(req: NextRequest) {
 			id,
 			clerk_id,
 			name,
-			description,
 			instructions,
 			difficulty,
 			shapes,
@@ -165,10 +161,9 @@ export async function PATCH(req: NextRequest) {
 		await query(
 			`UPDATE customexercises SET
 				name = $1,
-				description = $2,
-				instructions = $3,
-				difficulty = $4,
-				shapes = $5,
+				instructions = $2,
+				difficulty = $3,
+				shapes = $4,
 				letters = $6,
 				numbers = $7,
 				colors = $8,
@@ -187,7 +182,6 @@ export async function PATCH(req: NextRequest) {
 			WHERE id = $20 AND clerk_id = $21`,
 			[
 				name,
-				description,
 				instructions,
 				difficulty,
 				shapes,

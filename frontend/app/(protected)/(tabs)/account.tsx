@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { ScrollView, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as Notifications from "expo-notifications";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createAction } from "@reduxjs/toolkit";
 import { useUser } from "@clerk/clerk-expo";
@@ -19,7 +18,7 @@ import { Center } from "@/components/ui/center";
 import SwitchRow from "@/components/SwitchRow";
 import AlertModal from "@/components/AlertModal";
 import { i18n } from "../../i18n";
-import { setNotifications, Theme, setEmails, LanguageEnum } from "@/store/auth/authSlice";
+import { setEmails, Theme, LanguageEnum } from "@/store/auth/authSlice";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { deleteUserThunk } from "@/store/auth/authSaga";
 import { Pencil } from "lucide-react-native";
@@ -44,7 +43,8 @@ function Account() {
 
 	let emailAddress = "";
 	if (user) {
-		emailAddress = typeof user.emailAddresses === "string" ? user.emailAddresses : user.emailAddresses[0].emailAddress;
+		emailAddress =
+			typeof user.emailAddresses === "string" ? user.emailAddresses : user.emailAddresses[0].emailAddress;
 	}
 
 	const [showSignoutModal, setShowSignoutModal] = useState(false);
@@ -53,9 +53,8 @@ function Account() {
 	const usernameRef = useRef(user?.username ?? "");
 
 	const { theme, toggleTheme, themeTextColor } = useTheme();
-	const { notifications, emails } = useSelector(
+	const { emails } = useSelector(
 		(state: RootState) => ({
-			notifications: state.user.user.settings?.allowNotifications ?? false,
 			emails: state.user.user.settings?.allowEmails ?? false,
 		}),
 		shallowEqual
@@ -75,21 +74,6 @@ function Account() {
 	};
 
 	const isPaywallOpen = useSelector((state: RootState) => state.data.popupStates.paywallIsOpen);
-
-	async function askNotificationPermission() {
-		const { status } = await Notifications.requestPermissionsAsync();
-		return status === "granted";
-	}
-
-	async function updateNotificationSettings() {
-		if (!notifications) {
-			const permissionGranted = await askNotificationPermission();
-			if (!permissionGranted) {
-				return;
-			}
-		}
-		dispatch(setNotifications(!notifications));
-	}
 
 	const pickImage = async () => {
 		try {
@@ -184,17 +168,19 @@ function Account() {
 							{emailAddress.length > 0 && <Heading size="sm">{emailAddress}</Heading>}
 						</View>
 						{!isSubscribed && (
-							<AccountLink title="account.subscribe" onPress={() => dispatch(setPaywallModalPopup(true))} />
+							<AccountLink
+								title="account.subscribe"
+								onPress={() => dispatch(setPaywallModalPopup(true))}
+							/>
 						)}
 						<AccountLink title="account.signout" onPress={() => setShowSignoutModal(true)} />
 						<AccountLink title="account.askTeam" link="unknown" isExternal />
 					</VStack>
 					<VStack space="md">
 						<Heading className="text-primary-500">{i18n.t("account.appSettings")}</Heading>
-						<SwitchRow
-							title={i18n.t("account.notifications")}
-							value={notifications}
-							onToggle={updateNotificationSettings}
+						<AccountLink
+							title="account.notifications"
+							onPress={() => router.push("/(protected)/(tabs)/notifications")}
 						/>
 						<SwitchRow
 							title={i18n.t("account.darkMode")}
@@ -266,7 +252,11 @@ function Account() {
 				action="negative"
 			/>
 
-			<ModalComponent onClose={() => setShowUsernameModal(false)} isOpen={showUsernameModal} onConfirm={updateUsername}>
+			<ModalComponent
+				onClose={() => setShowUsernameModal(false)}
+				isOpen={showUsernameModal}
+				onConfirm={updateUsername}
+			>
 				<FormInput
 					formSize="md"
 					label="account.username"

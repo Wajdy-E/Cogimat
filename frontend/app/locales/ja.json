@@ -11,6 +11,7 @@
 		"weeklyGoal": "週間エクササイズ目標",
 		"communityExercises": "コミュニティエクササイズ",
 		"routine": "ルーティン",
+		"notifications": "通知",
 		"favourites": {
 			"title": "お気に入り",
 			"beginner": "初級",
@@ -65,6 +66,7 @@
 
 		"appSettings": "アプリ設定",
 		"notifications": "通知",
+		"notificationSettings": "通知設定",
 		"darkMode": "ダークモード",
 		"emailMarketing": "メールマーケティング",
 		"appLanguage": "アプリ言語",
@@ -218,6 +220,8 @@
 		"error": "認証エラー"
 	},
 	"general": {
+		"viewMore": "もっと見る",
+		"showLess": "閉じる",
 		"buttons": {
 			"next": "次へ",
 			"previous": "前へ",
@@ -669,6 +673,11 @@
 	},
 	"exerciseCreation": {
 		"exerciseParameters": "エクササイズパラメータ",
-		"timingSettings": "時間設定"
+		"timingSettings": "時間設定",
+		"colors": "色",
+		"shapes": "形",
+		"numbers": "数字",
+		"letters": "文字",
+		"arrows": "矢印"
 	}
 }

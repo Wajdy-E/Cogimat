@@ -66,6 +66,14 @@ export default function TabsLayout() {
 				/>
 
 				<Tabs.Screen
+					name="notifications"
+					options={{
+						title: i18n.t("pages.notifications"),
+						href: null,
+					}}
+				/>
+
+				<Tabs.Screen
 					name="community-exercises"
 					options={{
 						title: i18n.t("pages.communityExercises"),

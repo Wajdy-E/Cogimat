@@ -11,6 +11,7 @@
 		"weeklyGoal": "Objectif hebdomadaire",
 		"communityExercises": "Exercices communautaires",
 		"routine": "Routine",
+		"notifications": "Notifications",
 		"favourites": {
 			"title": "Favoris",
 			"beginner": "Débutant",
@@ -65,6 +66,7 @@
 
 		"appSettings": "Paramètres de l'application",
 		"notifications": "Notifications",
+		"notificationSettings": "Paramètres de notification",
 		"darkMode": "Mode sombre",
 		"emailMarketing": "Marketing par e-mail",
 		"appLanguage": "Langue de l'application",
@@ -218,6 +220,8 @@
 		"error": "Erreur d'authentification"
 	},
 	"general": {
+		"viewMore": "Voir Plus",
+		"showLess": "Voir Moins",
 		"buttons": {
 			"next": "Suivant",
 			"previous": "Précédent",
@@ -673,6 +677,11 @@
 	},
 	"exerciseCreation": {
 		"exerciseParameters": "Paramètres d'Exercice",
-		"timingSettings": "Paramètres de Temps"
+		"timingSettings": "Paramètres de Temps",
+		"colors": "Couleurs",
+		"shapes": "Formes",
+		"numbers": "Nombres",
+		"letters": "Lettres",
+		"arrows": "Flèches"
 	}
 }

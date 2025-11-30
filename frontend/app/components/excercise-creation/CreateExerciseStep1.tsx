@@ -39,19 +39,6 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 				formErrorKey={formErrors.name}
 			/>
 
-			<FormInput
-				placeholder="createExercise.form.descriptionPlaceholder"
-				defaultValue={formData.description}
-				label="createExercise.form.descriptionLabel"
-				inputSize="md"
-				onChange={(text) => onChange("description", text)}
-				inputType="text"
-				formSize="lg"
-				isRequired
-				invalid={!!formErrors.description}
-				formErrorKey={formErrors.description}
-			/>
-
 			<FormControl isRequired={true} size="lg" isInvalid={!!formErrors.instructions}>
 				<FormControlLabel>
 					<FormControlLabelText>{i18n.t("createExercise.form.instructionsLabel")}</FormControlLabelText>
@@ -95,7 +82,7 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 
 			<FormInput
 				placeholder="createExercise.form.ytUrlPlaceholder"
-				value={formData.description}
+				value={formData.youtubeUrl}
 				label="createExercise.form.ytUrl"
 				inputSize="md"
 				onChange={(text) => onChange("youtubeUrl", text)}
