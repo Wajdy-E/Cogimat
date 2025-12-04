@@ -387,6 +387,14 @@
 		"invalidOrMissing": "Exercice invalide ou manquant",
 		"startingIn": "Démarrage dans"
 	},
+	"metronome": {
+		"title": "Métronome",
+		"tempo": "Tempo (BPM)",
+		"volume": "Volume",
+		"description": "Signaux sonores pour vous aider avec le timing et la coordination",
+		"enabled": "Métronome activé",
+		"disabled": "Métronome désactivé"
+	},
 	"progress": {
 		"milestones": "Étapes importantes",
 		"overview": "Aperçu",

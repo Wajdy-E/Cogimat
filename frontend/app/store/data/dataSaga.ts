@@ -28,7 +28,7 @@ import {
 } from "./dataSlice";
 import axios from "axios";
 import { RootState } from "@/store/store";
-import { Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
+import { Arrow, Color, colorOptions, Letter, NumberEnum, Shape } from "../../data/program/Program";
 import { updateUserMilestone } from "../auth/authSaga";
 import { uploadExerciseImage, uploadExerciseVideo } from "../../lib/exerciseMediaUpload";
 const BASE_URL = process.env.BASE_URL;
@@ -316,6 +316,7 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 				videoUri = await uploadExerciseVideo(formData.videoUri);
 			}
 
+			console.log("Creating exercise with data:", formData);
 			const payload = {
 				...formData,
 				clerk_id: userId,
@@ -339,6 +340,7 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 					colors: formData.colors as Color[],
 					numbers: formData.numbers as NumberEnum[],
 					letters: formData.letters as Letter[],
+					arrows: formData.arrows as Arrow[],
 				},
 				videoUrl: videoUri,
 				imageFileUrl: imageUri,
@@ -354,6 +356,7 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 						colors: formData.colors as Color[],
 						numbers: formData.numbers as NumberEnum[],
 						letters: formData.letters as Letter[],
+						arrows: formData.arrows as Arrow[],
 					},
 					offScreenTime: formData.offScreenTime,
 					onScreenTime: formData.onScreenTime,

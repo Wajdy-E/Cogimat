@@ -386,6 +386,14 @@
 		"invalidOrMissing": "Invalid or missing exercise",
 		"startingIn": "Starting in"
 	},
+	"metronome": {
+		"title": "Metronome",
+		"tempo": "Tempo (BPM)",
+		"volume": "Volume",
+		"description": "Audio tempo cues to help with timing and coordination",
+		"enabled": "Metronome Enabled",
+		"disabled": "Metronome Disabled"
+	},
 	"progress": {
 		"milestones": "Milestones",
 		"overview": "Overview",

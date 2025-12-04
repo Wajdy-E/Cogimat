@@ -147,6 +147,8 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		if (!valid) {
 			return;
 		}
+
+		console.log(formData);
 		await dispatch(createCustomExercise(formData)).unwrap();
 		props.onClose();
 		setFormData(null);

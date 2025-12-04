@@ -390,6 +390,14 @@
 		"invalidOrMissing": "無効または不足しているエクササイズ",
 		"startingIn": "開始まで"
 	},
+	"metronome": {
+		"title": "メトロノーム",
+		"tempo": "テンポ (BPM)",
+		"volume": "音量",
+		"description": "タイミングと協調性を助けるオーディオテンポキュー",
+		"enabled": "メトロノーム有効",
+		"disabled": "メトロノーム無効"
+	},
 	"progress": {
 		"milestones": "マイルストーン",
 		"overview": "概要",

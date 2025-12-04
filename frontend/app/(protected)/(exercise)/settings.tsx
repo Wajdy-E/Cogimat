@@ -17,6 +17,7 @@ import { updateExercise, getExerciseCustomizedOptions } from "@/store/data/dataS
 import { i18n } from "../../i18n";
 import CustomSlider from "@/components/CustomSlider";
 import ExerciseVideoUpload from "@/components/ExerciseVideoUpload";
+import MetronomeControl, { MetronomeSettings } from "@/components/MetronomeControl";
 
 export default function ExerciseSettings() {
 	const { id } = useLocalSearchParams();
@@ -59,10 +60,44 @@ export default function ExerciseSettings() {
 				}
 	);
 
+	// Metronome settings state
+	const [metronomeSettings, setMetronomeSettings] = useState<MetronomeSettings>({
+		enabled: false,
+		bpm: 120,
+		volume: 0.7,
+	});
+
+	// Auto-save metronome settings when they change
+	const handleMetronomeChange = (newSettings: MetronomeSettings) => {
+		console.log("🎵 Metronome settings changed:", newSettings);
+		setMetronomeSettings(newSettings);
+
+		// Auto-save to Redux
+		if (exercises) {
+			console.log("💾 Auto-saving metronome settings...");
+			dispatch(
+				updateExercise({
+					exerciseId: exercises.id,
+					options: {
+						...durationSettings,
+						metronome: newSettings,
+					},
+				})
+			);
+			console.log("✅ Metronome settings auto-saved");
+		}
+	};
+
 	// Update durationSettings when exercise or customizedExercises change
 	useEffect(() => {
 		if (exercises) {
-			setDurationSettings(getExerciseCustomizedOptions(exercises, customizedExercises));
+			const customOptions = getExerciseCustomizedOptions(exercises, customizedExercises);
+			setDurationSettings(customOptions);
+
+			// Load metronome settings if they exist
+			if (customOptions.metronome) {
+				setMetronomeSettings(customOptions.metronome);
+			}
 		}
 	}, [exercises, customizedExercises]);
 
@@ -80,7 +115,11 @@ export default function ExerciseSettings() {
 		if (!exercises) {
 			return;
 		}
-		setDurationSettings({ ...getExerciseCustomizedOptions(exercises, customizedExercises) });
+		const customOptions = getExerciseCustomizedOptions(exercises, customizedExercises);
+		setDurationSettings({ ...customOptions });
+		if (customOptions.metronome) {
+			setMetronomeSettings(customOptions.metronome);
+		}
 		setIsEditing(false);
 	}
 
@@ -89,8 +128,21 @@ export default function ExerciseSettings() {
 			return;
 		}
 
-		dispatch(updateExercise({ exerciseId: exercises.id, options: { ...durationSettings } }));
+		console.log("💾 Saving exercise settings...");
+		console.log("💾 Duration settings:", durationSettings);
+		console.log("💾 Metronome settings:", metronomeSettings);
 
+		dispatch(
+			updateExercise({
+				exerciseId: exercises.id,
+				options: {
+					...durationSettings,
+					metronome: metronomeSettings,
+				},
+			})
+		);
+
+		console.log("✅ Settings saved to Redux");
 		setIsEditing(false);
 	}
 	const handleVideoUploadSuccess = () => {
@@ -166,16 +218,53 @@ export default function ExerciseSettings() {
 											minValue={0.5}
 											maxValue={key === "exerciseTime" ? 5 : 15}
 											step={0.5}
-											value={key === "exerciseTime" ? parseFloat(value.toString()) / 60 : parseFloat(value.toString())}
-											defaultValue={
-												key === "exerciseTime" ? parseFloat(value.toString()) / 60 : parseFloat(value.toString())
+											value={
+												key === "exerciseTime"
+													? parseFloat(value.toString()) / 60
+													: parseFloat(value.toString())
 											}
-											suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+											defaultValue={
+												key === "exerciseTime"
+													? parseFloat(value.toString()) / 60
+													: parseFloat(value.toString())
+											}
+											suffix={
+												key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"
+											}
 											isReadOnly={!isEditing}
 											onChange={(newValue) => handleSliderChange(key, newValue)}
 										/>
 									))}
 								</VStack>
+
+								{isEditing && (
+									<ButtonGroup className="flex-row self-end py-3">
+										<Button variant="outline" onPress={onEditCancel} action="secondary" size="md">
+											<ButtonText>{i18n.t("general.buttons.cancel")}</ButtonText>
+										</Button>
+										<Button onPress={onEditSave} action="primary" size="md">
+											<ButtonText>{i18n.t("general.buttons.save")}</ButtonText>
+										</Button>
+									</ButtonGroup>
+								)}
+							</VStack>
+						</Box>
+
+						{/* Metronome Settings */}
+						<Box className="bg-secondary-500 p-5 rounded-md">
+							<VStack space="lg" className="px-3 pb-4">
+								<View>
+									<Heading size="md" className="text-primary-500">
+										{i18n.t("metronome.title")}
+									</Heading>
+									<Divider className="bg-slate-400" />
+								</View>
+
+								<MetronomeControl
+									settings={metronomeSettings}
+									onChange={handleMetronomeChange}
+									showVisualIndicator={false}
+								/>
 
 								{isEditing && (
 									<ButtonGroup className="flex-row self-end py-3">
@@ -209,7 +298,11 @@ export default function ExerciseSettings() {
 											onClose={() => setShowVideoUpload(false)}
 										/>
 									) : (
-										<Button onPress={() => setShowVideoUpload(true)} action="primary" className="w-full">
+										<Button
+											onPress={() => setShowVideoUpload(true)}
+											action="primary"
+											className="w-full"
+										>
 											<ButtonText>{i18n.t("exercise.sections.uploadVideo")}</ButtonText>
 										</Button>
 									)}

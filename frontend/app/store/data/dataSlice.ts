@@ -20,11 +20,18 @@ export interface Exercise {
 	youtubeUrl?: string;
 }
 
+export interface MetronomeSettings {
+	enabled: boolean;
+	bpm: number;
+	volume: number;
+}
+
 export interface CustomizableExerciseOptions {
 	parameters?: ExerciseParameters;
 	offScreenTime: number;
 	onScreenTime: number;
 	exerciseTime: number;
+	metronome?: MetronomeSettings;
 }
 
 export interface CustomExercise {
@@ -405,6 +412,11 @@ export const getExerciseCustomizedOptions = (
 		offScreenTime: 0.5,
 		onScreenTime: 1,
 		exerciseTime: parseInt(exercise.timeToComplete),
+		metronome: {
+			enabled: false,
+			bpm: 120,
+			volume: 0.7,
+		},
 	};
 };
 
