@@ -74,7 +74,7 @@
 			],
 			"expo-video",
 			"expo-web-browser",
-			"./plugins/withReactNativeIAP.js"
+			"./plugins/withKotlinJvmTarget.js"
 		],
 		"extra": {
 			"router": {
