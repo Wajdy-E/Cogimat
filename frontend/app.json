@@ -73,7 +73,8 @@
 				}
 			],
 			"expo-video",
-			"expo-web-browser"
+			"expo-web-browser",
+			"./plugins/withReactNativeIAP.js"
 		],
 		"extra": {
 			"router": {
