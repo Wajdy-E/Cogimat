@@ -7,20 +7,24 @@
 		"development": {
 			"developmentClient": true,
 			"distribution": "internal",
+			"prebuildCommand": "expo prebuild --clean",
 			"android": {
-				"gradleCommand": ":app:assemblePlayDebug"
+				"gradleCommand": ":app:assembleDebug",
+				"buildType": "apk"
 			}
 		},
 		"preview": {
 			"distribution": "internal",
 			"android": {
-				"gradleCommand": ":app:assemblePlayRelease"
+				"gradleCommand": ":app:assembleRelease",
+				"buildType": "app-bundle"
 			}
 		},
 		"production": {
 			"autoIncrement": true,
 			"android": {
-				"gradleCommand": ":app:assemblePlayRelease"
+				"gradleCommand": ":app:assembleRelease",
+				"buildType": "app-bundle"
 			}
 		}
 	},
