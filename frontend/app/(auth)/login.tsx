@@ -21,7 +21,6 @@ import { ArrowRight, Eye, EyeClosed } from "lucide-react-native";
 import { InputIcon } from "@/components/ui/input";
 import { handleEmailLogin, handleProviderLogin } from "@/store/auth/authSaga";
 import { setLoginFormField } from "@/store/auth/authSlice";
-import { loginSchema } from "@/schemas/schema";
 
 export const useWarmUpBrowser = () => {
 	useEffect(() => {
@@ -50,18 +49,28 @@ function Login() {
 		e.preventDefault();
 		if (!isLoaded) return;
 
+		// Basic validation - check if fields are empty
+		if (!loginForm?.email?.trim() || !loginForm?.password?.trim()) {
+			Alert.alert(i18n.t("login.alerts.validationError"), i18n.t("login.errors.emptyFields"));
+			return;
+		}
+
 		try {
-			await loginSchema.validate(loginForm);
-			await dispatch(
+			const result = await dispatch(
 				handleEmailLogin({
-					email: loginForm?.email || "",
-					password: loginForm?.password || "",
+					email: loginForm.email,
+					password: loginForm.password,
 					signIn,
 					setActive,
 				})
 			);
+
+			// Check if login failed
+			if (handleEmailLogin.rejected.match(result)) {
+				Alert.alert(i18n.t("login.alerts.validationError"), i18n.t("login.errors.invalidCredentials"));
+			}
 		} catch (error: any) {
-			Alert.alert(i18n.t("login.alert.invalidData"), error.message);
+			Alert.alert(i18n.t("login.alerts.validationError"), i18n.t("login.errors.invalidCredentials"));
 		}
 	};
 
@@ -107,7 +116,12 @@ function Login() {
 							}
 						/>
 
-						<Button size="lg" className="rounded-full" onPress={(e) => handleSubmit(e)} disabled={isLoggingIn}>
+						<Button
+							size="lg"
+							className="rounded-full"
+							onPress={(e) => handleSubmit(e)}
+							disabled={isLoggingIn}
+						>
 							<ButtonText>{i18n.t("login.loginButton")}</ButtonText>
 							<ButtonIcon as={ArrowRight} />
 						</Button>

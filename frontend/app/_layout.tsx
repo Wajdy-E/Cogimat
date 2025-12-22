@@ -1,10 +1,10 @@
 import "../global.css";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { Provider } from "react-redux";
 import { store, persistor } from "@/store/store";
 import { GluestackUIProvider } from "./components/ui/gluestack-ui-provider";
 import { PersistGate } from "redux-persist/integration/react";
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "../cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useTheme } from "./components/ui/ThemeProvider";
@@ -13,7 +13,6 @@ import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import * as Notifications from "expo-notifications";
-import { useRouter } from "expo-router";
 import backgroundNotificationService from "@/lib/backgroundNotificationService";
 import { setupNotifications } from "@/lib/notificationSetup";
 import { LanguageAwareWrapper } from "@/components/LanguageAwareWrapper";
@@ -24,6 +23,24 @@ const publishableKey = process.env.CLERK_PROD_KEY!;
 function ThemedApp() {
 	const { theme } = useTheme();
 	const router = useRouter();
+	const segments = useSegments();
+	const { isSignedIn, isLoaded } = useAuth();
+
+	// Handle authentication redirects
+	useEffect(() => {
+		if (!isLoaded) return;
+
+		const inAuthGroup = segments[0] === "(auth)";
+
+		if (!isSignedIn && !inAuthGroup) {
+			// Redirect to login if not signed in and not in auth routes
+			console.log("Session expired or user not authenticated, redirecting to login");
+			router.replace("/(auth)/login");
+		} else if (isSignedIn && inAuthGroup) {
+			// Redirect to home if signed in and in auth routes
+			router.replace("/(protected)/(tabs)/home");
+		}
+	}, [isSignedIn, isLoaded, segments]);
 
 	// Handle notification responses and reschedule notifications on app start
 	useEffect(() => {

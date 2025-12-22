@@ -157,19 +157,17 @@
 		"scanQRCode": "Scan QR Code",
 		"signUp": "Sign Up",
 		"alerts": {
-			"validationError": "Validation Error",
-			"invalidCredentials": "Login failed. Please check your credentials.",
+			"validationError": "Login Error",
+			"invalidCredentials": "Invalid email or password. Please try again.",
 			"userNotFound": "User not found",
 			"userNotFoundMessage": "Please sign up to create an account."
 		},
 		"alert": {
-			"invalidData": "Invalid login data"
+			"invalidData": "Invalid email or password"
 		},
 		"errors": {
-			"invalidEmail": "Invalid email format",
-			"emailRequired": "Email is required",
-			"passwordShort": "Password must be at least 6 characters",
-			"passwordRequired": "Password is required"
+			"invalidCredentials": "Invalid email or password. Please try again.",
+			"emptyFields": "Please enter both email and password."
 		},
 		"loading": "Logging in..."
 	},
@@ -389,10 +387,9 @@
 	"metronome": {
 		"title": "Metronome",
 		"tempo": "Tempo (BPM)",
-		"volume": "Volume",
-		"description": "Audio tempo cues to help with timing and coordination",
 		"enabled": "Metronome Enabled",
-		"disabled": "Metronome Disabled"
+		"disabled": "Metronome Disabled",
+		"timingNote": "Note: When metronome is enabled, stimulus timing is controlled by BPM instead of on-screen/off-screen times."
 	},
 	"progress": {
 		"milestones": "Milestones",

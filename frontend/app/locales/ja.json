@@ -157,19 +157,17 @@
 		"scanQRCode": "QRコードをスキャン",
 		"signUp": "サインアップ",
 		"alerts": {
-			"validationError": "検証エラー",
-			"invalidCredentials": "ログインに失敗しました。認証情報を確認してください。",
+			"validationError": "ログインエラー",
+			"invalidCredentials": "メールアドレスまたはパスワードが正しくありません。もう一度お試しください。",
 			"userNotFound": "ユーザーが見つかりません",
 			"userNotFoundMessage": "アカウントを作成するためにサインアップしてください。"
 		},
 		"alert": {
-			"invalidData": "無効なログインデータ"
+			"invalidData": "メールアドレスまたはパスワードが正しくありません"
 		},
 		"errors": {
-			"invalidEmail": "無効なメール形式",
-			"emailRequired": "メールは必須です",
-			"passwordShort": "パスワードは6文字以上である必要があります",
-			"passwordRequired": "パスワードは必須です"
+			"invalidCredentials": "メールアドレスまたはパスワードが正しくありません。もう一度お試しください。",
+			"emptyFields": "メールアドレスとパスワードを入力してください。"
 		},
 		"loading": "ログイン中..."
 	},
@@ -394,9 +392,10 @@
 		"title": "メトロノーム",
 		"tempo": "テンポ (BPM)",
 		"volume": "音量",
-		"description": "タイミングと協調性を助けるオーディオテンポキュー",
+		"description": "タイミングと協調性をサポートするオーディオテンポキュー",
 		"enabled": "メトロノーム有効",
-		"disabled": "メトロノーム無効"
+		"disabled": "メトロノーム無効",
+		"timingNote": "注意：メトロノームが有効な場合、刺激のタイミングは画面表示/非表示時間ではなくBPMによって制御されます。"
 	},
 	"progress": {
 		"milestones": "マイルストーン",

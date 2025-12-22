@@ -1,7 +1,7 @@
 // app/exercise.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import {
@@ -9,6 +9,7 @@ import {
 	setCurrentExercise,
 	setPaywallModalPopup,
 	getExerciseCustomizedOptions,
+	setExerciseStopped,
 } from "@/store/data/dataSlice";
 import { i18n } from "../../i18n";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
@@ -23,7 +24,10 @@ import Countdown from "@/components/Countdown";
 import Header from "@/components/Header";
 import MetronomeIndicator from "@/components/MetronomeIndicator";
 
-const handlerMap: Record<string, React.FC<{ exercise: Exercise; onComplete?: () => void; onStop?: () => void }>> = {
+const handlerMap: Record<
+	string,
+	React.FC<{ exercise: Exercise; onComplete?: () => void; onStop?: () => void; forcePause?: boolean }>
+> = {
 	default: SimpleStimulus,
 	"letter-sequence": SimpleStimulus,
 	"shape-color-combo": SimpleStimulus,
@@ -37,10 +41,11 @@ export default function ExerciseRouter() {
 	const router = useRouter();
 	const dispatch: AppDispatch = useDispatch();
 	const [showCountdown, setShowCountdown] = useState(true);
-	const [exerciseStopped, setExerciseStopped] = useState(false);
+	const [forceExercisePause, setForceExercisePause] = useState(false);
 
 	const { isSubscribed } = useSubscriptionStatus();
 	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises);
+	const exerciseStopped = useSelector((state: RootState) => state.data.exerciseStopped);
 
 	// Check if this is routine mode
 	const isRoutineMode = params?.routineMode === "true";
@@ -71,15 +76,30 @@ export default function ExerciseRouter() {
 		}
 	}, [exercise, dispatch]);
 
+	// Handle screen focus/blur to pause exercise when navigating away
+	useFocusEffect(
+		React.useCallback(() => {
+			// Screen is focused - resuming if was paused by navigation
+			console.log("🎯 Exercise screen focused");
+
+			return () => {
+				// Screen is blurred - pause the exercise
+				console.log("🎯 Exercise screen blurred - pausing exercise");
+				setForceExercisePause(true);
+			};
+		}, [])
+	);
+
 	// Cleanup: clear selected exercise when component unmounts
 	useEffect(() => {
 		return () => {
 			// Clear the selected exercise when leaving the screen
 			dispatch(setCurrentExercise(null as any));
+			// dispatch(setExerciseStopped(false));
 			// Stop metronome when leaving exercise
 			MetronomeService.stop();
 		};
-	}, [dispatch]);
+	}, []);
 
 	// Handle metronome based on exercise settings
 	useEffect(() => {
@@ -97,7 +117,6 @@ export default function ExerciseRouter() {
 		const metronomeSettings = customOptions.metronome || {
 			enabled: false,
 			bpm: 120,
-			volume: 0.7,
 		};
 		console.log("🎵 Metronome settings:", metronomeSettings);
 
@@ -106,7 +125,6 @@ export default function ExerciseRouter() {
 			// Start metronome when exercise begins
 			MetronomeService.start({
 				bpm: metronomeSettings.bpm,
-				volume: metronomeSettings.volume,
 				soundEnabled: true,
 			});
 		} else {
@@ -133,6 +151,10 @@ export default function ExerciseRouter() {
 	const Component = handlerMap[exercise.type] || handlerMap.default;
 
 	const handleExerciseComplete = () => {
+		// Ensure metronome and Redux state indicate completion
+		dispatch(setExerciseStopped(true));
+		setShowCountdown(true);
+		MetronomeService.stop();
 		if (isRoutineMode && routineId && exercise) {
 			router.push(
 				`/(tabs)/routine-execution?routineId=${routineId}&returnFromExercise=true&completedExerciseId=${exercise.id}`
@@ -144,15 +166,15 @@ export default function ExerciseRouter() {
 	};
 
 	const handleStopExercise = () => {
-		setExerciseStopped(true);
+		dispatch(setExerciseStopped(true));
 		setShowCountdown(false);
 		dispatch(setCurrentExercise(null));
 		MetronomeService.stop();
+		// Navigate back to exercise details page
+		router.push(`/(exercise)/${exercise.id}`);
 	};
 
 	const handleManualStop = () => {
-		// Don't set exerciseStopped to true here - let the exercise handler show its progress
-		// Only update the header state
 		setShowCountdown(false);
 		MetronomeService.stop();
 	};
@@ -163,15 +185,28 @@ export default function ExerciseRouter() {
 				showSettings={true}
 				onBack={handleStopExercise}
 				isExerciseActive={!showCountdown && !exerciseStopped}
+				isInExerciseExecution={true}
 			/>
 			<View className="flex-1">
 				{showCountdown && (
-					<Countdown seconds={5} isVisible={showCountdown} onComplete={() => setShowCountdown(false)} />
+					<Countdown
+						seconds={5}
+						isVisible={showCountdown}
+						onComplete={() => {
+							setShowCountdown(false);
+							dispatch(setExerciseStopped(false));
+						}}
+					/>
 				)}
 				{!showCountdown && (
 					<>
 						<MetronomeIndicator position="top" />
-						<Component exercise={exercise} onComplete={handleExerciseComplete} onStop={handleManualStop} />
+						<Component
+							exercise={exercise}
+							onComplete={handleExerciseComplete}
+							onStop={handleManualStop}
+							forcePause={forceExercisePause}
+						/>
 					</>
 				)}
 			</View>

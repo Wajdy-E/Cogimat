@@ -299,7 +299,11 @@ function Home() {
 												classes="w-[250px]"
 												isFavourited={exercise.isFavourited}
 												variant="elevated"
-												onClick={isSubscribed ? undefined : () => dispatch(setPaywallModalPopup(true))}
+												onClick={
+													isSubscribed
+														? undefined
+														: () => dispatch(setPaywallModalPopup(true))
+												}
 											/>
 										))}
 								</HStack>
@@ -309,7 +313,7 @@ function Home() {
 				</VStack>
 			</Box>
 
-			<Box className="w-[90%] self-center">
+			{/* <Box className="w-[90%] self-center">
 				<NavigateTo
 					heading={i18n.t("home.articlesAndTips")}
 					text={i18n.t("home.exercisePrograms.seeAll")}
@@ -353,7 +357,7 @@ function Home() {
 						/>
 					</HStack>
 				</ScrollView>
-			</Box>
+			</Box> */}
 			<CreateExerciseModal isOpen={isOpen} onClose={() => dispatch(setCustomExerciseModalPopup(false))} />
 		</ScrollView>
 	);

@@ -9,10 +9,12 @@ export default function ShapeCountStimulus({
 	exercise,
 	onComplete,
 	onStop,
+	forcePause,
 }: {
 	exercise: Exercise;
 	onComplete?: () => void;
 	onStop?: () => void;
+	forcePause?: boolean;
 }) {
 	return (
 		<UnifiedStimulus
@@ -20,6 +22,7 @@ export default function ShapeCountStimulus({
 			onComplete={onComplete}
 			onStop={onStop}
 			strategy={ShapeCountStimulusStrategy}
+			forcePause={forcePause}
 		/>
 	);
 }

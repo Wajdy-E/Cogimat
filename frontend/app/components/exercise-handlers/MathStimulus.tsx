@@ -9,12 +9,20 @@ export default function MathStimulus({
 	exercise,
 	onComplete,
 	onStop,
+	forcePause,
 }: {
 	exercise: Exercise;
 	onComplete?: () => void;
 	onStop?: () => void;
+	forcePause?: boolean;
 }) {
 	return (
-		<UnifiedStimulus exercise={exercise} onComplete={onComplete} onStop={onStop} strategy={MathStimulusStrategy} />
+		<UnifiedStimulus
+			exercise={exercise}
+			onComplete={onComplete}
+			onStop={onStop}
+			strategy={MathStimulusStrategy}
+			forcePause={forcePause}
+		/>
 	);
 }

@@ -9,10 +9,12 @@ The metronome system has been fully integrated into the Cogimat mobile app to pr
 ### 1. Core Functionality ✅
 
 -   **Start/Stop Control**: Metronome automatically starts when exercise begins and stops when it ends
+-   **Pause/Resume**: Metronome pauses when exercise is paused and resumes when exercise continues
 -   **Adjustable Tempo (BPM)**: Range from 30-300 BPM with presets at 60, 90, 120, 150, 180
 -   **Volume Control**: Adjustable from 0.0 to 1.0 with visual slider
 -   **Sound Toggle**: Can be enabled/disabled per exercise
 -   **Visual Indicator**: Pulsing beat indicator that syncs with audio
+-   **Synchronized Stimulus**: When metronome is enabled, stimulus changes are synchronized with beats instead of manual timing
 
 ### 2. User Interface ✅
 
@@ -99,6 +101,34 @@ interface CustomizableExerciseOptions {
 }
 ```
 
+## How It Works
+
+### Synchronization Behavior
+
+When metronome is **enabled**:
+
+-   Stimulus changes are **synchronized with metronome beats**
+-   Each beat triggers a new stimulus to appear
+-   On-screen/off-screen time settings are **ignored**
+-   Timing is controlled entirely by BPM: `timing = 60 / BPM seconds per beat`
+-   Example: 120 BPM = 2 beats per second = new stimulus every 0.5 seconds
+
+When metronome is **disabled**:
+
+-   Stimulus uses **manual timing settings** (onScreenTime/offScreenTime)
+-   No audio cues
+-   Traditional time-based stimulus cycling
+
+### Exercise Flow
+
+1. User starts exercise → 5-second countdown
+2. After countdown → Exercise begins
+3. If metronome enabled → MetronomeService starts automatically
+4. Each metronome beat → New stimulus appears
+5. User pauses → Metronome pauses
+6. User resumes → Metronome resumes
+7. Exercise ends → Metronome stops and cleans up
+
 ## Usage
 
 ### For Users
@@ -109,14 +139,16 @@ interface CustomizableExerciseOptions {
     - Tap "Customize this exercise"
     - Find "Metronome" section
     - Toggle metronome on
-    - Adjust BPM using presets or +/- buttons
+    - Adjust BPM using presets or +/- buttons (controls stimulus speed)
     - Adjust volume with slider
-    - Save settings
+    - Note: On-screen/off-screen times are hidden when metronome is enabled
+    - Save settings (auto-saves on changes)
 
 2. **During Exercise:**
     - Start exercise normally
-    - If metronome is enabled, you'll hear beats
-    - Visual indicator pulses at top of screen
+    - If metronome is enabled, you'll hear beats and see stimulus change with each beat
+    - Visual indicator pulses at top of screen in sync with beats
+    - Pause button pauses both exercise and metronome
     - Metronome automatically stops when exercise ends
 
 ### For Developers

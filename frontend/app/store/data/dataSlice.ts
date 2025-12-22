@@ -23,7 +23,6 @@ export interface Exercise {
 export interface MetronomeSettings {
 	enabled: boolean;
 	bpm: number;
-	volume: number;
 }
 
 export interface CustomizableExerciseOptions {
@@ -135,6 +134,7 @@ export interface DataState {
 	popupStates: PopupStates;
 	weeklyWorkoutGoal: WeeklyWorkoutGoal | null;
 	routineExecution: RoutineExecutionState | null;
+	exerciseStopped: boolean;
 }
 
 const initialState: DataState = {
@@ -154,6 +154,7 @@ const initialState: DataState = {
 	},
 	weeklyWorkoutGoal: null,
 	routineExecution: null,
+	exerciseStopped: false,
 };
 
 const dataSlice = createSlice({
@@ -349,6 +350,9 @@ const dataSlice = createSlice({
 		resetRoutineExecution(state) {
 			state.routineExecution = null;
 		},
+		setExerciseStopped(state, { payload }: PayloadAction<boolean>) {
+			state.exerciseStopped = payload;
+		},
 		resetState: () => initialState,
 	},
 });
@@ -391,6 +395,7 @@ export const {
 	completeExercise,
 	nextExercise,
 	skipExercise,
+	setExerciseStopped,
 	setRoutineComplete,
 	setShowCountdown,
 	resetRoutineExecution,
@@ -415,7 +420,6 @@ export const getExerciseCustomizedOptions = (
 		metronome: {
 			enabled: false,
 			bpm: 120,
-			volume: 0.7,
 		},
 	};
 };

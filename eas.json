@@ -1,38 +1,38 @@
 {
-  "cli": {
-    "version": ">= 15.0.12",
-    "appVersionSource": "remote",
-    "requireCommit": true
-  },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "gradleCommand": ":app:assembleDebug",
-        "buildType": "apk",
-        "withoutCredentials": true
-      },
-      "env": {
-        "APP_VARIANT": "development"
-      }
-    },
-    "preview": {
-      "distribution": "internal",
-      "android": {
-        "gradleCommand": ":app:assembleRelease",
-        "buildType": "app-bundle"
-      }
-    },
-    "production": {
-      "autoIncrement": true,
-      "android": {
-        "gradleCommand": ":app:assembleRelease",
-        "buildType": "app-bundle"
-      }
-    }
-  },
-  "submit": {
-    "production": {}
-  }
+	"cli": {
+		"version": ">= 15.0.12",
+		"appVersionSource": "remote",
+		"requireCommit": true
+	},
+	"build": {
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"android": {
+				"gradleCommand": ":app:assembleDebug",
+				"buildType": "apk",
+				"withoutCredentials": true
+			},
+			"env": {
+				"APP_VARIANT": "development"
+			}
+		},
+		"preview": {
+			"distribution": "internal",
+			"android": {
+				"gradleCommand": ":app:assembleRelease",
+				"buildType": "app-bundle"
+			}
+		},
+		"production": {
+			"autoIncrement": true,
+			"android": {
+				"gradleCommand": ":app:assembleRelease",
+				"buildType": "app-bundle"
+			}
+		}
+	},
+	"submit": {
+		"production": {}
+	}
 }

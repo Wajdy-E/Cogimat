@@ -157,19 +157,17 @@
 		"scanQRCode": "Scanner le QR Code",
 		"signUp": "S'inscrire",
 		"alerts": {
-			"validationError": "Erreur de validation",
-			"invalidCredentials": "La connexion a échoué. Veuillez vérifier vos identifiants.",
+			"validationError": "Erreur de connexion",
+			"invalidCredentials": "E-mail ou mot de passe invalide. Veuillez réessayer.",
 			"userNotFound": "Utilisateur non trouvé",
 			"userNotFoundMessage": "Veuillez vous inscrire pour créer un compte."
 		},
 		"alert": {
-			"invalidData": "Données de connexion invalides"
+			"invalidData": "E-mail ou mot de passe invalide"
 		},
 		"errors": {
-			"invalidEmail": "Format d'e-mail invalide",
-			"emailRequired": "L'e-mail est requis",
-			"passwordShort": "Le mot de passe doit contenir au moins 6 caractères",
-			"passwordRequired": "Le mot de passe est requis"
+			"invalidCredentials": "E-mail ou mot de passe invalide. Veuillez réessayer.",
+			"emptyFields": "Veuillez entrer votre e-mail et votre mot de passe."
 		},
 		"loading": "Connexion en cours..."
 	},
@@ -391,9 +389,10 @@
 		"title": "Métronome",
 		"tempo": "Tempo (BPM)",
 		"volume": "Volume",
-		"description": "Signaux sonores pour vous aider avec le timing et la coordination",
-		"enabled": "Métronome activé",
-		"disabled": "Métronome désactivé"
+		"description": "Signaux audio de tempo pour aider au timing et à la coordination",
+		"enabled": "Métronome Activé",
+		"disabled": "Métronome Désactivé",
+		"timingNote": "Note : Lorsque le métronome est activé, le timing du stimulus est contrôlé par le BPM au lieu des temps d'affichage/masquage."
 	},
 	"progress": {
 		"milestones": "Étapes importantes",

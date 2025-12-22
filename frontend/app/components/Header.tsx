@@ -11,14 +11,21 @@ import { setFavourite } from "@/store/data/dataSaga";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import AlertModal from "./AlertModal";
 import { i18n } from "../i18n";
+import MetronomeService from "@/services/MetronomeService";
 
 interface HeaderProps {
 	showSettings?: boolean;
 	onBack?: () => void;
 	isExerciseActive?: boolean;
+	isInExerciseExecution?: boolean; // New prop to indicate we're in exercise.tsx
 }
 
-export default function Header({ showSettings = true, onBack, isExerciseActive = false }: HeaderProps) {
+export default function Header({
+	showSettings = true,
+	onBack,
+	isExerciseActive = false,
+	isInExerciseExecution = false,
+}: HeaderProps) {
 	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
 	const router = useRouter();
@@ -109,8 +116,14 @@ export default function Header({ showSettings = true, onBack, isExerciseActive =
 									className={`${exercises.isFavourited ? "fill-yellow-300" : ""}`}
 								/>
 							</Button>
-							{showSettings && (
-								<Button variant="link" onPress={() => router.push(`/(exercise)/settings?id=${id}`)}>
+							{showSettings && !isInExerciseExecution && (
+								<Button
+									variant="link"
+									onPress={() => {
+										MetronomeService.stop();
+										router.push(`/(exercise)/settings?id=${id}`);
+									}}
+								>
 									<ButtonIcon as={Settings} size={"xxl" as any} stroke={themeTextColor} />
 								</Button>
 							)}

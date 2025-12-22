@@ -17,20 +17,18 @@ export function useMetronome(enabled: boolean, settings: MetronomeSettings, isAc
 		// Start metronome with settings
 		MetronomeService.start({
 			bpm: settings.bpm,
-			volume: settings.volume,
 			soundEnabled: settings.enabled,
 		});
 
 		return () => {
 			MetronomeService.stop();
 		};
-	}, [enabled, settings.bpm, settings.volume, settings.enabled, isActive]);
+	}, [enabled, settings.bpm, settings.enabled, isActive]);
 
 	const start = useCallback(async () => {
 		if (enabled) {
 			await MetronomeService.start({
 				bpm: settings.bpm,
-				volume: settings.volume,
 				soundEnabled: settings.enabled,
 			});
 		}

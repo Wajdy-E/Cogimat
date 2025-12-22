@@ -9,7 +9,6 @@ import { Sound } from "expo-av/build/Audio";
 export interface MetronomeConfig {
 	bpm: number;
 	soundEnabled: boolean;
-	volume: number;
 	countdownBeats?: number;
 }
 
@@ -21,7 +20,6 @@ class MetronomeService {
 	private isPlaying: boolean = false;
 	private currentBeat: number = 0;
 	private bpm: number = 120;
-	private volume: number = 1.0;
 	private soundEnabled: boolean = true;
 	private callbacks: MetronomeCallback[] = [];
 
@@ -54,7 +52,7 @@ class MetronomeService {
 			// Pre-load the metronome sound
 			const { sound } = await Audio.Sound.createAsync(
 				require("../../assets/sounds/metronome-tick.mp3"),
-				{ shouldPlay: false, volume: this.volume },
+				{ shouldPlay: false },
 				this.onPlaybackStatusUpdate
 			);
 
@@ -89,12 +87,10 @@ class MetronomeService {
 		// Update configuration
 		if (config) {
 			this.bpm = config.bpm ?? this.bpm;
-			this.volume = config.volume ?? this.volume;
 			this.soundEnabled = config.soundEnabled ?? this.soundEnabled;
 		}
 
-		console.log(`🎵 Metronome settings - BPM: ${this.bpm}, Volume: ${this.volume}, Enabled: ${this.soundEnabled}`);
-
+		console.log(`🎵 Metronome settings - BPM: ${this.bpm}, Enabled: ${this.soundEnabled}`);
 		// Ensure audio is initialized
 		if (!this.isInitialized) {
 			console.log("🎵 Audio not initialized, initializing now...");
@@ -104,11 +100,6 @@ class MetronomeService {
 		if (!this.soundObject) {
 			console.error("❌ Sound object is null, cannot start metronome");
 			return;
-		}
-
-		// Update sound volume
-		if (this.soundObject) {
-			await this.soundObject.setVolumeAsync(this.volume);
 		}
 
 		// Calculate interval in milliseconds
@@ -180,8 +171,9 @@ class MetronomeService {
 		// Play sound if enabled
 		if (this.soundEnabled && this.soundObject) {
 			try {
-				await this.soundObject.setPositionAsync(0);
-				await this.soundObject.playAsync();
+				// Use replayAsync to avoid "Seeking interrupted" errors
+				// This method stops the sound if playing, resets position, and plays again
+				await this.soundObject.replayAsync();
 				console.log(`✅ Played tick ${this.currentBeat}`);
 			} catch (error) {
 				console.error("❌ Error playing metronome tick:", error);
@@ -215,16 +207,6 @@ class MetronomeService {
 	}
 
 	/**
-	 * Update volume (0.0 to 1.0)
-	 */
-	async setVolume(volume: number): Promise<void> {
-		this.volume = Math.max(0, Math.min(1, volume));
-		if (this.soundObject) {
-			await this.soundObject.setVolumeAsync(this.volume);
-		}
-	}
-
-	/**
 	 * Toggle sound on/off
 	 */
 	setSoundEnabled(enabled: boolean): void {
@@ -251,7 +233,6 @@ class MetronomeService {
 			isPlaying: this.isPlaying,
 			currentBeat: this.currentBeat,
 			bpm: this.bpm,
-			volume: this.volume,
 			soundEnabled: this.soundEnabled,
 		};
 	}

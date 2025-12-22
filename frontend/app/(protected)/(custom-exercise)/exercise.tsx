@@ -13,6 +13,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { setCurrentExercise } from "@/store/data/dataSlice";
 import CustomExerciseHeader from "@/components/CustomExerciseHeader";
 import { i18n } from "../../i18n";
+import MetronomeService from "@/services/MetronomeService";
 
 interface IconWithColor {
 	icon: LucideIcon;
@@ -147,6 +148,7 @@ function ExerciseScreen() {
 		setExerciseCompleted(true);
 		setIsPaused(true);
 		setShowCountdown(false);
+		MetronomeService.stop();
 	};
 
 	const incrementStimulusCount = (stimulus: any) => {

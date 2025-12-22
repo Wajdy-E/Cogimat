@@ -1,6 +1,6 @@
 /**
  * MetronomeControl Component
- * UI for controlling metronome settings (BPM, volume, enable/disable)
+ * UI for controlling metronome settings (BPM, enable/disable)
  */
 
 import React, { useState, useEffect } from "react";
@@ -10,15 +10,13 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Minus, Plus, Volume2, VolumeX } from "lucide-react-native";
-import CustomSlider from "@/components/CustomSlider";
+import { Minus, Plus } from "lucide-react-native";
 import MetronomeService from "@/services/MetronomeService";
 import { i18n } from "../i18n";
 
 export interface MetronomeSettings {
 	enabled: boolean;
 	bpm: number;
-	volume: number;
 }
 
 interface MetronomeControlProps {
@@ -82,13 +80,6 @@ export default function MetronomeControl({
 		const newSettings = { ...localSettings, bpm: newBPM };
 		setLocalSettings(newSettings);
 		onChange(newSettings);
-	};
-
-	const handleVolumeChange = (volume: number) => {
-		const newSettings = { ...localSettings, volume };
-		setLocalSettings(newSettings);
-		onChange(newSettings);
-		MetronomeService.setVolume(volume);
 	};
 
 	if (compact) {
@@ -183,29 +174,6 @@ export default function MetronomeControl({
 							))}
 						</HStack>
 					</VStack>
-
-					<VStack space="md">
-						<HStack space="sm" className="items-center">
-							{localSettings.volume > 0 ? (
-								<Volume2 size={20} color="#6b7280" />
-							) : (
-								<VolumeX size={20} color="#6b7280" />
-							)}
-							<Text className="text-typography-700 font-semibold">{i18n.t("metronome.volume")}</Text>
-						</HStack>
-						<CustomSlider
-							title=""
-							minValue={0}
-							maxValue={1}
-							step={0.1}
-							value={localSettings.volume}
-							defaultValue={localSettings.volume}
-							onChange={handleVolumeChange}
-							size="md"
-						/>
-					</VStack>
-
-					<Text className="text-typography-600 text-xs text-center">{i18n.t("metronome.description")}</Text>
 				</>
 			)}
 		</VStack>

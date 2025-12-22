@@ -21,6 +21,7 @@ import { RootState } from "@/store/store";
 import { i18n } from "../../i18n";
 import ExerciseVideoGallery from "@/components/ExerciseVideoGallery";
 import Header from "@/components/Header";
+import MetronomeService from "@/services/MetronomeService";
 
 function ExerciseProgram() {
 	const dispatch = useDispatch();
@@ -36,12 +37,16 @@ function ExerciseProgram() {
 		}
 	}, [exercise]);
 
-	// Cleanup: clear selected exercise when component unmounts
+	// Stop metronome when entering exercise details page
 	useEffect(() => {
+		MetronomeService.stop();
+
 		return () => {
+			// Cleanup: clear selected exercise and stop metronome when component unmounts
 			dispatch(setCurrentExercise(null));
+			MetronomeService.stop();
 		};
-	}, []);
+	}, [dispatch]);
 
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const router = useRouter();
@@ -116,6 +121,7 @@ function ExerciseProgram() {
 	}, [floatAnim]);
 
 	const handleStartExercise = () => {
+		dispatch(setCurrentExercise(exercise!));
 		router.navigate({
 			pathname: "/exercise",
 			params: {

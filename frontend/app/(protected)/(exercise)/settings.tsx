@@ -18,17 +18,24 @@ import { i18n } from "../../i18n";
 import CustomSlider from "@/components/CustomSlider";
 import ExerciseVideoUpload from "@/components/ExerciseVideoUpload";
 import MetronomeControl, { MetronomeSettings } from "@/components/MetronomeControl";
+import MetronomeService from "@/services/MetronomeService";
 
 export default function ExerciseSettings() {
-	const { id } = useLocalSearchParams();
 	const dispatch: AppDispatch = useDispatch();
+	const params = useLocalSearchParams();
 	const user = useSelector((state: RootState) => state.user.user.baseInfo, shallowEqual);
 	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises, shallowEqual);
+	const selectedExercise = useSelector((state: RootState) => state.data.selectedExercise, shallowEqual);
+	const id = selectedExercise?.id;
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
 
+	// Check if we came from an active exercise
+	const fromExercise = params?.fromExercise === "true";
+
 	// Safely handle the id parameter
 	let exerciseId: number | null = null;
+	console.log("📋 Settings: Retrieved id param:", id);
 	try {
 		if (id && typeof id === "string") {
 			exerciseId = parseInt(id);
@@ -37,22 +44,10 @@ export default function ExerciseSettings() {
 		console.error("Error parsing exercise id:", error);
 	}
 
-	const exerciseData = useExercise(exerciseId);
-
-	// Handle the case where useExercise returns an array, null, or undefined
-	let exercises: Exercise | null = null;
-	try {
-		if (exerciseData && !Array.isArray(exerciseData) && exerciseData !== null) {
-			exercises = exerciseData as Exercise;
-		}
-	} catch (error) {
-		console.error("Error processing exercise data:", error);
-	}
-
 	const [isEditing, setIsEditing] = useState(false);
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions>(
-		exercises
-			? getExerciseCustomizedOptions(exercises, customizedExercises)
+		selectedExercise
+			? getExerciseCustomizedOptions(selectedExercise as Exercise, customizedExercises)
 			: {
 					exerciseTime: 150,
 					offScreenTime: 0.5,
@@ -64,7 +59,6 @@ export default function ExerciseSettings() {
 	const [metronomeSettings, setMetronomeSettings] = useState<MetronomeSettings>({
 		enabled: false,
 		bpm: 120,
-		volume: 0.7,
 	});
 
 	// Auto-save metronome settings when they change
@@ -73,11 +67,11 @@ export default function ExerciseSettings() {
 		setMetronomeSettings(newSettings);
 
 		// Auto-save to Redux
-		if (exercises) {
+		if (selectedExercise) {
 			console.log("💾 Auto-saving metronome settings...");
 			dispatch(
 				updateExercise({
-					exerciseId: exercises.id,
+					exerciseId: selectedExercise.id,
 					options: {
 						...durationSettings,
 						metronome: newSettings,
@@ -88,18 +82,35 @@ export default function ExerciseSettings() {
 		}
 	};
 
+	// Stop metronome when entering settings page (but only if not from active exercise)
+	useEffect(() => {
+		if (!fromExercise) {
+			MetronomeService.stop();
+		}
+
+		return () => {
+			// Stop on unmount only if not returning to exercise
+			if (!fromExercise) {
+				MetronomeService.stop();
+			}
+		};
+	}, [fromExercise]);
+
 	// Update durationSettings when exercise or customizedExercises change
 	useEffect(() => {
-		if (exercises) {
-			const customOptions = getExerciseCustomizedOptions(exercises, customizedExercises);
+		if (selectedExercise) {
+			const customOptions = getExerciseCustomizedOptions(selectedExercise as Exercise, customizedExercises);
 			setDurationSettings(customOptions);
 
 			// Load metronome settings if they exist
 			if (customOptions.metronome) {
-				setMetronomeSettings(customOptions.metronome);
+				setMetronomeSettings({
+					enabled: customOptions.metronome.enabled,
+					bpm: customOptions.metronome.bpm,
+				});
 			}
 		}
-	}, [exercises, customizedExercises]);
+	}, [selectedExercise, customizedExercises]);
 
 	// Admin video upload state
 	const [showVideoUpload, setShowVideoUpload] = useState(false);
@@ -112,19 +123,22 @@ export default function ExerciseSettings() {
 	};
 
 	function onEditCancel() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
-		const customOptions = getExerciseCustomizedOptions(exercises, customizedExercises);
+		const customOptions = getExerciseCustomizedOptions(selectedExercise as Exercise, customizedExercises);
 		setDurationSettings({ ...customOptions });
 		if (customOptions.metronome) {
-			setMetronomeSettings(customOptions.metronome);
+			setMetronomeSettings({
+				enabled: customOptions.metronome.enabled,
+				bpm: customOptions.metronome.bpm,
+			});
 		}
 		setIsEditing(false);
 	}
 
 	function onEditSave() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
@@ -134,7 +148,7 @@ export default function ExerciseSettings() {
 
 		dispatch(
 			updateExercise({
-				exerciseId: exercises.id,
+				exerciseId: selectedExercise.id,
 				options: {
 					...durationSettings,
 					metronome: metronomeSettings,
@@ -150,14 +164,25 @@ export default function ExerciseSettings() {
 	};
 
 	// Early return if exercise data is not yet available
-	if (!exercises) {
+	if (!selectedExercise) {
 		return (
 			<View className="bg-background-800 h-screen">
 				<SafeAreaView className="bg-background-800">
 					<View className="flex-row items-center w-full justify-center py-3">
 						<View className="flex-row items-center justify-between gap-3 w-[90%]">
 							<View className="flex-row items-center gap-3">
-								<Button variant="link" onPress={() => router.push(`/(exercise)/${id}`)}>
+								<Button
+									variant="link"
+									onPress={() => {
+										if (fromExercise) {
+											// Go back to the active exercise
+											router.back();
+										} else {
+											// Go to exercise details page
+											router.push(`/(exercise)/${id}`);
+										}
+									}}
+								>
 									<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 								</Button>
 								<Heading className="text-typography-950" size="2xl">
@@ -180,7 +205,18 @@ export default function ExerciseSettings() {
 				<View className="flex-row items-center w-full justify-center py-3">
 					<View className="flex-row items-center justify-between gap-3 w-[90%]">
 						<View className="flex-row items-center gap-3">
-							<Button variant="link" onPress={() => router.push(`/(exercise)/${id}`)}>
+							<Button
+								variant="link"
+								onPress={() => {
+									if (fromExercise) {
+										// Go back to the active exercise
+										router.back();
+									} else {
+										// Go to exercise details page
+										router.push(`/(exercise)/${id}`);
+									}
+								}}
+							>
 								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="2xl">
@@ -210,31 +246,52 @@ export default function ExerciseSettings() {
 								</View>
 
 								<VStack space="3xl" className={`${!isEditing ? "opacity-70" : ""}`}>
-									{Object.entries(durationSettings).map(([key, value]) => (
-										<CustomSlider
-											key={key}
-											title={`exercise.form.${key}`}
-											size="md"
-											minValue={0.5}
-											maxValue={key === "exerciseTime" ? 5 : 15}
-											step={0.5}
-											value={
-												key === "exerciseTime"
-													? parseFloat(value.toString()) / 60
-													: parseFloat(value.toString())
+									{Object.entries(durationSettings)
+										.filter(([key]) => {
+											// Filter out metronome
+											if (key === "metronome") return false;
+											// Hide onScreenTime and offScreenTime when metronome is enabled
+											if (
+												metronomeSettings.enabled &&
+												(key === "onScreenTime" || key === "offScreenTime")
+											) {
+												return false;
 											}
-											defaultValue={
-												key === "exerciseTime"
-													? parseFloat(value.toString()) / 60
-													: parseFloat(value.toString())
-											}
-											suffix={
-												key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"
-											}
-											isReadOnly={!isEditing}
-											onChange={(newValue) => handleSliderChange(key, newValue)}
-										/>
-									))}
+											return true;
+										})
+										.map(([key, value]) => (
+											<CustomSlider
+												key={key}
+												title={`exercise.form.${key}`}
+												size="md"
+												minValue={0.5}
+												maxValue={key === "exerciseTime" ? 5 : 15}
+												step={0.5}
+												value={
+													key === "exerciseTime"
+														? parseFloat(value.toString()) / 60
+														: parseFloat(value.toString())
+												}
+												defaultValue={
+													key === "exerciseTime"
+														? parseFloat(value.toString()) / 60
+														: parseFloat(value.toString())
+												}
+												suffix={
+													key === "exerciseTime"
+														? "general.time.minutes"
+														: "general.time.seconds"
+												}
+												isReadOnly={!isEditing}
+												onChange={(newValue) => handleSliderChange(key, newValue)}
+											/>
+										))}
+
+									{metronomeSettings.enabled && (
+										<Text className="text-typography-600 text-sm italic">
+											{i18n.t("metronome.timingNote")}
+										</Text>
+									)}
 								</VStack>
 
 								{isEditing && (
@@ -250,7 +307,6 @@ export default function ExerciseSettings() {
 							</VStack>
 						</Box>
 
-						{/* Metronome Settings */}
 						<Box className="bg-secondary-500 p-5 rounded-md">
 							<VStack space="lg" className="px-3 pb-4">
 								<View>
@@ -279,7 +335,6 @@ export default function ExerciseSettings() {
 							</VStack>
 						</Box>
 
-						{/* Admin Video Upload Section */}
 						{user?.isAdmin && (
 							<Box className="bg-secondary-500 p-5 rounded-md">
 								<VStack space="lg">
@@ -292,8 +347,8 @@ export default function ExerciseSettings() {
 
 									{showVideoUpload ? (
 										<ExerciseVideoUpload
-											exerciseId={exercises.id}
-											exerciseName={exercises.name}
+											exerciseId={selectedExercise.id}
+											exerciseName={selectedExercise.name}
 											onUploadSuccess={handleVideoUploadSuccess}
 											onClose={() => setShowVideoUpload(false)}
 										/>

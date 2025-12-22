@@ -28,33 +28,15 @@ import { customExerciseToExercise } from "@/lib/helpers/helpers";
 import React from "react";
 import CustomSlider from "@/components/CustomSlider";
 
-export default function CustomExerciseSettings() {
-	const { id } = useLocalSearchParams();
+export default function CustomselectedExerciseettings() {
 	const dispatch: AppDispatch = useDispatch();
 	const user = useSelector((state: RootState) => state.user.user, shallowEqual);
+	const selectedExercise = useSelector(
+		(state: RootState) => state.data.selectedExercise,
+		shallowEqual
+	) as CustomExercise | null;
 	const router = useRouter();
 	const { themeTextColor } = useTheme();
-
-	// Safely handle the id parameter
-	let exerciseId: number | null = null;
-	try {
-		if (id && typeof id === "string") {
-			exerciseId = parseInt(id);
-		}
-	} catch (error) {
-		console.error("Error parsing exercise id:", error);
-	}
-
-	const exerciseData = useCustomExercise(exerciseId);
-	// Handle the case where useCustomExercise returns an array, null, or undefined
-	let exercises: CustomExercise | null = null;
-	try {
-		if (exerciseData && !Array.isArray(exerciseData) && exerciseData !== null) {
-			exercises = exerciseData as CustomExercise;
-		}
-	} catch (error) {
-		console.error("Error processing exercise data:", error);
-	}
 
 	const [showSubmitToCogiproAlertModal, setShowSubmitToCogiproAlertModal] = useState(false);
 	const [showUnsubmitFromCogiproAlertModal, setShowUnsubmitFromCogiproAlertModal] = useState(false);
@@ -71,20 +53,20 @@ export default function CustomExerciseSettings() {
 
 	const [isEditing, setIsEditing] = useState(false);
 	const [durationSettings, setDurationSettings] = useState<CustomizableExerciseOptions | undefined>(
-		exercises?.customizableOptions
+		selectedExercise?.customizableOptions
 	);
 
-	// Update state when exercises data becomes available
+	// Update state when selectedExercise data becomes available
 	useEffect(() => {
-		if (exercises?.customizableOptions) {
-			setDurationSettings(exercises.customizableOptions);
+		if (selectedExercise?.customizableOptions) {
+			setDurationSettings(selectedExercise.customizableOptions);
 		}
 		// Initialize switches based on the submittedToCogipro field
-		if (exercises) {
-			setCogiproSwitchValue(exercises.submittedToCogipro);
-			setCogiproPremiumSwitchValue(exercises.isPremium || false);
+		if (selectedExercise) {
+			setCogiproSwitchValue(selectedExercise.submittedToCogipro);
+			setCogiproPremiumSwitchValue(selectedExercise.isPremium || false);
 		}
-	}, [exercises]);
+	}, [selectedExercise]);
 
 	const handleSliderChange = (key: string, newValue: number) => {
 		setDurationSettings((prev) =>
@@ -98,53 +80,53 @@ export default function CustomExerciseSettings() {
 	};
 
 	function submitToCogipro() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
-		const convertedExercise: Exercise = customExerciseToExercise(exercises, false);
+		const convertedExercise: Exercise = customExerciseToExercise(selectedExercise, false);
 		dispatch(submitExercise({ exercise: convertedExercise }));
-		dispatch(updateCustomExerciseThunk({ ...exercises, submittedToCogipro: true }));
+		dispatch(updateCustomExerciseThunk({ ...selectedExercise, submittedToCogipro: true }));
 		setCogiproSwitchValue(true);
 		setShowSubmitToCogiproAlertModal(false);
 	}
 
 	function submitToCogiproPremium() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
-		const convertedExercise: Exercise = customExerciseToExercise(exercises, true);
+		const convertedExercise: Exercise = customExerciseToExercise(selectedExercise, true);
 		dispatch(submitExercise({ exercise: convertedExercise }));
-		dispatch(updateCustomExerciseThunk({ ...exercises, submittedToCogipro: true, isPremium: true }));
+		dispatch(updateCustomExerciseThunk({ ...selectedExercise, submittedToCogipro: true, isPremium: true }));
 		setCogiproPremiumSwitchValue(true);
 		setShowSubmitToCogiproPremiumAlertModal(false);
 	}
 
 	function unsubmitFromCogipro() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
-		dispatch(unsubmitExercise({ uniqueIdentifier: exercises.uniqueIdentifier, action: "remove" }));
-		dispatch(updateCustomExerciseThunk({ ...exercises, submittedToCogipro: false }));
+		dispatch(unsubmitExercise({ uniqueIdentifier: selectedExercise.uniqueIdentifier, action: "remove" }));
+		dispatch(updateCustomExerciseThunk({ ...selectedExercise, submittedToCogipro: false }));
 		setCogiproSwitchValue(false);
 		setShowUnsubmitFromCogiproAlertModal(false);
 	}
 
 	function unsubmitFromCogiproPremium() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
-		dispatch(unsubmitExercise({ uniqueIdentifier: exercises.uniqueIdentifier, action: "unpremium" }));
-		dispatch(updateCustomExerciseThunk({ ...exercises, isPremium: false }));
+		dispatch(unsubmitExercise({ uniqueIdentifier: selectedExercise.uniqueIdentifier, action: "unpremium" }));
+		dispatch(updateCustomExerciseThunk({ ...selectedExercise, isPremium: false }));
 		setCogiproPremiumSwitchValue(false);
 		setShowUnsubmitFromCogiproPremiumAlertModal(false);
 	}
 
 	function handleCogiproToggle(value: boolean) {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
@@ -158,7 +140,7 @@ export default function CustomExerciseSettings() {
 	}
 
 	function handleCogiproPremiumToggle(value: boolean) {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
@@ -172,47 +154,47 @@ export default function CustomExerciseSettings() {
 	}
 
 	function handleDeleteExercise() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
-		dispatch(deleteCustomExercise(exercises.id));
+		dispatch(deleteCustomExercise(selectedExercise.id));
 		setShowDeleteExerciseAlertModal(false);
 		router.back();
 	}
 
 	const handlePublicAccessChange = (value: boolean) => {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
-		if (exercises.publicAccess === false) {
-			dispatch(updateCustomExerciseThunk({ ...exercises, publicAccess: value, isFavourited: false }));
+		if (selectedExercise.publicAccess === false) {
+			dispatch(updateCustomExerciseThunk({ ...selectedExercise, publicAccess: value, isFavourited: false }));
 			setShowMakePublicAlertModal(true);
 		} else {
-			dispatch(updateCustomExerciseThunk({ ...exercises, publicAccess: value }));
+			dispatch(updateCustomExerciseThunk({ ...selectedExercise, publicAccess: value }));
 			setShowMakePublicAlertModal(false);
 		}
 	};
 
 	function onEditCancel() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
-		setDurationSettings({ ...exercises.customizableOptions });
+		setDurationSettings({ ...selectedExercise.customizableOptions });
 		setIsEditing(false);
 	}
 
 	function onEditSave() {
-		if (!exercises) {
+		if (!selectedExercise) {
 			return;
 		}
 
 		const updatedExercise = {
-			...exercises,
+			...selectedExercise,
 			customizableOptions: {
-				...exercises.customizableOptions,
+				...selectedExercise.customizableOptions,
 				...durationSettings,
 			},
 		};
@@ -221,16 +203,13 @@ export default function CustomExerciseSettings() {
 	}
 
 	// Early return if exercise data is not yet available
-	if (!exercises) {
+	if (!selectedExercise) {
 		return (
 			<View className="bg-background-800 h-screen">
 				<SafeAreaView className="bg-background-800">
 					<View className="flex-row items-center w-full justify-center py-3">
 						<View className="flex-row items-center justify-between gap-3 w-[90%]">
 							<View className="flex-row items-center gap-3">
-								<Button variant="link" onPress={() => router.push(`/(custom-exercise)/${id}`)}>
-									<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
-								</Button>
 								<Heading className="text-typography-950" size="2xl">
 									{i18n.t("exercise.page.settings")}
 								</Heading>
@@ -251,7 +230,10 @@ export default function CustomExerciseSettings() {
 				<View className="flex-row items-center w-full justify-center py-3">
 					<View className="flex-row items-center justify-between gap-3 w-[90%]">
 						<View className="flex-row items-center gap-3">
-							<Button variant="link" onPress={() => router.push(`/(custom-exercise)/${id}`)}>
+							<Button
+								variant="link"
+								onPress={() => router.push(`/(custom-exercise)/${selectedExercise.id}`)}
+							>
 								<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
 							</Button>
 							<Heading className="text-typography-950" size="2xl">
@@ -291,12 +273,20 @@ export default function CustomExerciseSettings() {
 												maxValue={key === "exerciseTime" ? 5 : 15}
 												step={0.5}
 												value={
-													key === "exerciseTime" ? parseFloat(value.toString()) / 60 : parseFloat(value.toString())
+													key === "exerciseTime"
+														? parseFloat(value.toString()) / 60
+														: parseFloat(value.toString())
 												}
 												defaultValue={
-													key === "exerciseTime" ? parseFloat(value.toString()) / 60 : parseFloat(value.toString())
+													key === "exerciseTime"
+														? parseFloat(value.toString()) / 60
+														: parseFloat(value.toString())
 												}
-												suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+												suffix={
+													key === "exerciseTime"
+														? "general.time.minutes"
+														: "general.time.seconds"
+												}
 												isReadOnly={!isEditing}
 												onChange={(newValue) => handleSliderChange(key, newValue)}
 											/>
@@ -334,7 +324,7 @@ export default function CustomExerciseSettings() {
 										</Text>
 									</View>
 									<AnimatedSwitch
-										defaultValue={exercises.publicAccess}
+										defaultValue={selectedExercise.publicAccess}
 										onChange={handlePublicAccessChange}
 										onIcon={<Icon as={Eye} />}
 										offIcon={<Icon as={EyeOff} />}
@@ -355,7 +345,11 @@ export default function CustomExerciseSettings() {
 											{i18n.t("exercise.page.deleteExerciseDescription")}
 										</Text>
 									</View>
-									<Button variant="outline" action="negative" onPress={() => setShowDeleteExerciseAlertModal(true)}>
+									<Button
+										variant="outline"
+										action="negative"
+										onPress={() => setShowDeleteExerciseAlertModal(true)}
+									>
 										<ButtonIcon as={Trash2} size="md" />
 										<ButtonText action="negative">{i18n.t("general.buttons.delete")}</ButtonText>
 									</Button>
@@ -394,7 +388,9 @@ export default function CustomExerciseSettings() {
 
 									<View className="flex-row justify-between items-center gap-2">
 										<View className="flex-1">
-											<Heading size="sm">{i18n.t("exercise.page.submitToCogiproPremium")}</Heading>
+											<Heading size="sm">
+												{i18n.t("exercise.page.submitToCogiproPremium")}
+											</Heading>
 											<Text size="xs" className="text-typography-600">
 												{i18n.t("exercise.page.submitToCogiproPremiumDescription")}
 											</Text>

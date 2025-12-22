@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Exercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
+import { Exercise, getExerciseCustomizedOptions, updateExercise } from "@/store/data/dataSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { updateUserMilestone } from "@/store/auth/authSaga";
 import ExerciseControl from "../exercises/ExerciseControl";
 import ExerciseProgress from "../exercises/ExerciseProgress";
+import MetronomeService from "@/services/MetronomeService";
 
 export interface StimulusStrategy {
 	generateStimulus: (exercise: Exercise) => any;
@@ -22,9 +23,16 @@ interface UnifiedStimulusProps {
 	onComplete?: () => void;
 	onStop?: () => void;
 	strategy: StimulusStrategy;
+	forcePause?: boolean;
 }
 
-export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy }: UnifiedStimulusProps) {
+export default function UnifiedStimulus({
+	exercise,
+	onComplete,
+	onStop,
+	strategy,
+	forcePause = false,
+}: UnifiedStimulusProps) {
 	const dispatch = useDispatch<AppDispatch>();
 	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises);
 	const [stimulus, setStimulus] = useState<any>(null);
@@ -34,11 +42,30 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 	const [timeCompleted, setTimeCompleted] = useState(0);
 	const [exerciseCompleted, setExerciseCompleted] = useState(false);
 
+	// Apply force pause when navigating away
+	useEffect(() => {
+		if (forcePause && !isPaused) {
+			setIsPaused(true);
+		}
+	}, [forcePause]);
+
 	const custom = getExerciseCustomizedOptions(exercise, customizedExercises);
-	const offScreenTime = custom.offScreenTime;
-	const onScreenTime = custom.onScreenTime;
+	const metronomeSettings = custom.metronome || { enabled: false, bpm: 120 };
+	const isMetronomeMode = metronomeSettings.enabled;
+
+	// Calculate timing based on metronome or manual settings
+	const offScreenTime = isMetronomeMode ? 0 : custom.offScreenTime;
+	const onScreenTime = isMetronomeMode ? 60 / metronomeSettings.bpm : custom.onScreenTime;
 	const totalDuration = custom.exerciseTime;
 	const [timeLeft, setTimeLeft] = useState(totalDuration);
+
+	// Initialize stimulus on mount
+	useEffect(() => {
+		const initialStimulus = strategy.generateStimulus(exercise);
+		setStimulus(initialStimulus);
+		strategy.incrementStimulusCount(initialStimulus, setStimulusCount);
+	}, []);
+
 	// Independent timer effect
 	useEffect(() => {
 		if (exerciseCompleted) {
@@ -70,10 +97,23 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 
 	// Stimulus cycle effect
 	useEffect(() => {
-		if (exerciseCompleted) {
+		if (exerciseCompleted || isPaused) {
 			return;
 		}
 
+		// Metronome mode: change stimulus on each beat
+		if (isMetronomeMode) {
+			const unsubscribe = MetronomeService.onBeat(() => {
+				const newStimulus = strategy.generateStimulus(exercise);
+				setStimulus(newStimulus);
+				strategy.incrementStimulusCount(newStimulus, setStimulusCount);
+				setIsWhiteScreen(false);
+			});
+
+			return unsubscribe;
+		}
+
+		// Manual mode: use time-based cycle
 		let elapsed = 0;
 		let active = true;
 
@@ -96,7 +136,16 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 		return () => {
 			active = false;
 		};
-	}, [isPaused, exerciseCompleted, strategy, exercise, totalDuration, onScreenTime, offScreenTime]);
+	}, [isPaused, exerciseCompleted, strategy, exercise, totalDuration, onScreenTime, offScreenTime, isMetronomeMode]);
+
+	// Handle metronome pause/resume when isPaused changes
+	useEffect(() => {
+		if (isPaused) {
+			MetronomeService.pause();
+		} else {
+			MetronomeService.resume();
+		}
+	}, [isPaused]);
 
 	const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -104,6 +153,7 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 	const handleStopExercise = () => {
 		setExerciseCompleted(true);
 		setIsPaused(true);
+		MetronomeService.stop();
 		if (onStop) {
 			onStop();
 		}
@@ -118,6 +168,22 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 		if (onComplete) {
 			onComplete();
 		}
+	}
+
+	function onMetronomeChange(newSettings: { enabled: boolean; bpm: number }) {
+		dispatch(
+			updateExercise({
+				exerciseId: exercise.id,
+				options: {
+					...custom,
+					metronome: newSettings,
+				},
+			})
+		);
+
+		// Always stop metronome when settings change during paused exercise
+		// It will be started again when exercise resumes
+		MetronomeService.stop();
 	}
 
 	if (exerciseCompleted) {
@@ -151,6 +217,9 @@ export default function UnifiedStimulus({ exercise, onComplete, onStop, strategy
 				setTimeLeft={setTimeLeft}
 				timeLeft={timeLeft}
 				onStop={handleStopExercise}
+				exerciseId={exercise.id}
+				metronomeSettings={metronomeSettings}
+				onMetronomeChange={onMetronomeChange}
 			/>
 		</>
 	);

@@ -97,6 +97,16 @@ function ExerciseProgram() {
 				: Trophy;
 	}
 
+	const handleStartExercise = () => {
+		dispatch(setCurrentExercise(exercise!));
+		router.navigate({
+			pathname: "/exercise",
+			params: {
+				data: JSON.stringify(exercise),
+			},
+		});
+	};
+
 	useEffect(() => {
 		Animated.loop(
 			Animated.sequence([
@@ -283,7 +293,7 @@ function ExerciseProgram() {
 					}}
 				>
 					<Button
-						onPress={() => router.push("/exercise")}
+						onPress={handleStartExercise}
 						className="rounded-full w-full"
 						variant="solid"
 						action="primary"

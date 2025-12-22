@@ -271,8 +271,9 @@ export const handleEmailLogin = createAsyncThunk<
 		}
 	} catch (error: any) {
 		console.error("Email login error:", error);
-		dispatch(setAuthError(error.message || "Login failed"));
-		return rejectWithValue(error.message || "Login failed");
+		const genericError = "Invalid email or password. Please try again.";
+		dispatch(setAuthError(genericError));
+		return rejectWithValue(genericError);
 	} finally {
 		dispatch(setIsLoggingIn(false));
 	}
