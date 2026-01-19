@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
 	try {
-		const { userId, milestoneType, exerciseDifficulty } = await req.json();
+		const { userId, milestoneType, exerciseDifficulty, exerciseId, exerciseType } = await req.json();
 
 		if (!userId || !milestoneType) {
 			return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
@@ -83,6 +83,32 @@ export async function PATCH(req: NextRequest) {
 		}
 
 		await query(updateQuery, params);
+
+		// Track exercise completion with timestamp for analytics
+		if (milestoneType.includes("ExercisesCompleted") && exerciseId && exerciseType) {
+			// Determine exercise type from milestone type if not explicitly provided
+			let finalExerciseType = exerciseType;
+			if (!finalExerciseType) {
+				if (milestoneType.includes("custom")) {
+					finalExerciseType = "custom";
+				} else if (milestoneType.includes("community")) {
+					finalExerciseType = "community";
+				} else {
+					finalExerciseType = "standard";
+				}
+			}
+
+			try {
+				await query(
+					`INSERT INTO exercise_completions (clerk_id, exercise_id, exercise_type, difficulty, completed_at)
+					VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`,
+					[userId, exerciseId, finalExerciseType, exerciseDifficulty || null]
+				);
+			} catch (error) {
+				// Log error but don't fail the milestone update if completion tracking fails
+				console.error("[EXERCISE_COMPLETION_TRACKING]", error);
+			}
+		}
 
 		// If this is an exercise completion, also update the total and difficulty-specific counters
 		if (milestoneType.includes("ExercisesCompleted") && exerciseDifficulty) {
