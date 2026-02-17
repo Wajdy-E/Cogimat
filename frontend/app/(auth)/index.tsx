@@ -14,11 +14,11 @@ export default function Home() {
 				<View className="h-full bg-black/50 justify-center items-center">
 					<Image source={logo} resizeMode="contain" className="aspect-square max-w-[250px]" />
 					<View className="flex gap-3 w-[250px]">
-						<Button className="rounded-lg" size="xl" action="primary" onPress={() => router.navigate("/(auth)/login")}>
+						<Button className="rounded-xl" size="xl" action="primary" onPress={() => router.navigate("/(auth)/login")}>
 							<ButtonText className="text-white">{i18n.t("login.loginButton")}</ButtonText>
 						</Button>
 						<Button
-							className="rounded-lg"
+							className="rounded-xl"
 							size="xl"
 							variant="outline"
 							action="primary"

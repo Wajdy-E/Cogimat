@@ -20,7 +20,7 @@ import Apple from "../../assets/apple.svg";
 import Google from "../../assets/google.svg";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { InputIcon } from "@/components/ui/input";
-import { Eye, EyeClosed, ArrowRight, QrCode, Camera, Loader } from "lucide-react-native";
+import { Eye, EyeClosed, ArrowRight, QrCode, Camera, Loader, Brain } from "lucide-react-native";
 import QRCodeScanner from "@/components/QRCodeScanner";
 import { Box } from "@/components/ui/box";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,6 +44,8 @@ import {
 	setIsSigningUp,
 	setSessionId,
 } from "@/store/auth/authSlice";
+import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from "@/components/ui/checkbox";
+import { Divider } from "@/components/ui/divider";
 
 export const useWarmUpBrowser = () => {
 	useEffect(() => {
@@ -235,7 +237,7 @@ export default function SignUp() {
 									<VStack space="sm" className="items-center">
 										<QrCode size={32} color={themeTextColor} />
 										<Text className="text-typography-950 font-medium">{i18n.t("qrSignup.qrCodeScanned")}</Text>
-										<Button onPress={() => dispatch(setQrCode(""))} variant="outline" size="sm">
+										<Button onPress={() => dispatch(setQrCode(""))} variant="outline" size="sm" className="rounded-xl">
 											<ButtonText>{i18n.t("qrSignup.changeQRCode")}</ButtonText>
 										</Button>
 									</VStack>
@@ -245,7 +247,7 @@ export default function SignUp() {
 									onPress={() => dispatch(setShowQrScanner(true))}
 									variant="outline"
 									size="xl"
-									className="rounded-full border-secondary-0"
+									className="rounded-xl border-secondary-0"
 								>
 									<Camera size={20} color={themeTextColor} />
 									<ButtonText className="text-typography-950">{i18n.t("qrSignup.scanQRCode")}</ButtonText>
@@ -254,7 +256,7 @@ export default function SignUp() {
 
 							<Button
 								size="lg"
-								className={`rounded-full ${!qrCode ? "opacity-25" : ""}`}
+								className={`rounded-xl ${!qrCode ? "opacity-25" : ""}`}
 								onPress={handleQRCodeSignupClick}
 								disabled={!qrCode}
 							>
@@ -266,7 +268,7 @@ export default function SignUp() {
 								variant="outline"
 								size="md"
 								onPress={handleQRPromptBack}
-								className="rounded-full border-secondary-0"
+								className="rounded-xl border-secondary-0"
 							>
 								<ButtonText className="text-typography-950">{i18n.t("general.buttons.cancel")}</ButtonText>
 							</Button>
@@ -305,11 +307,11 @@ export default function SignUp() {
 								formErrorKey={verificationCodeError ? "signup.alert.verificationFailed" : undefined}
 								onChange={(text) => dispatch(setVerificationCode(text))}
 							/>
-							<Button className="w-full rounded-lg" onPress={verifyEmailCode} size="md">
+							<Button className="w-full rounded-xl" onPress={verifyEmailCode} size="md">
 								<ButtonText>{i18n.t("signup.verify")}</ButtonText>
 							</Button>
 							<Button
-								className="w-full rounded-lg"
+								className="w-full rounded-xl"
 								onPress={() => onResendCode()}
 								size="md"
 								variant="outline"
@@ -326,17 +328,34 @@ export default function SignUp() {
 
 	// Render main signup form
 	return (
-		<SafeAreaView className="flex-1 justify-center items-center bg-background-700">
-			<View className="w-full flex-row items-center justify-between px-6 py-4 text-center">
-				<BackButton />
-				<Text className="text-2xl font-bold mb-6 w-[90%]">{i18n.t("signup.title")}</Text>
-			</View>
+		<SafeAreaView className="flex-1 bg-background-700">
 			<ScrollView
-				className="w-screen flex-1"
-				contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center", paddingBottom: 50 }}
+				className="flex-1"
+				contentContainerStyle={{
+					flexGrow: 1,
+					justifyContent: "center",
+					alignItems: "center",
+					paddingHorizontal: 24,
+					paddingTop: 20,
+					paddingBottom: 50,
+				}}
 			>
-				<VStack space="md" className="w-[90%]">
-					<Center className="flex gap-5">
+				<VStack space="lg" className="w-full max-w-md">
+					{/* Logo */}
+					<Center className="mb-4">
+						<Brain size={48} color="#57CEB8" strokeWidth={2} />
+					</Center>
+
+					{/* Title and Subtitle */}
+					<Center className="mb-8">
+						<Heading size="2xl" className="text-typography-950 font-bold mb-2">
+							Create Account
+						</Heading>
+						<Text className="text-typography-600 text-base">Start your cognitive training journey</Text>
+					</Center>
+
+					{/* Form Fields */}
+					<VStack space="md" className="w-full">
 						<FormInput
 							label={"signup.form.firstName"}
 							placeholder={"signup.form.firstNamePlaceholder"}
@@ -344,7 +363,9 @@ export default function SignUp() {
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
+							inputIcon={<Ionicons name="person-outline" size={20} color="#9CA3AF" />}
 							inputType="text"
+							inputVariant="rounded"
 							onChange={(text) => dispatch(setSignupFormField({ field: "firstName", value: text }))}
 						/>
 						<FormInput
@@ -354,20 +375,23 @@ export default function SignUp() {
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
+							inputIcon={<Ionicons name="person-outline" size={20} color="#9CA3AF" />}
 							inputType="text"
+							inputVariant="rounded"
 							onChange={(text) => dispatch(setSignupFormField({ field: "lastName", value: text }))}
 						/>
 						<FormInput
 							label={"signup.form.email"}
 							placeholder={"signup.form.emailPlaceholder"}
 							value={signupForm.email}
+							inputIcon={<Ionicons name="mail-outline" size={20} color="#9CA3AF" />}
 							formSize="lg"
 							inputSize="lg"
 							isRequired={true}
 							inputType="text"
+							inputVariant="rounded"
 							onChange={(text) => dispatch(setSignupFormField({ field: "email", value: text }))}
 						/>
-
 						<FormInput
 							label={"signup.form.password"}
 							placeholder={"signup.form.passwordPlaceholder"}
@@ -376,46 +400,83 @@ export default function SignUp() {
 							inputSize="lg"
 							isRequired={true}
 							inputType={signupForm.showPassword ? "text" : "password"}
+							inputVariant="rounded"
 							onChange={(text) => dispatch(setSignupFormField({ field: "password", value: text }))}
 							inputIcon={<InputIcon as={signupForm.showPassword ? Eye : EyeClosed} />}
 							onIconClick={() =>
 								dispatch(setSignupFormField({ field: "showPassword", value: !signupForm.showPassword }))
 							}
 						/>
-						<Button className="w-full rounded-full" onPress={signUpWithEmail} size="xl">
-							<ButtonText>{i18n.t("signup.form.signUp")}</ButtonText>
-							<ButtonIcon as={isSigningUp ? Loader : ArrowRight} size="xl" />
-						</Button>
+						<FormInput
+							label={"signup.form.confirmPassword"}
+							placeholder={"signup.form.confirmPasswordPlaceholder"}
+							value={signupForm.confirmPassword}
+							formSize="lg"
+							inputSize="lg"
+							isRequired={true}
+							inputType={signupForm.showConfirmPassword ? "text" : "password"}
+							inputVariant="rounded"
+							onChange={(text) => dispatch(setSignupFormField({ field: "confirmPassword", value: text }))}
+							inputIcon={<InputIcon as={signupForm.showConfirmPassword ? Eye : EyeClosed} />}
+							onIconClick={() =>
+								dispatch(setSignupFormField({ field: "showConfirmPassword", value: !signupForm.showConfirmPassword }))
+							}
+						/>
 
-						{Platform.OS === "ios" && (
-							<Button
-								onPress={() => onProviderSignIn("apple")}
-								variant="outline"
-								size="xl"
-								className="rounded-full w-100 border-secondary-0"
-								style={{ width: "100%" }}
-							>
-								<Apple height={20} width={20} fill={themeTextColor} />
-								<ButtonText className="text-typography-950">{i18n.t("login.appleSignIn")}</ButtonText>
-							</Button>
-						)}
-
+						{/* Create Account Button */}
 						<Button
-							onPress={() => onProviderSignIn("google")}
-							variant="outline"
+							className="w-full rounded-xl bg-primary-500 mt-4"
+							onPress={signUpWithEmail}
 							size="xl"
-							className="rounded-full w-full border-secondary-0"
+							disabled={isSigningUp}
 						>
-							<Google height={20} width={20} />
-							<ButtonText className="text-typography-950">{i18n.t("login.googleSignIn")}</ButtonText>
+							<ButtonText className="text-white font-semibold">
+								{i18n.t("signup.form.signUp") || "Create Account"}
+							</ButtonText>
+							{isSigningUp && <ButtonIcon as={Loader} size="xl" className="ml-2" />}
 						</Button>
-						<Text>
-							{i18n.t("signup.alreadyHaveAccount")}{" "}
-							<Link href={"/login"} className="underline text-primary-500">
-								{i18n.t("signup.login")}
-							</Link>
-						</Text>
-					</Center>
+
+						{/* Social Login Separator */}
+						<View className="flex-row items-center my-6">
+							<Divider orientation="horizontal" className="flex-1 bg-secondary-300" />
+							<Text className="mx-4 text-typography-600 text-sm">Or sign up with</Text>
+							<Divider orientation="horizontal" className="flex-1 bg-secondary-300" />
+						</View>
+
+						{/* Social Login Buttons */}
+						<View className="flex-row gap-3">
+							{Platform.OS === "ios" && (
+								<Button
+									onPress={() => onProviderSignIn("apple")}
+									variant="outline"
+									size="lg"
+									className="flex-1 rounded-xl border-secondary-300"
+								>
+									<Apple height={20} width={20} fill={themeTextColor} />
+									<ButtonText className="text-typography-950 ml-2">Apple</ButtonText>
+								</Button>
+							)}
+							<Button
+								onPress={() => onProviderSignIn("google")}
+								variant="outline"
+								size="lg"
+								className={`rounded-xl border-secondary-300 ${Platform.OS === "ios" ? "flex-1" : "w-full"}`}
+							>
+								<Google height={20} width={20} />
+								<ButtonText className="text-typography-950 ml-2">{i18n.t("login.googleSignIn")}</ButtonText>
+							</Button>
+						</View>
+
+						{/* Sign In Link */}
+						<Center className="mt-6">
+							<Text className="text-typography-600 text-sm">
+								{i18n.t("signup.alreadyHaveAccount") || "Already have an account? "}
+								<Link href={"/login"} className="text-blue-500 font-medium">
+									{i18n.t("signup.login") || "Sign In"}
+								</Link>
+							</Text>
+						</Center>
+					</VStack>
 				</VStack>
 			</ScrollView>
 		</SafeAreaView>

@@ -14,7 +14,7 @@ export default function GoalCard ({ text, onDelete, onCheck }: GoalCardProps) {
 	const [checked, setChecked] = useState(false);
 
 	return (
-		<Card className="relative rounded-md" variant="elevated" size="md">
+		<Card className="relative bg-background-500 border-2 border-outline-700 rounded-xl p-3" variant="outline" size="md">
 			<Pressable
 				onPress={() => {
 					setChecked(!checked);

@@ -28,12 +28,12 @@
 		"greeting": "こんにちは、{{name}}さん",
 		"subtitle": "限界に挑戦する時です。",
 		"tabs": {
-			"allExercises": "すべてのエクササイズ",
+			"allExercises": "トレーニングプログラム",
 			"interactiveExercises": "インタラクティブエクササイズ",
 			"noCustomExercises": "カスタムエクササイズをまだ作成していません",
 			"createCustomExercise": "最初のカスタムエクササイズを作成",
 			"noPublicExercises": "公開エクササイズがありません。後でもう一度確認してください。",
-			"myCustomExercises": "マイカスタムエクササイズ",
+			"myCustomExercises": "マイエクササイズ",
 			"community": "コミュニティ"
 		},
 		"exercisePrograms": {
@@ -144,15 +144,17 @@
 	"login": {
 		"title": "ログイン",
 		"welcomeBack": "おかえりなさい！",
+		"appName": "Cogipro",
+		"slogan": "心を鍛え、体を動かす",
 		"email": "メール",
 		"emailPlaceholder": "メールを入力してください",
 		"password": "パスワード",
 		"passwordPlaceholder": "パスワードを入力してください",
 		"forgotPassword": "パスワードを忘れましたか？",
-		"loginButton": "ログイン",
-		"orSignInWith": "または以下でログイン",
-		"googleSignIn": "Googleで続行",
-		"appleSignIn": "Appleで続行",
+		"loginButton": "サインイン",
+		"orContinueWith": "または続行",
+		"googleSignIn": "Google",
+		"appleSignIn": "Apple",
 		"noAccount": "アカウントをお持ちでないですか？",
 		"scanQRCode": "QRコードをスキャン",
 		"signUp": "サインアップ",
@@ -230,6 +232,7 @@
 			"delete": "削除",
 			"edit": "編集",
 			"play": "エクササイズを再生",
+			"startExercise": "エクササイズを開始",
 			"favorite": "お気に入りを切り替え",
 			"confirm": "確認",
 			"close": "閉じる",
@@ -391,6 +394,16 @@
 	"metronome": {
 		"title": "メトロノーム",
 		"tempo": "テンポ (BPM)",
+		"sound": "音色",
+		"sounds": {
+			"tick": "クラシック",
+			"soft": "ソフト",
+			"high": "高音",
+			"click": "クリック",
+			"deep": "低音",
+			"wood": "ウッド",
+			"ping": "ピン"
+		},
 		"volume": "音量",
 		"description": "タイミングと協調性をサポートするオーディオテンポキュー",
 		"enabled": "メトロノーム有効",
@@ -516,6 +529,7 @@
 	},
 	"routines": {
 		"title": "ルーチン",
+		"description": "独自のトレーニングルーチンを作成してカスタマイズしましょう。",
 		"createNew": "新規作成",
 		"builder": {
 			"title": "ルーチンビルダー",
@@ -581,7 +595,8 @@
 			"monthlyPrice": "月額$9.99",
 			"annualPrice": "年額$79.99",
 			"annualSaving": "33%節約",
-			"monthlySaving": ""
+			"monthlySaving": "",
+			"bestValue": "ベストバリュー"
 		},
 		"buttons": {
 			"subscribe": "続行",
@@ -590,8 +605,8 @@
 	},
 	"upgradeCard": {
 		"title": "CogiProにアップグレード",
-		"description": "エキスパートチームが設計したエクササイズを含む、Cogimatを使用するユニークでクリエイティブな方法への独占アクセスを取得してください。",
-		"button": "アップグレード"
+		"description": "エキスパートエクササイズ、詳細な分析、パーソナライズされたトレーニングプランをアンロック",
+		"button": "今すぐアップグレード"
 	},
 	"admin": {
 		"videoUpload": {

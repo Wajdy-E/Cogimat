@@ -5,10 +5,16 @@
 
 import { Audio } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
+import {
+	DEFAULT_METRONOME_SOUND_ID,
+	getMetronomeSoundSource,
+	type MetronomeSoundId,
+} from "@/constants/metronomeSounds";
 
 export interface MetronomeConfig {
 	bpm: number;
 	soundEnabled: boolean;
+	soundId?: string;
 	countdownBeats?: number;
 }
 
@@ -25,20 +31,23 @@ class MetronomeService {
 
 	// Pre-loaded sound for minimal latency
 	private soundObject: Sound | null = null;
+	private currentSoundId: string = DEFAULT_METRONOME_SOUND_ID;
 	private isInitialized: boolean = false;
+
+	// Serialize start/resume so we never create multiple intervals
+	private lastStartResumePromise: Promise<void> = Promise.resolve();
 
 	constructor() {
 		this.initializeAudio();
 	}
 
 	/**
-	 * Initialize audio system and pre-load metronome sound
+	 * Initialize audio system (mode only; sound loaded on start with soundId)
 	 */
 	private async initializeAudio() {
 		try {
 			console.log("🎵 Initializing metronome audio...");
 
-			// Set audio mode for optimal playback
 			await Audio.setAudioModeAsync({
 				allowsRecordingIOS: false,
 				playsInSilentModeIOS: true,
@@ -47,21 +56,35 @@ class MetronomeService {
 				playThroughEarpieceAndroid: false,
 			});
 
-			console.log("🎵 Loading metronome sound file...");
-
-			// Pre-load the metronome sound
-			const { sound } = await Audio.Sound.createAsync(
-				require("../../assets/sounds/metronome-tick.mp3"),
-				{ shouldPlay: false },
-				this.onPlaybackStatusUpdate
-			);
-
-			this.soundObject = sound;
 			this.isInitialized = true;
-			console.log("✅ Metronome audio initialized successfully");
+			console.log("✅ Metronome audio mode initialized");
 		} catch (error) {
 			console.error("❌ Failed to initialize metronome audio:", error);
 		}
+	}
+
+	/**
+	 * Load the sound for the given soundId. Unloads previous sound if any.
+	 */
+	private async loadSound(soundId: string): Promise<void> {
+		if (this.soundObject && this.currentSoundId === soundId) {
+			return;
+		}
+
+		if (this.soundObject) {
+			await this.soundObject.unloadAsync();
+			this.soundObject = null;
+		}
+
+		const source = getMetronomeSoundSource(soundId);
+		const { sound } = await Audio.Sound.createAsync(
+			source,
+			{ shouldPlay: false },
+			this.onPlaybackStatusUpdate
+		);
+		this.soundObject = sound;
+		this.currentSoundId = soundId;
+		console.log("🎵 Loaded metronome sound:", soundId);
 	}
 
 	/**
@@ -75,57 +98,100 @@ class MetronomeService {
 	};
 
 	/**
+	 * Preview a metronome sound by playing it 3 times (e.g. in settings picker).
+	 * Uses a temporary sound so it does not affect the main metronome state.
+	 */
+	async previewSound(soundId: string): Promise<void> {
+		try {
+			const source = getMetronomeSoundSource(soundId);
+			const { sound } = await Audio.Sound.createAsync(source, { shouldPlay: false });
+			const intervalMs = 500;
+			for (let i = 0; i < 3; i++) {
+				await sound.replayAsync();
+				if (i < 2) {
+					await new Promise((r) => setTimeout(r, intervalMs));
+				}
+			}
+			await sound.unloadAsync();
+		} catch (error) {
+			console.warn("Metronome preview failed:", error);
+		}
+	}
+
+	/** Clear the tick interval if any (prevents duplicate intervals from pause/resume races). */
+	private clearTickInterval(): void {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+			this.intervalId = null;
+		}
+	}
+
+	/**
 	 * Start the metronome
 	 */
 	async start(config?: Partial<MetronomeConfig>): Promise<void> {
-		console.log("🎵 Starting metronome with config:", config);
+		const prev = this.lastStartResumePromise;
+		let resolve: () => void;
+		this.lastStartResumePromise = new Promise((r) => {
+			resolve = r;
+		});
+		await prev;
 
-		if (this.isPlaying) {
-			await this.stop();
-		}
+		try {
+			console.log("🎵 Starting metronome with config:", config);
 
-		// Update configuration
-		if (config) {
-			this.bpm = config.bpm ?? this.bpm;
-			this.soundEnabled = config.soundEnabled ?? this.soundEnabled;
-		}
+			this.clearTickInterval();
+			if (this.isPlaying) {
+				await this.stop();
+			}
 
-		console.log(`🎵 Metronome settings - BPM: ${this.bpm}, Enabled: ${this.soundEnabled}`);
-		// Ensure audio is initialized
-		if (!this.isInitialized) {
-			console.log("🎵 Audio not initialized, initializing now...");
-			await this.initializeAudio();
-		}
+			// Update configuration
+			const soundId = config?.soundId ?? this.currentSoundId ?? DEFAULT_METRONOME_SOUND_ID;
+			if (config) {
+				this.bpm = config.bpm ?? this.bpm;
+				this.soundEnabled = config.soundEnabled ?? this.soundEnabled;
+			}
 
-		if (!this.soundObject) {
-			console.error("❌ Sound object is null, cannot start metronome");
-			return;
-		}
+			// Ensure audio mode is initialized
+			if (!this.isInitialized) {
+				await this.initializeAudio();
+			}
 
-		// Calculate interval in milliseconds
-		const intervalMs = (60 / this.bpm) * 1000;
-		console.log(`🎵 Interval: ${intervalMs}ms (${this.bpm} BPM)`);
+			// Load the requested sound (may reuse current if same id)
+			await this.loadSound(soundId);
 
-		this.isPlaying = true;
-		this.currentBeat = 0;
+			if (!this.soundObject) {
+				console.error("❌ Sound object is null, cannot start metronome");
+				return;
+			}
 
-		// Use high-precision interval for accurate timing
-		this.intervalId = setInterval(() => {
+			console.log(`🎵 Metronome - BPM: ${this.bpm}, sound: ${soundId}, enabled: ${this.soundEnabled}`);
+
+			// Calculate interval in milliseconds
+			const intervalMs = (60 / this.bpm) * 1000;
+			console.log(`🎵 Interval: ${intervalMs}ms (${this.bpm} BPM)`);
+
+			this.isPlaying = true;
+			this.currentBeat = 0;
+
+			// Use high-precision interval for accurate timing
+			this.intervalId = setInterval(() => {
+				this.tick();
+			}, intervalMs);
+
+			// Play first beat immediately
 			this.tick();
-		}, intervalMs);
-
-		// Play first beat immediately
-		this.tick();
+		} finally {
+			resolve!();
+		}
 	}
 
 	/**
 	 * Stop the metronome
 	 */
 	async stop(): Promise<void> {
-		if (this.intervalId) {
-			clearInterval(this.intervalId);
-			this.intervalId = null;
-		}
+		this.clearTickInterval();
+		this.tickPlayLock = false;
 
 		if (this.soundObject) {
 			await this.soundObject.stopAsync();
@@ -140,11 +206,11 @@ class MetronomeService {
 	 * Pause the metronome (can be resumed)
 	 */
 	pause(): void {
-		if (this.intervalId) {
-			clearInterval(this.intervalId);
-			this.intervalId = null;
-		}
 		this.isPlaying = false;
+		this.tickPlayLock = false;
+		this.clearTickInterval();
+		// Stop current playback so no tick continues after pause
+		this.soundObject?.stopAsync().catch(() => {});
 	}
 
 	/**
@@ -153,36 +219,56 @@ class MetronomeService {
 	async resume(): Promise<void> {
 		if (this.isPlaying) return;
 
-		const intervalMs = (60 / this.bpm) * 1000;
-		this.isPlaying = true;
+		const prev = this.lastStartResumePromise;
+		let resolve: () => void;
+		this.lastStartResumePromise = new Promise((r) => {
+			resolve = r;
+		});
+		await prev;
 
-		this.intervalId = setInterval(() => {
-			this.tick();
-		}, intervalMs);
+		try {
+			if (this.isPlaying) return;
+			this.clearTickInterval();
+
+			const intervalMs = (60 / this.bpm) * 1000;
+			this.isPlaying = true;
+
+			this.intervalId = setInterval(() => {
+				this.tick();
+			}, intervalMs);
+		} finally {
+			resolve!();
+		}
 	}
+
+	// Prevent overlapping tick playback (one replay at a time per interval)
+	private tickPlayLock: boolean = false;
 
 	/**
 	 * Execute a single tick/beat
 	 */
 	private async tick(): Promise<void> {
-		this.currentBeat++;
-		console.log(`🎵 Tick ${this.currentBeat} - Sound enabled: ${this.soundEnabled}`);
+		if (!this.isPlaying) return;
 
-		// Play sound if enabled
-		if (this.soundEnabled && this.soundObject) {
+		this.currentBeat++;
+		const beat = this.currentBeat;
+		console.log(`🎵 Tick ${beat} - Sound enabled: ${this.soundEnabled}`);
+
+		// Play sound only if still playing (avoid tick after pause)
+		if (!this.isPlaying) return;
+		if (this.soundEnabled && this.soundObject && !this.tickPlayLock) {
+			this.tickPlayLock = true;
 			try {
-				// Use replayAsync to avoid "Seeking interrupted" errors
-				// This method stops the sound if playing, resets position, and plays again
 				await this.soundObject.replayAsync();
-				console.log(`✅ Played tick ${this.currentBeat}`);
+				if (this.isPlaying) console.log(`✅ Played tick ${beat}`);
 			} catch (error) {
 				console.error("❌ Error playing metronome tick:", error);
+			} finally {
+				this.tickPlayLock = false;
 			}
-		} else {
-			console.log(`⚠️ Skipped tick - soundEnabled: ${this.soundEnabled}, soundObject: ${!!this.soundObject}`);
 		}
 
-		// Notify all registered callbacks
+		if (!this.isPlaying) return;
 		this.callbacks.forEach((callback) => {
 			callback(this.currentBeat);
 		});

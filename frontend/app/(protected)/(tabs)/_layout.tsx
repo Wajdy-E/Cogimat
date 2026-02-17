@@ -13,7 +13,7 @@ import PaywallDrawer from "@/components/PaywallDrawer";
 import { i18n } from "../../i18n";
 
 export default function TabsLayout() {
-	const activeColor = "#64dac4";
+	const activeColor = "#06b6d4";
 	const inactiveColor = "#d3d3d3";
 
 	const dispatch = useDispatch();

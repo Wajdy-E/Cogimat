@@ -1,10 +1,10 @@
 /**
  * MetronomeControl Component
- * UI for controlling metronome settings (BPM, enable/disable)
+ * UI for controlling metronome settings (BPM, enable/disable, sound)
  */
 
 import React, { useState, useEffect } from "react";
-import { View, Animated, Easing } from "react-native";
+import { View, Animated, Easing, Pressable } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -13,10 +13,16 @@ import { Switch } from "@/components/ui/switch";
 import { Minus, Plus } from "lucide-react-native";
 import MetronomeService from "@/services/MetronomeService";
 import { i18n } from "../i18n";
+import {
+	METRONOME_SOUND_IDS,
+	DEFAULT_METRONOME_SOUND_ID,
+	type MetronomeSoundId,
+} from "@/constants/metronomeSounds";
 
 export interface MetronomeSettings {
 	enabled: boolean;
 	bpm: number;
+	soundId?: string;
 }
 
 interface MetronomeControlProps {
@@ -82,6 +88,15 @@ export default function MetronomeControl({
 		onChange(newSettings);
 	};
 
+	const currentSoundId = (localSettings.soundId ?? DEFAULT_METRONOME_SOUND_ID) as MetronomeSoundId;
+
+	const handleSoundSelect = (soundId: MetronomeSoundId) => {
+		const newSettings = { ...localSettings, soundId };
+		setLocalSettings(newSettings);
+		onChange(newSettings);
+		MetronomeService.previewSound(soundId);
+	};
+
 	if (compact) {
 		return (
 			<HStack space="md" className="items-center justify-between w-full">
@@ -129,6 +144,30 @@ export default function MetronomeControl({
 
 			{localSettings.enabled && (
 				<>
+					{/* Sound picker */}
+					<VStack space="sm">
+						<Text className="text-typography-700 font-semibold">{i18n.t("metronome.sound")}</Text>
+						<View className="flex-row flex-wrap gap-2">
+							{METRONOME_SOUND_IDS.map((id) => (
+								<Pressable
+									key={id}
+									onPress={() => handleSoundSelect(id)}
+									className={`rounded-lg px-3 py-2 min-w-[72px] items-center ${
+										currentSoundId === id ? "bg-primary-500" : "bg-secondary-400"
+									}`}
+								>
+									<Text
+										className={
+											currentSoundId === id ? "text-white font-semibold" : "text-typography-700"
+										}
+									>
+										{i18n.t(`metronome.sounds.${id}`)}
+									</Text>
+								</Pressable>
+							))}
+						</View>
+					</VStack>
+
 					<VStack space="md">
 						<Text className="text-typography-700 font-semibold">{i18n.t("metronome.tempo")}</Text>
 						<HStack space="md" className="items-center justify-between">

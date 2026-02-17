@@ -83,6 +83,8 @@ export default function UnifiedStimulus({
 							updateUserMilestone({
 								milestoneType: "exercisesCompleted",
 								exerciseDifficulty: exercise.difficulty,
+								exerciseId: exercise.id,
+								exerciseType: "standard",
 							})
 						);
 					}
@@ -140,12 +142,12 @@ export default function UnifiedStimulus({
 
 	// Handle metronome pause/resume when isPaused changes
 	useEffect(() => {
-		if (isPaused) {
+		if (isPaused && isMetronomeMode) {
 			MetronomeService.pause();
-		} else {
+		} else if (!isPaused && isMetronomeMode) {
 			MetronomeService.resume();
 		}
-	}, [isPaused]);
+	}, [isPaused, isMetronomeMode]);
 
 	const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

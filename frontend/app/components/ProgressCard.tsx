@@ -15,7 +15,7 @@ interface ProgressCardProps {
 
 export default function ProgressCard (props: ProgressCardProps) {
 	return (
-		<VStack space="lg" className="w-full bg-background-500 rounded-md p-3">
+		<VStack space="lg" className="w-full bg-background-500 border-2 border-outline-700 rounded-xl p-3">
 			<Heading>{i18n.t(props.headingKey)}</Heading>
 			<Text>{i18n.t(props.descriptionKey)}</Text>
 			<Progress value={props.value} className="w-full h-2 bg-secondary-800">

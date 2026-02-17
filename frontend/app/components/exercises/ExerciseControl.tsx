@@ -51,8 +51,11 @@ function ExerciseControl({
 		if (!isPaused) {
 			dispatch(setExerciseStopped(true));
 		}
-		if (isPaused) {
-			MetronomeService.start({ bpm: metronomeSettings.bpm });
+		if (isPaused && metronomeSettings.enabled) {
+			MetronomeService.start({
+				bpm: metronomeSettings.bpm,
+				soundId: metronomeSettings.soundId ?? "tick",
+			});
 		}
 	};
 	return (

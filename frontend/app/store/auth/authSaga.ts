@@ -3,6 +3,7 @@ import axios from "axios";
 import {
 	setCurrentUser,
 	setMilestonesProgress,
+	setWeeklyStats,
 	setSubscriptionStatus,
 	UserBase,
 	UserMilestones,
@@ -141,7 +142,17 @@ export const fetchUserMilestones = createAsyncThunk(
 export const updateUserMilestone = createAsyncThunk(
 	"milestones/updateUserMilestone",
 	async (
-		{ milestoneType, exerciseDifficulty }: { milestoneType: string; exerciseDifficulty?: string },
+		{
+			milestoneType,
+			exerciseDifficulty,
+			exerciseId,
+			exerciseType,
+		}: {
+			milestoneType: string;
+			exerciseDifficulty?: string;
+			exerciseId?: number;
+			exerciseType?: "standard" | "custom" | "community";
+		},
 		{ getState, dispatch }
 	) => {
 		try {
@@ -151,16 +162,53 @@ export const updateUserMilestone = createAsyncThunk(
 				throw new Error("User is not authenticated");
 			}
 
+			// Determine exercise type from milestone type if not provided
+			let finalExerciseType = exerciseType;
+			if (!finalExerciseType && milestoneType.includes("ExercisesCompleted")) {
+				if (milestoneType.includes("custom")) {
+					finalExerciseType = "custom";
+				} else if (milestoneType.includes("community")) {
+					finalExerciseType = "community";
+				} else {
+					finalExerciseType = "standard";
+				}
+			}
+
 			await axios.patch(`${BASE_URL}/api/user-milestones`, {
 				userId,
 				milestoneType,
 				exerciseDifficulty,
+				exerciseId,
+				exerciseType: finalExerciseType,
 			});
 
 			// Refresh milestones after update
 			dispatch(fetchUserMilestones());
 		} catch (error) {
 			console.error("Error updating milestone:", error);
+			throw error;
+		}
+	}
+);
+
+export const fetchWeeklyExerciseStats = createAsyncThunk(
+	"milestones/fetchWeeklyExerciseStats",
+	async (_, { getState, dispatch }) => {
+		try {
+			const state = getState() as RootState;
+			const userId = state.user?.user?.baseInfo?.id;
+			if (!userId) {
+				throw new Error("User is not authenticated");
+			}
+
+			const response = await axios.get(`${BASE_URL}/api/exercise-completions/stats`, {
+				params: { userId },
+			});
+
+			dispatch(setWeeklyStats(response.data.stats));
+			return response.data.stats;
+		} catch (error) {
+			console.error("Error fetching weekly exercise stats:", error);
 			throw error;
 		}
 	}

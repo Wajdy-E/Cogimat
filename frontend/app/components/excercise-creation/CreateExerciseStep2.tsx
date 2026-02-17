@@ -2,7 +2,7 @@ import React from "react";
 import { VStack } from "@/components/ui/vstack";
 import { View } from "react-native";
 import { Heading } from "@/components/ui/heading";
-import { AlertCircleIcon } from "lucide-react-native";
+import { AlertCircleIcon, Target, Clock, Timer } from "lucide-react-native";
 import CustomSlider from "../CustomSlider";
 import {
 	FormControl,
@@ -39,7 +39,7 @@ export default function CreateExerciseStepTwo({
 	};
 
 	return (
-		<VStack space="xl" style={{ paddingBottom: 80 }}>
+		<VStack space="xl">
 			<Heading size="lg" className="text-primary-500">
 				{i18n.t("exerciseCreation.exerciseParameters")}
 			</Heading>
@@ -82,20 +82,29 @@ export default function CreateExerciseStepTwo({
 				{i18n.t("exerciseCreation.timingSettings")}
 			</Heading>
 
-			{["offScreenTime", "onScreenTime", "exerciseTime"].map((key) => (
-				<CustomSlider
-					key={key}
-					title={`exercise.form.${key}`}
-					size="lg"
-					minValue={0.5}
-					maxValue={key === "exerciseTime" ? 5 : 15}
-					step={key === "exerciseTime" ? 0.5 : 0.1}
-					value={key === "exerciseTime" ? durationSettings[key] / 60 : durationSettings[key]}
-					defaultValue={key === "exerciseTime" ? durationSettings[key] / 60 : durationSettings[key]}
-					suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
-					onChange={(value) => updateDuration(key, value)}
-				/>
-			))}
+			{["offScreenTime", "onScreenTime", "exerciseTime"].map((key) => {
+				const iconMap: Record<string, typeof Target> = {
+					offScreenTime: Timer,
+					onScreenTime: Clock,
+					exerciseTime: Target,
+				};
+				return (
+					<CustomSlider
+						key={key}
+						title={`exercise.form.${key}`}
+						size="lg"
+						minValue={0.5}
+						maxValue={key === "exerciseTime" ? 5 : 15}
+						step={key === "exerciseTime" ? 0.5 : 0.1}
+						value={key === "exerciseTime" ? durationSettings[key] / 60 : durationSettings[key]}
+						defaultValue={key === "exerciseTime" ? durationSettings[key] / 60 : durationSettings[key]}
+						suffix={key === "exerciseTime" ? "general.time.minutes" : "general.time.seconds"}
+						onChange={(value) => updateDuration(key, value)}
+						showTimeRangeStyle={true}
+						icon={iconMap[key]}
+					/>
+				);
+			})}
 		</VStack>
 	);
 }

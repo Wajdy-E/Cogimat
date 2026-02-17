@@ -267,7 +267,7 @@ function Favourites() {
 
 	return (
 		<ScrollView className="flex bg-background-700">
-			<View>
+			<View className="w-[90%] self-center mt-5">
 				<Tab tabVariant="outline" iconTop={false} tabs={tabs} roundedFull context="favourites" />
 			</View>
 		</ScrollView>

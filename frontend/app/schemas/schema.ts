@@ -62,11 +62,12 @@ export const signUpSchema = Yup.object().shape({
 	password: Yup.string()
 		.min(6, i18n.t("signup.errors.passwordShort"))
 		.required(i18n.t("signup.errors.passwordRequired")),
+	confirmPassword: Yup.string()
+		.oneOf([Yup.ref("password")], i18n.t("signup.errors.passwordsDoNotMatch") || "Passwords do not match")
+		.required(i18n.t("signup.errors.confirmPasswordRequired") || "Please confirm your password"),
 });
 
 export const loginSchema = Yup.object().shape({
 	email: Yup.string().email(i18n.t("login.errors.invalidEmail")).required(i18n.t("login.errors.emailRequired")),
-	password: Yup.string()
-		.min(6, i18n.t("login.errors.passwordShort"))
-		.required(i18n.t("login.errors.passwordRequired")),
+	password: Yup.string().min(6, i18n.t("login.errors.passwordShort")).required(i18n.t("login.errors.passwordRequired")),
 });

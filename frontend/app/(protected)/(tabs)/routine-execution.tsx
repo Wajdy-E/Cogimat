@@ -304,10 +304,10 @@ export default function RoutineExecution() {
 					<Heading size="2xl">{i18n.t("routines.execution.complete")}</Heading>
 					<Text className="text-center text-typography-500">{i18n.t("routines.execution.completeMessage")}</Text>
 					<HStack space="md">
-						<Button size="lg" variant="outline" onPress={handleRestartRoutine} className="flex-1">
+						<Button size="lg" variant="outline" onPress={handleRestartRoutine} className="flex-1 rounded-xl">
 							<ButtonText>{i18n.t("general.buttons.restart")}</ButtonText>
 						</Button>
-						<Button size="lg" onPress={handleEndRoutine} className="flex-1">
+						<Button size="lg" onPress={handleEndRoutine} className="flex-1 rounded-xl">
 							<ButtonText>{i18n.t("general.buttons.done")}</ButtonText>
 						</Button>
 					</HStack>
@@ -421,11 +421,11 @@ export default function RoutineExecution() {
 
 			{/* Control Buttons */}
 			<HStack className="justify-center p-4 bg-background-600" space="md" style={{ paddingBottom: 30 }}>
-				<Button size="lg" variant="outline" onPress={handleSkipExercise} className="flex-1">
+				<Button size="lg" variant="outline" onPress={handleSkipExercise} className="flex-1 rounded-xl">
 					<ButtonIcon as={SkipForward} />
 					<ButtonText>{i18n.t("routines.execution.skip")}</ButtonText>
 				</Button>
-				<Button size="lg" onPress={handleStartExercise} className="flex-1" disabled={!currentExercise}>
+				<Button size="lg" onPress={handleStartExercise} className="flex-1 rounded-xl" disabled={!currentExercise}>
 					<ButtonIcon as={Play} />
 					<ButtonText>{i18n.t("routines.execution.start")}</ButtonText>
 				</Button>

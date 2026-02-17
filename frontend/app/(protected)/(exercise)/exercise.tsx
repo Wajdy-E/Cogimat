@@ -126,9 +126,12 @@ export default function ExerciseRouter() {
 			MetronomeService.start({
 				bpm: metronomeSettings.bpm,
 				soundEnabled: true,
+				soundId: metronomeSettings.soundId ?? "tick",
 			});
 		} else {
 			console.log("🎵 NOT starting metronome - enabled:", metronomeSettings.enabled, "stopped:", exerciseStopped);
+			// Ensure any previously-running metronome is stopped when settings disable it
+			MetronomeService.stop().catch((err) => console.warn("Metronome stop error:", err));
 		}
 
 		return () => {
@@ -200,7 +203,7 @@ export default function ExerciseRouter() {
 				)}
 				{!showCountdown && (
 					<>
-						<MetronomeIndicator position="top" />
+						<MetronomeIndicator position="top" exercise={exercise} />
 						<Component
 							exercise={exercise}
 							onComplete={handleExerciseComplete}

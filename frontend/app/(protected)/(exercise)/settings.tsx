@@ -107,6 +107,7 @@ export default function ExerciseSettings() {
 				setMetronomeSettings({
 					enabled: customOptions.metronome.enabled,
 					bpm: customOptions.metronome.bpm,
+					soundId: customOptions.metronome.soundId ?? "tick",
 				});
 			}
 		}
@@ -132,6 +133,7 @@ export default function ExerciseSettings() {
 			setMetronomeSettings({
 				enabled: customOptions.metronome.enabled,
 				bpm: customOptions.metronome.bpm,
+				soundId: customOptions.metronome.soundId ?? "tick",
 			});
 		}
 		setIsEditing(false);

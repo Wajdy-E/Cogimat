@@ -37,7 +37,7 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 	const defaultDurationSettings = {
 		offScreenTime: 0.5,
 		onScreenTime: 1,
-		exerciseTime: 2.5,
+		exerciseTime: 150, // 2.5 minutes in seconds
 	};
 	const [durationSettings, setDurationSettings] = useState(defaultDurationSettings);
 

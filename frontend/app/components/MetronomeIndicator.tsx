@@ -6,22 +6,24 @@
 import React, { useState, useEffect } from "react";
 import { View, Animated, Easing, StyleSheet } from "react-native";
 import MetronomeService from "@/services/MetronomeService";
+import { Exercise } from "@/store/data/dataSlice";
 
 interface MetronomeIndicatorProps {
 	position?: "top" | "bottom" | "center";
 	color?: string;
 	size?: number;
+	exercise: Exercise;
 }
 
 export default function MetronomeIndicator({
 	position = "top",
 	color = "#10b981",
 	size = 20,
+	exercise,
 }: MetronomeIndicatorProps) {
 	const [pulseAnim] = useState(new Animated.Value(1));
 	const [opacityAnim] = useState(new Animated.Value(0.3));
 	const [isVisible, setIsVisible] = useState(false);
-
 	useEffect(() => {
 		const metronomeState = MetronomeService.getState();
 		setIsVisible(metronomeState.isPlaying && metronomeState.soundEnabled);
@@ -75,21 +77,23 @@ export default function MetronomeIndicator({
 	};
 
 	return (
-		<View style={[styles.container, positionStyle as any]} pointerEvents="none">
-			<Animated.View
-				style={[
-					styles.indicator,
-					{
-						width: size,
-						height: size,
-						borderRadius: size / 2,
-						backgroundColor: color,
-						transform: [{ scale: pulseAnim }],
-						opacity: opacityAnim,
-					},
-				]}
-			/>
-		</View>
+		exercise.customizableOptions.metronome?.enabled && (
+			<View style={[styles.container, positionStyle as any]} pointerEvents="none">
+				<Animated.View
+					style={[
+						styles.indicator,
+						{
+							width: size,
+							height: size,
+							borderRadius: size / 2,
+							backgroundColor: color,
+							transform: [{ scale: pulseAnim }],
+							opacity: opacityAnim,
+						},
+					]}
+				/>
+			</View>
+		)
 	);
 }
 

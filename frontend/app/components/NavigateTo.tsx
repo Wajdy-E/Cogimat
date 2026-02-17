@@ -24,7 +24,7 @@ function NavigateTo (props: NavigateTo) {
 		}
 	}
 	return (
-		<View className={`${props.classes} flex-row gap-2 items-center`} style={{ marginVertical: 10 }}>
+		<View className={`${props.classes} flex-row gap-2 items-center mb-2`}>
 			{props.heading && <Heading className="text-typography-950">{props.heading}</Heading>}
 			<Button onPress={handlePress} variant="link" action="primary">
 				<ButtonText>
@@ -34,7 +34,7 @@ function NavigateTo (props: NavigateTo) {
 						</Text>
 					)}
 				</ButtonText>
-				<ButtonIcon as={ArrowRight} />
+				<ButtonIcon as={ArrowRight} className="text-primary-500" />
 			</Button>
 		</View>
 	);

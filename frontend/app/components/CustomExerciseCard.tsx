@@ -1,18 +1,20 @@
-import { Image } from "@/components/ui/image";
 import { View, TouchableOpacity } from "react-native";
 import { CustomExercise, ExerciseDifficulty } from "@/store/data/dataSlice";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
-import { Clock, Sprout, Rocket, Trophy } from "lucide-react-native";
+import { Clock, Play } from "lucide-react-native";
 import { Icon } from "@/components/ui/icon";
 import { VStack } from "@/components/ui/vstack";
-import PlayButton from "./PlayButton";
+import { HStack } from "@/components/ui/hstack";
+import { Badge, BadgeText } from "@/components/ui/badge";
+import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
 import FavouriteButton from "./FavouriteButton";
 import { updateCustomExerciseThunk, setCommunityExerciseFavourite } from "@/store/data/dataSaga";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { i18n } from "../i18n";
+import { useRouter } from "expo-router";
 
 interface ExerciseCardProps {
 	name: string;
@@ -28,12 +30,9 @@ interface ExerciseCardProps {
 	onClick?: () => void;
 }
 
-const placeHolder = require("../../assets/exercise-thumbnails/placeholder.png");
-
 function ExerciseCard(props: ExerciseCardProps) {
 	const dispatch: AppDispatch = useDispatch();
-
-	const exerciseImage = props.imageFileUrl ? { uri: props.imageFileUrl } : placeHolder;
+	const router = useRouter();
 
 	function onFavourite() {
 		if (props.isCommunityExercise) {
@@ -52,70 +51,93 @@ function ExerciseCard(props: ExerciseCardProps) {
 		}
 	}
 
-	function getIconForType() {
-		return (
-			<Icon
-				size="lg"
-				as={
-					props.difficulty === ExerciseDifficulty.Beginner
-						? Sprout
-						: props.difficulty === ExerciseDifficulty.Intermediate
-							? Rocket
-							: Trophy
-				}
-			/>
-		);
+	function getDifficultyBadgeColor() {
+		switch (props.difficulty) {
+			case ExerciseDifficulty.Beginner:
+				return "success"; // Green for Easy/Beginner
+			case ExerciseDifficulty.Intermediate:
+				return "warning"; // Orange/Yellow for Medium/Intermediate
+			case ExerciseDifficulty.Advanced:
+				return "error"; // Orange/Red for Hard/Advanced
+			default:
+				return "muted";
+		}
+	}
+
+	function getDifficultyLabel() {
+		const difficulty = props.difficulty.toLowerCase();
+		if (difficulty === "beginner") return "Easy";
+		if (difficulty === "intermediate") return "Medium";
+		if (difficulty === "advanced") return "Hard";
+		return i18n.t(`exercise.difficulty.${difficulty}`);
+	}
+
+	function handleStartExercise() {
+		if (props.onClick) {
+			props.onClick();
+		} else {
+			let pathname;
+			if (props.isCommunityExercise) {
+				pathname = `/(community-exercise)/${props.id}`;
+			} else {
+				pathname = `/(custom-exercise)/${props.id}`;
+			}
+
+			router.push({
+				pathname,
+				params: {
+					data: JSON.stringify(props.exercise),
+				},
+			});
+		}
+	}
+
+	// Convert from seconds to minutes and seconds for display
+	const totalSeconds = parseFloat(props.time);
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = Math.floor(totalSeconds % 60);
+
+	function getTimeDisplay() {
+		if (minutes === 0) {
+			return `${seconds} ${i18n.t("exercise.card.seconds")}`;
+		} else if (seconds === 0) {
+			return `${minutes} ${i18n.t("exercise.card.minutes")}`;
+		} else {
+			return `${minutes} ${i18n.t("exercise.card.minutes")} ${seconds} ${i18n.t("exercise.card.seconds")}`;
+		}
 	}
 
 	const CardContent = (
-		<Card
-			variant={props.variant ? props.variant : "outline"}
-			className={`p-0 rounded-md overflow-hidden ${props.classes}`}
-		>
-			<VStack space="sm" className="content relative">
-				<View className="relative">
-					<Image
-						className="w-full h-36"
-						source={exerciseImage}
-						alt={i18n.t("exercise.card.imageAlt")}
-						resizeMode="cover"
-					/>
-					<FavouriteButton isFavourited={props.isFavourited ? true : false} onFavourite={onFavourite} />
-					<PlayButton
-						id={props.id}
-						exercise={props.exercise}
-						isCustomExercise={!props.isCommunityExercise}
-						isCommunityExercise={props.isCommunityExercise}
-					/>
-				</View>
-				<View className="p-2">
-					<Heading numberOfLines={1} style={{ maxWidth: "90%" }}>
-						{props?.name}
-					</Heading>
-					<View className="flex-row gap-2">
-						<View className="flex-row items-center gap-1">
-							<Icon size="md" as={Clock} />
-							{(() => {
-								// Convert from seconds to minutes for display
-								const totalSeconds = parseFloat(props.time);
-								const minutes = Math.floor(totalSeconds / 60);
-								const seconds = totalSeconds % 60;
-								return (
-									<Text>
-										{minutes} {i18n.t("exercise.card.minutes")}
-										{seconds > 0 && ` ${seconds} ${i18n.t("exercise.card.seconds")}`}
-									</Text>
-								);
-							})()}
-						</View>
-						<View className="flex-row items-center gap-1" style={{ maxWidth: "100%" }}>
-							{getIconForType()}
-							<Text size="lg" ellipsizeMode="tail" numberOfLines={1}>
-								{i18n.t(`exercise.difficulty.${props.difficulty.toLowerCase()}`)}
+		<Card variant={props.variant ? props.variant : "outline"} className={`bg-background-500 border-2 border-outline-700 p-4 rounded-xl ${props.classes}`}>
+			<VStack space="md" className="flex justify-between">
+				<Heading size="xl" numberOfLines={2}>
+					{props?.name}
+				</Heading>
+				<VStack space="md">
+					<HStack space="md" className="items-center">
+						<HStack space="xs" className="items-center">
+							<Icon size="md" as={Clock} className="text-typography-600" />
+							<Text size="md" className="text-typography-600">
+								{getTimeDisplay()}
 							</Text>
+						</HStack>
+						<Badge action={getDifficultyBadgeColor()} variant="solid" size="md" className="rounded-full">
+							<BadgeText>{getDifficultyLabel()}</BadgeText>
+						</Badge>
+					</HStack>
+
+					<HStack space="sm" className="w-full">
+						<View style={{ flex: 0.8 }}>
+							<Button variant="solid" action="primary" size="md" onPress={handleStartExercise} className="w-full rounded-xl">
+								<ButtonIcon as={Play} size="md" className="text-white" />
+								<ButtonText className="text-white">{i18n.t("general.buttons.startExercise")}</ButtonText>
+							</Button>
 						</View>
-					</View>
-				</View>
+						<View style={{ flex: 0.2 }}>
+							<FavouriteButton isFavourited={props.isFavourited ? true : false} onFavourite={onFavourite} />
+						</View>
+					</HStack>
+				</VStack>
 			</VStack>
 		</Card>
 	);

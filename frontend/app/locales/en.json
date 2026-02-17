@@ -28,12 +28,12 @@
 		"greeting": "Hi, {{name}}",
 		"subtitle": "It's time to challenge your limits.",
 		"tabs": {
-			"allExercises": "All Exercises",
+			"allExercises": "Training Programs",
 			"interactiveExercises": "Interactive Exercises",
 			"noCustomExercises": "You have not created any custom exercises",
 			"createCustomExercise": "Create my first custom exercise",
 			"noPublicExercises": "There are no public exercises. Please check again later.",
-			"myCustomExercises": "My Custom Exercises",
+			"myCustomExercises": "My Exercises",
 			"community": "Community"
 		},
 		"exercisePrograms": {
@@ -43,7 +43,8 @@
 			"seeAll": "See All"
 		},
 		"exerciseOfTheDay": "Exercise of the day",
-		"exclusiveExercises": "CogiPro Exclusives",
+		"exclusiveExercises": "Pro Exclusives",
+		"unlockWithPro": "Unlock with Pro",
 		"articleDateFormat": "MMMM D, YYYY",
 		"articlesAndTips": "Articles & Tips",
 		"article1": "Article 1",
@@ -120,7 +121,9 @@
 			"email": "Email",
 			"emailPlaceholder": "Enter your email",
 			"password": "Password",
-			"passwordPlaceholder": "Enter your password",
+			"passwordPlaceholder": "Create a password",
+			"confirmPassword": "Confirm Password",
+			"confirmPasswordPlaceholder": "Confirm your password",
 			"signUp": "Sign Up"
 		},
 		"errors": {
@@ -132,6 +135,9 @@
 			"emailRequired": "Email is required",
 			"passwordShort": "Password must be at least 6 characters",
 			"passwordRequired": "Password is required",
+			"confirmPasswordRequired": "Please confirm your password",
+			"passwordsDoNotMatch": "Passwords do not match",
+			"termsRequired": "You must agree to the terms",
 			"missingFields": "Please fill in all required fields"
 		},
 		"userExists": {
@@ -144,15 +150,17 @@
 	"login": {
 		"title": "Log In",
 		"welcomeBack": "Welcome Back!",
+		"appName": "Cogipro",
+		"slogan": "Train your mind, move your body",
 		"email": "Email",
 		"emailPlaceholder": "Enter your email",
 		"password": "Password",
 		"passwordPlaceholder": "Enter your password",
 		"forgotPassword": "Forgot Password?",
-		"loginButton": "Login",
-		"orSignInWith": "Or Sign In With",
-		"googleSignIn": "Continue with Google",
-		"appleSignIn": "Continue with Apple",
+		"loginButton": "Sign In",
+		"orContinueWith": "Or continue with",
+		"googleSignIn": "Google",
+		"appleSignIn": "Apple",
 		"noAccount": "Don't have an account?",
 		"scanQRCode": "Scan QR Code",
 		"signUp": "Sign Up",
@@ -230,6 +238,7 @@
 			"delete": "Delete",
 			"edit": "Edit",
 			"play": "Play Exercise",
+			"startExercise": "Start Exercise",
 			"favorite": "Toggle Favorite",
 			"confirm": "Confirm",
 			"close": "Close",
@@ -387,6 +396,16 @@
 	"metronome": {
 		"title": "Metronome",
 		"tempo": "Tempo (BPM)",
+		"sound": "Tick sound",
+		"sounds": {
+			"tick": "Classic",
+			"soft": "Soft",
+			"high": "High",
+			"click": "Click",
+			"deep": "Deep",
+			"wood": "Wood",
+			"ping": "Ping"
+		},
 		"enabled": "Metronome Enabled",
 		"disabled": "Metronome Disabled",
 		"timingNote": "Note: When metronome is enabled, stimulus timing is controlled by BPM instead of on-screen/off-screen times."
@@ -396,6 +415,28 @@
 		"overview": "Overview",
 		"actions": {
 			"deleteGoal": "Are you sure you want to delete this goal?"
+		},
+		"analytics": {
+			"title": "Your Progress",
+			"goalCompletion": "Goal Completion",
+			"goalsCompleted": "goals completed",
+			"complete": "complete",
+			"exerciseSummary": "Exercise Summary",
+			"totalExercises": "total exercises completed",
+			"beginner": "Beginner",
+			"intermediate": "Intermediate",
+			"advanced": "Advanced",
+			"routinesCompleted": "Routines Completed",
+			"times": "times",
+			"weeklyGoal": "Weekly Goal",
+			"daysPerWeek": "days per week scheduled",
+			"weeklyStats": "Weekly Analytics",
+			"thisWeek": "This Week",
+			"lastWeek": "Last Week",
+			"today": "Today",
+			"thisMonth": "This Month",
+			"exercisesCompleted": "exercises completed",
+			"vsLastWeek": "vs last week"
 		},
 		"days": {
 			"monday": "Monday",
@@ -510,6 +551,7 @@
 	},
 	"routines": {
 		"title": "Routines",
+		"description": "Create and personalize your own training routines.",
 		"createNew": "Create New",
 		"builder": {
 			"title": "Routine Builder",
@@ -575,7 +617,8 @@
 			"monthlyPrice": "$9.99/month",
 			"annualPrice": "$79.99/year",
 			"annualSaving": "Save 33%",
-			"monthlySaving": ""
+			"monthlySaving": "",
+			"bestValue": "BEST VALUE"
 		},
 		"buttons": {
 			"subscribe": "Continue",
@@ -584,8 +627,8 @@
 	},
 	"upgradeCard": {
 		"title": "Upgrade to CogiPro",
-		"description": "Get exclusive access to unique and creative ways to use your Cogimat, featuring exercises designed by our expert team.",
-		"button": "Upgrade"
+		"description": "Unlock expert exercises, detailed analytics, and personalized training plans",
+		"button": "Upgrade Now"
 	},
 	"admin": {
 		"videoUpload": {

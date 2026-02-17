@@ -28,12 +28,12 @@
 		"greeting": "Salut, {{name}}",
 		"subtitle": "Il est temps de repousser vos limites.",
 		"tabs": {
-			"allExercises": "Tous les exercices",
+			"allExercises": "Programmes d'entraînement",
 			"interactiveExercises": "Exercices interactifs",
 			"noCustomExercises": "Vous n'avez créé aucun exercice personnalisé",
 			"createCustomExercise": "Créer mon premier exercice personnalisé",
 			"noPublicExercises": "Il n'y a pas d'exercices publics. Veuillez vérifier plus tard.",
-			"myCustomExercises": "Mes exercices personnalisés",
+			"myCustomExercises": "Mes exercices",
 			"community": "Communauté"
 		},
 		"exercisePrograms": {
@@ -144,15 +144,17 @@
 	"login": {
 		"title": "Se connecter",
 		"welcomeBack": "Bon retour !",
+		"appName": "Cogipro",
+		"slogan": "Entraînez votre esprit, bougez votre corps",
 		"email": "E-mail",
 		"emailPlaceholder": "Entrez votre e-mail",
 		"password": "Mot de passe",
 		"passwordPlaceholder": "Entrez votre mot de passe",
 		"forgotPassword": "Mot de passe oublié ?",
-		"loginButton": "Connexion",
-		"orSignInWith": "Ou se connecter avec",
-		"googleSignIn": "Continuer avec Google",
-		"appleSignIn": "Continuer avec Apple",
+		"loginButton": "Se connecter",
+		"orContinueWith": "Ou continuer avec",
+		"googleSignIn": "Google",
+		"appleSignIn": "Apple",
 		"noAccount": "Vous n'avez pas de compte ?",
 		"scanQRCode": "Scanner le QR Code",
 		"signUp": "S'inscrire",
@@ -230,6 +232,7 @@
 			"delete": "Supprimer",
 			"edit": "Modifier",
 			"play": "Jouer l'exercice",
+			"startExercise": "Commencer l'exercice",
 			"favorite": "Basculer favori",
 			"confirm": "Confirmer",
 			"close": "Fermer",
@@ -388,6 +391,16 @@
 	"metronome": {
 		"title": "Métronome",
 		"tempo": "Tempo (BPM)",
+		"sound": "Son du tick",
+		"sounds": {
+			"tick": "Classique",
+			"soft": "Doux",
+			"high": "Aigu",
+			"click": "Clic",
+			"deep": "Grave",
+			"wood": "Bois",
+			"ping": "Ping"
+		},
 		"volume": "Volume",
 		"description": "Signaux audio de tempo pour aider au timing et à la coordination",
 		"enabled": "Métronome Activé",
@@ -513,6 +526,7 @@
 	},
 	"routines": {
 		"title": "Routines",
+		"description": "Créez et personnalisez vos propres routines d'entraînement.",
 		"createNew": "Créer Nouveau",
 		"builder": {
 			"title": "Constructeur de Routine",
@@ -584,7 +598,8 @@
 			"monthlyPrice": "9,99 €/mois",
 			"annualPrice": "79,99 €/an",
 			"annualSaving": "Économisez 33%",
-			"monthlySaving": ""
+			"monthlySaving": "",
+			"bestValue": "MEILLEURE OFFRE"
 		},
 		"buttons": {
 			"subscribe": "Continuer",
@@ -593,8 +608,8 @@
 	},
 	"upgradeCard": {
 		"title": "Mettre à niveau vers CogiPro",
-		"description": "Obtenez un accès exclusif à des moyens uniques et créatifs d'utiliser votre Cogimat, avec des exercices conçus par notre équipe d'experts.",
-		"button": "Mettre à niveau"
+		"description": "Débloquez des exercices d'experts, des analyses détaillées et des plans d'entraînement personnalisés",
+		"button": "Mettre à niveau maintenant"
 	},
 	"admin": {
 		"videoUpload": {

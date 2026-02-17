@@ -23,6 +23,8 @@ export interface Exercise {
 export interface MetronomeSettings {
 	enabled: boolean;
 	bpm: number;
+	/** Selected metronome sound id (persisted per exercise). */
+	soundId?: string;
 }
 
 export interface CustomizableExerciseOptions {
@@ -420,6 +422,7 @@ export const getExerciseCustomizedOptions = (
 		metronome: {
 			enabled: false,
 			bpm: 120,
+			soundId: "tick",
 		},
 	};
 };

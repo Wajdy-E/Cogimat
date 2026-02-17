@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import Countdown from "@/components/Countdown";
 import { Letter, NumberEnum, colorOptions, ColorOption } from "@/data/program/Program";
 import { LucideIcon, Square, Triangle, Circle, Diamond } from "lucide-react-native";
-import { CustomExercise } from "@/store/data/dataSlice";
+import { CustomExercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
 import { updateUserMilestone } from "@/store/auth/authSaga";
 import ExerciseControl from "@/components/exercises/ExerciseControl";
 import ExerciseProgress from "@/components/exercises/ExerciseProgress";
@@ -27,7 +27,11 @@ function ExerciseScreen() {
 	const isRoutineMode = params?.routineMode === "true";
 	const routineId = params?.routineId;
 
-	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise) as CustomExercise; // Set the current exercise in Redux state if not already set
+	const currentExercise = useSelector((state: RootState) => state.data.selectedExercise) as CustomExercise;
+	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises);
+	const metronomeSettings =
+		currentExercise &&
+		getExerciseCustomizedOptions(currentExercise as any, customizedExercises).metronome;
 
 	const [showCountdown, setShowCountdown] = useState(true);
 	const [stimulus, setStimulus] = useState<any>(null);
@@ -73,6 +77,8 @@ function ExerciseScreen() {
 								updateUserMilestone({
 									milestoneType: "customExercisesCompleted",
 									exerciseDifficulty: currentExercise.difficulty,
+									exerciseId: currentExercise.id,
+									exerciseType: "custom",
 								})
 							);
 						}
@@ -352,6 +358,7 @@ function ExerciseScreen() {
 							setTimeLeft={setTimeLeft}
 							timeLeft={timeLeft}
 							onStop={handleManualStop}
+							metronomeSettings={metronomeSettings ?? { enabled: false, bpm: 120, soundId: "tick" }}
 						/>
 					</>
 				)}

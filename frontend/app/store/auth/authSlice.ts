@@ -62,10 +62,19 @@ export interface MilestoneCardConfig {
 	goalTarget: number;
 }
 
+export interface WeeklyExerciseStats {
+	thisWeek: number;
+	lastWeek: number;
+	thisMonth: number;
+	today: number;
+	dailyBreakdown: Array<{ date: string; count: number }>;
+}
+
 export interface UserState {
 	user: User;
 	isSignedIn: boolean;
 	milestones: UserMilestones | null;
+	weeklyStats: WeeklyExerciseStats | null;
 	cancelledQRSignup: boolean;
 	// New authentication flow states
 	isLoggingIn: boolean;
@@ -81,9 +90,12 @@ export interface UserState {
 	signupForm: {
 		email: string;
 		password: string;
+		confirmPassword: string;
 		firstName: string;
 		lastName: string;
 		showPassword: boolean;
+		showConfirmPassword: boolean;
+		termsAgreed: boolean;
 	};
 	// Login form states
 	loginForm: {
@@ -113,6 +125,7 @@ const initialState: UserState = {
 	},
 	isSignedIn: false,
 	milestones: null,
+	weeklyStats: null,
 	cancelledQRSignup: false,
 	// New authentication flow states
 	isLoggingIn: false,
@@ -128,9 +141,12 @@ const initialState: UserState = {
 	signupForm: {
 		email: "",
 		password: "",
+		confirmPassword: "",
 		firstName: "",
 		lastName: "",
 		showPassword: false,
+		showConfirmPassword: false,
+		termsAgreed: false,
 	},
 	// Login form states
 	loginForm: {
@@ -175,6 +191,9 @@ const userSlice = createSlice({
 		},
 		setMilestonesProgress(state, { payload }: PayloadAction<UserMilestones>) {
 			state.milestones = payload;
+		},
+		setWeeklyStats(state, { payload }: PayloadAction<WeeklyExerciseStats>) {
+			state.weeklyStats = payload;
 		},
 		setCancelledQRSignup(state, action: PayloadAction<boolean>) {
 			state.cancelledQRSignup = action.payload;
@@ -266,6 +285,7 @@ export const {
 	setLanguage,
 	setIsSignedIn,
 	setMilestonesProgress,
+	setWeeklyStats,
 	setSubscriptionStatus,
 	setCancelledQRSignup,
 	// New authentication flow actions

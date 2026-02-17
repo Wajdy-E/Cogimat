@@ -189,7 +189,7 @@ function Routines(props: RoutinesProps) {
 		<VStack space="lg" className={props.classes}>
 			<HStack className="justify-between items-center">
 				<Heading size="lg">{i18n.t("routines.title")}</Heading>
-				<Button size="sm" variant="solid" action="primary" onPress={handleCreateNew}>
+				<Button size="sm" variant="solid" action="primary" onPress={handleCreateNew} className="rounded-xl">
 					<ButtonText>{i18n.t("routines.createNew")}</ButtonText>
 					<ButtonIcon as={Plus} size="sm" />
 				</Button>
@@ -203,7 +203,7 @@ function Routines(props: RoutinesProps) {
 					<ScrollView horizontal showsHorizontalScrollIndicator={false}>
 						<HStack space="md" className="pb-2">
 							{slots.map((slot) => (
-								<View key={slot.id} className="w-48">
+								<View key={slot.id} className="w-64">
 									{slot.exercise ? (
 										<RoutineExerciseCard
 											exercise={slot.exercise}
@@ -217,7 +217,7 @@ function Routines(props: RoutinesProps) {
 												<Text size="sm" className="text-center text-typography-500">
 													{i18n.t("routines.builder.addExercise")}
 												</Text>
-												<Button size="sm" variant="outline" onPress={() => handleAddExercise(slot.id)}>
+												<Button size="sm" variant="outline" onPress={() => handleAddExercise(slot.id)} className="rounded-xl">
 													<ButtonText>{i18n.t("routines.builder.add")}</ButtonText>
 												</Button>
 											</VStack>
@@ -228,7 +228,7 @@ function Routines(props: RoutinesProps) {
 
 							{/* Add/Remove Slot Buttons */}
 							<VStack space="sm" className="justify-center">
-								<Button size="sm" variant="outline" onPress={handleAddSlot}>
+								<Button size="sm" variant="outline" onPress={handleAddSlot} className="rounded-xl">
 									<ButtonText>{i18n.t("routines.builder.addSlot")}</ButtonText>
 								</Button>
 								{slots.length > 1 && (
@@ -237,6 +237,7 @@ function Routines(props: RoutinesProps) {
 										variant="outline"
 										action="negative"
 										onPress={() => handleRemoveSlot(slots[slots.length - 1].id)}
+										className="rounded-xl"
 									>
 										<ButtonText>{i18n.t("routines.builder.removeSlot")}</ButtonText>
 									</Button>
@@ -246,7 +247,7 @@ function Routines(props: RoutinesProps) {
 					</ScrollView>
 
 					{slots.some((slot) => slot.exercise) && (
-						<Button size="lg" variant="solid" action="primary" onPress={handleSaveButtonClick}>
+						<Button size="lg" variant="solid" action="primary" onPress={handleSaveButtonClick} className="rounded-xl">
 							<ButtonText>
 								{isEditing ? i18n.t("routines.builder.updateRoutine") : i18n.t("routines.builder.saveRoutine")}
 							</ButtonText>
@@ -276,10 +277,10 @@ function Routines(props: RoutinesProps) {
 										)}
 									</VStack>
 									<HStack space="sm">
-										<Button size="sm" variant="solid" action="primary" onPress={() => handleStartRoutine(routine)}>
+										<Button size="sm" variant="solid" action="primary" onPress={() => handleStartRoutine(routine)} className="rounded-xl">
 											<ButtonIcon as={Play} size="sm" />
 										</Button>
-										<Button size="sm" variant="outline" onPress={() => handleEditRoutine(routine)}>
+										<Button size="sm" variant="outline" onPress={() => handleEditRoutine(routine)} className="rounded-xl">
 											<ButtonIcon as={Edit} size="sm" />
 										</Button>
 										<Button
@@ -287,6 +288,7 @@ function Routines(props: RoutinesProps) {
 											variant="outline"
 											action="negative"
 											onPress={() => handleDeleteRoutine(routine.id)}
+											className="rounded-xl"
 										>
 											<ButtonIcon as={Trash2} size="sm" />
 										</Button>

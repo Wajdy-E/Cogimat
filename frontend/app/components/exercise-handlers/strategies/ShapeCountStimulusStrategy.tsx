@@ -1,7 +1,7 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Dimensions } from "react-native";
 import { Square, Circle, Triangle, Diamond, LucideIcon } from "lucide-react-native";
-import { Exercise } from "../@/store/data/dataSlice";
+import { Exercise } from "@/store/data/dataSlice";
 import { StimulusStrategy } from "../UnifiedStimulus";
 
 interface ShapeStimulus {
@@ -57,7 +57,10 @@ export const ShapeCountStimulusStrategy: StimulusStrategy = {
 				<View className="flex-row flex-wrap justify-center items-center gap-4 max-w-[90%]">
 					{stimulus.map((shape: ShapeStimulus, idx: number) => {
 						const Icon = shape.icon;
-						return <Icon key={idx} size={80} color={shape.color} fill={shape.color} />;
+						const { width, height } = Dimensions.get("window");
+						const minDim = Math.min(width, height);
+						const size = Math.min(160, Math.floor(minDim * 0.22));
+						return <Icon key={idx} size={size} color={shape.color} fill={shape.color} />;
 					})}
 				</View>
 			</View>

@@ -52,6 +52,12 @@ export default function ProtectedLayout() {
 					headerShown: false,
 				}}
 			/>
+			<Stack.Screen
+				name="routines"
+				options={{
+					headerShown: false,
+				}}
+			/>
 		</Stack>
 	);
 }

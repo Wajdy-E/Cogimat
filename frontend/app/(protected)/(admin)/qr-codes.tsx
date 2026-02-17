@@ -133,12 +133,12 @@ export default function QRCodesManagement () {
 
 				{/* Action Buttons */}
 				<VStack space="md" className="mb-6">
-					<Button onPress={generateQRCodes} disabled={generating} size="lg" className="rounded-full">
+					<Button onPress={generateQRCodes} disabled={generating} size="lg" className="rounded-xl">
 						<QrCode size={20} />
 						<ButtonText>{generating ? i18n.t('general.generating') : i18n.t('admin.qrCodes.generate10000')}</ButtonText>
 					</Button>
 
-					<Button onPress={fetchStats} disabled={loading} variant="outline" size="lg" className="rounded-full">
+					<Button onPress={fetchStats} disabled={loading} variant="outline" size="lg" className="rounded-xl">
 						<RefreshCw size={20} />
 						<ButtonText>
 							{loading ? i18n.t('general.refreshing') : i18n.t('admin.qrCodes.refreshStatistics')}

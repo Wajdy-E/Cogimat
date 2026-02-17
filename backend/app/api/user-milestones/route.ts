@@ -35,7 +35,7 @@ export async function PATCH(req: NextRequest) {
 					communityexercisescompleted, customexercisescompleted, 
 					customexercisescreated, goalscreated, educationalarticlescompleted
 				) VALUES ($1, 0, 0, 0, 0, 0, 0, 0, 0, 0)`,
-				[userId]
+				[userId],
 			);
 		}
 
@@ -102,7 +102,7 @@ export async function PATCH(req: NextRequest) {
 				await query(
 					`INSERT INTO exercise_completions (clerk_id, exercise_id, exercise_type, difficulty, completed_at)
 					VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`,
-					[userId, exerciseId, finalExerciseType, exerciseDifficulty || null]
+					[userId, exerciseId, finalExerciseType, exerciseDifficulty || null],
 				);
 			} catch (error) {
 				// Log error but don't fail the milestone update if completion tracking fails
@@ -125,19 +125,19 @@ export async function PATCH(req: NextRequest) {
 					case "beginner":
 						await query(
 							"UPDATE usermilestones SET beginnerexercisescompleted = beginnerexercisescompleted + 1 WHERE clerk_id = $1",
-							[userId]
+							[userId],
 						);
 						break;
 					case "intermediate":
 						await query(
 							"UPDATE usermilestones SET intermediateexercisescompleted = intermediateexercisescompleted + 1 WHERE clerk_id = $1",
-							[userId]
+							[userId],
 						);
 						break;
 					case "advanced":
 						await query(
 							"UPDATE usermilestones SET advancedexercisescompleted = advancedexercisescompleted + 1 WHERE clerk_id = $1",
-							[userId]
+							[userId],
 						);
 						break;
 				}

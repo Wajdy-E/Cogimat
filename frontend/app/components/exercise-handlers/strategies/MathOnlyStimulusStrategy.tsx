@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { Exercise } from "../@/store/data/dataSlice";
+import { View, Text, Dimensions } from "react-native";
+import { Exercise } from "@/store/data/dataSlice";
 import { StimulusStrategy } from "../UnifiedStimulus";
 
 const generateValidMathProblem = (): string => {
@@ -54,9 +54,13 @@ export const MathOnlyStimulusStrategy: StimulusStrategy = {
 			return null;
 		}
 
+		const { width, height } = Dimensions.get("window");
+		const minDim = Math.min(width, height);
+		const fontSize = Math.min(420, Math.floor(minDim * 0.5));
+
 		return (
 			<View className="absolute inset-0 justify-center items-center bg-background-700">
-				<Text style={{ fontSize: 150 }} className="text-typography-950 font-bold">
+				<Text style={{ fontSize }} className="text-typography-950 font-bold">
 					{stimulus}
 				</Text>
 			</View>

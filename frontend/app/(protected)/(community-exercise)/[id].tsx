@@ -1,11 +1,11 @@
-import { Animated, ScrollView, View, Image as RNImage } from "react-native";
+import { Animated, ScrollView, View, Image as RNImage, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { useCommunityExercise } from "@/hooks/useCustomExercise";
 import { i18n } from "../../i18n";
-import { Clock, Sprout, Rocket, Trophy, CirclePlay, Brain } from "lucide-react-native";
+import { Clock, CirclePlay, Check, Zap, Target, Volume2 } from "lucide-react-native";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { useRef, useEffect, useState } from "react";
 import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
@@ -17,27 +17,6 @@ import { setCurrentExercise } from "@/store/data/dataSlice";
 import { getPublicExercises } from "@/store/data/dataSaga";
 import CustomExerciseHeader from "@/components/CustomExerciseHeader";
 import React from "react";
-
-// Separate component for video items to avoid hooks violation
-const VideoMediaItem = ({ url, index }: { url: string; index: number }) => {
-	const player = useVideoPlayer(url, (player) => {
-		player.loop = true;
-	});
-
-	return (
-		<VideoView
-			player={player}
-			allowsFullscreen
-			allowsPictureInPicture
-			style={{
-				width: "100%",
-				height: "100%",
-				borderRadius: 20,
-			}}
-			contentFit="cover"
-		/>
-	);
-};
 
 function CommunityExerciseProgram() {
 	const { id } = useLocalSearchParams();
@@ -110,6 +89,14 @@ function CommunityExerciseProgram() {
 		).start();
 	}, [floatAnim]);
 
+	// Create video player (hooks must be called unconditionally before early returns)
+	// Use empty string as fallback if no video URL
+	const videoPlayer = useVideoPlayer(exercise?.videoUrl || "", (player) => {
+		if (exercise?.videoUrl) {
+			player.loop = true;
+		}
+	});
+
 	// Early returns after all hooks
 	if (isLoading) {
 		return (
@@ -133,26 +120,26 @@ function CommunityExerciseProgram() {
 		);
 	}
 
-	const getIconForType = () => {
+	const getDifficultyBadgeColor = () => {
 		switch (exercise.difficulty) {
 			case "Beginner":
-				return Sprout;
+				return "success"; // Green for Easy/Beginner
 			case "Intermediate":
-				return Rocket;
+				return "warning"; // Orange/Yellow for Medium/Intermediate
 			case "Advanced":
-				return Trophy;
+				return "error"; // Orange/Red for Hard/Advanced
 			default:
-				return Sprout;
+				return "muted";
 		}
 	};
 
-	// Prepare media items for horizontal scroll
-	const mediaItems: Array<{
-		type: "youtube" | "video" | "image";
-		url: string;
-	}> = [];
-	const placeholderImageUrl =
-		"https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/placeholder-ND4gRGq1YR5dapuS2ObPKZZ9SfAXju.png";
+	const getDifficultyLabel = () => {
+		const difficultyLower = exercise.difficulty.toLowerCase();
+		if (difficultyLower === "beginner") return "Easy";
+		if (difficultyLower === "intermediate") return "Medium";
+		if (difficultyLower === "advanced") return "Hard";
+		return i18n.t(`exercise.difficulty.${difficultyLower}`);
+	};
 
 	// Helper function to extract YouTube video ID
 	const getYouTubeVideoId = (url: string) => {
@@ -160,6 +147,9 @@ function CommunityExerciseProgram() {
 		const match = url.match(regExp);
 		return match && match[2].length === 11 ? match[2] : null;
 	};
+
+	// Collect all available media items
+	const mediaItems: Array<{ type: "youtube" | "video" | "image"; url: string }> = [];
 
 	if (exercise.youtubeUrl) {
 		const videoId = getYouTubeVideoId(exercise.youtubeUrl);
@@ -177,10 +167,14 @@ function CommunityExerciseProgram() {
 		mediaItems.push({ type: "image", url: exercise.imageFileUrl });
 	}
 
-	// If no media items, add placeholder
-	if (mediaItems.length === 0) {
-		mediaItems.push({ type: "image", url: placeholderImageUrl });
-	}
+	// Split instructions into numbered list items
+	const instructionLines = exercise.instructions
+		?.split(/[.!?]\s+|\.\n|\n/)
+		?.map((line) => line.trim())
+		?.filter((line) => line.length > 0);
+
+	// Get focus array (already an array for CustomExercise)
+	const focusArray = exercise.focus ?? [];
 
 	const onStartExercise = () => {
 		router.push(`/(custom-exercise)/exercise?id=${id}`);
@@ -190,54 +184,32 @@ function CommunityExerciseProgram() {
 		<>
 			<CustomExerciseHeader showSettings={false} />
 			<View className="relative bg-background-700 h-full">
-				<ScrollView contentContainerStyle={{ paddingBottom: 150 }}>
-					<View style={{ flex: 1, height: 250, maxHeight: 250 }} className="bg-primary-700 py-5">
-						<ScrollView
-							horizontal
-							showsHorizontalScrollIndicator={false}
-							contentContainerStyle={{ paddingHorizontal: 20 }}
-							style={{ height: 250 }}
-						>
-							{mediaItems.map((item, index) => (
-								<View
-									key={index}
-									style={{
-										width: 350,
-										height: 200,
-										marginRight: index < mediaItems.length - 1 ? 15 : 0,
-										borderRadius: 20,
-										overflow: "hidden",
-										position: "relative",
-									}}
-								>
-									{/* Media type indicator */}
+				<ScrollView contentContainerStyle={{ paddingBottom: 200 }}>
+					{/* Media Section - Only render if media exists */}
+					{mediaItems.length > 0 && (
+						<View className="px-5 pt-5">
+							<ScrollView
+								horizontal
+								showsHorizontalScrollIndicator={false}
+								contentContainerStyle={{ gap: 15 }}
+								style={{ height: 200 }}
+							>
+								{mediaItems.map((mediaItem, index) => (
 									<View
+										key={index}
 										style={{
-											position: "absolute",
-											top: 10,
-											right: 10,
-											backgroundColor: "rgba(0,0,0,0.7)",
-											paddingHorizontal: 8,
-											paddingVertical: 4,
-											borderRadius: 12,
-											zIndex: 10,
+											width: 350,
+											height: 200,
+											borderRadius: 20,
+											overflow: "hidden",
+											position: "relative",
+											backgroundColor: "#1a1a1a",
 										}}
 									>
-										<Text
-											style={{
-												color: "white",
-												fontSize: 10,
-												fontWeight: "bold",
-												textTransform: "uppercase",
-											}}
-										>
-											{item.type}
-										</Text>
-									</View>
-
-									{item.type === "youtube" && (
-										<WebView
-											source={{ uri: item.url }}
+										{mediaItem.type === "youtube" && (
+											<>
+												<WebView
+													source={{ uri: mediaItem.url }}
 											injectedJavaScriptBeforeContentLoaded={`
 												window.isNativeApp = true;
 												true;
@@ -245,80 +217,267 @@ function CommunityExerciseProgram() {
 											style={{
 												width: "100%",
 												height: "100%",
-												borderRadius: 20,
 											}}
 											allowsInlineMediaPlayback={true}
 											mediaPlaybackRequiresUserAction={false}
 										/>
-									)}
+										<View
+											style={{
+												position: "absolute",
+												top: 0,
+												left: 0,
+												right: 0,
+												bottom: 0,
+												justifyContent: "center",
+												alignItems: "center",
+												pointerEvents: "none",
+											}}
+										>
+											<View
+												style={{
+													width: 60,
+													height: 60,
+													borderRadius: 30,
+													backgroundColor: "rgba(255, 255, 255, 0.9)",
+													justifyContent: "center",
+													alignItems: "center",
+												}}
+											>
+												<CirclePlay size={30} color="#06b6d4" fill="#06b6d4" />
+											</View>
+										</View>
+										{/* Watch Tutorial Button */}
+										<Pressable
+											style={{
+												position: "absolute",
+												bottom: 12,
+												left: 12,
+											}}
+											onPress={() => {
+												// Handle tutorial action
+											}}
+										>
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													backgroundColor: "rgba(0, 0, 0, 0.7)",
+													paddingHorizontal: 12,
+													paddingVertical: 8,
+													borderRadius: 8,
+													gap: 6,
+												}}
+											>
+												<Volume2 size={16} color="white" />
+												<Text style={{ color: "white", fontSize: 12, fontWeight: "500" }}>
+													Watch Tutorial
+												</Text>
+											</View>
+										</Pressable>
+											</>
+										)}
 
-									{item.type === "video" && <VideoMediaItem url={item.url} index={index} />}
-
-									{item.type === "image" && (
-										<RNImage
-											source={{ uri: item.url }}
+										{mediaItem.type === "video" && exercise.videoUrl && (
+									<>
+										<VideoView
+											player={videoPlayer}
+											allowsFullscreen
+											allowsPictureInPicture
 											style={{
 												width: "100%",
 												height: "100%",
-												borderRadius: 20,
 											}}
-											resizeMode="cover"
-											onError={() => {
-												// If image fails to load, replace with placeholder
-												if (item.url !== placeholderImageUrl) {
-													item.url = placeholderImageUrl;
-												}
-											}}
+											contentFit="cover"
 										/>
-									)}
-								</View>
-							))}
-						</ScrollView>
-					</View>
+										<Pressable
+											style={{
+												position: "absolute",
+												top: 0,
+												left: 0,
+												right: 0,
+												bottom: 0,
+												justifyContent: "center",
+												alignItems: "center",
+											}}
+											onPress={() => {
+												videoPlayer.play();
+											}}
+										>
+											<View
+												style={{
+													width: 60,
+													height: 60,
+													borderRadius: 30,
+													backgroundColor: "rgba(255, 255, 255, 0.9)",
+													justifyContent: "center",
+													alignItems: "center",
+												}}
+											>
+												<CirclePlay size={30} color="#06b6d4" fill="#06b6d4" />
+											</View>
+										</Pressable>
+										{/* Watch Tutorial Button */}
+										<Pressable
+											style={{
+												position: "absolute",
+												bottom: 12,
+												left: 12,
+											}}
+											onPress={() => {
+												// Handle tutorial action
+											}}
+										>
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													backgroundColor: "rgba(0, 0, 0, 0.7)",
+													paddingHorizontal: 12,
+													paddingVertical: 8,
+													borderRadius: 8,
+													gap: 6,
+												}}
+											>
+												<Volume2 size={16} color="white" />
+												<Text style={{ color: "white", fontSize: 12, fontWeight: "500" }}>
+													Watch Tutorial
+												</Text>
+											</View>
+										</Pressable>
+											</>
+										)}
+
+										{mediaItem.type === "image" && (
+											<RNImage
+												source={{ uri: mediaItem.url }}
+												style={{
+													width: "100%",
+													height: "100%",
+												}}
+												resizeMode="cover"
+											/>
+										)}
+									</View>
+								))}
+							</ScrollView>
+						</View>
+					)}
+
 					<View className="flex items-center py-5">
 						<VStack className="w-[90%]" space="lg">
-							<View className="flex-row flex-wrap justify-start gap-4">
-								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
-									<BadgeIcon as={getIconForType()} />
-									<BadgeText size="lg">{i18n.t(`${exercise.difficulty.toLowerCase()}`)}</BadgeText>
-								</Badge>
-
-								<Badge size="lg" variant="solid" action="info" className="flex-row gap-3">
-									<BadgeIcon as={Clock} />
-									{(() => {
-										const totalSeconds = parseFloat(
-											exercise.customizableOptions.exerciseTime.toString()
-										);
-										const minutes = Math.floor(totalSeconds / 60);
-										const seconds = totalSeconds % 60;
-										return (
-											<BadgeText>
-												{minutes} {i18n.t("exercise.card.minutes")}
-												{seconds > 0 && ` ${seconds} ${i18n.t("exercise.card.seconds")}`}
-											</BadgeText>
-										);
-									})()}
-								</Badge>
-								{(exercise.focus ?? []).length > 0
-									? (exercise.focus ?? []).map((f: string) => {
-											return (
-												<Badge
-													size="lg"
-													variant="solid"
-													action="info"
-													className="flex-row gap-3"
-													key={f}
-												>
-													<BadgeIcon as={Brain} />
-													<BadgeText>{f}</BadgeText>
-												</Badge>
+							{/* Duration and Difficulty Badges */}
+							<View className="flex-row gap-4">
+								<View style={{ flex: 1 }}>
+									<View
+										style={{
+											backgroundColor: "#1a2a3a",
+											borderRadius: 20,
+											padding: 16,
+										}}
+									>
+										<View className="flex-row items-center gap-2 mb-2">
+											<Clock size={20} color="#9ca3af" />
+											<Text style={{ color: "#9ca3af", fontSize: 12 }}>Duration</Text>
+										</View>
+										{(() => {
+											const totalSeconds = parseFloat(
+												exercise.customizableOptions.exerciseTime.toString()
 											);
-										})
-									: null}
+											const minutes = Math.floor(totalSeconds / 60);
+											const seconds = totalSeconds % 60;
+											return (
+												<Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>
+													{minutes} {i18n.t("exercise.card.minutes")}
+													{seconds > 0 && ` ${seconds} ${i18n.t("exercise.card.seconds")}`}
+												</Text>
+											);
+										})()}
+									</View>
+								</View>
+
+								<View style={{ flex: 1 }}>
+									<View
+										style={{
+											backgroundColor: "#1a2a3a",
+											borderRadius: 20,
+											padding: 16,
+										}}
+									>
+										<View className="flex-row items-center gap-2 mb-2">
+											<Target size={20} color="#9ca3af" />
+											<Text style={{ color: "#9ca3af", fontSize: 12 }}>Difficulty</Text>
+										</View>
+										<Badge
+											size="lg"
+											variant="solid"
+											action={getDifficultyBadgeColor()}
+											className="rounded-full self-start"
+										>
+											<BadgeText size="lg">{getDifficultyLabel()}</BadgeText>
+										</Badge>
+									</View>
+								</View>
 							</View>
 
-							<Heading size="lg">{i18n.t("exercise.page.instructions")}</Heading>
-							<Text>{exercise.instructions}</Text>
+							{/* How It Works Section */}
+							<View
+								style={{
+									backgroundColor: "#1a2a3a",
+									borderRadius: 20,
+									padding: 20,
+								}}
+							>
+								<View className="flex-row items-center gap-3 mb-4">
+									<Zap size={24} color="#06b6d4" />
+									<Heading size="lg" style={{ color: "white" }}>
+										How It Works
+									</Heading>
+								</View>
+								<VStack space="md">
+									{instructionLines.map((instruction, index) => (
+										<View key={index} className="flex-row gap-3">
+											<Text
+												style={{
+													color: "#06b6d4",
+													fontSize: 16,
+													fontWeight: "bold",
+													minWidth: 24,
+												}}
+											>
+												{index + 1}.
+											</Text>
+											<Text style={{ color: "white", fontSize: 14, flex: 1 }}>
+												{instruction}
+											</Text>
+										</View>
+									))}
+								</VStack>
+							</View>
+
+							{/* Training Benefits Section */}
+							{focusArray.length > 0 && (
+								<View
+									style={{
+										backgroundColor: "#1a2a3a",
+										borderRadius: 20,
+										padding: 20,
+									}}
+								>
+									<Heading size="lg" style={{ color: "white", marginBottom: 16 }}>
+										Training Benefits
+									</Heading>
+									<VStack space="md">
+										{focusArray.map((benefit, index) => (
+											<View key={index} className="flex-row items-center gap-3">
+												<Check size={20} color="#06b6d4" />
+												<Text style={{ color: "white", fontSize: 14, flex: 1 }}>
+													{benefit}
+												</Text>
+											</View>
+										))}
+									</VStack>
+								</View>
+							)}
 						</VStack>
 					</View>
 				</ScrollView>

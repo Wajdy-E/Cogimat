@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import { Square, Triangle, Circle, Diamond } from "lucide-react-native";
-import { Exercise } from "../@/store/data/dataSlice";
+import { Exercise } from "@/store/data/dataSlice";
 import { Letter, NumberEnum } from "../../../data/program/Program";
 import { StimulusStrategy } from "../UnifiedStimulus";
 
@@ -62,19 +62,24 @@ export const SimpleStimulusStrategy: StimulusStrategy = {
 			return null;
 		}
 
+		const { width, height } = Dimensions.get("window");
+		const minDim = Math.min(width, height);
+
 		if (typeof stimulus === "object" && "hexcode" in stimulus) {
 			return <View className="absolute inset-0" style={{ backgroundColor: stimulus.hexcode }} />;
 		} else if (typeof stimulus === "string" && ["SQUARE", "TRIANGLE", "CIRCLE", "DIAMOND"].includes(stimulus)) {
 			const { icon: Icon, color } = getIconForShape(stimulus);
+			const size = Math.min(420, Math.floor(minDim * 0.85));
 			return (
 				<View className="absolute inset-0 justify-center items-center bg-background-700">
-					<Icon size={250} color={color} fill={color} />
+					<Icon size={size} color={color} fill={color} />
 				</View>
 			);
 		} else if (Object.values(Letter).includes(stimulus) || Object.values(NumberEnum).includes(stimulus)) {
+			const fontSize = Math.min(420, Math.floor(minDim * 0.6));
 			return (
 				<View className="absolute inset-0 justify-center items-center bg-background-700">
-					<Text style={{ fontSize: 250 }} className="text-typography-950 font-bold">
+					<Text style={{ fontSize }} className="text-typography-950 font-bold">
 						{stimulus}
 					</Text>
 				</View>

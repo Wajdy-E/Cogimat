@@ -4,20 +4,19 @@ import {
 	DrawerBackdrop,
 	DrawerContent,
 	DrawerHeader,
-	DrawerBody,
-	DrawerFooter,
-	DrawerCloseButton,
 } from "@/components/ui/drawer";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { Icon, CloseIcon, CheckIcon } from "@/components/ui/icon";
+import { Icon, CloseIcon, CheckCircleIcon } from "@/components/ui/icon";
 import { i18n } from "../i18n";
-import { Image, ScrollView, View } from "react-native";
+import { ScrollView, View, Pressable } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
 import Purchases from "react-native-purchases";
 import { updateSubscriptionStatus } from "@/store/auth/authSaga";
-import { Star } from "lucide-react-native";
+import { Star, Crown, Lock, Zap, TrendingUp, Users } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface PaywallDrawerProps {
 	isOpen: boolean;
@@ -35,7 +34,8 @@ interface PlanOption {
 
 function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 	const dispatch: AppDispatch = useDispatch();
-	const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">("monthly");
+	const insets = useSafeAreaInsets();
+	const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">("annual");
 	const [isLoading, setIsLoading] = useState(false);
 	const [plans, setPlans] = useState<Record<string, PlanOption>>({
 		monthly: {
@@ -53,6 +53,14 @@ function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 	});
 
 	const features = i18n.t("paywall.features.list") as string[];
+	
+	// Feature icons mapping
+	const featureIcons = [
+		{ icon: Lock, color: "#60A5FA" }, // Light blue
+		{ icon: Zap, color: "#60A5FA" },
+		{ icon: TrendingUp, color: "#60A5FA" },
+		{ icon: Users, color: "#60A5FA" },
+	];
 
 	// Fetch pricing from RevenueCat
 	useEffect(() => {
@@ -153,86 +161,224 @@ function PaywallDrawer({ isOpen, onClose }: PaywallDrawerProps) {
 	return (
 		<Drawer isOpen={isOpen} onClose={onClose} size="full" anchor="bottom">
 			<DrawerBackdrop />
-			<DrawerContent className="bg-background-0 rounded-t-3xl flex-1 p-0">
-				<DrawerHeader className="mt-10 px-7 py-4">
-					<View className="relative w-full">
-						{/* <Heading size="xl" className="text-center">
+			<DrawerContent className="bg-white rounded-t-3xl flex-1 p-0 overflow-hidden">
+				{/* Purple Header Section with Safe Area */}
+				<DrawerHeader className="p-0">
+					<LinearGradient
+						colors={['#9333EA', '#7C3AED', '#6D28D9']}
+						start={{ x: 0, y: 0 }}
+						end={{ x: 1, y: 1 }}
+						style={{
+							paddingTop: insets.top + 16,
+							paddingBottom: 32,
+							paddingHorizontal: 28,
+							position: 'relative',
+							width: '100%'
+						}}
+					>
+						{/* Decorative Stars */}
+						<View style={{ position: 'absolute', top: insets.top + 16, left: 39 }}>
+							<Icon as={Star} size="sm" className="text-purple-300" style={{ color: '#C4B5FD' }} fill="#C4B5FD" />
+						</View>
+						<View style={{ position: 'absolute', top: insets.top + 24, right: 60 }}>
+							<Icon as={Star} size="sm" className="text-purple-300" style={{ color: '#C4B5FD' }} fill="#C4B5FD" />
+						</View>
+						<View style={{ position: 'absolute', top: insets.top + 8, left: '20%' }}>
+							<Icon as={Star} size="xs" className="text-purple-300" style={{ color: '#C4B5FD', opacity: 0.7 }} fill="#C4B5FD" />
+						</View>
+						<View style={{ position: 'absolute', top: insets.top + 12, right: '25%' }}>
+							<Icon as={Star} size="xs" className="text-purple-300" style={{ color: '#C4B5FD', opacity: 0.7 }} fill="#C4B5FD" />
+						</View>
+						<View style={{ position: 'absolute', top: insets.top + 60, left: 20 }}>
+							<Icon as={Star} size="xs" className="text-purple-300" style={{ color: '#C4B5FD', opacity: 0.6 }} fill="#C4B5FD" />
+						</View>
+						<View style={{ position: 'absolute', top: insets.top + 70, right: 30 }}>
+							<Icon as={Star} size="xs" className="text-purple-300" style={{ color: '#C4B5FD', opacity: 0.6 }} fill="#C4B5FD" />
+						</View>
+						<View style={{ position: 'absolute', top: insets.top + 100, left: '15%' }}>
+							<Icon as={Star} size="xs" className="text-purple-300" style={{ color: '#C4B5FD', opacity: 0.5 }} fill="#C4B5FD" />
+						</View>
+						<View style={{ position: 'absolute', top: insets.top + 110, right: '20%' }}>
+							<Icon as={Star} size="xs" className="text-purple-300" style={{ color: '#C4B5FD', opacity: 0.5 }} fill="#C4B5FD" />
+						</View>
+
+						{/* Close Button */}
+						<View style={{ position: 'absolute', top: insets.top + 16, right: 18, zIndex: 10 }} className="bg-black rounded-full p-2">
+							<Pressable onPress={onClose}>
+								<Icon as={CloseIcon} size="xl" className="text-white" />
+							</Pressable>
+						</View>
+
+						{/* Crown Icon in Circle */}
+						<View className="items-center mb-4 mt-2">
+							<View 
+								className="w-20 h-20 rounded-full items-center justify-center" 
+								style={{ 
+									backgroundColor: '#A78BFA'
+								}}
+							>
+								<Icon as={Crown} size="xl" style={{ color: '#FCD34D', width: 40, height: 40 }} />
+							</View>
+						</View>
+
+						{/* Title */}
+						<Text className="text-3xl font-bold text-white text-center mb-2">
 							{i18n.t("paywall.title")}
-						</Heading> */}
-						{/* <View className="absolute right-0 top-0"> */}
-						<DrawerCloseButton onPress={onClose}>
-							<Icon as={CloseIcon} size="xl" />
-						</DrawerCloseButton>
-						{/* </View> */}
-					</View>
+						</Text>
+
+						{/* Subtitle */}
+						<Text className="text-base text-white text-center opacity-90">
+							{i18n.t("paywall.subtitle") || "Unlock your full cognitive potential"}
+						</Text>
+					</LinearGradient>
 				</DrawerHeader>
 
-				<ScrollView contentContainerStyle={{ paddingBottom: 10 }} showsVerticalScrollIndicator={false}>
-					<Image
-						source={{
-							uri: "https://dti1eh5sohakbabs.public.blob.vercel-storage.com/exercise-media/images/paywallimage-ICy6yLTw2lKXHrsmiSAsEgIQiLX1FA",
-						}}
-						className="w-full h-[300px]"
-						resizeMode="cover"
-					/>
-					<DrawerBody className="px-7">
-						{/* <Text className="text-lg text-center mb-6">{i18n.t("paywall.subtitle")}</Text> */}
+				<ScrollView contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
 
-						<View className="mb-6 flex items-center">
-							<View className="flex flex-row items-center gap-2 mb-6">
-								<Icon as={Star} size="xl" className="text-primary-500 fill-primary-500" fill="currentColor" />
-								<Text className="text-3xl font-bold text-primary-500">{i18n.t("paywall.title")}</Text>
-							</View>
-							<View className="flex flex-col text-start">
-								{features.map((feature: string, index: number) => (
-									<View key={index} className="flex-row items-center mb-3">
-										<Icon as={CheckIcon} size="sm" className="mr-2" />
-										<Text>{feature}</Text>
+					{/* Features Section */}
+					<View className="px-7 py-6 bg-white">
+						{features.map((feature: string, index: number) => {
+							const FeatureIcon = featureIcons[index]?.icon || Lock;
+							const iconColor = featureIcons[index]?.color || "#60A5FA";
+							
+							return (
+								<View key={index} className="flex-row items-center mb-4">
+									<View className="mr-3 mt-0.5 bg-primary-100 rounded-full p-2">
+										<Icon as={FeatureIcon} size="md" style={{ color: iconColor }} />
 									</View>
-								))}
-							</View>
-						</View>
-
-						<View className="flex justify-between gap-4 mb-6 w-full">
-							<Button
-								onPress={() => setSelectedPlan("monthly")}
-								className="fw-full lex-1 flex justify-between rounded-md h-[70px]"
-								variant="outline"
-								action={selectedPlan === "monthly" ? "primary" : "secondary"}
-							>
-								<Text className="font-semibold">{plans.monthly.title}</Text>
-								<Text className="text-lg">{plans.monthly.price}</Text>
-							</Button>
-							<Button
-								onPress={() => setSelectedPlan("annual")}
-								className="flex-1 flex-col rounded-md h-[70px]"
-								variant="outline"
-								action={selectedPlan === "annual" ? "primary" : "secondary"}
-							>
-								<View className="w-full flex flex-row justify-between">
-									<Text className="text-lg font-bold">{plans.annual.title}</Text>
-									<Text className="text-lg font-bold">{plans.annual.price}</Text>
+									<Text className="flex-1 text-base text-gray-800 leading-6">
+										{feature}
+									</Text>
 								</View>
+							);
+						})}
+					</View>
 
-								{plans.annual.saving && (
-									<View className="w-full flex flex-row justify-between">
-										<Text className="text-sm">{plans.annual.saving}</Text>
-										<Text className="text-sm">{plans.annual.monthlyPrice}</Text>
+					{/* Pricing Section */}
+					<View className="px-7 mb-6">
+						{/* Annual Plan - Highlighted */}
+						<Pressable
+							onPress={() => setSelectedPlan("annual")}
+							className="mb-4 rounded-xl overflow-hidden relative"
+							style={{
+								backgroundColor: selectedPlan === "annual" ? '#06b6d4' : '#E0F2FE', // Teal when selected, light blue when not
+								borderWidth: selectedPlan === "annual" ? 0 : 2,
+								borderColor: selectedPlan === "annual" ? 'transparent' : '#06b6d4',
+								padding: 16,
+								minHeight: 90,
+							}}
+						>
+							{/* BEST VALUE Banner */}
+							<View className="absolute top-0 left-0 right-0 items-center">
+								<View style={{ backgroundColor: '#9CE3EF', paddingHorizontal: 12, paddingVertical: 4, borderBottomLeftRadius: 6, borderBottomRightRadius: 6 }}>
+									<Text className="text-white text-xs font-bold">{i18n.t("paywall.pricing.bestValue")}</Text>
+								</View>
+							</View>
+
+							<View className="flex-row justify-between items-center mt-4">
+								<View className="flex-1 flex-row items-center">
+									{/* Selection Indicator */}
+									{selectedPlan === "annual" && (
+										<View style={{ marginRight: 8 }}>
+											<View style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 4 }}>
+												<Icon as={CheckCircleIcon} size="sm" style={{ color: '#06b6d4' }} />
+											</View>
+										</View>
+									)}
+									<View className="flex-1">
+										<Text className={`text-lg font-bold mb-1 ${selectedPlan === "annual" ? "text-white" : "text-gray-900"}`}>
+											{plans.annual.title}
+										</Text>
+										{plans.annual.saving && (
+											<Text className={`text-sm ${selectedPlan === "annual" ? "text-white opacity-90" : "text-gray-600"}`}>
+												{plans.annual.saving}
+											</Text>
+										)}
 									</View>
-								)}
-							</Button>
-						</View>
-					</DrawerBody>
+								</View>
+								<View className="items-end">
+									<Text className={`text-2xl font-bold ${selectedPlan === "annual" ? "text-white" : "text-gray-900"}`}>
+										{plans.annual.price}
+									</Text>
+									<Text className={`text-sm ${selectedPlan === "annual" ? "text-white opacity-90" : "text-gray-600"}`}>
+										per year
+									</Text>
+								</View>
+							</View>
+						</Pressable>
+
+						{/* Monthly Plan */}
+						<Pressable
+							onPress={() => setSelectedPlan("monthly")}
+							className="rounded-xl relative"
+							style={{
+								backgroundColor: selectedPlan === "monthly" ? '#F3E8FF' : '#FFFFFF', // Light purple when selected
+								borderWidth: 3,
+								borderColor: selectedPlan === "monthly" ? '#9333EA' : '#E5E7EB',
+								padding: 16,
+								minHeight: 80,
+							}}
+						>
+							<View className="flex-row justify-between items-center">
+								<View className="flex-1 flex-row items-center">
+									{/* Selection Indicator */}
+									{selectedPlan === "monthly" && (
+										<View style={{ marginRight: 8 }}>
+											<View style={{ backgroundColor: '#9333EA', borderRadius: 12, padding: 4 }}>
+												<Icon as={CheckCircleIcon} size="sm" style={{ color: '#FFFFFF' }} />
+											</View>
+										</View>
+									)}
+									<View className="flex-1">
+										<Text className={`text-lg font-bold mb-1 ${selectedPlan === "monthly" ? "text-gray-900" : "text-gray-900"}`}>
+											{plans.monthly.title}
+										</Text>
+										<Text className={`text-sm ${selectedPlan === "monthly" ? "text-gray-700" : "text-gray-500"}`}>
+											Billed monthly
+										</Text>
+									</View>
+								</View>
+								<View className="items-end">
+									<Text className={`text-2xl font-bold ${selectedPlan === "monthly" ? "text-gray-900" : "text-gray-900"}`}>
+										{plans.monthly.price}
+									</Text>
+									<Text className={`text-sm ${selectedPlan === "monthly" ? "text-gray-700" : "text-gray-500"}`}>
+										per month
+									</Text>
+								</View>
+							</View>
+						</Pressable>
+					</View>
+
+					{/* Footer Text */}
+					<Text className="text-center text-gray-500 text-sm px-7 mb-4">
+						Cancel anytime. 7-day money-back guarantee.
+					</Text>
 				</ScrollView>
 
-				<DrawerFooter className="gap-4 flex-col px-7 pb-5">
-					<Button onPress={handleSubscribe} isDisabled={isLoading} className="w-full h-[50px] rounded-xl">
-						<ButtonText>{i18n.t("paywall.buttons.subscribe")}</ButtonText>
+				{/* Footer Buttons */}
+				<View style={{ paddingHorizontal: 28, paddingBottom: Math.max(insets.bottom, 20), paddingTop: 8, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E5E7EB' }}>
+					<Button 
+						onPress={handleSubscribe} 
+						isDisabled={isLoading} 
+						className="w-full h-[50px] rounded-xl mb-3"
+						style={{ backgroundColor: '#9333EA' }}
+					>
+						<ButtonText className="text-white font-semibold">
+							{i18n.t("paywall.buttons.subscribe")}
+						</ButtonText>
 					</Button>
-					<Button variant="link" onPress={handleRestore} isDisabled={isLoading} className="w-full">
-						<ButtonText>{i18n.t("paywall.buttons.restore")}</ButtonText>
+					<Button 
+						variant="link" 
+						onPress={handleRestore} 
+						isDisabled={isLoading} 
+						className="w-full"
+					>
+						<ButtonText className="text-gray-600">
+							{i18n.t("paywall.buttons.restore")}
+						</ButtonText>
 					</Button>
-				</DrawerFooter>
+				</View>
 			</DrawerContent>
 		</Drawer>
 	);

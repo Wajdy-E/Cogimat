@@ -1,10 +1,20 @@
-# Metronome Sound File
+# Metronome Sound Files
 
-This directory should contain the metronome tick sound file.
+This directory contains metronome tick sounds. One is required; multiple are optional for user choice.
 
-## Required File:
+## Required (legacy)
 
--   `metronome-tick.mp3` - A short, clear metronome tick/beep sound
+-   `metronome-tick.mp3` - Classic beep (used when sound option is "tick")
+
+## Generated options (optional)
+
+Run from project root to generate WAV variants:
+
+```bash
+python scripts/generate_metronome_sounds.py
+```
+
+This creates: `metronome-tick.wav`, `metronome-soft.wav`, `metronome-high.wav`, `metronome-click.wav`, `metronome-deep.wav`, `metronome-wood.wav`, `metronome-ping.wav`. With ffmpeg installed, it can also regenerate `metronome-tick.mp3`.
 
 ## Specifications:
 

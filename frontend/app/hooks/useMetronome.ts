@@ -18,18 +18,20 @@ export function useMetronome(enabled: boolean, settings: MetronomeSettings, isAc
 		MetronomeService.start({
 			bpm: settings.bpm,
 			soundEnabled: settings.enabled,
+			soundId: settings.soundId ?? "tick",
 		});
 
 		return () => {
 			MetronomeService.stop();
 		};
-	}, [enabled, settings.bpm, settings.enabled, isActive]);
+	}, [enabled, settings.bpm, settings.enabled, settings.soundId, isActive]);
 
 	const start = useCallback(async () => {
 		if (enabled) {
 			await MetronomeService.start({
 				bpm: settings.bpm,
 				soundEnabled: settings.enabled,
+				soundId: settings.soundId ?? "tick",
 			});
 		}
 	}, [enabled, settings]);
