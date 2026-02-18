@@ -99,7 +99,9 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 			/>
 
 			<CustomVideoPicker
+				value={formData.videoUri}
 				onVideoPicked={(file) => onChange("videoUri", file.uri)}
+				onVideoRemoved={() => onChange("videoUri", "")}
 				buttonText={i18n.t("createExercise.form.uploadVideoTutorial")}
 			/>
 		</VStack>

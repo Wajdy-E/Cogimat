@@ -87,7 +87,7 @@ export default function ExerciseRouter() {
 				console.log("🎯 Exercise screen blurred - pausing exercise");
 				setForceExercisePause(true);
 			};
-		}, [])
+		}, []),
 	);
 
 	// Cleanup: clear selected exercise when component unmounts
@@ -156,11 +156,13 @@ export default function ExerciseRouter() {
 	const handleExerciseComplete = () => {
 		// Ensure metronome and Redux state indicate completion
 		dispatch(setExerciseStopped(true));
-		setShowCountdown(true);
+		// Don't set showCountdown(true) - we're navigating away. The Countdown would run in the
+		// background on the stacked screen and fire onComplete after 5s, setting exerciseStopped
+		// to false and triggering the metronome effect to start the metronome on the wrong screen.
 		MetronomeService.stop();
 		if (isRoutineMode && routineId && exercise) {
 			router.push(
-				`/(tabs)/routine-execution?routineId=${routineId}&returnFromExercise=true&completedExerciseId=${exercise.id}`
+				`/(tabs)/routine-execution?routineId=${routineId}&returnFromExercise=true&completedExerciseId=${exercise.id}`,
 			);
 		} else {
 			// Navigate back to the specific exercise page

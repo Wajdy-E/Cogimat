@@ -4,6 +4,7 @@ import { useSelector, useDispatch, shallowEqual } from "react-redux";
 import * as Notifications from "expo-notifications";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
+import BackButton from "@/components/BackButton";
 import { Divider } from "@/components/ui/divider";
 import SwitchRow from "@/components/SwitchRow";
 import DatePicker from "react-native-date-picker";
@@ -152,6 +153,7 @@ function NotificationsPage() {
 
 	return (
 		<ScrollView className="bg-background-700 p-5" contentContainerStyle={{ paddingBottom: 50 }}>
+			<BackButton showLabel />
 			<VStack space="3xl">
 				<VStack space="md">
 					<Heading className="text-primary-500">{i18n.t("account.notificationSettings")}</Heading>

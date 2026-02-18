@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 			`SELECT COUNT(*) as count 
 			FROM exercise_completions 
 			WHERE clerk_id = $1 AND completed_at >= $2`,
-			[userId, startOfThisWeek.toISOString()]
+			[userId, startOfThisWeek.toISOString()],
 		);
 
 		// Query for last week
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
 			`SELECT COUNT(*) as count 
 			FROM exercise_completions 
 			WHERE clerk_id = $1 AND completed_at >= $2 AND completed_at < $3`,
-			[userId, startOfLastWeek.toISOString(), startOfThisWeek.toISOString()]
+			[userId, startOfLastWeek.toISOString(), startOfThisWeek.toISOString()],
 		);
 
 		// Query for this month
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
 			`SELECT COUNT(*) as count 
 			FROM exercise_completions 
 			WHERE clerk_id = $1 AND completed_at >= $2`,
-			[userId, startOfThisMonth.toISOString()]
+			[userId, startOfThisMonth.toISOString()],
 		);
 
 		// Query for today
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 			`SELECT COUNT(*) as count 
 			FROM exercise_completions 
 			WHERE clerk_id = $1 AND completed_at >= $2`,
-			[userId, startOfToday.toISOString()]
+			[userId, startOfToday.toISOString()],
 		);
 
 		// Query for daily breakdown of this week
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
 			WHERE clerk_id = $1 AND completed_at >= $2
 			GROUP BY DATE(completed_at)
 			ORDER BY DATE(completed_at) ASC`,
-			[userId, startOfThisWeek.toISOString()]
+			[userId, startOfThisWeek.toISOString()],
 		);
 
 		const stats = {

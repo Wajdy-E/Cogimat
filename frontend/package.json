@@ -45,6 +45,7 @@
     "@react-native-google-signin/google-signin": "^13.2.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@reduxjs/toolkit": "^2.5.1",
+    "@vercel/blob": "^2.2.0",
     "axios": "^1.7.9",
     "expo": "^54.0.25",
     "expo-apple-authentication": "~8.0.7",

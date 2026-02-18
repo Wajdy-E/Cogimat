@@ -695,7 +695,10 @@
 		"cancel": "Annuler",
 		"openSettings": "Ouvrir les Paramètres",
 		"pickVideo": "Sélectionner une vidéo",
-		"pickImage": "Sélectionner une image"
+		"pickImage": "Sélectionner une image",
+		"videoPickFailed": "Impossible de sélectionner la vidéo",
+		"iCloudVideoError": "Cette vidéo est peut-être stockée dans iCloud. Ouvrez-la d'abord dans l'app Photos pour la télécharger sur votre appareil, puis réessayez. Ou sélectionnez une vidéo déjà sur votre appareil.",
+		"removeVideo": "Supprimer la vidéo"
 	},
 	"exerciseCreation": {
 		"exerciseParameters": "Paramètres d'Exercice",

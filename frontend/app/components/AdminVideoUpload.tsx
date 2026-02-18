@@ -216,7 +216,9 @@ export default function AdminVideoUpload({ onUploadSuccess, onClose }: AdminVide
 						<FormControlLabelText>{i18n.t("admin.videoUpload.videoLabel")}</FormControlLabelText>
 					</FormControlLabel>
 					<CustomVideoPicker
+						value={formData.videoUri}
 						onVideoPicked={(file) => updateFormData("videoUri", file.uri)}
+						onVideoRemoved={() => updateFormData("videoUri", "")}
 						buttonText={i18n.t("admin.videoUpload.selectVideo")}
 					/>
 					{errors.videoUri && (

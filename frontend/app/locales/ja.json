@@ -691,7 +691,10 @@
 		"cancel": "キャンセル",
 		"openSettings": "設定を開く",
 		"pickVideo": "動画を選択",
-		"pickImage": "画像を選択"
+		"pickImage": "画像を選択",
+		"videoPickFailed": "動画を選択できませんでした",
+		"iCloudVideoError": "この動画はiCloudに保存されている可能性があります。まず写真アプリで開いてデバイスにダウンロードしてから、もう一度お試しください。または、デバイスに既にある動画を選択してください。",
+		"removeVideo": "動画を削除"
 	},
 	"exerciseCreation": {
 		"exerciseParameters": "エクササイズパラメータ",

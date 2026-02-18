@@ -54,9 +54,7 @@ function Letters({ onChange }: LettersProps) {
 						</HStack>
 					))}
 					{row.length < 4 &&
-						Array.from({ length: 4 - row.length }).map((_, i) => (
-							<View key={`placeholder-${i}`} className="flex-1" />
-						))}
+						Array.from({ length: 4 - row.length }).map((_, i) => <View key={`placeholder-${i}`} className="flex-1" />)}
 				</HStack>
 			))}
 

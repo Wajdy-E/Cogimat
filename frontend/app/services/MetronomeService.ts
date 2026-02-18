@@ -36,6 +36,8 @@ class MetronomeService {
 
 	// Serialize start/resume so we never create multiple intervals
 	private lastStartResumePromise: Promise<void> = Promise.resolve();
+	// Serialize stop so start never runs while stop is in progress
+	private lastStopPromise: Promise<void> = Promise.resolve();
 
 	constructor() {
 		this.initializeAudio();
@@ -77,24 +79,20 @@ class MetronomeService {
 		}
 
 		const source = getMetronomeSoundSource(soundId);
-		const { sound } = await Audio.Sound.createAsync(
-			source,
-			{ shouldPlay: false },
-			this.onPlaybackStatusUpdate
-		);
+		const { sound } = await Audio.Sound.createAsync(source, { shouldPlay: false }, this.onPlaybackStatusUpdate);
 		this.soundObject = sound;
 		this.currentSoundId = soundId;
 		console.log("🎵 Loaded metronome sound:", soundId);
 	}
 
 	/**
-	 * Callback for playback status updates
+	 * Callback for playback status updates.
+	 * Note: We do NOT call setPositionAsync(0) here - it races with replayAsync()
+	 * at metronome intervals and causes "Seeking interrupted" errors. replayAsync()
+	 * already starts from the beginning.
 	 */
-	private onPlaybackStatusUpdate = (status: any) => {
-		if (status.didJustFinish) {
-			// Reset sound position for next play
-			this.soundObject?.setPositionAsync(0);
-		}
+	private onPlaybackStatusUpdate = (_status: any) => {
+		// Intentionally empty - avoid setPositionAsync race with replayAsync
 	};
 
 	/**
@@ -130,12 +128,15 @@ class MetronomeService {
 	 * Start the metronome
 	 */
 	async start(config?: Partial<MetronomeConfig>): Promise<void> {
+		console.log("start() called from:", new Error().stack);
 		const prev = this.lastStartResumePromise;
 		let resolve: () => void;
 		this.lastStartResumePromise = new Promise((r) => {
 			resolve = r;
 		});
 		await prev;
+		// Wait for any in-progress stop to finish before starting
+		await this.lastStopPromise;
 
 		try {
 			console.log("🎵 Starting metronome with config:", config);
@@ -190,16 +191,25 @@ class MetronomeService {
 	 * Stop the metronome
 	 */
 	async stop(): Promise<void> {
-		this.clearTickInterval();
-		this.tickPlayLock = false;
+		let resolve: () => void;
+		this.lastStopPromise = new Promise((r) => {
+			resolve = r;
+		});
 
-		if (this.soundObject) {
-			await this.soundObject.stopAsync();
-			await this.soundObject.setPositionAsync(0);
+		try {
+			this.clearTickInterval();
+			this.tickPlayLock = false;
+			this.isPlaying = false;
+			this.currentBeat = 0;
+
+			if (this.soundObject) {
+				await this.soundObject.stopAsync().catch(() => {});
+				// setPositionAsync can throw "Seeking interrupted" when racing with replay - ignore
+				await this.soundObject.setPositionAsync(0).catch(() => {});
+			}
+		} finally {
+			resolve!();
 		}
-
-		this.isPlaying = false;
-		this.currentBeat = 0;
 	}
 
 	/**
@@ -217,6 +227,8 @@ class MetronomeService {
 	 * Resume the metronome
 	 */
 	async resume(): Promise<void> {
+		console.log("resume() called from:", new Error().stack);
+
 		if (this.isPlaying) return;
 
 		const prev = this.lastStartResumePromise;
@@ -261,8 +273,13 @@ class MetronomeService {
 			try {
 				await this.soundObject.replayAsync();
 				if (this.isPlaying) console.log(`✅ Played tick ${beat}`);
-			} catch (error) {
-				console.error("❌ Error playing metronome tick:", error);
+			} catch (error: any) {
+				// "Seeking interrupted" is a known expo-av race when stop/start overlap or rapid replay
+				if (error?.message?.includes?.("Seeking interrupted")) {
+					// Harmless - tick may have played; avoid noisy logs
+				} else {
+					console.error("❌ Error playing metronome tick:", error);
+				}
 			} finally {
 				this.tickPlayLock = false;
 			}

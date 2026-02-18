@@ -193,7 +193,9 @@ export default function ExerciseVideoUpload({
 						<FormControlLabelText>{i18n.t("exercise.videoUpload.videoLabel")}</FormControlLabelText>
 					</FormControlLabel>
 					<CustomVideoPicker
+						value={formData.videoUri}
 						onVideoPicked={(file) => updateFormData("videoUri", file.uri)}
+						onVideoRemoved={() => updateFormData("videoUri", "")}
 						buttonText={i18n.t("exercise.videoUpload.selectVideo")}
 					/>
 					{errors.videoUri && (

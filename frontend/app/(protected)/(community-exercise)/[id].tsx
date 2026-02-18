@@ -281,7 +281,7 @@ function CommunityExerciseProgram() {
 									<>
 										<VideoView
 											player={videoPlayer}
-											allowsFullscreen
+											fullscreenOptions={{ enable: true }}
 											allowsPictureInPicture
 											style={{
 												width: "100%",

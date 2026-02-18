@@ -193,7 +193,7 @@ export default function AdminVideoGallery({
 
 								<VideoView
 									player={player}
-									allowsFullscreen
+									fullscreenOptions={{ enable: true }}
 									allowsPictureInPicture
 									style={{
 										width: "100%",

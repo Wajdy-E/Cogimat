@@ -713,7 +713,10 @@
 		"cancel": "Cancel",
 		"openSettings": "Open Settings",
 		"pickVideo": "Select Video",
-		"pickImage": "Select Image"
+		"pickImage": "Select Image",
+		"videoPickFailed": "Could not select video",
+		"iCloudVideoError": "This video may be stored in iCloud. Please open it in the Photos app first to download it to your device, then try again. Or select a video that's already on your device.",
+		"removeVideo": "Remove Video"
 	},
 	"exerciseCreation": {
 		"exerciseParameters": "Exercise Parameters",

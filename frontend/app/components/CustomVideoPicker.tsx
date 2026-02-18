@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Alert, Linking, Platform } from "react-native";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { VideoIcon } from "lucide-react-native";
+import { VideoIcon, X } from "lucide-react-native";
 import { i18n } from "../i18n";
 
 type PickedVideoData = {
@@ -15,11 +15,26 @@ type PickedVideoData = {
 
 type VideoPickerProps = {
 	onVideoPicked?: (file: PickedVideoData) => void;
+	onVideoRemoved?: () => void;
+	value?: string;
 	buttonText?: string;
 };
 
 export default function CustomVideoPicker(props: VideoPickerProps) {
-	const [videoUri, setVideoUri] = useState<string | null>(null);
+	const [videoUri, setVideoUri] = useState<string | null>(props.value ?? null);
+
+	useEffect(() => {
+		if (props.value === "") {
+			setVideoUri(null);
+		} else if (props.value) {
+			setVideoUri(props.value);
+		}
+	}, [props.value]);
+
+	const handleRemove = () => {
+		setVideoUri(null);
+		props.onVideoRemoved?.();
+	};
 
 	const requestPermission = async () => {
 		const { status, canAskAgain } = await ImagePicker.getMediaLibraryPermissionsAsync();
@@ -55,26 +70,42 @@ export default function CustomVideoPicker(props: VideoPickerProps) {
 	};
 
 	const pickVideo = async () => {
-		const result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ["videos"],
-			allowsEditing: false,
-			quality: 1,
-			aspect: [3, 2],
-		});
-
-		if (!result.canceled) {
-			const asset = result.assets[0];
-			const uri = asset.uri;
-			const name = uri.split("/").pop() ?? "video.mp4";
-			const type = "video/mp4";
-
-			setVideoUri(uri);
-
-			props.onVideoPicked?.({
-				uri,
-				name,
-				type,
+		try {
+			const result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ["videos"],
+				allowsEditing: false,
+				quality: 1,
+				videoExportPreset: ImagePicker.VideoExportPreset.Passthrough,
+				...(Platform.OS === "ios" && {
+					preferredAssetRepresentationMode:
+						ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Current,
+				}),
 			});
+
+			if (!result.canceled) {
+				const asset = result.assets[0];
+				const uri = asset.uri;
+				const name = uri.split("/").pop() ?? "video.mp4";
+				const type = "video/mp4";
+
+				setVideoUri(uri);
+
+				props.onVideoPicked?.({
+					uri,
+					name,
+					type,
+				});
+			}
+		} catch (error: any) {
+			const msg = error?.message ?? String(error);
+			const isICloudError =
+				Platform.OS === "ios" &&
+				(msg.includes("3164") || msg.includes("PHPhotosErrorDomain") || msg.includes("network access"));
+
+			Alert.alert(
+				i18n.t("mediaPicker.videoPickFailed"),
+				isICloudError ? i18n.t("mediaPicker.iCloudVideoError") : msg
+			);
 		}
 	};
 
@@ -99,13 +130,25 @@ export default function CustomVideoPicker(props: VideoPickerProps) {
 			</Button>
 			{videoUri && (
 				<>
-					<VideoView
-						player={player}
-						allowsFullscreen
-						allowsPictureInPicture
-						style={{ maxWidth: "100%", width: "100%", height: 200, borderRadius: 12 }}
-						contentFit="cover"
-					/>
+					<VStack space="sm">
+						<VideoView
+							player={player}
+							fullscreenOptions={{ enable: true }}
+							allowsPictureInPicture
+							style={{ maxWidth: "100%", width: "100%", height: 200, borderRadius: 12 }}
+							contentFit="cover"
+						/>
+						<Button
+							onPress={handleRemove}
+							size="md"
+							variant="outline"
+							action="secondary"
+							className="self-start"
+						>
+							<ButtonIcon as={X} size="sm" />
+							<ButtonText>{i18n.t("mediaPicker.removeVideo")}</ButtonText>
+						</Button>
+					</VStack>
 				</>
 			)}
 		</VStack>

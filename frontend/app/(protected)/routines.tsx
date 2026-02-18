@@ -9,7 +9,7 @@ export default function RoutinesPage() {
 		<ScrollView className="bg-background-700" contentContainerStyle={{ paddingBottom: 50 }}>
 			<SafeAreaView>
 				<VStack space="lg" className="w-[90%] self-center py-4">
-					<BackButton />
+					<BackButton showLabel />
 					<Routines />
 				</VStack>
 			</SafeAreaView>

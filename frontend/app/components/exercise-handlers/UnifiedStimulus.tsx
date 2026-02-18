@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Exercise, getExerciseCustomizedOptions, updateExercise } from "@/store/data/dataSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
@@ -14,7 +14,7 @@ export interface StimulusStrategy {
 	getTableHeaders: () => string[];
 	incrementStimulusCount: (
 		stimulus: any,
-		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>
+		setStimulusCount: React.Dispatch<React.SetStateAction<Map<string, number>>>,
 	) => void;
 }
 
@@ -41,6 +41,7 @@ export default function UnifiedStimulus({
 	const [stimulusCount, setStimulusCount] = useState<Map<string, number>>(new Map());
 	const [timeCompleted, setTimeCompleted] = useState(0);
 	const [exerciseCompleted, setExerciseCompleted] = useState(false);
+	const hasQuitRef = useRef(false);
 
 	// Apply force pause when navigating away
 	useEffect(() => {
@@ -85,7 +86,7 @@ export default function UnifiedStimulus({
 								exerciseDifficulty: exercise.difficulty,
 								exerciseId: exercise.id,
 								exerciseType: "standard",
-							})
+							}),
 						);
 					}
 					return Math.max(newTime, 0);
@@ -140,14 +141,14 @@ export default function UnifiedStimulus({
 		};
 	}, [isPaused, exerciseCompleted, strategy, exercise, totalDuration, onScreenTime, offScreenTime, isMetronomeMode]);
 
-	// Handle metronome pause/resume when isPaused changes
+	// Handle metronome pause/resume when isPaused changes (only when actively in exercise, not on completion screen or after quit)
 	useEffect(() => {
 		if (isPaused && isMetronomeMode) {
 			MetronomeService.pause();
-		} else if (!isPaused && isMetronomeMode) {
+		} else if (!isPaused && isMetronomeMode && !exerciseCompleted && !hasQuitRef.current) {
 			MetronomeService.resume();
 		}
-	}, [isPaused, isMetronomeMode]);
+	}, [isPaused, isMetronomeMode, exerciseCompleted]);
 
 	const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -162,6 +163,7 @@ export default function UnifiedStimulus({
 	};
 
 	function onEnd() {
+		hasQuitRef.current = true; // User clicked Done - don't resume metronome
 		setExerciseCompleted(false);
 		setTimeCompleted(0);
 		setStimulusCount(new Map());
@@ -180,7 +182,7 @@ export default function UnifiedStimulus({
 					...custom,
 					metronome: newSettings,
 				},
-			})
+			}),
 		);
 
 		// Always stop metronome when settings change during paused exercise
@@ -195,6 +197,7 @@ export default function UnifiedStimulus({
 				totalTime={timeCompleted}
 				onEnd={onEnd}
 				onRestart={() => {
+					hasQuitRef.current = false; // User restarted - allow metronome resume again
 					setExerciseCompleted(false);
 					setTimeCompleted(0);
 					setStimulusCount(new Map());

@@ -245,7 +245,7 @@ function ExerciseProgram() {
 									<>
 										<VideoView
 											player={videoPlayer}
-											allowsFullscreen
+											fullscreenOptions={{ enable: true }}
 											allowsPictureInPicture
 											style={{
 												width: "100%",

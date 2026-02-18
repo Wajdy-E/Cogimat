@@ -28,7 +28,7 @@ function ExerciseProgram() {
 	const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
 	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
 	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises, shallowEqual);
-	const exercise = exercises.filter((exercise) => exercise.id === id)[0];
+	const exercise = exercises?.filter((ex) => ex.id === id)[0];
 
 	useEffect(() => {
 		if (exercise) {
@@ -49,6 +49,24 @@ function ExerciseProgram() {
 
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const router = useRouter();
+	// Hooks must be called unconditionally - use fallbacks when exercise may be undefined
+	const videoPlayer = useVideoPlayer(exercise?.videoUrl || "", (player) => {
+		if (exercise?.videoUrl) {
+			player.loop = true;
+		}
+	});
+
+	// Guard: exercise not found (e.g. exercises not loaded yet, or invalid id)
+	if (!exercise) {
+		return (
+			<>
+				<Header showSettings={true} />
+				<View className="flex-1 justify-center items-center p-4">
+					<Text>{i18n.t("exercise.invalidOrMissing")}</Text>
+				</View>
+			</>
+		);
+	}
 
 	// Helper function to extract YouTube video ID
 	const getYouTubeVideoId = (url: string) => {
@@ -76,19 +94,12 @@ function ExerciseProgram() {
 		mediaItems.push({ type: "image" as const, url: exercise.imageFileUrl });
 	}
 
-	// Create video player (hooks must be called unconditionally)
-	// Use empty string as fallback if no video URL
-	const videoPlayer = useVideoPlayer(exercise.videoUrl || "", (player) => {
-		if (exercise.videoUrl) {
-			player.loop = true;
-		}
-	});
-
-	// Split instructions into numbered list items
-	const instructionLines = exercise.instructions
-		?.split(/[.!?]\s+|\.\n|\n/)
-		?.map((line) => line.trim())
-		?.filter((line) => line.length > 0);
+	// Split instructions into numbered list items (fallback to [] if undefined)
+	const instructionLines =
+		exercise.instructions
+			?.split(/[.!?]\s+|\.\n|\n/)
+			?.map((line) => line.trim())
+			?.filter((line) => line.length > 0) ?? [];
 
 	// Convert focus string to array for display
 	const focusArray = exercise.focus ? [exercise.focus] : [];
@@ -222,7 +233,7 @@ function ExerciseProgram() {
 									<>
 										<VideoView
 											player={videoPlayer}
-											allowsFullscreen
+											fullscreenOptions={{ enable: true }}
 											allowsPictureInPicture
 											style={{
 												width: "100%",
