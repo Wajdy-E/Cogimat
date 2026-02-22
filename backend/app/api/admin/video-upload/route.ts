@@ -99,6 +99,14 @@ export async function POST(req: NextRequest) {
 			]
 		);
 
+		// So the exercise page shows this video, update the exercise's video_url when linked to an exercise
+		if (exerciseId) {
+			await query("UPDATE exercises SET video_url = $1 WHERE id = $2", [
+				videoUrl,
+				parseInt(exerciseId),
+			]);
+		}
+
 		return new Response(
 			JSON.stringify({
 				success: true,

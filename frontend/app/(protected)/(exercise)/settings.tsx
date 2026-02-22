@@ -14,6 +14,7 @@ import { Divider } from "@/components/ui/divider";
 import { Text } from "@/components/ui/text";
 import { useState, useEffect } from "react";
 import { updateExercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
+import { fetchExercises } from "@/store/data/dataSaga";
 import { i18n } from "../../i18n";
 import CustomSlider from "@/components/CustomSlider";
 import ExerciseVideoUpload from "@/components/ExerciseVideoUpload";
@@ -163,6 +164,8 @@ export default function ExerciseSettings() {
 	}
 	const handleVideoUploadSuccess = () => {
 		setShowVideoUpload(false);
+		// Refetch exercises so the exercise detail page shows the new video
+		dispatch(fetchExercises());
 	};
 
 	// Early return if exercise data is not yet available
