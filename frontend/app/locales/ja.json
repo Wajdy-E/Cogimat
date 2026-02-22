@@ -270,6 +270,9 @@
 			"info": "情報"
 		},
 		"loading": "読み込み中...",
+		"noDataAvailable": "データがありません",
+		"generating": "生成中...",
+		"refreshing": "更新中...",
 		"search": {
 			"placeholder": "検索..."
 		}
@@ -662,15 +665,27 @@
 			"usedCodes": "使用済みコード",
 			"unusedCodes": "未使用コード",
 			"usageRate": "使用率",
+			"tableMetric": "項目",
+			"tableValue": "値",
+			"tablePage": "ページ",
+			"tableRange": "コード範囲",
+			"tableAction": "操作",
 			"generate10000": "10,000個のQRコードを生成",
+			"pagesToGenerate": "生成するページ数",
+			"pagesToGenerateHelper": "{{min}}ページ（{{minCodes}}コード）～{{max}}ページ（{{maxCodes}}コード）",
+			"generateCountButton": "{{count}}コードを生成",
 			"refreshStatistics": "統計を更新",
 			"printQrCodePages": "QRコードページを印刷",
 			"eachPageContains50": "各ページには印刷しやすいように5x10グリッドで配置された50個のQRコードが含まれています。",
 			"instructions": "手順",
 			"instruction1": "1. 上記のボタンを使用して10,000個のQRコードを生成",
 			"instruction2": "2. 印刷用のQRコードページをダウンロード",
+			"instruction3": "3. QRコードページを印刷して製品に同梱してください",
+			"instruction4": "4. この管理画面で使用統計を確認してください",
+			"instruction5": "5. どのコードが誰によって使用されたかを追跡できます",
 			"noDataAvailable": "データがありません",
 			"download": "ダウンロード",
+			"downloadPage": "ページ{{page}}をダウンロード",
 			"downloadReady": "ページ{{page}}のQRコードが印刷の準備完了です",
 			"alerts": {
 				"error": "エラー",
@@ -678,6 +693,7 @@
 				"fetchError": "QRコード統計の取得に失敗しました",
 				"generateError": "QRコードの生成に失敗しました",
 				"generateSuccess": "10,000個のQRコードが正常に生成されました！",
+				"generateSuccessCount": "{{count}}個のQRコードが正常に生成されました！",
 				"downloadError": "QRコードのダウンロードに失敗しました"
 			}
 		},

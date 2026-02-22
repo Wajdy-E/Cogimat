@@ -53,9 +53,10 @@ function Account() {
 	const usernameRef = useRef(user?.username ?? "");
 
 	const { theme, toggleTheme, themeTextColor } = useTheme();
-	const { emails } = useSelector(
+	const { emails, isAdmin } = useSelector(
 		(state: RootState) => ({
 			emails: state.user.user.settings?.allowEmails ?? false,
+			isAdmin: state.user.user.baseInfo?.isAdmin ?? false,
 		}),
 		shallowEqual
 	);
@@ -176,6 +177,23 @@ function Account() {
 						<AccountLink title="account.signout" onPress={() => setShowSignoutModal(true)} />
 						<AccountLink title="account.askTeam" link="unknown" isExternal />
 					</VStack>
+					{isAdmin && (
+						<VStack space="md">
+							<Heading className="text-primary-500">{i18n.t("account.adminSection")}</Heading>
+							<AccountLink
+								title="admin.videoManagement.title"
+								onPress={() => router.push("/(admin)/video-management")}
+							/>
+							<AccountLink
+								title="admin.allVideos.title"
+								onPress={() => router.push("/(admin)/all-videos")}
+							/>
+							<AccountLink
+								title="admin.qrCodes.title"
+								onPress={() => router.push("/(admin)/qr-codes")}
+							/>
+						</VStack>
+					)}
 					<VStack space="md">
 						<Heading className="text-primary-500">{i18n.t("account.appSettings")}</Heading>
 						<AccountLink

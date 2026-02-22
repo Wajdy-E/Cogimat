@@ -276,6 +276,9 @@
 			"info": "Information"
 		},
 		"loading": "Loading...",
+		"noDataAvailable": "No data available",
+		"generating": "Generating...",
+		"refreshing": "Refreshing...",
 		"search": {
 			"placeholder": "Search..."
 		}
@@ -684,15 +687,27 @@
 			"usedCodes": "Used Codes",
 			"unusedCodes": "Unused Codes",
 			"usageRate": "Usage Rate",
+			"tableMetric": "Metric",
+			"tableValue": "Value",
+			"tablePage": "Page",
+			"tableRange": "Code range",
+			"tableAction": "Action",
 			"generate10000": "Generate 10,000 QR Codes",
+			"pagesToGenerate": "Pages to generate",
+			"pagesToGenerateHelper": "{{min}} page ({{minCodes}} codes) to {{max}} pages ({{maxCodes}} codes)",
+			"generateCountButton": "Generate {{count}} codes",
 			"refreshStatistics": "Refresh Statistics",
 			"printQrCodePages": "Print QR Code Pages",
 			"eachPageContains50": "Each page contains 50 QR codes arranged in a 5x10 grid for easy printing.",
 			"instructions": "Instructions",
 			"instruction1": "1. Generate 10,000 QR codes using the button above",
 			"instruction2": "2. Download the QR code pages for printing",
+			"instruction3": "3. Print QR code pages and include with products",
+			"instruction4": "4. Monitor usage statistics through this admin interface",
+			"instruction5": "5. Track which codes have been used and by whom",
 			"noDataAvailable": "No data available",
 			"download": "Download",
+			"downloadPage": "Download Page {{page}}",
 			"downloadReady": "QR codes for page {{page}} are ready for printing",
 			"alerts": {
 				"error": "Error",
@@ -700,6 +715,7 @@
 				"fetchError": "Failed to fetch QR code statistics",
 				"generateError": "Failed to generate QR codes",
 				"generateSuccess": "10,000 QR codes generated successfully!",
+				"generateSuccessCount": "{{count}} QR codes generated successfully!",
 				"downloadError": "Failed to download QR codes"
 			}
 		},

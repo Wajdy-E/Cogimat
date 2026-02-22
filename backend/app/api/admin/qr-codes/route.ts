@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { query } from "../../../../lib/db";
 
+const MIN_COUNT = 50;   // 1 page
+const MAX_COUNT = 10000;
+
 export async function POST(req: Request) {
 	try {
-		const { count = 10000, batchSize = 50 } = await req.json();
+		const body = await req.json();
+		let { count = 10000, batchSize = 50 } = body;
+		count = Math.min(MAX_COUNT, Math.max(MIN_COUNT, Number(count) || MIN_COUNT));
+		batchSize = Math.min(50, Math.max(1, Number(batchSize) || 50));
 
 		// Generate QR codes using the database function
 		await query("SELECT generate_qr_codes($1, $2)", [count, batchSize]);

@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { query } from "../../../../../lib/db";
+import { generateQRCodePDFBuffer } from "../../../../lib/qr-pdf";
 
 export async function GET(req: Request) {
 	try {
 		const { searchParams } = new URL(req.url);
 		const batchNumber = searchParams.get("batch");
 		const page = parseInt(searchParams.get("page") || "1");
+		const format = searchParams.get("format");
 		const codesPerPage = 50;
 
-		// Calculate the range for this page (by OFFSET/LIMIT, not by id range)
 		const offset = (page - 1) * codesPerPage;
 
 		let whereClause = "";
@@ -22,25 +23,38 @@ export async function GET(req: Request) {
 		const limitParam = params.length + 1;
 		const offsetParam = params.length + 2;
 
-		// Get QR codes for this specific page
 		const qrCodes = await query(
 			`SELECT id, code, batch_number
 			 FROM qr_codes 
 			 ${whereClause}
 			 ORDER BY id
 			 LIMIT $${limitParam} OFFSET $${offsetParam}`,
-			[...params, codesPerPage, offset]
+			[...params, codesPerPage, offset],
 		);
 
-		// Get total pages
+		// Return PDF for download when format=pdf
+		if (format === "pdf" && Array.isArray(qrCodes) && qrCodes.length > 0) {
+			const pdfBuffer = await generateQRCodePDFBuffer(
+				qrCodes.map((r: { code: string }) => ({ code: r.code })),
+				page,
+			);
+			const filename = `qr-codes-page-${String(page).padStart(3, "0")}.pdf`;
+			return new NextResponse(new Uint8Array(pdfBuffer), {
+				status: 200,
+				headers: {
+					"Content-Type": "application/pdf",
+					"Content-Disposition": `attachment; filename="${filename}"`,
+					"Content-Length": String(pdfBuffer.length),
+				},
+			});
+		}
+
 		const totalCount = await query(`SELECT COUNT(*) as total FROM qr_codes ${whereClause}`, params);
 		const totalPages = Math.ceil(parseInt(totalCount[0]?.total || "0") / codesPerPage);
 
-		// Format codes for printing (5x10 grid)
 		const formattedCodes = [];
 		for (let i = 0; i < qrCodes.length; i += 10) {
-			const row = qrCodes.slice(i, i + 10);
-			formattedCodes.push(row);
+			formattedCodes.push(qrCodes.slice(i, i + 10));
 		}
 
 		return NextResponse.json({

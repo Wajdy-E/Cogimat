@@ -1,4 +1,4 @@
-import { ScrollView, View, useColorScheme } from "react-native";
+import { ScrollView, View, useColorScheme, Pressable } from "react-native";
 import Tab, { TabItem } from "@/components/Tab";
 import { useUser } from "@clerk/clerk-expo";
 import ExerciseCard from "@/components/ExerciseCard";
@@ -198,9 +198,11 @@ function Home() {
 			<SafeAreaView>
 				{/* Admin Top Bar */}
 				{userInfo?.isAdmin && (
-					<Box className="w-full bg-red-600 py-2 mb-5">
-						<Text className="text-white text-center font-bold text-sm">{i18n.t("home.adminTopBar")}</Text>
-					</Box>
+					<Pressable onPress={() => router.push("/(admin)/video-management")} className="w-full mb-5">
+						<Box className="w-full bg-red-600 py-2">
+							<Text className="text-white text-center font-bold text-sm">{i18n.t("home.adminTopBar")}</Text>
+						</Box>
+					</Pressable>
 				)}
 			</SafeAreaView>
 

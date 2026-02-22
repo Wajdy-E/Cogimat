@@ -270,6 +270,9 @@
 			"info": "Information"
 		},
 		"loading": "Chargement...",
+		"noDataAvailable": "Aucune donnée disponible",
+		"generating": "Génération...",
+		"refreshing": "Actualisation...",
 		"search": {
 			"placeholder": "Rechercher..."
 		}
@@ -666,15 +669,27 @@
 			"usedCodes": "Codes Utilisés",
 			"unusedCodes": "Codes Non Utilisés",
 			"usageRate": "Taux d'Utilisation",
+			"tableMetric": "Indicateur",
+			"tableValue": "Valeur",
+			"tablePage": "Page",
+			"tableRange": "Plage de codes",
+			"tableAction": "Action",
 			"generate10000": "Générer 10 000 QR Codes",
+			"pagesToGenerate": "Pages à générer",
+			"pagesToGenerateHelper": "{{min}} page ({{minCodes}} codes) à {{max}} pages ({{maxCodes}} codes)",
+			"generateCountButton": "Générer {{count}} codes",
 			"refreshStatistics": "Actualiser les Statistiques",
 			"printQrCodePages": "Imprimer les Pages de QR Codes",
 			"eachPageContains50": "Chaque page contient 50 QR codes disposés en grille 5x10 pour faciliter l'impression.",
 			"instructions": "Instructions",
 			"instruction1": "1. Générez 10 000 QR codes en utilisant le bouton ci-dessus",
 			"instruction2": "2. Téléchargez les pages de QR codes pour l'impression",
+			"instruction3": "3. Imprimez les pages de QR codes et incluez-les avec les produits",
+			"instruction4": "4. Surveillez les statistiques d'utilisation via cette interface d'administration",
+			"instruction5": "5. Suivez quels codes ont été utilisés et par qui",
 			"noDataAvailable": "Aucune donnée disponible",
 			"download": "Télécharger",
+			"downloadPage": "Télécharger la page {{page}}",
 			"downloadReady": "Les QR codes pour la page {{page}} sont prêts pour l'impression",
 			"alerts": {
 				"error": "Erreur",
@@ -682,6 +697,7 @@
 				"fetchError": "Échec de la récupération des statistiques des QR codes",
 				"generateError": "Échec de la génération des QR codes",
 				"generateSuccess": "10 000 QR codes générés avec succès !",
+				"generateSuccessCount": "{{count}} QR codes générés avec succès !",
 				"downloadError": "Échec du téléchargement des QR codes"
 			}
 		},
