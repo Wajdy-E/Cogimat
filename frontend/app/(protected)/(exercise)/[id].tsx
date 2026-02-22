@@ -6,7 +6,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import WebView from "react-native-webview";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { CirclePlay, Rocket, Sprout, Trophy, Check, Zap, Target, Volume2 } from "lucide-react-native";
+import { CirclePlay, Rocket, Sprout, Trophy, Check, Zap, Target, Volume2, Lock } from "lucide-react-native";
 import { Clock } from "lucide-react-native";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
 
@@ -16,11 +16,13 @@ import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 
-import { ExerciseDifficulty, setCurrentExercise, getExerciseCustomizedOptions } from "@/store/data/dataSlice";
+import { ExerciseDifficulty, setCurrentExercise, getExerciseCustomizedOptions, getVisibleExerciseMedia, getExerciseMediaItemsWithLock, setPaywallModalPopup } from "@/store/data/dataSlice";
 import { RootState } from "@/store/store";
 import { i18n } from "../../i18n";
 import Header from "@/components/Header";
 import MetronomeService from "@/services/MetronomeService";
+import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
+import PaywallDrawer from "@/components/PaywallDrawer";
 
 function ExerciseProgram() {
 	const dispatch = useDispatch();
@@ -28,7 +30,14 @@ function ExerciseProgram() {
 	const id = parseInt(Array.isArray(params.id) ? params.id[0] : params.id);
 	const exercises = useSelector((state: RootState) => state.data.exercises, shallowEqual);
 	const customizedExercises = useSelector((state: RootState) => state.data.customizedExercises, shallowEqual);
+	const paywallIsOpen = useSelector((state: RootState) => state.data?.popupStates?.paywallIsOpen ?? false);
+	const { isSubscribed } = useSubscriptionStatus();
 	const exercise = exercises?.filter((ex) => ex.id === id)[0];
+
+	// All media items (including locked); first unlocked video URL for the single player
+	const mediaItemsWithLock = exercise ? getExerciseMediaItemsWithLock(exercise, isSubscribed) : [];
+	const visibleMedia = exercise ? getVisibleExerciseMedia(exercise, isSubscribed) : null;
+	const primaryVideoUrl = visibleMedia?.videoUrl ?? visibleMedia?.youtubeUrl ?? exercise?.videoUrl ?? "";
 
 	useEffect(() => {
 		if (exercise) {
@@ -50,8 +59,8 @@ function ExerciseProgram() {
 	const floatAnim = useRef(new Animated.Value(0)).current;
 	const router = useRouter();
 	// Hooks must be called unconditionally - use fallbacks when exercise may be undefined
-	const videoPlayer = useVideoPlayer(exercise?.videoUrl || "", (player) => {
-		if (exercise?.videoUrl) {
+	const videoPlayer = useVideoPlayer(primaryVideoUrl, (player) => {
+		if (primaryVideoUrl) {
 			player.loop = true;
 		}
 	});
@@ -68,31 +77,6 @@ function ExerciseProgram() {
 		);
 	}
 
-	// Helper function to extract YouTube video ID
-	const getYouTubeVideoId = (url: string) => {
-		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-		const match = url.match(regExp);
-		return match && match[2].length === 11 ? match[2] : null;
-	};
-
-	// Collect all available media items
-	const mediaItems: Array<{ type: "youtube" | "video" | "image"; url: string }> = [];
-
-	if (exercise.youtubeUrl) {
-		const videoId = getYouTubeVideoId(exercise.youtubeUrl);
-		if (videoId) {
-			mediaItems.push({
-				type: "youtube" as const,
-				url: `https://www.youtube.com/embed/${videoId}?si=SWqkZtlRD8J8sBL-`,
-			});
-		}
-	}
-	if (exercise.videoUrl) {
-		mediaItems.push({ type: "video" as const, url: exercise.videoUrl });
-	}
-	if (exercise.imageFileUrl) {
-		mediaItems.push({ type: "image" as const, url: exercise.imageFileUrl });
-	}
 
 	// Split instructions into numbered list items (fallback to [] if undefined)
 	const instructionLines =
@@ -166,7 +150,7 @@ function ExerciseProgram() {
 			<View className="relative bg-background-700 h-full">
 				<ScrollView contentContainerStyle={{ paddingBottom: 200 }}>
 					{/* Media Section - Only render if media exists */}
-					{mediaItems.length > 0 && (
+					{mediaItemsWithLock.length > 0 && (
 						<View className="px-5 pt-5">
 							<ScrollView
 								horizontal
@@ -174,143 +158,90 @@ function ExerciseProgram() {
 								contentContainerStyle={{ gap: 15 }}
 								style={{ height: 200 }}
 							>
-								{mediaItems.map((mediaItem, index) => (
-									<View
-										key={index}
-										style={{
-											width: 350,
-											height: 200,
-											borderRadius: 20,
-											overflow: "hidden",
-											position: "relative",
-											backgroundColor: "#1a1a1a",
-										}}
-									>
-										{mediaItem.type === "youtube" && (
-											<>
-												<WebView
-													source={{ uri: mediaItem.url }}
-											injectedJavaScriptBeforeContentLoaded={`
-												window.isNativeApp = true;
-												true;
-											`}
-											style={{
-												width: "100%",
-												height: "100%",
-											}}
-											allowsInlineMediaPlayback={true}
-											mediaPlaybackRequiresUserAction={false}
-										/>
+								{mediaItemsWithLock.map((mediaItem, index) => {
+									const isLocked = mediaItem.isLocked === true;
+									const isFirstUnlockedVideo = !isLocked && mediaItem.type === "video" && mediaItem.url === primaryVideoUrl;
+									return (
 										<View
+											key={index}
 											style={{
-												position: "absolute",
-												top: 0,
-												left: 0,
-												right: 0,
-												bottom: 0,
-												justifyContent: "center",
-												alignItems: "center",
-												pointerEvents: "none",
+												width: 350,
+												height: 200,
+												borderRadius: 20,
+												overflow: "hidden",
+												position: "relative",
+												backgroundColor: "#1a1a1a",
 											}}
 										>
-											<View
-												style={{
-													width: 60,
-													height: 60,
-													borderRadius: 30,
-													backgroundColor: "rgba(255, 255, 255, 0.9)",
-													justifyContent: "center",
-													alignItems: "center",
-												}}
-											>
-												<CirclePlay size={30} color="#06b6d4" fill="#06b6d4" />
-											</View>
+											{mediaItem.type === "youtube" && !isLocked && (
+												<>
+													<WebView
+														source={{ uri: mediaItem.url }}
+														injectedJavaScriptBeforeContentLoaded={`
+															window.isNativeApp = true;
+															true;
+														`}
+														style={{ width: "100%", height: "100%" }}
+														allowsInlineMediaPlayback={true}
+														mediaPlaybackRequiresUserAction={false}
+													/>
+													<View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center", alignItems: "center", pointerEvents: "none" }}>
+														<View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: "rgba(255, 255, 255, 0.9)", justifyContent: "center", alignItems: "center" }}>
+															<CirclePlay size={30} color="#06b6d4" fill="#06b6d4" />
+														</View>
+													</View>
+												</>
+											)}
+											{mediaItem.type === "youtube" && isLocked && (
+												<Pressable
+													style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#1a1a1a" }}
+													onPress={() => dispatch(setPaywallModalPopup(true))}
+												>
+													<View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", alignItems: "center" }}>
+														<Lock size={48} color="#fff" />
+														<Text style={{ color: "white", marginTop: 8, fontSize: 14 }}>Pro video</Text>
+													</View>
+												</Pressable>
+											)}
+											{mediaItem.type === "video" && isFirstUnlockedVideo && (
+												<>
+													<VideoView
+														player={videoPlayer}
+														fullscreenOptions={{ enable: true }}
+														allowsPictureInPicture
+														style={{ width: "100%", height: "100%" }}
+														contentFit="cover"
+													/>
+													<Pressable style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center", alignItems: "center" }} onPress={() => videoPlayer.play()}>
+														<View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: "rgba(255, 255, 255, 0.9)", justifyContent: "center", alignItems: "center" }}>
+															<CirclePlay size={30} color="#06b6d4" fill="#06b6d4" />
+														</View>
+													</Pressable>
+													<Pressable style={{ position: "absolute", bottom: 12, left: 12 }}>
+														<View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.7)", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, gap: 6 }}>
+															<Volume2 size={16} color="white" />
+															<Text style={{ color: "white", fontSize: 12, fontWeight: "500" }}>Watch Tutorial</Text>
+														</View>
+													</Pressable>
+												</>
+											)}
+											{mediaItem.type === "video" && isLocked && (
+												<Pressable
+													style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#1a1a1a" }}
+													onPress={() => dispatch(setPaywallModalPopup(true))}
+												>
+													<View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", alignItems: "center" }}>
+														<Lock size={48} color="#fff" />
+														<Text style={{ color: "white", marginTop: 8, fontSize: 14 }}>Pro video</Text>
+													</View>
+												</Pressable>
+											)}
+											{mediaItem.type === "image" && (
+												<RNImage source={{ uri: mediaItem.url }} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+											)}
 										</View>
-									</>
-								)}
-
-										{mediaItem.type === "video" && exercise.videoUrl && (
-									<>
-										<VideoView
-											player={videoPlayer}
-											fullscreenOptions={{ enable: true }}
-											allowsPictureInPicture
-											style={{
-												width: "100%",
-												height: "100%",
-											}}
-											contentFit="cover"
-										/>
-										<Pressable
-											style={{
-												position: "absolute",
-												top: 0,
-												left: 0,
-												right: 0,
-												bottom: 0,
-												justifyContent: "center",
-												alignItems: "center",
-											}}
-											onPress={() => {
-												videoPlayer.play();
-											}}
-										>
-											<View
-												style={{
-													width: 60,
-													height: 60,
-													borderRadius: 30,
-													backgroundColor: "rgba(255, 255, 255, 0.9)",
-													justifyContent: "center",
-													alignItems: "center",
-												}}
-											>
-												<CirclePlay size={30} color="#06b6d4" fill="#06b6d4" />
-											</View>
-										</Pressable>
-										{/* Watch Tutorial Button */}
-										<Pressable
-											style={{
-												position: "absolute",
-												bottom: 12,
-												left: 12,
-											}}
-											onPress={() => {
-												// Handle tutorial action
-											}}
-										>
-											<View
-												style={{
-													flexDirection: "row",
-													alignItems: "center",
-													backgroundColor: "rgba(0, 0, 0, 0.7)",
-													paddingHorizontal: 12,
-													paddingVertical: 8,
-													borderRadius: 8,
-													gap: 6,
-												}}
-											>
-												<Volume2 size={16} color="white" />
-												<Text style={{ color: "white", fontSize: 12, fontWeight: "500" }}>
-													Watch Tutorial
-												</Text>
-											</View>
-										</Pressable>
-											</>
-										)}
-
-										{mediaItem.type === "image" && (
-											<RNImage
-												source={{ uri: mediaItem.url }}
-												style={{
-													width: "100%",
-													height: "100%",
-												}}
-												resizeMode="cover"
-											/>
-										)}
-									</View>
-								))}
+									);
+								})}
 							</ScrollView>
 						</View>
 					)}
@@ -456,6 +387,7 @@ function ExerciseProgram() {
 					</Button>
 				</Animated.View>
 			</View>
+			<PaywallDrawer isOpen={paywallIsOpen} onClose={() => dispatch(setPaywallModalPopup(false))} />
 		</>
 	);
 }

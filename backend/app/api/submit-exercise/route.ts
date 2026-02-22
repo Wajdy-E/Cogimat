@@ -12,6 +12,8 @@ export async function POST(req: NextRequest) {
 			instructions,
 			isChallenge,
 			videoUrl,
+			youtubeUrl,
+			videos,
 			timeToComplete,
 			focus,
 			imageFileUrl,
@@ -20,11 +22,21 @@ export async function POST(req: NextRequest) {
 			uniqueIdentifier,
 		} = body;
 
+		// Build videos JSON for public exercises: prefer body.videos, else build from videoUrl/youtubeUrl
+		let videosJson: Record<string, { url: string; isPremium: boolean }> | null = null;
+		if (videos && typeof videos === "object") {
+			videosJson = videos;
+		} else if (videoUrl || youtubeUrl) {
+			videosJson = {};
+			if (videoUrl) videosJson.mp4 = { url: videoUrl, isPremium: false };
+			if (youtubeUrl) videosJson.youtube = { url: youtubeUrl, isPremium: false };
+		}
+
 		let stringifyParams = JSON.stringify(parameters);
 		const exerciseTime = timeToComplete; // Now stored in seconds
 		await query(
 			`INSERT INTO exercises (
-			  name, type, difficulty, instructions, is_challenge, video_url, time_to_complete, 
+			  name, type, difficulty, instructions, is_challenge, videos, time_to_complete, 
 			  focus, parameters, exercise_time, is_premium, image_file_name, unique_identifier
 			) VALUES (
 			  $1, $2, $3, $4, $5, $6, $7,
@@ -36,7 +48,7 @@ export async function POST(req: NextRequest) {
 				difficulty,
 				instructions,
 				isChallenge,
-				videoUrl,
+				videosJson != null ? JSON.stringify(videosJson) : null,
 				timeToComplete,
 				focus,
 				stringifyParams,

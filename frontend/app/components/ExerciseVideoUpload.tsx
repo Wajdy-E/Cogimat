@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, Pressable } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import {
 	FormControlErrorIcon,
 	FormControlErrorText,
 } from "@/components/ui/form-control";
-import { Upload, X, AlertCircle } from "lucide-react-native";
+import { Upload, X, AlertCircle, Check } from "lucide-react-native";
 import CustomVideoPicker from "./CustomVideoPicker";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
@@ -24,11 +24,14 @@ import { useAppAlert } from "../hooks/useAppAlert";
 import { i18n } from "../i18n";
 import { HStack } from "@/components/ui/hstack";
 import { uploadExerciseVideo } from "../lib/exerciseMediaUpload";
+import { Checkbox, CheckboxIndicator, CheckboxLabel, CheckboxIcon } from "@/components/ui/checkbox";
 
 interface ExerciseVideo {
 	title: string;
 	description: string;
 	videoUri: string;
+	youtubeUrl: string;
+	premiumOnly: boolean;
 }
 
 interface ExerciseVideoUploadProps {
@@ -48,14 +51,18 @@ export default function ExerciseVideoUpload({
 		title: "",
 		description: "",
 		videoUri: "",
+		youtubeUrl: "",
+		premiumOnly: false,
 	});
+	const [sourceType, setSourceType] = useState<"file" | "youtube">("file");
 	const [errors, setErrors] = useState<Partial<ExerciseVideo>>({});
 	const user = useSelector((state: RootState) => state.user.user.baseInfo);
 	const dispatch = useDispatch();
 	const { showSuccess, showError } = useAppAlert();
 
-	// Computed validation state to avoid infinite re-renders
-	const isFormValid = formData.title.trim() && formData.videoUri;
+	// Valid: title + either file or YouTube URL
+	const isFormValid =
+		formData.title.trim() && (sourceType === "file" ? !!formData.videoUri : !!formData.youtubeUrl.trim());
 
 	const validateForm = (): boolean => {
 		const newErrors: Partial<ExerciseVideo> = {};
@@ -64,8 +71,10 @@ export default function ExerciseVideoUpload({
 			newErrors.title = "Title is required";
 		}
 
-		if (!formData.videoUri) {
-			newErrors.videoUri = "Video is required";
+		if (sourceType === "file") {
+			if (!formData.videoUri) newErrors.videoUri = "Video is required";
+		} else {
+			if (!formData.youtubeUrl.trim()) newErrors.youtubeUrl = "YouTube URL is required";
 		}
 
 		setErrors(newErrors);
@@ -82,49 +91,64 @@ export default function ExerciseVideoUpload({
 		}
 
 		try {
-			// Show uploading message
-			dispatch(showLoadingOverlay("Uploading video..."));
+			dispatch(showLoadingOverlay(sourceType === "youtube" ? "Adding YouTube video..." : "Uploading video..."));
 
-			// Upload video to Vercel Blob
-			const videoUrl = await uploadExerciseVideo(formData.videoUri, exerciseId);
+			if (sourceType === "youtube") {
+				const uploadData = {
+					title: formData.title,
+					description: formData.description,
+					category: "exercise-tutorial",
+					adminId: user.id,
+					exerciseId: exerciseId.toString(),
+					youtubeUrl: formData.youtubeUrl.trim(),
+					premiumOnly: formData.premiumOnly,
+				};
 
-			// Store video metadata in admin_videos table
-			const uploadData = {
-				title: formData.title,
-				description: formData.description,
-				category: "exercise-tutorial",
-				adminId: user.id,
-				exerciseId: exerciseId.toString(),
-				videoData: videoUrl, // Now this is the blob URL
-				fileName: formData.videoUri.split("/").pop() || "video.mp4",
-			};
-
-			const response = await fetch(`${process.env.BASE_URL}/api/admin/video-upload`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(uploadData),
-			});
-
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const result = await response.json();
-
-			if (result.success) {
-				showSuccess("Success", "Video uploaded successfully!");
-				setFormData({
-					title: "",
-					description: "",
-					videoUri: "",
+				const response = await fetch(`${process.env.BASE_URL}/api/admin/video-upload`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(uploadData),
 				});
-				onUploadSuccess?.();
-				onClose?.();
+
+				if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+				const result = await response.json();
+				if (!result.success) throw new Error(result.error || "Upload failed");
+
+				showSuccess("Success", "YouTube video added successfully!");
 			} else {
-				throw new Error(result.error || "Upload failed");
+				const videoUrl = await uploadExerciseVideo(formData.videoUri, exerciseId);
+				const uploadData = {
+					title: formData.title,
+					description: formData.description,
+					category: "exercise-tutorial",
+					adminId: user.id,
+					exerciseId: exerciseId.toString(),
+					videoData: videoUrl,
+					fileName: formData.videoUri.split("/").pop() || "video.mp4",
+					premiumOnly: formData.premiumOnly,
+				};
+
+				const response = await fetch(`${process.env.BASE_URL}/api/admin/video-upload`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(uploadData),
+				});
+
+				if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+				const result = await response.json();
+				if (!result.success) throw new Error(result.error || "Upload failed");
+				showSuccess("Success", "Video uploaded successfully!");
 			}
+
+			setFormData({
+				title: "",
+				description: "",
+				videoUri: "",
+				youtubeUrl: "",
+				premiumOnly: false,
+			});
+			onUploadSuccess?.();
+			onClose?.();
 		} catch (error: any) {
 			console.error("Upload failed:", error);
 			showError("Upload Failed", error.message || "Failed to upload video");
@@ -133,9 +157,9 @@ export default function ExerciseVideoUpload({
 		}
 	};
 
-	const updateFormData = (field: keyof ExerciseVideo, value: string) => {
+	const updateFormData = (field: keyof ExerciseVideo, value: string | boolean) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
-		if (errors[field]) {
+		if (errors[field as keyof Partial<ExerciseVideo>]) {
 			setErrors((prev) => ({ ...prev, [field]: undefined }));
 		}
 	};
@@ -188,22 +212,102 @@ export default function ExerciseVideoUpload({
 					</Textarea>
 				</FormControl>
 
-				<FormControl isInvalid={!!errors.videoUri}>
+				<FormControl>
 					<FormControlLabel>
-						<FormControlLabelText>{i18n.t("exercise.videoUpload.videoLabel")}</FormControlLabelText>
+						<FormControlLabelText>{i18n.t("exercise.videoUpload.sourceLabel")}</FormControlLabelText>
 					</FormControlLabel>
-					<CustomVideoPicker
-						value={formData.videoUri}
-						onVideoPicked={(file) => updateFormData("videoUri", file.uri)}
-						onVideoRemoved={() => updateFormData("videoUri", "")}
-						buttonText={i18n.t("exercise.videoUpload.selectVideo")}
-					/>
-					{errors.videoUri && (
-						<FormControlError>
-							<FormControlErrorIcon as={AlertCircle} />
-							<FormControlErrorText>{errors.videoUri}</FormControlErrorText>
-						</FormControlError>
-					)}
+					<View className="flex-row gap-2 mt-1">
+						<Pressable
+							onPress={() => setSourceType("file")}
+							className={`flex-1 p-2 rounded-lg border-2 ${
+								sourceType === "file" ? "bg-primary-500 border-primary-500" : "bg-transparent border-outline-300"
+							}`}
+						>
+							<Text
+								className={`text-center text-base font-medium ${
+									sourceType === "file" ? "text-white" : "text-typography-600"
+								}`}
+							>
+								{i18n.t("exercise.videoUpload.sourceOptionFile")}
+							</Text>
+						</Pressable>
+						<Pressable
+							onPress={() => setSourceType("youtube")}
+							className={`flex-1 p-2 rounded-lg border-2 ${
+								sourceType === "youtube" ? "bg-primary-500 border-primary-500" : "bg-transparent border-outline-300"
+							}`}
+						>
+							<Text
+								className={`text-center text-base font-medium ${
+									sourceType === "youtube" ? "text-white" : "text-typography-600"
+								}`}
+							>
+								{i18n.t("exercise.videoUpload.sourceOptionYoutube")}
+							</Text>
+						</Pressable>
+					</View>
+				</FormControl>
+
+				{sourceType === "file" && (
+					<FormControl isInvalid={!!errors.videoUri}>
+						<FormControlLabel>
+							<FormControlLabelText>{i18n.t("exercise.videoUpload.videoLabel")}</FormControlLabelText>
+						</FormControlLabel>
+						<CustomVideoPicker
+							value={formData.videoUri}
+							onVideoPicked={(file) => updateFormData("videoUri", file.uri)}
+							onVideoRemoved={() => updateFormData("videoUri", "")}
+							buttonText={i18n.t("exercise.videoUpload.selectVideo")}
+						/>
+						{errors.videoUri && (
+							<FormControlError>
+								<FormControlErrorIcon as={AlertCircle} />
+								<FormControlErrorText>{errors.videoUri}</FormControlErrorText>
+							</FormControlError>
+						)}
+					</FormControl>
+				)}
+
+				{sourceType === "youtube" && (
+					<FormControl isInvalid={!!errors.youtubeUrl}>
+						<FormControlLabel>
+							<FormControlLabelText>{i18n.t("exercise.videoUpload.youtubeUrlLabel")}</FormControlLabelText>
+						</FormControlLabel>
+						<Input>
+							<InputField
+								placeholder={i18n.t("exercise.videoUpload.youtubeUrlPlaceholder")}
+								value={formData.youtubeUrl}
+								onChangeText={(text) => updateFormData("youtubeUrl", text)}
+								keyboardType="url"
+								autoCapitalize="none"
+							/>
+						</Input>
+						{errors.youtubeUrl && (
+							<FormControlError>
+								<FormControlErrorIcon as={AlertCircle} />
+								<FormControlErrorText>{errors.youtubeUrl}</FormControlErrorText>
+							</FormControlError>
+						)}
+					</FormControl>
+				)}
+
+				<FormControl>
+					<Checkbox
+						value="premiumOnly"
+						isChecked={formData.premiumOnly}
+						onChange={(checked) => updateFormData("premiumOnly", checked)}
+						className="flex-row items-center gap-2"
+					>
+						<CheckboxIndicator>
+							<CheckboxIcon as={Check} />
+						</CheckboxIndicator>
+						<CheckboxLabel className="text-typography-700">
+							{i18n.t("exercise.videoUpload.premiumOnlyLabel")}
+						</CheckboxLabel>
+					</Checkbox>
+					<Text size="sm" className="text-typography-500 mt-1">
+						{i18n.t("exercise.videoUpload.premiumOnlyDescription")}
+					</Text>
 				</FormControl>
 
 				<Button onPress={handleUpload} disabled={!isFormValid} action="primary" className="w-full" variant="solid">

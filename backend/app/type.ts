@@ -10,6 +10,17 @@ export interface UserBase {
 	hasQrAccess?: boolean;
 }
 
+export interface ExerciseVideoEntry {
+	url: string;
+	isPremium?: boolean;
+}
+
+/** Video sources for public exercises. Keys: youtube, mp4. */
+export interface ExerciseVideos {
+	youtube?: ExerciseVideoEntry;
+	mp4?: ExerciseVideoEntry;
+}
+
 export interface Exercise {
 	id: number;
 	uniqueIdentifier: string;
@@ -19,7 +30,8 @@ export interface Exercise {
 	timeToComplete: string;
 	instructions: string;
 	parameters: ExerciseParameters;
-	videoUrl: string;
+	/** Public exercises: use videos (JSON). Custom exercises use videoUrl/youtubeUrl. */
+	videos?: ExerciseVideos;
 	imageFileUrl: string;
 	isFavourited: boolean;
 	focus: string;

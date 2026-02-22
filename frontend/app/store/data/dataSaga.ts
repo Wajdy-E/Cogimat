@@ -53,13 +53,12 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 			difficulty: ex.difficulty,
 			instructions: ex.instructions,
 			isChallenge: ex.is_challenge,
-			videoUrl: ex.video_url,
+			videos: ex.videos ?? undefined,
 			imageFileUrl: ex.image_file_name,
 			timeToComplete: ex.time_to_complete,
 			isFavourited: ex.isFavourited,
 			focus: ex.focus,
 			isPremium: ex.is_premium,
-			youtubeUrl: ex.youtube_url,
 			parameters: {
 				shapes: ex.parameters.shapes?.map((shape: string) => Shape[shape as keyof typeof Shape]),
 				colors: ex.parameters.colors?.map((color: string) => {

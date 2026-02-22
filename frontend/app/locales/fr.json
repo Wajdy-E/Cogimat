@@ -369,7 +369,14 @@
 			"videoLabel": "Fichier vidéo",
 			"selectVideo": "Sélectionner une vidéo",
 			"upload": "Télécharger la vidéo",
-			"uploading": "Téléchargement..."
+			"uploading": "Téléchargement...",
+			"premiumOnlyLabel": "Réservé aux abonnés Pro",
+			"premiumOnlyDescription": "Si activé, cette vidéo ne sera visible que par les utilisateurs ayant un abonnement CogiPro actif.",
+			"sourceLabel": "Source vidéo",
+			"sourceOptionFile": "Télécharger un fichier",
+			"sourceOptionYoutube": "Lien YouTube",
+			"youtubeUrlLabel": "URL YouTube",
+			"youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=..."
 		},
 		"videoGallery": {
 			"title": "Exemples créatifs",

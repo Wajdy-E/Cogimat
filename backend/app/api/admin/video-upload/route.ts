@@ -23,10 +23,11 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const { title, description, category, adminId, exerciseId, videoData, fileName } = data;
+		const { title, description, category, adminId, exerciseId, videoData, fileName, premiumOnly, youtubeUrl } = data;
 
 		console.log("Parsed data:", {
 			hasVideoData: !!videoData,
+			hasYoutubeUrl: !!youtubeUrl,
 			title,
 			description,
 			category,
@@ -35,8 +36,17 @@ export async function POST(req: NextRequest) {
 			fileName,
 		});
 
-		if (!videoData || !title || !adminId) {
-			return new Response(JSON.stringify({ error: "Video data, title and admin ID are required" }), { status: 400 });
+		const hasFile = !!videoData;
+		const hasYoutube = !!youtubeUrl && typeof youtubeUrl === "string" && youtubeUrl.trim().length > 0;
+
+		if (!title || !adminId) {
+			return new Response(JSON.stringify({ error: "Title and admin ID are required" }), { status: 400 });
+		}
+		if (!hasFile && !hasYoutube) {
+			return new Response(
+				JSON.stringify({ error: "Either video file (videoData) or YouTube URL (youtubeUrl) is required" }),
+				{ status: 400 }
+			);
 		}
 
 		// Verify admin status
@@ -46,6 +56,27 @@ export async function POST(req: NextRequest) {
 			return new Response(JSON.stringify({ error: "Unauthorized: Admin access required" }), { status: 403 });
 		}
 
+		const isPremium = premiumOnly === true;
+
+		if (hasYoutube && exerciseId) {
+			const youtubeEntry = JSON.stringify({ url: youtubeUrl.trim(), isPremium });
+			await query(
+				`UPDATE exercises SET videos = jsonb_set(COALESCE(videos, '{}'::jsonb), '{youtube}', $1::jsonb) WHERE id = $2`,
+				[youtubeEntry, parseInt(exerciseId)]
+			);
+			return new Response(
+				JSON.stringify({ success: true, url: youtubeUrl.trim() }),
+				{ status: 200, headers: { "Content-Type": "application/json" } }
+			);
+		}
+		if (hasYoutube && !exerciseId) {
+			return new Response(
+				JSON.stringify({ error: "Exercise ID is required when adding a YouTube video" }),
+				{ status: 400 }
+			);
+		}
+
+		// File path
 		let videoUrl: string;
 		let fileSize: number;
 		let fileContentType: string;
@@ -99,12 +130,13 @@ export async function POST(req: NextRequest) {
 			]
 		);
 
-		// So the exercise page shows this video, update the exercise's video_url when linked to an exercise
+		// So the exercise page shows this video, update the exercise's videos.mp4 when linked
 		if (exerciseId) {
-			await query("UPDATE exercises SET video_url = $1 WHERE id = $2", [
-				videoUrl,
-				parseInt(exerciseId),
-			]);
+			const mp4Entry = JSON.stringify({ url: videoUrl, isPremium });
+			await query(
+				`UPDATE exercises SET videos = jsonb_set(COALESCE(videos, '{}'::jsonb), '{mp4}', $1::jsonb) WHERE id = $2`,
+				[mp4Entry, parseInt(exerciseId)]
+			);
 		}
 
 		return new Response(

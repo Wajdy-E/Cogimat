@@ -374,7 +374,14 @@
 			"videoLabel": "Video File",
 			"selectVideo": "Select Video",
 			"upload": "Upload Video",
-			"uploading": "Uploading..."
+			"uploading": "Uploading...",
+			"premiumOnlyLabel": "Only visible to Pro subscribers",
+			"premiumOnlyDescription": "When enabled, this video will only appear for users with an active CogiPro subscription.",
+			"sourceLabel": "Video source",
+			"sourceOptionFile": "Upload video file",
+			"sourceOptionYoutube": "YouTube link",
+			"youtubeUrlLabel": "YouTube URL",
+			"youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=..."
 		},
 		"videoGallery": {
 			"title": "Creative Examples",

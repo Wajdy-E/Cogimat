@@ -11,12 +11,10 @@ import { useExercise } from "@/hooks/useExercise";
 import {
 	CustomExercise,
 	Exercise,
-	ExerciseDifficulty,
 	FilterType,
 	setCurrentFilter,
 	setCustomExerciseModalPopup,
 	setPaywallModalPopup,
-	getExerciseCustomizedOptions,
 } from "@/store/data/dataSlice";
 import { VStack } from "@/components/ui/vstack";
 import BlogCard from "@/components/CardWithImage";
@@ -30,7 +28,7 @@ import CustomExerciseCard from "@/components/CustomExerciseCard";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { ChevronRight, Flame, Trophy, ListChecks, Lock, Crown, Clock } from "lucide-react-native";
+import { ChevronRight, Flame, Trophy, ListChecks, Crown, Clock } from "lucide-react-native";
 import { Icon } from "@/components/ui/icon";
 import { Badge, BadgeText, BadgeIcon } from "@/components/ui/badge";
 import CreateExerciseModal from "@/components/program-components/CreateExerciseModal";
@@ -279,123 +277,39 @@ function Home() {
 				{/* Premium Exercises Section */}
 				{premiumExercises.length > 0 && (
 					<VStack space="lg">
-						{/* Pro Exclusives Header */}
 						<HStack space="sm" className="items-center">
-							<Icon 
-								as={Crown} 
-								size="lg" 
-								className="text-purple-400" 
+							<Icon
+								as={Crown}
+								size="lg"
+								className="text-purple-400"
 								fill="currentColor"
-								style={{ color: '#C084FC' }} // Purple-400
+								style={{ color: "#C084FC" }}
 							/>
 							<Heading size="xl" className="text-typography-950 font-bold">
 								{i18n.t("home.exclusiveExercises")}
 							</Heading>
 						</HStack>
 
-						{/* Pro Exclusive Cards */}
 						<VStack space="md">
 							{exercises
 								.filter((exercise) => exercise.isPremium)
 								.slice(0, 5)
-								.map((exercise) => {
-									const customOptions = getExerciseCustomizedOptions(exercise, customizedExercises);
-									const totalSeconds = customOptions.exerciseTime;
-									const minutes = Math.floor(totalSeconds / 60);
-									const timeDisplay = `${minutes} min`;
-
-									// Get difficulty badge color (matching ExerciseCard)
-									const getDifficultyBadgeColor = () => {
-										switch (exercise.difficulty) {
-											case ExerciseDifficulty.Beginner:
-												return "success"; // Green for Easy/Beginner
-											case ExerciseDifficulty.Intermediate:
-												return "warning"; // Orange/Yellow for Medium/Intermediate
-											case ExerciseDifficulty.Advanced:
-												return "error"; // Orange/Red for Hard/Advanced
-											default:
-												return "muted";
-										}
-									};
-
-									// Get difficulty label
-									const getDifficultyLabel = () => {
-										const difficulty = exercise.difficulty.toLowerCase();
-										if (difficulty === "beginner") return "Easy";
-										if (difficulty === "intermediate") return "Medium";
-										if (difficulty === "advanced") return "Expert";
-										return i18n.t(`exercise.difficulty.${difficulty}`);
-									};
-
-									return (
-										<Card
-											key={`pro-exclusive-${exercise.id}`}
-											variant="elevated"
-											className="rounded-xl p-4 relative"
-											style={{
-												backgroundColor: theme === 'dark' ? 'rgba(88, 28, 135, 0.3)' : '#FFFFFF', // White in light mode, dark purple in dark mode
-												borderWidth: 2,
-												borderColor: 'rgba(168, 85, 247, 0.4)', // Purple border
-											}}
-										>
-											<View 
-												style={{
-													position: 'absolute',
-													top: 16,
-													right: 16,
-													backgroundColor: 'rgba(168, 85, 247, 0.2)', // Subtle purple background
-													borderRadius: 8,
-													padding: 4,
-												}}
-											>
-												<Icon as={Lock} size="md" className="text-typography-400" />
-											</View>
-
-											<VStack space="md">
-												{/* Title */}
-												<Heading size="xl" className="text-typography-950 pr-8">
-													{exercise.name}
-												</Heading>
-
-												{/* Time and Difficulty Badge */}
-												<HStack space="md" className="items-center">
-													<HStack space="xs" className="items-center">
-														<Icon as={Clock} size="sm" className="text-typography-400" />
-														<Text size="md" className="text-typography-400">
-															{timeDisplay}
-														</Text>
-													</HStack>
-													<Badge 
-														action={getDifficultyBadgeColor()}
-														variant="solid" 
-														size="md" 
-														className="rounded-full"
-													>
-														<BadgeText>{getDifficultyLabel()}</BadgeText>
-													</Badge>
-												</HStack>
-
-												{/* Unlock Button - Only show if not subscribed */}
-												{!isSubscribed && (
-													<Button
-														variant="solid"
-														size="md"
-														onPress={() => dispatch(setPaywallModalPopup(true))}
-														className="w-full rounded-xl"
-														style={{
-															backgroundColor: '#A855F7', // Vibrant purple gradient color
-														}}
-													>
-														<ButtonIcon as={Lock} size="sm" className="text-white" />
-														<ButtonText className="text-white font-semibold">
-															{i18n.t("home.unlockWithPro")}
-														</ButtonText>
-													</Button>
-												)}
-											</VStack>
-										</Card>
-									);
-								})}
+								.map((exercise) => (
+									<ExerciseCard
+										key={`pro-exclusive-${exercise.id}`}
+										name={exercise.name}
+										imageFileUrl={exercise.imageFileUrl}
+										time={exercise.timeToComplete}
+										difficulty={exercise.difficulty}
+										id={exercise.id}
+										exercise={exercise}
+										isFavourited={exercise.isFavourited}
+										variant="elevated"
+										isPremiumCard
+										isSubscribed={isSubscribed}
+										onUnlockPress={() => dispatch(setPaywallModalPopup(true))}
+									/>
+								))}
 						</VStack>
 					</VStack>
 				)}

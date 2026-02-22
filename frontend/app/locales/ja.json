@@ -372,7 +372,14 @@
 			"videoLabel": "動画ファイル",
 			"selectVideo": "動画を選択",
 			"upload": "動画をアップロード",
-			"uploading": "アップロード中..."
+			"uploading": "アップロード中...",
+			"premiumOnlyLabel": "Pro会員限定で表示",
+			"premiumOnlyDescription": "有効にすると、この動画はCogiProの有料会員のみに表示されます。",
+			"sourceLabel": "動画ソース",
+			"sourceOptionFile": "動画ファイルをアップロード",
+			"sourceOptionYoutube": "YouTubeリンク",
+			"youtubeUrlLabel": "YouTube URL",
+			"youtubeUrlPlaceholder": "https://www.youtube.com/watch?v=..."
 		},
 		"videoGallery": {
 			"title": "クリエイティブな例",

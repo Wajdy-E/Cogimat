@@ -1,6 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NumberEnum, Letter, Shape, Color, ColorOption, Arrow } from "../../data/program/Program";
 
+/** Single video entry in exercises.videos (public exercises only). */
+export interface ExerciseVideoEntry {
+	url: string;
+	isPremium?: boolean;
+}
+
+/** Video sources for public exercises. Custom exercises use videoUrl / youtubeUrl. */
+export interface ExerciseVideos {
+	youtube?: ExerciseVideoEntry;
+	mp4?: ExerciseVideoEntry;
+}
+
 export interface Exercise {
 	id: number;
 	uniqueIdentifier: string;
@@ -10,13 +22,17 @@ export interface Exercise {
 	timeToComplete: string;
 	instructions: string;
 	parameters: ExerciseParameters;
-	videoUrl: string;
+	/** Public exercises: video sources with optional isPremium. */
+	videos?: ExerciseVideos;
+	/** Legacy / custom: single video URL. */
+	videoUrl?: string;
 	imageFileUrl: string;
 	isFavourited: boolean;
 	focus: string;
 	isChallenge: boolean;
 	customizableOptions: CustomizableExerciseOptions;
 	isPremium?: boolean;
+	/** Legacy / custom: YouTube URL. */
 	youtubeUrl?: string;
 }
 
@@ -403,6 +419,60 @@ export const {
 	resetRoutineExecution,
 	resetState,
 } = dataSlice.actions;
+
+/** Returns visible video/youtube URLs for an exercise (respects videos[].isPremium for public exercises). */
+export function getVisibleExerciseMedia(
+	exercise: Exercise,
+	isSubscribed: boolean
+): { youtubeUrl?: string; videoUrl?: string } {
+	if (exercise.videos) {
+		const youtube = exercise.videos.youtube;
+		const mp4 = exercise.videos.mp4;
+		return {
+			youtubeUrl:
+				youtube?.url && (!youtube.isPremium || isSubscribed) ? youtube.url : undefined,
+			videoUrl: mp4?.url && (!mp4.isPremium || isSubscribed) ? mp4.url : undefined,
+		};
+	}
+	return {
+		youtubeUrl: exercise.youtubeUrl,
+		videoUrl: exercise.videoUrl,
+	};
+}
+
+export type ExerciseMediaItem = { type: "youtube" | "video" | "image"; url: string; isLocked?: boolean };
+
+/** Returns all media items for an exercise (videos + image), with isLocked for premium-only videos when !isSubscribed. */
+export function getExerciseMediaItemsWithLock(
+	exercise: Exercise,
+	isSubscribed: boolean
+): ExerciseMediaItem[] {
+	const items: ExerciseMediaItem[] = [];
+
+	if (exercise.videos) {
+		const y = exercise.videos.youtube;
+		const m = exercise.videos.mp4;
+		if (y?.url) {
+			const match = y.url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})(?:\?|&|$)/);
+			const embedUrl = match ? `https://www.youtube.com/embed/${match[1]}?si=SWqkZtlRD8J8sBL-` : y.url;
+			items.push({ type: "youtube", url: embedUrl, isLocked: y.isPremium === true && !isSubscribed });
+		}
+		if (m?.url) {
+			items.push({ type: "video", url: m.url, isLocked: m.isPremium === true && !isSubscribed });
+		}
+	} else {
+		// Legacy: only visible media, no lock state
+		if (exercise.youtubeUrl) {
+			const videoId = exercise.youtubeUrl.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})(?:\?|&|$)/)?.[1];
+			if (videoId) items.push({ type: "youtube", url: `https://www.youtube.com/embed/${videoId}?si=SWqkZtlRD8J8sBL-` });
+		}
+		if (exercise.videoUrl) items.push({ type: "video", url: exercise.videoUrl });
+	}
+
+	if (exercise.imageFileUrl) items.push({ type: "image", url: exercise.imageFileUrl });
+
+	return items;
+}
 
 // Helper function to get customized options for an exercise
 export const getExerciseCustomizedOptions = (
