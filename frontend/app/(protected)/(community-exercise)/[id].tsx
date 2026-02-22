@@ -163,9 +163,6 @@ function CommunityExerciseProgram() {
 	if (exercise.videoUrl) {
 		mediaItems.push({ type: "video", url: exercise.videoUrl });
 	}
-	if (exercise.imageFileUrl) {
-		mediaItems.push({ type: "image", url: exercise.imageFileUrl });
-	}
 
 	// Split instructions into numbered list items
 	const instructionLines = exercise.instructions

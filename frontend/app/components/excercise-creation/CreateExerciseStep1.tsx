@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/form-control";
 import { AlertCircleIcon } from "lucide-react-native";
 import FormSelect from "../FormSelect";
-import CustomImagePicker from "../ImagePicker";
 import CustomVideoPicker from "../CustomVideoPicker";
 import { i18n } from "../../i18n";
 import { ExerciseDifficulty } from "@/store/data/dataSlice";
@@ -89,13 +88,6 @@ export default function CreateExerciseStepOne({ formData, formErrors, onChange, 
 				inputType="text"
 				formSize="lg"
 				formHelperKey={"createExercise.form.ytUrlHelper"}
-			/>
-
-			<CustomImagePicker
-				buttonText={i18n.t("createExercise.form.uploadThumbnail")}
-				onImagePicked={(file) => onChange("imageUri", file.uri)}
-				aspectX={3}
-				aspectY={2}
 			/>
 
 			<CustomVideoPicker

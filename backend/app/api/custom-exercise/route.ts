@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
 			colors,
 			arrows,
 			focus,
-			imageUri,
 			videoUri,
 			offScreenTime,
 			onScreenTime,
@@ -54,13 +53,8 @@ export async function POST(req: NextRequest) {
 		} = body;
 
 		console.log(arrows, body);
-		let imageUriBlob = imageUri;
 		let videoUriBlob = videoUri;
 
-		// Upload images and videos to Vercel Blob if they are local files
-		if (imageUri?.startsWith("file://")) {
-			imageUriBlob = await uploadToBlob(imageUri, "image");
-		}
 		if (videoUri?.startsWith("file://")) {
 			videoUriBlob = await uploadToBlob(videoUri, "video");
 		}
@@ -76,7 +70,6 @@ export async function POST(req: NextRequest) {
 				numbers,
 				colors,
 				focus,
-				image_uri,
 				video_uri,
 				off_screen_time,
 				on_screen_time,
@@ -89,7 +82,7 @@ export async function POST(req: NextRequest) {
 				$1, $2, $3, $4,
 				$5, $6, $7, $8,
 				$9, $10, $11, $12,
-				$13, $14, $15, $16, $17, $18
+				$13, $14, $15, $16, $17
 			) RETURNING id, unique_identifier`,
 			[
 				clerk_id,
@@ -101,7 +94,6 @@ export async function POST(req: NextRequest) {
 				numbers,
 				colors,
 				focus,
-				imageUriBlob,
 				videoUriBlob,
 				offScreenTime,
 				onScreenTime,
@@ -135,7 +127,6 @@ export async function PATCH(req: NextRequest) {
 			colors,
 			arrows,
 			focus,
-			imageUri,
 			videoUri,
 			isFavourited,
 			offScreenTime,
@@ -152,13 +143,8 @@ export async function PATCH(req: NextRequest) {
 		}
 
 		console.log(isFavourited);
-		let imageUriBlob = imageUri;
 		let videoUriBlob = videoUri;
 
-		// Upload new images and videos to Vercel Blob if they are local files
-		if (imageUri?.startsWith("file://")) {
-			imageUriBlob = await uploadToBlob(imageUri, "image", id);
-		}
 		if (videoUri?.startsWith("file://")) {
 			videoUriBlob = await uploadToBlob(videoUri, "video", id);
 		}
@@ -169,23 +155,22 @@ export async function PATCH(req: NextRequest) {
 				instructions = $2,
 				difficulty = $3,
 				shapes = $4,
-				letters = $6,
-				numbers = $7,
-				colors = $8,
-				focus = $9,
-				image_uri = $10,
-				video_uri = $11,
-				is_favourited = $12,
-				off_screen_time = $13,
-				on_screen_time = $14,
-				exercise_time = $15,
-				public_access = $16,
-				youtube_url = $17,
+				letters = $5,
+				numbers = $6,
+				colors = $7,
+				focus = $8,
+				video_uri = $9,
+				is_favourited = $10,
+				off_screen_time = $11,
+				on_screen_time = $12,
+				exercise_time = $13,
+				public_access = $14,
+				youtube_url = $15,
 				updated_at = CURRENT_TIMESTAMP,
-				submitted_to_cogipro = $18,
-				is_premium = $19,
-				arrows = $20
-			WHERE id = $21 AND clerk_id = $22`,
+				submitted_to_cogipro = $16,
+				is_premium = $17,
+				arrows = $18
+			WHERE id = $19 AND clerk_id = $20`,
 			[
 				name,
 				instructions,
@@ -195,7 +180,6 @@ export async function PATCH(req: NextRequest) {
 				numbers,
 				colors,
 				focus,
-				imageUriBlob,
 				videoUriBlob,
 				isFavourited,
 				offScreenTime,

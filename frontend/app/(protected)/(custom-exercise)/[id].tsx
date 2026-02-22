@@ -67,9 +67,6 @@ function ExerciseProgram() {
 	if (exercise.videoUrl) {
 		mediaItems.push({ type: "video" as const, url: exercise.videoUrl });
 	}
-	if (exercise.imageFileUrl) {
-		mediaItems.push({ type: "image" as const, url: exercise.imageFileUrl });
-	}
 
 	// Create video player (hooks must be called unconditionally)
 	// Use empty string as fallback if no video URL

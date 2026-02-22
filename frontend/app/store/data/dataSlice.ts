@@ -26,7 +26,6 @@ export interface Exercise {
 	videos?: ExerciseVideos;
 	/** Legacy / custom: single video URL. */
 	videoUrl?: string;
-	imageFileUrl: string;
 	isFavourited: boolean;
 	focus: string;
 	isChallenge: boolean;
@@ -60,7 +59,6 @@ export interface CustomExercise {
 	instructions: string;
 	parameters: ExerciseParameters;
 	videoUrl?: string;
-	imageFileUrl?: string;
 	isFavourited: boolean;
 	focus?: string[];
 	publicAccess: boolean;
@@ -468,8 +466,6 @@ export function getExerciseMediaItemsWithLock(
 		}
 		if (exercise.videoUrl) items.push({ type: "video", url: exercise.videoUrl });
 	}
-
-	if (exercise.imageFileUrl) items.push({ type: "image", url: exercise.imageFileUrl });
 
 	return items;
 }

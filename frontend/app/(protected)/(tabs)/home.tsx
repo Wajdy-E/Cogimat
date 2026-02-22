@@ -94,7 +94,6 @@ function Home() {
 								<ExerciseCard
 									key={`standard-exercise-${exercise.id}`}
 									name={exercise.name}
-									imageFileUrl={exercise.imageFileUrl}
 									time={exercise.timeToComplete}
 									difficulty={exercise.difficulty}
 									id={exercise.id}
@@ -141,7 +140,6 @@ function Home() {
 									<CustomExerciseCard
 										key={`custom-exercise-${exercise.id}`}
 										name={exercise.name}
-										imageFileUrl={exercise.imageFileUrl}
 										time={exercise.customizableOptions.exerciseTime.toString()}
 										difficulty={exercise.difficulty}
 										id={exercise.id}
@@ -179,7 +177,6 @@ function Home() {
 									<CustomExerciseCard
 										key={`community-exercise-${exercise.id}`}
 										name={exercise.name}
-										imageFileUrl={exercise.imageFileUrl}
 										time={exercise.customizableOptions.exerciseTime.toString()}
 										difficulty={exercise.difficulty}
 										id={exercise.id}
@@ -233,7 +230,6 @@ function Home() {
 					{dailyChallenge ? (
 						<ExerciseCard
 							name={dailyChallenge.name}
-							imageFileUrl={dailyChallenge.imageFileUrl}
 							time={dailyChallenge.timeToComplete}
 							difficulty={dailyChallenge.difficulty}
 							id={dailyChallenge.id}
@@ -298,7 +294,6 @@ function Home() {
 									<ExerciseCard
 										key={`pro-exclusive-${exercise.id}`}
 										name={exercise.name}
-										imageFileUrl={exercise.imageFileUrl}
 										time={exercise.timeToComplete}
 										difficulty={exercise.difficulty}
 										id={exercise.id}

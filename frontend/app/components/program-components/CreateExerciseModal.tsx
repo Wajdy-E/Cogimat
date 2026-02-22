@@ -61,7 +61,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		colors: string[];
 		arrows: string[];
 		focus?: string[];
-		imageUri?: string;
 		videoUri?: string;
 		offScreenTime: number;
 		onScreenTime: number;
@@ -78,7 +77,6 @@ function CreateExerciseDrawer(props: CreateExerciseModalProps) {
 		colors: [],
 		arrows: [],
 		focus: [],
-		imageUri: undefined,
 		videoUri: undefined,
 		offScreenTime: durationSettings.offScreenTime,
 		onScreenTime: durationSettings.onScreenTime,

@@ -174,7 +174,6 @@ function ExerciseSelectionModal(props: ExerciseSelectionModalProps) {
 											name={exercise.name}
 											difficulty={exercise.difficulty}
 											time={getExerciseCustomizedOptions(exercise, customizedExercises).exerciseTime.toString()}
-											imageFileUrl={exercise.imageFileUrl}
 											isFavourited={exercise.isFavourited}
 											id={exercise.id}
 											exercise={exercise}
@@ -194,7 +193,6 @@ function ExerciseSelectionModal(props: ExerciseSelectionModalProps) {
 										name={exercise.name}
 										difficulty={exercise.difficulty}
 										time={exercise.customizableOptions.exerciseTime.toString()}
-										imageFileUrl={exercise.imageFileUrl}
 										isFavourited={exercise.isFavourited}
 										id={exercise.id}
 										exercise={exercise}

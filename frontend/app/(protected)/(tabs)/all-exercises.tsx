@@ -148,7 +148,6 @@ function AllExercises() {
 						<CustomExerciseCard
 							key={`custom-${ex.id}`}
 							name={ex.name}
-							imageFileUrl={ex.imageFileUrl}
 							time={ex.customizableOptions.exerciseTime.toString()}
 							difficulty={ex.difficulty}
 							id={ex.id}
@@ -161,7 +160,6 @@ function AllExercises() {
 						<ExerciseCard
 							key={`standard-${ex.id}`}
 							name={ex.name}
-							imageFileUrl={ex.imageFileUrl}
 							time={getExerciseCustomizedOptions(ex, customizedExercises).exerciseTime.toString()}
 							difficulty={ex.difficulty}
 							id={ex.id}

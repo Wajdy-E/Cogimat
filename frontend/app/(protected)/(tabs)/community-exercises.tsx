@@ -96,10 +96,9 @@ function CommunityExercises() {
 
 			<VStack space="md" className="items-center mb-10">
 				{filteredExercises.map((exercise) => (
-					<CustomExerciseCard
+						<CustomExerciseCard
 						key={`community-${exercise.id}`}
 						name={exercise.name}
-						imageFileUrl={exercise.imageFileUrl}
 						time={exercise.customizableOptions.exerciseTime.toString()}
 						difficulty={exercise.difficulty}
 						id={exercise.id}

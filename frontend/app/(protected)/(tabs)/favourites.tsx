@@ -103,7 +103,6 @@ function Favourites() {
 												<CustomExerciseCard
 													key={`${type}-${exercise.id}`}
 													name={exercise.name}
-													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.customizableOptions.exerciseTime.toString() || "0"}
 													difficulty={exercise.difficulty}
 													id={exercise.id}
@@ -119,7 +118,6 @@ function Favourites() {
 												<ExerciseCard
 													key={`${type}-${exercise.id}`}
 													name={exercise.name}
-													imageFileUrl={exercise.imageFileUrl}
 													time={getExerciseCustomizedOptions(
 														exercise as Exercise,
 														customizedExercises
@@ -164,7 +162,6 @@ function Favourites() {
 												<CustomExerciseCard
 													key={`${type}-${exercise.id}`}
 													name={exercise.name}
-													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.customizableOptions.exerciseTime.toString() || "0"}
 													difficulty={exercise.difficulty}
 													id={exercise.id}
@@ -180,7 +177,6 @@ function Favourites() {
 												<ExerciseCard
 													key={`${type}-${exercise.id}`}
 													name={exercise.name}
-													imageFileUrl={exercise.imageFileUrl}
 													time={getExerciseCustomizedOptions(
 														exercise as Exercise,
 														customizedExercises
@@ -225,7 +221,6 @@ function Favourites() {
 												<CustomExerciseCard
 													key={`${type}-${exercise.id}`}
 													name={exercise.name}
-													imageFileUrl={exercise.imageFileUrl}
 													time={exercise.customizableOptions.exerciseTime.toString() || "0"}
 													difficulty={exercise.difficulty}
 													id={exercise.id}
@@ -241,7 +236,6 @@ function Favourites() {
 												<ExerciseCard
 													key={`${type}-${exercise.id}`}
 													name={exercise.name}
-													imageFileUrl={exercise.imageFileUrl}
 													time={getExerciseCustomizedOptions(
 														exercise as Exercise,
 														customizedExercises

@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
 			videos,
 			timeToComplete,
 			focus,
-			imageFileUrl,
 			isPremium,
 			parameters,
 			uniqueIdentifier,
@@ -36,11 +35,11 @@ export async function POST(req: NextRequest) {
 		const exerciseTime = timeToComplete; // Now stored in seconds
 		await query(
 			`INSERT INTO exercises (
-			  name, type, difficulty, instructions, is_challenge, videos, time_to_complete, 
-			  focus, parameters, exercise_time, is_premium, image_file_name, unique_identifier
+			  name, type, difficulty, instructions, is_challenge, videos, time_to_complete,
+			  focus, parameters, exercise_time, is_premium, unique_identifier
 			) VALUES (
 			  $1, $2, $3, $4, $5, $6, $7,
-			  $8, $9, $10, $11, $12, $13
+			  $8, $9, $10, $11, $12
 			)`,
 			[
 				name,
@@ -54,7 +53,6 @@ export async function POST(req: NextRequest) {
 				stringifyParams,
 				exerciseTime,
 				isPremium,
-				imageFileUrl,
 				uniqueIdentifier,
 			]
 		);

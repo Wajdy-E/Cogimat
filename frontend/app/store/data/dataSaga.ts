@@ -54,7 +54,6 @@ export const fetchExercises = createAsyncThunk("exercises/fetch", async (_, { ge
 			instructions: ex.instructions,
 			isChallenge: ex.is_challenge,
 			videos: ex.videos ?? undefined,
-			imageFileUrl: ex.image_file_name,
 			timeToComplete: ex.time_to_complete,
 			isFavourited: ex.isFavourited,
 			focus: ex.focus,
@@ -304,13 +303,7 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 				throw new Error("User is not authenticated");
 			}
 
-			// Upload media to Vercel Blob if they are local files
-			let imageUri = formData.imageUri;
 			let videoUri = formData.videoUri;
-
-			if (formData.imageUri?.startsWith("file://")) {
-				imageUri = await uploadExerciseImage(formData.imageUri);
-			}
 			if (formData.videoUri?.startsWith("file://")) {
 				videoUri = await uploadExerciseVideo(formData.videoUri);
 			}
@@ -319,7 +312,6 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 			const payload = {
 				...formData,
 				clerk_id: userId,
-				imageUri,
 				videoUri,
 			};
 
@@ -342,7 +334,6 @@ export const createCustomExercise = createAsyncThunk<void, any, { state: RootSta
 					arrows: formData.arrows as Arrow[],
 				},
 				videoUrl: videoUri,
-				imageFileUrl: imageUri,
 				youtubeUrl: formData.youtubeUrl,
 				focus: formData.focus,
 				isFavourited: false,
@@ -388,13 +379,7 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 			const currentExercise = currentState.data.customExercises.find((e) => e.id === exercise.id);
 			const wasPublicBefore = currentExercise?.publicAccess || false;
 
-			// Upload new media to Vercel Blob if they are local files
-			let imageUri = exercise.imageFileUrl;
 			let videoUri = exercise.videoUrl;
-
-			if (exercise.imageFileUrl?.startsWith("file://")) {
-				imageUri = await uploadExerciseImage(exercise.imageFileUrl, exercise.id);
-			}
 			if (exercise.videoUrl?.startsWith("file://")) {
 				videoUri = await uploadExerciseVideo(exercise.videoUrl, exercise.id);
 			}
@@ -412,7 +397,6 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 					? exercise.parameters.colors.map((c) => (typeof c === "string" ? c : c.name))
 					: [],
 				focus: exercise.focus ?? [],
-				imageUri,
 				videoUri,
 				isFavourited: exercise.isFavourited,
 				offScreenTime: exercise.customizableOptions.offScreenTime,
@@ -425,10 +409,8 @@ export const updateCustomExerciseThunk = createAsyncThunk<void, CustomExercise, 
 
 			await axios.patch(`${BASE_URL}/api/custom-exercise`, payload);
 
-			// Update the exercise with the new URLs
 			const updatedExercise = {
 				...exercise,
-				imageFileUrl: imageUri,
 				videoUrl: videoUri,
 			};
 
@@ -465,7 +447,6 @@ export const getCustomExercises = createAsyncThunk<void, void, { state: RootStat
 			instructions: ex.instructions,
 			focus: ex.focus ?? [],
 			isFavourited: ex.is_favourited,
-			imageFileUrl: ex.image_uri ?? undefined,
 			videoUrl: ex.video_uri ?? undefined,
 			publicAccess: ex.public_access,
 			submittedToCogipro: ex.submitted_to_cogipro ?? false,
@@ -532,7 +513,6 @@ export const getPublicExercises = createAsyncThunk<void, void, { state: RootStat
 			instructions: ex.instructions,
 			focus: ex.focus ?? [],
 			isFavourited: ex.isFavourited ?? false,
-			imageFileUrl: ex.image_uri ?? undefined,
 			videoUrl: ex.video_uri ?? undefined,
 			publicAccess: ex.public_access,
 			submittedToCogipro: ex.submitted_to_cogipro ?? false,

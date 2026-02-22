@@ -32,7 +32,6 @@ export interface Exercise {
 	parameters: ExerciseParameters;
 	/** Public exercises: use videos (JSON). Custom exercises use videoUrl/youtubeUrl. */
 	videos?: ExerciseVideos;
-	imageFileUrl: string;
 	isFavourited: boolean;
 	focus: string;
 	isPremium: boolean;

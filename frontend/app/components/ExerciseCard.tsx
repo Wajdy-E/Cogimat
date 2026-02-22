@@ -21,7 +21,6 @@ interface ExerciseCardProps {
 	name: string;
 	difficulty: ExerciseDifficulty;
 	time: string;
-	imageFileUrl?: string;
 	isFavourited: boolean;
 	id?: number;
 	exercise: Exercise;
