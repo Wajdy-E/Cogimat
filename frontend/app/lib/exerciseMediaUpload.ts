@@ -26,6 +26,7 @@ async function uploadVideoDirect(uri: string, exerciseId?: number): Promise<Medi
 	}
 
 	const tokenUrl = `${BASE_URL}/api/blob-client-upload`;
+	console.log("[uploadVideoDirect] Requesting token from:", tokenUrl);
 	const tokenRes = await fetch(tokenUrl, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },

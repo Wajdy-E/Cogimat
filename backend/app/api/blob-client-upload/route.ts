@@ -2,6 +2,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET() {
 	return NextResponse.json({
@@ -10,6 +11,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
+	console.log("[blob-client-upload] POST received");
 	try {
 		const body = (await request.json()) as HandleUploadBody;
 
