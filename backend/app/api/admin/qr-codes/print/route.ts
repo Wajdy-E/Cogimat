@@ -8,26 +8,28 @@ export async function GET(req: Request) {
 		const page = parseInt(searchParams.get("page") || "1");
 		const codesPerPage = 50;
 
+		// Calculate the range for this page (by OFFSET/LIMIT, not by id range)
+		const offset = (page - 1) * codesPerPage;
+
 		let whereClause = "";
-		let params: any[] = [];
+		let params: (string | number)[] = [];
 
 		if (batchNumber) {
 			whereClause = "WHERE batch_number = $1";
 			params = [batchNumber];
 		}
 
-		// Calculate the range for this page
-		const startId = (page - 1) * codesPerPage + 1;
-		const endId = page * codesPerPage;
+		const limitParam = params.length + 1;
+		const offsetParam = params.length + 2;
 
 		// Get QR codes for this specific page
 		const qrCodes = await query(
 			`SELECT id, code, batch_number
 			 FROM qr_codes 
 			 ${whereClause}
-			 AND id BETWEEN $${params.length + 1} AND $${params.length + 2}
-			 ORDER BY id`,
-			[...params, startId, endId]
+			 ORDER BY id
+			 LIMIT $${limitParam} OFFSET $${offsetParam}`,
+			[...params, codesPerPage, offset]
 		);
 
 		// Get total pages
