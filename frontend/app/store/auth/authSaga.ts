@@ -5,6 +5,7 @@ import {
 	setMilestonesProgress,
 	setWeeklyStats,
 	setSubscriptionStatus,
+	setBaseInfoSubscription,
 	UserBase,
 	UserMilestones,
 	UserSubscriptionState,
@@ -231,6 +232,7 @@ export const updateSubscriptionStatus = createAsyncThunk<void, UserSubscriptionS
 			});
 
 			dispatch(setSubscriptionStatus(subscriptionData));
+			dispatch(setBaseInfoSubscription(subscriptionData.isSubscribed));
 		} catch (error) {
 			console.error("Error updating subscription status:", error);
 			throw error;

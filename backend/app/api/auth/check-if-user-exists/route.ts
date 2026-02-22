@@ -19,7 +19,8 @@ export async function GET(req: Request) {
 			   username AS "username", 
 			   creation_date AS "createdAt",
 			   is_admin AS "isAdmin",
-			   has_qr_access AS "hasQrAccess"
+			   has_qr_access AS "hasQrAccess",
+			   is_subscribed AS "isSubscribed"
 			 FROM users 
 			 WHERE clerk_id = $1`,
 			[clerk_id]

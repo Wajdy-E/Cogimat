@@ -100,6 +100,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 						profileUri: user.imageUrl,
 						isAdmin: isAdmin,
 						hasQrAccess: hasQrAccess,
+						isSubscribed: userDataResult.user?.isSubscribed ?? false,
 					})
 				);
 
@@ -210,6 +211,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 								profileUri: user.imageUrl,
 								isAdmin: isAdmin,
 								hasQrAccess: hasQrAccess,
+								isSubscribed: userDataResult.user?.isSubscribed ?? false,
 							})
 						);
 

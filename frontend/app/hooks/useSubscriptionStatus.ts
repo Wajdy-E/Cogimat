@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import Purchases from 'react-native-purchases';
+import { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store/store';
+import { checkIfUserExistsAndHasQrAccess } from '@/store/auth/authSaga';
 
 interface SubscriptionStatus {
 	isSubscribed: boolean;
@@ -10,66 +12,23 @@ interface SubscriptionStatus {
 	refetch: () => Promise<void>;
 }
 
-export function useSubscriptionStatus (): SubscriptionStatus {
-	const [isSubscribed, setIsSubscribed] = useState(false);
-	const [isMonthly, setIsMonthly] = useState(false);
-	const [isYearly, setIsYearly] = useState(false);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
+export function useSubscriptionStatus(): SubscriptionStatus {
+	const dispatch = useDispatch();
+	const userId = useSelector((state: RootState) => state.user.user.baseInfo?.id);
+	const isSubscribed = useSelector((state: RootState) => state.user.user.baseInfo?.isSubscribed === true);
 
-	const checkSubscriptionStatus = async () => {
-		try {
-			setIsLoading(true);
-			setError(null);
-
-			const info = await Purchases.getCustomerInfo();
-			// console.log(info, "info");
-			const activeEntitlement = info.entitlements.active['Pro'];
-			// console.log(activeEntitlement, "activeEntitlement");
-
-			setIsSubscribed(activeEntitlement != null);
-
-			if (activeEntitlement) {
-				// Check the product identifier to determine subscription type
-				const productId = activeEntitlement.productIdentifier;
-				setIsMonthly(productId === 'com.cogipro.cogimat.Monthly');
-				setIsYearly(productId === 'com.cogipro.cogimat.Annual');
-			} else {
-				setIsMonthly(false);
-				setIsYearly(false);
-			}
-		} catch (err) {
-			setError(err instanceof Error ? err : new Error('Failed to check subscription status'));
-			setIsSubscribed(false);
-			setIsMonthly(false);
-			setIsYearly(false);
-		} finally {
-			setIsLoading(false);
+	const refetch = useCallback(async () => {
+		if (userId) {
+			await dispatch(checkIfUserExistsAndHasQrAccess(userId)).unwrap();
 		}
-	};
-
-	useEffect(() => {
-		checkSubscriptionStatus();
-
-		// Set up listener for subscription changes
-		const customerInfoUpdateListener = () => {
-			checkSubscriptionStatus();
-		};
-
-		Purchases.addCustomerInfoUpdateListener(customerInfoUpdateListener);
-
-		return () => {
-			// Clean up listener on unmount
-			Purchases.removeCustomerInfoUpdateListener(customerInfoUpdateListener);
-		};
-	}, []);
+	}, [dispatch, userId]);
 
 	return {
 		isSubscribed,
-		isMonthly,
-		isYearly,
-		isLoading,
-		error,
-		refetch: checkSubscriptionStatus,
+		isMonthly: false,
+		isYearly: false,
+		isLoading: false,
+		error: null,
+		refetch,
 	};
 }

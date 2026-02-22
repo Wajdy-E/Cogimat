@@ -15,6 +15,7 @@ export interface UserBase {
 	profileUri?: string | null;
 	isAdmin?: boolean;
 	hasQrAccess?: boolean;
+	isSubscribed?: boolean;
 }
 
 export enum Theme {
@@ -167,6 +168,11 @@ const userSlice = createSlice({
 			state.user.baseInfo = action.payload;
 			console.log("state.user.baseInfo", state.user.baseInfo);
 		},
+		setBaseInfoSubscription(state, action: PayloadAction<boolean>) {
+			if (state.user.baseInfo) {
+				state.user.baseInfo.isSubscribed = action.payload;
+			}
+		},
 		setSubscriptionStatus(state, action: PayloadAction<UserSubscriptionState>) {
 			state.user.subscription = action.payload;
 		},
@@ -278,6 +284,7 @@ const userSlice = createSlice({
 
 export const {
 	setCurrentUser,
+	setBaseInfoSubscription,
 	toggleTheme,
 	setTheme,
 	setNotifications,
