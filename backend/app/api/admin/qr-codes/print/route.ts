@@ -12,11 +12,11 @@ export async function GET(req: Request) {
 
 		const offset = (page - 1) * codesPerPage;
 
-		let whereClause = "";
+		let whereClause = "WHERE is_used = false";
 		let params: (string | number)[] = [];
 
 		if (batchNumber) {
-			whereClause = "WHERE batch_number = $1";
+			whereClause = "WHERE batch_number = $1 AND is_used = false";
 			params = [batchNumber];
 		}
 

@@ -33,6 +33,12 @@ Use the admin interface or run the database function:
 SELECT generate_qr_codes(10000, 50);
 ```
 
+**Important:** Generation should **append** new codes, not replace existing ones. If your `generate_qr_codes` function truncates the table, any already-printed codes would be invalidated. To use an append-only implementation, run:
+
+```sql
+\i backend/database_schema_qr_codes_append_only.sql
+```
+
 ## API Endpoints
 
 ### QR Code Signup

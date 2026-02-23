@@ -681,6 +681,7 @@
 			"refreshStatistics": "Actualiser les Statistiques",
 			"printQrCodePages": "Imprimer les Pages de QR Codes",
 			"eachPageContains50": "Chaque page contient 50 QR codes disposés en grille 5x10 pour faciliter l'impression.",
+			"downloadUnusedOnly": "Seuls les codes non utilisés sont inclus dans le téléchargement.",
 			"instructions": "Instructions",
 			"instruction1": "1. Générez 10 000 QR codes en utilisant le bouton ci-dessus",
 			"instruction2": "2. Téléchargez les pages de QR codes pour l'impression",

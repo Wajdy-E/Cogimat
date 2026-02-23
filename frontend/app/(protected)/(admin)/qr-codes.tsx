@@ -63,7 +63,7 @@ export default function QRCodesManagement() {
 				{ metric: i18n.t("admin.qrCodes.usageRate"), value: `${getUsagePercentage()}%` },
 			]
 		: [];
-	const totalPages = stats ? Math.ceil(stats.total_codes / CODES_PER_PAGE) : 0;
+	const totalPages = stats ? Math.ceil(stats.unused_codes / CODES_PER_PAGE) : 0;
 
 	const countToGenerate = Math.min(
 		MAX_PAGES * CODES_PER_PAGE,
@@ -133,10 +133,6 @@ export default function QRCodesManagement() {
 	return (
 		<ScrollView className="flex-1 bg-background-700">
 			<View className="p-4">
-				<Heading size="2xl" className="text-typography-950 mb-6">
-					{i18n.t("admin.qrCodes.title")}
-				</Heading>
-
 				{/* Usage statistics table */}
 				<VStack space="md" className="mb-6">
 					<View className="flex-row items-center gap-2 mb-2">
@@ -231,13 +227,16 @@ export default function QRCodesManagement() {
 					</Button>
 				</VStack>
 
-				{/* Print / Download pages table */}
-				{stats && stats.total_codes > 0 && totalPages > 0 && (
+				{/* Print / Download pages table — only unused codes */}
+				{stats && stats.unused_codes > 0 && totalPages > 0 && (
 					<VStack space="md" className="mb-6">
 						<Heading size="lg" className="text-typography-950">
 							{i18n.t("admin.qrCodes.printQrCodePages")}
 						</Heading>
 						<Text className="text-typography-600 mb-3">{i18n.t("admin.qrCodes.eachPageContains50")}</Text>
+						<Text className="text-typography-500 text-sm mb-2">
+							{i18n.t("admin.qrCodes.downloadUnusedOnly")}
+						</Text>
 						<Box className="rounded-xl overflow-hidden border border-outline-200 bg-secondary-500">
 							<Table className="w-full">
 								<TableHeader>

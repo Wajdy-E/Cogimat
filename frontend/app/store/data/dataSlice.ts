@@ -7,10 +7,10 @@ export interface ExerciseVideoEntry {
 	isPremium?: boolean;
 }
 
-/** Video sources for public exercises. Custom exercises use videoUrl / youtubeUrl. */
+/** Video sources for public exercises. Custom exercises use videoUrl / youtubeUrl. Can be single entry (legacy) or array. */
 export interface ExerciseVideos {
-	youtube?: ExerciseVideoEntry;
-	mp4?: ExerciseVideoEntry;
+	youtube?: ExerciseVideoEntry | ExerciseVideoEntry[];
+	mp4?: ExerciseVideoEntry | ExerciseVideoEntry[];
 }
 
 export interface Exercise {
@@ -426,10 +426,15 @@ export function getVisibleExerciseMedia(
 	if (exercise.videos) {
 		const youtube = exercise.videos.youtube;
 		const mp4 = exercise.videos.mp4;
+		const toArr = (v: unknown): { url: string; isPremium?: boolean }[] =>
+			Array.isArray(v) ? v : v && typeof v === "object" && "url" in (v as object) ? [v as { url: string; isPremium?: boolean }] : [];
+		const yArr = toArr(youtube);
+		const mArr = toArr(mp4);
+		const firstY = yArr.find((e) => !e.isPremium || isSubscribed);
+		const firstM = mArr.find((e) => !e.isPremium || isSubscribed);
 		return {
-			youtubeUrl:
-				youtube?.url && (!youtube.isPremium || isSubscribed) ? youtube.url : undefined,
-			videoUrl: mp4?.url && (!mp4.isPremium || isSubscribed) ? mp4.url : undefined,
+			youtubeUrl: firstY?.url ?? undefined,
+			videoUrl: firstM?.url ?? undefined,
 		};
 	}
 	return {
@@ -446,17 +451,20 @@ export function getExerciseMediaItemsWithLock(
 	isSubscribed: boolean
 ): ExerciseMediaItem[] {
 	const items: ExerciseMediaItem[] = [];
+	const toArr = (v: unknown): { url: string; isPremium?: boolean }[] =>
+		Array.isArray(v) ? v : v && typeof v === "object" && "url" in (v as object) ? [v as { url: string; isPremium?: boolean }] : [];
 
 	if (exercise.videos) {
-		const y = exercise.videos.youtube;
-		const m = exercise.videos.mp4;
-		if (y?.url) {
+		const yArr = toArr(exercise.videos.youtube);
+		const mArr = toArr(exercise.videos.mp4);
+		for (const y of yArr) {
+			if (!y?.url) continue;
 			const match = y.url.match(/(?:v=|\/)([a-zA-Z0-9_-]{11})(?:\?|&|$)/);
 			const embedUrl = match ? `https://www.youtube.com/embed/${match[1]}?si=SWqkZtlRD8J8sBL-` : y.url;
 			items.push({ type: "youtube", url: embedUrl, isLocked: y.isPremium === true && !isSubscribed });
 		}
-		if (m?.url) {
-			items.push({ type: "video", url: m.url, isLocked: m.isPremium === true && !isSubscribed });
+		for (const m of mArr) {
+			if (m?.url) items.push({ type: "video", url: m.url, isLocked: m.isPremium === true && !isSubscribed });
 		}
 	} else {
 		// Legacy: only visible media, no lock state

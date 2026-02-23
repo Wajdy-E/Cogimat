@@ -677,6 +677,7 @@
 			"refreshStatistics": "統計を更新",
 			"printQrCodePages": "QRコードページを印刷",
 			"eachPageContains50": "各ページには印刷しやすいように5x10グリッドで配置された50個のQRコードが含まれています。",
+			"downloadUnusedOnly": "ダウンロードには未使用のコードのみ含まれます。",
 			"instructions": "手順",
 			"instruction1": "1. 上記のボタンを使用して10,000個のQRコードを生成",
 			"instruction2": "2. 印刷用のQRコードページをダウンロード",

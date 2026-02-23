@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, RefreshControl } from "react-native";
-import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
@@ -23,7 +22,7 @@ import { Text } from "@/components/ui/text";
 import { Card } from "@/components/ui/card";
 import { Badge, BadgeText } from "@/components/ui/badge";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { Play, Calendar, Eye, ArrowLeft, Search, Filter } from "lucide-react-native";
+import { Play, Calendar, Eye, Search, Filter } from "lucide-react-native";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import { i18n } from "../../i18n";
 import axios from "axios";
@@ -45,7 +44,6 @@ interface AdminVideo {
 }
 
 export default function AllVideos() {
-	const router = useRouter();
 	const { themeTextColor } = useTheme();
 	const user = useSelector((state: RootState) => state.user.user.baseInfo);
 
@@ -142,20 +140,6 @@ export default function AllVideos() {
 
 	return (
 		<View className="bg-background-800 h-screen">
-			{/* Header */}
-			<View className="flex-row items-center w-full justify-center py-3">
-				<View className="flex-row items-center justify-between gap-3 w-[90%]">
-					<View className="flex-row items-center gap-3">
-						<Button variant="link" onPress={() => router.back()}>
-							<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
-						</Button>
-						<Heading className="text-typography-950" size="2xl">
-							{i18n.t("admin.allVideos.title")}
-						</Heading>
-					</View>
-				</View>
-			</View>
-
 			{/* Search and Filter */}
 			<View className="px-5 mb-4">
 				<VStack space="md">

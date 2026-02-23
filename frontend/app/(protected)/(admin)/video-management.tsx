@@ -4,17 +4,14 @@ import { useRouter } from "expo-router";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
 import { Box } from "@/components/ui/box";
-import { ArrowLeft, Upload, Video } from "lucide-react-native";
-import { useTheme } from "@/components/ui/ThemeProvider";
+import { Upload, Video } from "lucide-react-native";
 import AdminVideoUpload from "@/components/AdminVideoUpload";
 import AdminVideoGallery from "@/components/AdminVideoGallery";
 import { i18n } from "../../i18n";
 
 export default function AdminVideoManagement() {
 	const router = useRouter();
-	const { themeTextColor } = useTheme();
 	const user = useSelector((state: RootState) => state.user.user.baseInfo);
 	const [activeTab, setActiveTab] = useState<"upload" | "gallery">("gallery");
 
@@ -26,20 +23,6 @@ export default function AdminVideoManagement() {
 
 	return (
 		<View className="bg-background-800 h-screen">
-			{/* Header */}
-			<View className="flex-row items-center w-full justify-center py-3">
-				<View className="flex-row items-center justify-between gap-3 w-[90%]">
-					<View className="flex-row items-center gap-3">
-						<Button variant="link" onPress={() => router.back()}>
-							<ButtonIcon as={ArrowLeft} size={"xxl" as any} stroke={themeTextColor} />
-						</Button>
-						<Heading className="text-typography-950" size="2xl">
-							{i18n.t("admin.videoManagement.title")}
-						</Heading>
-					</View>
-				</View>
-			</View>
-
 			{/* Tab Navigation */}
 			<View className="px-5 mb-4">
 				<Box className="bg-secondary-500 p-1 rounded-xl">

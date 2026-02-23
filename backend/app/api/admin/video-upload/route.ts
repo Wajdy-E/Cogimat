@@ -58,11 +58,35 @@ export async function POST(req: NextRequest) {
 
 		const isPremium = premiumOnly === true;
 
+		// Append a video entry to exercises.videos (keeps all; does not overwrite)
+		const appendExerciseVideo = async (
+			exId: number,
+			key: "mp4" | "youtube",
+			entry: { url: string; isPremium: boolean }
+		) => {
+			const rows = await query("SELECT videos FROM exercises WHERE id = $1", [exId]);
+			const current = rows[0]?.videos ?? {};
+			const currentVal = current[key];
+			let arr: { url: string; isPremium: boolean }[];
+			if (Array.isArray(currentVal)) {
+				arr = [...currentVal, entry];
+			} else if (currentVal && typeof currentVal === "object" && "url" in currentVal) {
+				arr = [currentVal as { url: string; isPremium: boolean }, entry];
+			} else {
+				arr = [entry];
+			}
+			const newVideos = { ...current, [key]: arr };
+			await query("UPDATE exercises SET videos = $1::jsonb WHERE id = $2", [
+				JSON.stringify(newVideos),
+				exId,
+			]);
+		};
+
 		if (hasYoutube && exerciseId) {
-			const youtubeEntry = JSON.stringify({ url: youtubeUrl.trim(), isPremium });
-			await query(
-				`UPDATE exercises SET videos = jsonb_set(COALESCE(videos, '{}'::jsonb), '{youtube}', $1::jsonb) WHERE id = $2`,
-				[youtubeEntry, parseInt(exerciseId)]
+			await appendExerciseVideo(
+				parseInt(exerciseId),
+				"youtube",
+				{ url: youtubeUrl.trim(), isPremium }
 			);
 			return new Response(
 				JSON.stringify({ success: true, url: youtubeUrl.trim() }),
@@ -130,13 +154,9 @@ export async function POST(req: NextRequest) {
 			]
 		);
 
-		// So the exercise page shows this video, update the exercise's videos.mp4 when linked
+		// Append to exercise's videos so the exercise page shows all videos (do not overwrite)
 		if (exerciseId) {
-			const mp4Entry = JSON.stringify({ url: videoUrl, isPremium });
-			await query(
-				`UPDATE exercises SET videos = jsonb_set(COALESCE(videos, '{}'::jsonb), '{mp4}', $1::jsonb) WHERE id = $2`,
-				[mp4Entry, parseInt(exerciseId)]
-			);
+			await appendExerciseVideo(parseInt(exerciseId), "mp4", { url: videoUrl, isPremium });
 		}
 
 		return new Response(
